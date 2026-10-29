@@ -1,0 +1,46 @@
+# ProfAlgoLabs — security, HTTPS and caching (Apache / cPanel)
+Options -Indexes
+ServerSignature Off
+DirectoryIndex index.html
+AddDefaultCharset UTF-8
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  # Force HTTPS
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP:X-Forwarded-Proto} !https
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+  # Block hidden files (.git, .env …) but allow .well-known for SSL
+  RewriteRule "(^|/)\.(?!well-known/)" - [F]
+</IfModule>
+
+<IfModule mod_headers.c>
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Permissions-Policy "camera=(), microphone=(), geolocation=(), payment=(), usb=()"
+  Header always set Cross-Origin-Opener-Policy "same-origin"
+  Header always unset X-Powered-By
+  <FilesMatch "\.html$">
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'sha256-zLTSuLa/EH3jX9igWi6CZrh2tGg8vfybDYT7lQBu8PE=' 'sha256-gHIqDtjqsUnjI9p8nHwiFtOe49CnQ47/TChMNXFfrYI=' 'sha256-MUZXco4MsIV8GAF+4Rw9ruTJ6HjA2Fo5MHimre5QFdE=' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests"
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+  <FilesMatch "\.(png|svg|webmanifest|ico)$">
+    Header set Cache-Control "public, max-age=2592000"
+  </FilesMatch>
+</IfModule>
+
+# Never serve data, logs, backups or source files
+<FilesMatch "\.(csv|json|log|bak|sql|ini|md|zip|py|sh)$">
+  Require all denied
+</FilesMatch>
+<Files "site.webmanifest">
+  Require all granted
+</Files>
+
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json image/svg+xml application/manifest+json
+</IfModule>
+AddType application/manifest+json .webmanifest
+ErrorDocument 404 /index.html

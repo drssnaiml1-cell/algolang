@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /data/
+Disallow: /contact.php
+Disallow: /counter.php
+
+Sitemap: https://www.profagentlabs.algoprofessor.com/sitemap.xml

@@ -1,0 +1,872 @@
+<!doctype html>
+<html lang="en-IN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta property="og:image" content="https://www.profagentlabs.algoprofessor.com/assets/og-image.png">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="ProfAlgoLabs — Where agents replace functions">
+<meta name="twitter:image" content="https://www.profagentlabs.algoprofessor.com/assets/og-image.png">
+<meta name="format-detection" content="telephone=no">
+<title>ProfAlgoLabs™</title>
+<meta name="description" content="ProfAlgoLabs™ is the Bell Labs–inspired research lab of AlgoProfessor AI R&amp;D Solutions, Hyderabad. Creators of AlgoLang, the agent-native programming language. 10 services: programming language development, agentic AI, AI security, quant, Q1 research, AI courses, internships, university partnerships, publications and applied AI.">
+<meta name="keywords" content="ProfAlgoLabs, AlgoProfessor, AlgoLang, agentic AI, multi-agent systems, programming language development, compiler development, AI research lab Hyderabad, AI security, QuantOracle, Q1 SCI research support, AI courses India, Dr S Satyanarayana">
+<meta name="author" content="AlgoProfessor AI R&amp;D Solutions">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="theme-color" content="#071328">
+<link rel="canonical" href="https://www.profagentlabs.algoprofessor.com/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ProfAlgoLabs™ · AlgoProfessor">
+<meta property="og:title" content="ProfAlgoLabs™ · Where agents replace functions">
+<meta property="og:description" content="The research lab of AlgoProfessor: AlgoLang, governed agentic AI and 10 services for universities and enterprises.">
+<meta property="og:url" content="https://www.profagentlabs.algoprofessor.com/">
+<meta property="og:locale" content="en_IN">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="ProfAlgoLabs™ · Where agents replace functions">
+<meta name="twitter:description" content="The research lab of AlgoProfessor: AlgoLang, governed agentic AI and 10 services.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,500&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<script type="application/ld+json">
+{"@context":"https://schema.org","@graph":[
+ {"@type":"ResearchOrganization","@id":"https://www.algoprofessor.com/#lab","name":"ProfAlgoLabs™","alternateName":"ProfAlgoLabs","url":"https://www.profagentlabs.algoprofessor.com/","description":"The research and invention lab of AlgoProfessor AI R&D Solutions, Hyderabad.","parentOrganization":{"@id":"https://www.algoprofessor.com/#org"},"knowsAbout":["Programming language design","Compilers","Agentic AI","Multi-agent systems","AI security","Quantitative finance","Medical image analysis"]},
+ {"@type":"Organization","@id":"https://www.algoprofessor.com/#org","name":"AlgoProfessor AI R&D Solutions","url":"https://www.algoprofessor.com/","email":"contact@algoprofessor.com","foundingLocation":"Hyderabad, India","address":{"@type":"PostalAddress","addressLocality":"Hyderabad","addressRegion":"Telangana","addressCountry":"IN"},"founder":{"@id":"https://www.algoprofessor.com/#founder"},"sameAs":["https://github.com/drssnaiml1-cell/algolang"],
+  "hasOfferCatalog":{"@type":"OfferCatalog","name":"AlgoProfessor services","itemListElement":[
+   {"@type":"Offer","itemOffered":{"@type":"Service","name":"Programming Language & Compiler Development"}},
+   {"@type":"Offer","itemOffered":{"@type":"Service","name":"Agentic AI Systems & Products"}},
+   {"@type":"Offer","itemOffered":{"@type":"Service","name":"Enterprise AI Security & Supply-Chain Assurance"}},
+   {"@type":"Offer","itemOffered":{"@type":"Service","name":"Quant Research & Algo Trading Strategies"}},
+   {"@type":"Offer","itemOffered":{"@type":"Service","name":"Q1 SCI Research & Publication Support"}},
+   {"@type":"Offer","itemOffered":{"@type":"Service","name":"AI Courses & Certification"}},
+   {"@type":"Offer","itemOffered":{"@type":"Service","name":"Live Internships & Forward Deployed Engineering"}},
+   {"@type":"Offer","itemOffered":{"@type":"Service","name":"University Partnerships & AlgoProfessor Campus"}},
+   {"@type":"Offer","itemOffered":{"@type":"Service","name":"AlgoProfessor Publications"}},
+   {"@type":"Offer","itemOffered":{"@type":"Service","name":"Applied AI Products & Development"}}]}},
+ {"@type":"Person","@id":"https://www.algoprofessor.com/#founder","name":"Dr. S. Satyanarayana","honorificSuffix":"Ph.D., PDF (AI)","jobTitle":"Founder, CEO & Chief Agentic AI Scientist","worksFor":{"@id":"https://www.algoprofessor.com/#org"},"sameAs":["https://orcid.org/0000-0001-8285-113X","https://scholar.google.com/citations?user=4Oo8gqoAAAAJ"]},
+ {"@type":"SoftwareSourceCode","name":"AlgoLang","description":"An agent-native programming language where agents replace functions.","codeRepository":"https://github.com/drssnaiml1-cell/algolang","programmingLanguage":"Python","author":{"@id":"https://www.algoprofessor.com/#founder"}},
+ {"@type":"WebSite","@id":"https://www.profagentlabs.algoprofessor.com/#site","url":"https://www.profagentlabs.algoprofessor.com/","name":"ProfAlgoLabs™ · AlgoProfessor","publisher":{"@id":"https://www.algoprofessor.com/#org"},"inLanguage":"en-IN"}
+]}
+</script>
+<script type="importmap">
+{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js"}}
+</script>
+<style>
+/* Layout concept: a deep-space navy lab with a gold agent globe floating behind glass panels.
+   Single committed dark look (brand), dense bands that butt edge to edge — no dead space. */
+:root{
+  color-scheme:dark;
+  --void:#050c1a; --navy:#071328; --panel:rgba(11,29,58,.72); --panel-2:rgba(16,38,74,.78);
+  --line:rgba(201,169,74,.24); --line-soft:rgba(160,185,220,.15);
+  --gold:#d9b54a; --gold-2:#f1d27a; --gold-deep:#a8841f; --ink:#eef2f8; --ink-2:#c3cee0; --muted:#8c9cb5;
+  --ok:#5cc792; --ok-bg:rgba(92,199,146,.12); --warn:#e8b25a; --warn-bg:rgba(232,178,90,.12); --risk:#f08a98; --risk-bg:rgba(240,138,152,.12);
+  --f-display:"Newsreader","Times New Roman",Georgia,serif;
+  --f-body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+  --r:12px; --maxw:1240px; --glow:0 0 0 1px var(--line),0 18px 50px rgba(0,0,0,.45);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:72px}
+body{margin:0;background:var(--void);color:var(--ink);font-family:var(--f-body);font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+  background-image:radial-gradient(1200px 700px at 78% 8%,rgba(217,181,74,.12),transparent 60%),radial-gradient(900px 600px at 10% 60%,rgba(111,168,255,.10),transparent 60%),linear-gradient(180deg,#071328,#050c1a 60%,#071328)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:90;background:var(--navy)}
+#webgl{position:fixed;inset:0;width:100%;height:100%;z-index:0;display:block;pointer-events:none}
+main,header,footer{position:relative;z-index:1}
+a{color:inherit}
+h1,h2,h3,h4{font-family:var(--f-display);font-weight:600;line-height:1.1;margin:0;text-wrap:balance;letter-spacing:-.01em}
+p{margin:0}
+.wrap{max-width:var(--maxw);margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.eyebrow{display:inline-flex;align-items:center;gap:.5rem;font-family:var(--f-mono);font-size:.72rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+.eyebrow::before{content:"";width:18px;height:1px;background:var(--gold)}
+.gold{color:var(--gold)}
+.tm{font-size:.5em;vertical-align:super;font-family:var(--f-body);font-weight:500;margin-left:.04em}
+:focus-visible{outline:2px solid var(--gold-2);outline-offset:3px;border-radius:4px}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:80;background:rgba(5,12,26,.8);backdrop-filter:blur(14px) saturate(140%);-webkit-backdrop-filter:blur(14px) saturate(140%);border-bottom:1px solid var(--line)}
+.top .wrap{display:flex;align-items:center;gap:1.1rem;min-height:66px}
+.brand{display:flex;align-items:center;gap:.65rem;text-decoration:none;flex-shrink:0}
+.brand svg{width:38px;height:38px;filter:drop-shadow(0 0 10px rgba(217,181,74,.35))}
+.brand svg .spin{transform-origin:20px 20px;animation:spin 18s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.brand b{display:block;font-family:var(--f-display);font-size:1.35rem;font-weight:600;line-height:1}
+.brand b span{color:var(--gold)}
+.brand small{display:block;font-family:var(--f-mono);font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+nav.main{display:flex;gap:.1rem;margin-left:auto}
+nav.main a{color:var(--ink-2);text-decoration:none;font-size:.9rem;font-weight:500;padding:.45rem .75rem;border-radius:6px;position:relative}
+nav.main a:hover{color:var(--ink)}
+nav.main a.on{color:var(--gold-2)}
+nav.main a.on::after{content:"";position:absolute;left:.75rem;right:.75rem;bottom:.15rem;height:2px;background:var(--gold);border-radius:2px}
+.visits{display:inline-flex;align-items:center;gap:.45rem;font:500 .74rem var(--f-mono);color:var(--ink-2);border:1px solid var(--line);border-radius:30px;padding:.28rem .7rem;white-space:nowrap;background:rgba(217,181,74,.06)}
+.visits i{width:7px;height:7px;border-radius:50%;background:var(--ok);animation:ping 2s infinite}
+@keyframes ping{0%{box-shadow:0 0 0 0 rgba(92,199,146,.55)}70%{box-shadow:0 0 0 8px rgba(92,199,146,0)}100%{box-shadow:0 0 0 0 rgba(92,199,146,0)}}
+.visits b{color:var(--gold-2);font-weight:600;font-variant-numeric:tabular-nums}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;font:600 .93rem var(--f-body);padding:.74rem 1.2rem;border-radius:8px;text-decoration:none;cursor:pointer;border:1px solid transparent;transition:transform .18s,box-shadow .18s;white-space:nowrap}
+.btn:hover{transform:translateY(-2px)}
+.btn-gold{background:linear-gradient(135deg,var(--gold-2),var(--gold) 45%,var(--gold-deep));color:#071328;box-shadow:0 8px 24px rgba(217,181,74,.28)}
+.btn-gold:hover{box-shadow:0 12px 30px rgba(217,181,74,.42)}
+.btn-glass{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.2);color:var(--ink)}
+.btn-sm{padding:.5rem .9rem;font-size:.85rem}
+.menu-btn{display:none;background:none;border:1px solid var(--line);color:var(--ink);border-radius:7px;padding:.42rem .65rem;font:500 .85rem var(--f-body);cursor:pointer}
+@media (max-width:1060px){
+  nav.main{display:none;position:absolute;left:0;right:0;top:100%;flex-direction:column;background:rgba(5,12,26,.97);padding:.6rem max(16px,env(safe-area-inset-left,0px)) 1rem;border-bottom:1px solid var(--line)}
+  nav.main.open{display:flex}
+  nav.main a{padding:.7rem .4rem;font-size:1rem}
+  nav.main a.on::after{left:.4rem;right:auto;width:30px}
+  .menu-btn{display:block;margin-left:auto}
+  .top .btn-gold{display:none}
+}
+@media (max-width:520px){.top .visits{display:none}}
+.hero{padding-block:clamp(2.4rem,6vw,4.4rem) 0}
+.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:2rem;align-items:center}
+.hero-copy{display:grid;gap:1.25rem;align-content:start;min-width:0}
+.badge-line{display:flex;flex-wrap:wrap;gap:.5rem}
+.badge{display:inline-flex;align-items:center;gap:.45rem;font:500 .74rem var(--f-mono);color:var(--ink-2);border:1px solid var(--line-soft);background:rgba(255,255,255,.04);border-radius:30px;padding:.28rem .7rem}
+.badge b{color:var(--gold)}
+.hero h1{font-size:clamp(2.6rem,6.2vw,5.2rem);font-weight:600;letter-spacing:-.025em}
+.hero h1 em{font-style:italic;font-weight:500;background:linear-gradient(100deg,var(--gold-2),var(--gold) 50%,#fff3c8);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero .lede{font-size:clamp(1.02rem,1.5vw,1.18rem);color:var(--ink-2);max-width:56ch}
+.hero .lede strong{color:var(--ink)}
+.cta-row{display:flex;flex-wrap:wrap;gap:.7rem}
+.hero-side{display:grid;gap:.8rem;align-content:center;justify-items:end;min-height:380px;min-width:0}
+.orbit-card{background:var(--panel);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--line);border-radius:var(--r);padding:.85rem 1rem;max-width:300px;width:100%;box-shadow:var(--glow);transform:perspective(800px) rotateY(-8deg);animation:float 6s ease-in-out infinite}
+.orbit-card:nth-child(2){animation-delay:-2s;margin-right:3.5rem}
+.orbit-card:nth-child(3){animation-delay:-4s}
+@keyframes float{50%{transform:perspective(800px) rotateY(-8deg) translateY(-8px)}}
+.orbit-card .k{font:500 .66rem var(--f-mono);letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+.orbit-card .v{font-family:var(--f-display);font-size:1.25rem;font-weight:600;margin-top:.15rem}
+.orbit-card .v small{font-family:var(--f-body);font-size:.8rem;color:var(--ink-2);font-weight:400;display:block}
+@media (max-width:900px){.hero-grid{grid-template-columns:1fr}.hero-copy{padding-top:13rem}.hero-side{min-height:0;justify-items:stretch;grid-template-columns:repeat(3,1fr)}.orbit-card,.orbit-card:nth-child(2){margin:0;max-width:none;transform:none;animation:none}}
+.hero-copy .badge-line{position:relative}@media (max-width:600px){.hero-copy{padding-top:12.5rem}.hero-side{grid-template-columns:1fr}}
+.stats{margin-top:clamp(2rem,4vw,3rem);display:grid;grid-template-columns:repeat(6,1fr);background:var(--panel);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;box-shadow:var(--glow)}
+.stat{padding:1.1rem 1rem;border-right:1px solid var(--line-soft);min-width:0}
+.stat:last-child{border-right:0}
+.stat b{display:block;font-family:var(--f-display);font-size:clamp(1.7rem,2.8vw,2.4rem);line-height:1;font-weight:600;font-variant-numeric:tabular-nums}
+.stat b sup{color:var(--gold);font-size:.55em}
+.stat span{display:block;font-size:.78rem;color:var(--muted);margin-top:.35rem;line-height:1.35}
+@media (max-width:900px){.stats{grid-template-columns:repeat(3,1fr)}.stat:nth-child(3){border-right:0}.stat:nth-child(-n+3){border-bottom:1px solid var(--line-soft)}}
+@media (max-width:480px){.stats{grid-template-columns:repeat(2,1fr)}.stat{border-right:1px solid var(--line-soft)!important;border-bottom:1px solid var(--line-soft)}.stat:nth-child(2n){border-right:0!important}.stat:nth-last-child(-n+2){border-bottom:0}}
+.marquee{margin-top:clamp(1.5rem,3vw,2.2rem);border-block:1px solid var(--line);background:linear-gradient(90deg,rgba(217,181,74,.1),rgba(217,181,74,.03),rgba(217,181,74,.1));overflow:hidden;white-space:nowrap}
+.marquee-track{display:inline-flex;gap:2.2rem;padding:.8rem 0;animation:slide 48s linear infinite}
+.marquee:hover .marquee-track{animation-play-state:paused}
+.marquee span{font:500 .82rem var(--f-mono);letter-spacing:.06em;color:var(--ink-2);display:inline-flex;align-items:center;gap:2.2rem}
+.marquee span::after{content:"◆";color:var(--gold);font-size:.6rem}
+@keyframes slide{to{transform:translateX(-50%)}}
+.band{padding-block:clamp(3rem,6vw,4.5rem)}
+.band.tight{padding-block:clamp(2.2rem,4vw,3rem)}
+.band.glass{background:rgba(5,12,26,.62);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border-block:1px solid var(--line-soft)}
+.band.deep{background:linear-gradient(180deg,rgba(7,19,40,.9),rgba(5,12,26,.9));border-block:1px solid var(--line)}
+.head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:end;gap:1rem 2rem;margin-bottom:1.6rem}
+.head > div{display:grid;gap:.6rem;max-width:720px}
+.head h2{font-size:clamp(1.9rem,3.6vw,2.9rem)}
+.head p{color:var(--ink-2);font-size:1.02rem}
+.panel{background:var(--panel);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border:1px solid var(--line-soft);border-radius:var(--r)}
+.tilt{transition:transform .25s ease,border-color .25s,box-shadow .25s}
+.tilt:hover{border-color:var(--line);box-shadow:var(--glow)}
+.about-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:1.2rem}
+.story{padding:1.6rem;display:grid;gap:.9rem;align-content:start}
+.story h3{font-size:1.6rem}
+.story p{color:var(--ink-2)}
+.story strong{color:var(--ink)}
+.carry{display:grid;grid-template-columns:1fr 1fr;gap:1.2rem}
+.carry .panel{padding:1.15rem;display:grid;gap:.4rem;align-content:start}
+.carry .k{font:600 .95rem var(--f-mono);color:var(--gold)}
+.carry p{font-size:.9rem;color:var(--ink-2)}
+.carry em{color:var(--ink);font-style:normal}
+@media (max-width:900px){.about-grid{grid-template-columns:1fr}}
+@media (max-width:480px){.carry{grid-template-columns:1fr}}
+.principles{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;margin-top:1.2rem}
+.principles .panel{padding:1.15rem;display:grid;gap:.45rem;align-content:start;border-top:2px solid var(--gold)}
+.principles h4{font-size:1.15rem}
+.principles p{font-size:.88rem;color:var(--ink-2)}
+@media (max-width:900px){.principles{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:480px){.principles{grid-template-columns:1fr}}
+.divisions{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem}
+.division{padding:1.3rem;display:grid;grid-template-columns:auto 1fr;gap:.3rem 1rem;align-content:start;background:var(--panel-2)}
+.division .ico{grid-row:span 3;width:46px;height:46px;border-radius:10px;display:grid;place-items:center;background:linear-gradient(145deg,rgba(217,181,74,.25),rgba(217,181,74,.05));border:1px solid var(--line);color:var(--gold-2)}
+.division .ico svg{width:24px;height:24px}
+.division .code{font:500 .68rem var(--f-mono);color:var(--muted);letter-spacing:.1em}
+.division h3{font-size:1.18rem}
+.division p{font-size:.88rem;color:var(--ink-2)}
+@media (max-width:900px){.divisions{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:560px){.divisions{grid-template-columns:1fr}}
+.story-row{display:grid;grid-template-columns:1.25fr .75fr;gap:1.2rem;margin-top:1.2rem}
+.timeline{padding:1.4rem;display:grid;grid-template-columns:repeat(3,1fr);gap:1rem 1.2rem}
+.timeline h3{grid-column:1/-1;font-size:1.4rem}
+.tl{padding:.9rem 1rem;border-radius:10px;background:rgba(255,255,255,.03);border:1px solid var(--line-soft);display:grid;gap:.2rem;align-content:start}
+.tl b{font:500 .78rem var(--f-mono);color:var(--gold)}
+.tl h4{font-size:1.05rem}
+.tl p{font-size:.84rem;color:var(--ink-2)}
+.tl.next{border-style:dashed}
+.director{padding:1.4rem;display:grid;gap:.8rem;align-content:start;background:linear-gradient(160deg,rgba(217,181,74,.14),rgba(11,29,58,.78) 40%)}
+.director .top-row{display:flex;gap:1rem;align-items:center}
+.monogram{width:72px;height:72px;flex:none;border-radius:50%;display:grid;place-items:center;font-family:var(--f-display);font-weight:600;font-size:1.7rem;color:var(--gold-2);background:radial-gradient(circle at 30% 30%,#173465,#071328);border:2px solid var(--gold);box-shadow:0 0 0 6px rgba(217,181,74,.08)}
+.director h3{font-size:1.35rem}
+.director .role{font:500 .74rem var(--f-mono);color:var(--muted);margin-top:.2rem}
+.director ul{margin:0;padding:0;list-style:none;display:grid;gap:.4rem}
+.director li{padding-left:1.1rem;position:relative;font-size:.9rem;color:var(--ink-2)}
+.director li::before{content:"";position:absolute;left:0;top:.6em;width:6px;height:6px;background:var(--gold);transform:rotate(45deg)}
+.chips{display:flex;flex-wrap:wrap;gap:.45rem}
+.chip{font:500 .76rem var(--f-mono);border:1px solid var(--line);border-radius:30px;padding:.25rem .7rem;text-decoration:none;color:var(--ink-2);background:rgba(255,255,255,.03)}
+.chip:hover{border-color:var(--gold);color:var(--gold-2)}
+@media (max-width:980px){.story-row{grid-template-columns:1fr}}
+@media (max-width:760px){.timeline{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:440px){.timeline{grid-template-columns:1fr}}
+.fine{font-size:.76rem;color:var(--muted);margin-top:1rem}
+.filters{display:flex;flex-wrap:wrap;gap:.45rem}
+.filters button{font:500 .84rem var(--f-body);background:rgba(255,255,255,.04);color:var(--ink-2);border:1px solid var(--line-soft);border-radius:30px;padding:.42rem .9rem;cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--gold);color:#071328;border-color:var(--gold)}
+.svc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem}
+.svc{padding:1.25rem;display:grid;gap:.55rem;align-content:start;position:relative;overflow:hidden;background:var(--panel-2)}
+.svc::before{content:"";position:absolute;inset:0;background:radial-gradient(400px 200px at var(--mx,50%) var(--my,0%),rgba(217,181,74,.16),transparent 60%);opacity:0;transition:opacity .3s;pointer-events:none}
+.svc:hover::before{opacity:1}
+.svc .row1{display:flex;align-items:center;justify-content:space-between;gap:.5rem}
+.svc .num{font:600 .8rem var(--f-mono);color:var(--gold)}
+.svc .ico{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;background:rgba(217,181,74,.1);border:1px solid var(--line);color:var(--gold-2)}
+.svc .ico svg{width:21px;height:21px}
+.svc h3{font-size:1.18rem;line-height:1.18}
+.svc p{font-size:.87rem;color:var(--ink-2)}
+.svc ul{margin:0;padding:0;list-style:none;display:grid;gap:.25rem}
+.svc li{font-size:.82rem;color:var(--ink-2);padding-left:1rem;position:relative}
+.svc li::before{content:"›";position:absolute;left:0;color:var(--gold);font-weight:700}
+.svc .acts{display:flex;flex-wrap:wrap;gap:.45rem;margin-top:.3rem}
+.svc .acts button,.svc .acts a{font:600 .8rem var(--f-body);padding:.42rem .75rem;border-radius:6px;cursor:pointer;text-decoration:none}
+.svc .acts .ask{background:var(--gold);color:#071328;border:0}
+.svc .acts .site{border:1px solid var(--line-soft);color:var(--ink);background:transparent}
+.svc.featured{grid-column:span 2;grid-row:span 2;background:linear-gradient(150deg,rgba(217,181,74,.22),rgba(11,29,58,.86) 45%);border-color:var(--line)}
+.svc.featured h3{font-size:1.75rem}
+.svc.featured p,.svc.featured li{font-size:.95rem}
+.svc.featured pre{margin:.4rem 0 0;font:400 .78rem/1.55 var(--f-mono);background:rgba(5,12,26,.6);border:1px solid var(--line-soft);border-radius:8px;padding:.8rem;overflow-x:auto;color:#dfe6f1}
+.new{font:700 .62rem var(--f-mono);letter-spacing:.12em;background:var(--gold);color:#071328;padding:.18rem .5rem;border-radius:4px}
+@media (max-width:1100px){.svc-grid{grid-template-columns:repeat(3,1fr)}.svc.featured{grid-row:auto}}
+@media (max-width:820px){.svc-grid{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:560px){.svc-grid{grid-template-columns:1fr}.svc.featured{grid-column:auto}}
+.process{display:grid;grid-template-columns:repeat(4,1fr);gap:1.2rem;margin-top:1.2rem}
+.step{padding:1.1rem;display:grid;gap:.35rem;align-content:start}
+.step .n{font-family:var(--f-display);font-size:2.2rem;line-height:1;color:var(--gold);font-weight:600}
+.step h4{font-size:1.08rem}
+.step p{font-size:.86rem;color:var(--ink-2)}
+@media (max-width:820px){.process{grid-template-columns:repeat(2,1fr)}}
+@media (max-width:440px){.process{grid-template-columns:1fr}}
+.al-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:1.2rem}
+.console{background:rgba(3,9,20,.9);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;min-width:0;box-shadow:var(--glow)}
+.console-bar{display:flex;align-items:center;gap:.5rem;padding:.6rem .9rem;border-bottom:1px solid var(--line-soft);font:400 .72rem var(--f-mono);color:var(--muted)}
+.console-bar .dots{display:flex;gap:5px}.console-bar .dots i{width:9px;height:9px;border-radius:50%;background:#22385a}.console-bar .dots i:first-child{background:var(--gold)}
+.console-bar span{margin-left:auto}
+.tabs{display:flex;gap:.35rem;flex-wrap:wrap;padding:.75rem .9rem 0}
+.tabs button{font:500 .78rem var(--f-body);color:var(--ink-2);background:rgba(255,255,255,.05);border:1px solid var(--line-soft);border-radius:30px;padding:.3rem .75rem;cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--gold);color:#071328;border-color:var(--gold)}
+.console pre{margin:0;padding:.85rem .95rem;font:400 .78rem/1.6 var(--f-mono);color:#dfe6f1;overflow-x:auto;min-height:168px}
+.tok-k{color:#e5c55f}.tok-s{color:#9ed3a8}.tok-c{color:#6f819c;font-style:italic}.tok-n{color:#8fc3ff}
+.run{border-top:1px solid var(--line-soft);padding:.8rem .95rem 1rem}
+.run-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:.6rem}
+.run-head span{font:500 .68rem var(--f-mono);letter-spacing:.12em;color:var(--muted);text-transform:uppercase}
+.chain{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center}
+.agent{font:500 .74rem var(--f-mono);padding:.3rem .55rem;border-radius:6px;border:1px solid var(--line-soft);color:var(--muted);background:rgba(255,255,255,.03);transition:all .3s}
+.agent.live{border-color:var(--gold);color:#fff;background:rgba(217,181,74,.18);box-shadow:0 0 14px rgba(217,181,74,.35)}
+.agent.done{border-color:rgba(92,199,146,.55);color:#d8f3e4}
+.agent.esc{border-color:rgba(232,178,90,.75);color:#ffe2b3;background:rgba(232,178,90,.12)}
+.agent small{opacity:.8;margin-left:.3rem}
+.arrow{color:#5d6b80;font-size:.8rem}
+.par{display:inline-flex;flex-wrap:wrap;gap:.3rem;padding:.2rem;border:1px dashed rgba(217,181,74,.5);border-radius:7px}
+.gov{display:flex;flex-wrap:wrap;gap:.35rem;margin-top:.7rem}
+.gov span{font:500 .68rem var(--f-mono);padding:.18rem .55rem;border-radius:30px;background:rgba(111,168,255,.12);color:#bcd8ff}
+.gov span.f{background:var(--risk-bg);color:#ffc6cf}
+.log{margin-top:.6rem;font:400 .72rem/1.5 var(--f-mono);color:var(--muted);min-height:1.6em}
+.log b{color:var(--gold-2);font-weight:500}
+.note{font-size:.7rem;color:#7d8ca3;margin-top:.45rem}
+.al-side{display:grid;gap:1.2rem;align-content:start}
+.feat{display:grid;grid-template-columns:repeat(2,1fr);gap:1.2rem}
+.feat .panel{padding:1rem;display:grid;gap:.3rem;align-content:start}
+.feat .k{font:600 .72rem var(--f-mono);color:var(--gold);letter-spacing:.06em}
+.feat h4{font-size:1.02rem}
+.feat p{font-size:.84rem;color:var(--ink-2)}
+.install{padding:1rem 1.1rem;display:grid;gap:.6rem}
+.install .cmd{display:flex;gap:.6rem;align-items:center;justify-content:space-between;background:rgba(3,9,20,.7);border:1px solid var(--line-soft);border-radius:8px;padding:.55rem .7rem}
+.install code{font:500 .78rem var(--f-mono);overflow-wrap:anywhere;min-width:0;color:var(--gold-2)}
+.copy{font:600 .76rem var(--f-body);background:var(--gold);color:#071328;border:0;border-radius:5px;padding:.35rem .65rem;cursor:pointer;flex:none}
+.modes{display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;margin-top:1.2rem}
+.modes .panel{padding:1rem 1.1rem;display:grid;gap:.3rem;align-content:start}
+.modes code{font:500 .76rem var(--f-mono);color:var(--gold-2)}
+.modes h4{font-size:1.1rem}
+.modes p{font-size:.86rem;color:var(--ink-2)}
+.sectors{display:flex;flex-wrap:wrap;gap:.4rem;margin-top:1.2rem}
+.sectors span{font-size:.8rem;border:1px solid var(--line-soft);background:rgba(255,255,255,.03);border-radius:30px;padding:.22rem .65rem;color:var(--ink-2)}
+.sectors span:first-child{border-color:var(--gold);color:var(--gold-2)}
+@media (max-width:980px){.al-grid{grid-template-columns:1fr}}
+@media (max-width:700px){.modes{grid-template-columns:1fr}}
+@media (max-width:440px){.feat{grid-template-columns:1fr}}
+.pulse{display:grid;grid-template-columns:1.2fr repeat(3,1fr);gap:1.2rem;align-items:stretch}
+.pulse .panel{padding:1.2rem;display:grid;gap:.3rem;align-content:center}
+.pulse .big{font-family:var(--f-display);font-size:clamp(2rem,3.4vw,2.8rem);font-weight:600;line-height:1;font-variant-numeric:tabular-nums}
+.pulse .k{font:500 .7rem var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.pulse .lead{display:grid;gap:.4rem;align-content:center}
+.pulse .lead h3{font-size:1.6rem}
+.pulse .lead p{color:var(--ink-2);font-size:.92rem}
+@media (max-width:900px){.pulse{grid-template-columns:repeat(3,1fr)}.pulse .lead{grid-column:1/-1}}
+@media (max-width:520px){.pulse{grid-template-columns:1fr}}
+.contact-grid{display:grid;grid-template-columns:1.4fr .6fr;gap:1.2rem;align-items:start}
+@media (max-width:960px){.contact-grid{grid-template-columns:1fr}}
+form.enq{padding:clamp(1.1rem,3vw,1.8rem);display:grid;grid-template-columns:1fr 1fr;gap:1rem;background:rgba(9,24,48,.88)}
+@media (max-width:600px){form.enq{grid-template-columns:1fr}}
+.field{display:grid;gap:.35rem;min-width:0;align-content:start}
+.field.full{grid-column:1/-1}
+.field label,.field .lbl{font-size:.84rem;font-weight:600;color:var(--ink)}
+.req{color:var(--risk)}
+.field input,.field select,.field textarea{font:400 .95rem var(--f-body);color:var(--ink);background:rgba(3,9,20,.65);border:1px solid var(--line-soft);border-radius:8px;padding:.66rem .8rem;width:100%}
+.field input::placeholder,.field textarea::placeholder{color:#6d7d96}
+.field select option{background:#0c1f3d;color:var(--ink)}
+.field textarea{min-height:130px;resize:vertical}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(217,181,74,.2)}
+.field .err{font-size:.78rem;color:var(--risk)}
+.field.invalid input,.field.invalid select,.field.invalid textarea{border-color:var(--risk)}
+.count{font:400 .72rem var(--f-mono);color:var(--muted);justify-self:end}
+.engage{display:flex;flex-wrap:wrap;gap:.4rem}
+.engage label{position:relative;font-weight:500;font-size:.84rem;border:1px solid var(--line-soft);border-radius:30px;padding:.34rem .8rem;cursor:pointer;background:rgba(3,9,20,.5);color:var(--ink-2)}
+.engage input{position:absolute;left:0;top:0;width:1px;height:1px;opacity:0;pointer-events:none}
+.engage label:has(input:checked){background:rgba(217,181,74,.18);border-color:var(--gold);color:var(--gold-2)}
+.engage label:has(input:focus-visible){outline:2px solid var(--gold-2);outline-offset:2px}
+.field label.consent{display:flex;gap:.6rem;align-items:flex-start;font-size:.86rem;color:var(--ink-2);font-weight:400}
+.field .consent input{width:auto;flex:none;margin-top:.28rem;accent-color:var(--gold)}
+.hp{position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden}
+.form-foot{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:1rem;align-items:center;justify-content:space-between}
+.form-foot .sec{display:flex;align-items:center;gap:.5rem;font-size:.78rem;color:var(--muted);max-width:46ch}
+.form-foot .sec svg{width:16px;height:16px;flex:none;color:var(--ok)}
+.status{grid-column:1/-1;border-radius:10px;padding:.9rem 1.1rem;font-size:.92rem}
+.status.ok{background:var(--ok-bg);color:#bff0d6;border:1px solid var(--ok)}
+.status.bad{background:var(--risk-bg);color:#ffd0d7;border:1px solid var(--risk)}
+.status.info{background:var(--warn-bg);color:#ffe2b3;border:1px solid var(--warn)}
+.status b{display:block;margin-bottom:.15rem;color:var(--ink)}
+.status code{font-family:var(--f-mono)}
+.desks{display:grid;gap:1.2rem}
+.desk{padding:.9rem 1rem;display:grid;gap:.2rem}
+.desk .k{font:500 .66rem var(--f-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.desk .addr{display:flex;align-items:center;justify-content:space-between;gap:.5rem;flex-wrap:wrap}
+.desk .addr span{font:500 .86rem var(--f-mono);user-select:all;overflow-wrap:anywhere;color:var(--gold-2)}
+.desk button{font:600 .72rem var(--f-body);background:transparent;border:1px solid var(--line-soft);border-radius:5px;padding:.2rem .55rem;cursor:pointer;color:var(--ink-2)}
+.desk p{font-size:.86rem;color:var(--ink-2)}
+.desk.hq{background:linear-gradient(150deg,rgba(217,181,74,.16),rgba(11,29,58,.82) 50%)}
+.foot{background:rgba(3,8,18,.97);border-top:1px solid var(--line)}
+.foot .wrap{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:2rem;padding-block:2.6rem 1.4rem}
+.foot h5{font:600 .7rem var(--f-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin:0 0 .7rem}
+.foot ul{list-style:none;margin:0;padding:0;display:grid;gap:.4rem;font-size:.88rem}
+.foot a{color:var(--ink-2);text-decoration:none}
+.foot a:hover{color:var(--gold-2)}
+.foot .bl{font-family:var(--f-display);font-size:1.7rem}
+.foot .bl span{color:var(--gold)}
+.foot p{font-size:.88rem;color:var(--ink-2);margin-top:.5rem;max-width:36ch}
+.foot .base{grid-column:1/-1;border-top:1px solid var(--line-soft);padding-top:1rem;display:flex;flex-wrap:wrap;justify-content:space-between;gap:.8rem;font-size:.78rem;color:var(--muted)}
+@media (max-width:820px){.foot .wrap{grid-template-columns:1fr 1fr}}
+@media (max-width:460px){.foot .wrap{grid-template-columns:1fr}}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%) translateY(140%);background:var(--gold);color:#071328;font-weight:600;padding:.6rem 1rem;border-radius:8px;font-size:.86rem;transition:transform .25s;z-index:95;visibility:hidden}
+.toast.show{transform:translateX(-50%);visibility:visible}
+.reveal{transition:transform .7s cubic-bezier(.2,.7,.2,1),opacity .7s}
+.reveal.pre{transform:translateY(18px);opacity:.55}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}.reveal.pre{transform:none;opacity:1}}
+</style>
+<noscript><style>.reveal.pre{opacity:1;transform:none}</style></noscript>
+</head>
+<body>
+
+
+<canvas id="webgl" aria-hidden="true"></canvas>
+
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#home" aria-label="ProfAlgoLabs home">
+      <svg viewBox="0 0 40 40" aria-hidden="true"><g class="spin"><circle cx="20" cy="20" r="18.4" fill="none" stroke="#d9b54a" stroke-width="1.6" stroke-dasharray="3 3.4"/></g><circle cx="20" cy="20" r="14.5" fill="#0b1d3a" stroke="#d9b54a" stroke-width="1"/><path d="M20 10.5 L28.6 26 H11.4 Z" fill="none" stroke="#eef2f8" stroke-width="1.6" stroke-linejoin="round"/><circle cx="20" cy="10.5" r="2.6" fill="#f1d27a"/><circle cx="28.6" cy="26" r="2.6" fill="#d9b54a"/><circle cx="11.4" cy="26" r="2.6" fill="#d9b54a"/><circle cx="20" cy="21" r="2" fill="#eef2f8"/></svg>
+      <span><b>ProfAlgo<span>Labs</span><span class="tm">™</span></b><small>an AlgoProfessor research lab</small></span>
+    </a>
+    <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="mainNav">Menu</button>
+    <nav class="main" id="mainNav" aria-label="Main">
+      <a href="#home">Home</a><a href="#about">About the Lab</a><a href="#services">Services</a><a href="#algolang">AlgoLang</a><a href="#contact">Contact</a>
+    </nav>
+    <span class="visits" title="Visitors to this site"><i></i><b id="visitCount">…</b><span id="visitLbl">visitors</span></span>
+    <a class="btn btn-gold btn-sm" href="#contact">Start a project</a>
+  </div>
+</header>
+
+<main>
+<section class="hero" id="home" aria-labelledby="h-hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div class="hero-copy">
+        <div class="badge-line"><span class="badge"><b>●</b> AlgoProfessor AI R&amp;D Solutions</span><span class="badge">Hyderabad · India</span><span class="badge">Open source: <b>AlgoLang v0.2</b></span></div>
+        <h1 id="h-hero">Where agents <em>replace</em> functions.</h1>
+        <p class="lede"><strong>ProfAlgoLabs™</strong> is AlgoProfessor's research and invention lab, built in the spirit of Bell Labs. We design new programming languages, build governed multi-agent AI, and turn every discovery into products, courses and publications.</p>
+        <div class="cta-row">
+          <a class="btn btn-gold" href="#services">Explore 10 services</a>
+          <a class="btn btn-glass" href="#algolang">Try the lab console</a>
+          <a class="btn btn-glass" href="https://github.com/drssnaiml1-cell/algolang" target="_blank" rel="noopener">★ GitHub</a>
+        </div>
+      </div>
+      <div class="hero-side" aria-label="Lab highlights">
+        <div class="orbit-card"><div class="k">Flagship research</div><div class="v">AlgoLang v0.2<small>Agent-native programming language</small></div></div>
+        <div class="orbit-card"><div class="k">Live product</div><div class="v">QuantOracle™<small>Indian F&amp;O trading engine</small></div></div>
+        <div class="orbit-card"><div class="k">New service</div><div class="v">Language development<small>Your own DSL, compiler and IDE</small></div></div>
+      </div>
+    </div>
+    <div class="stats" aria-label="The lab in numbers">
+      <div class="stat"><b data-count="60">60<sup>+</sup></b><span>SCI / Scopus / IEEE publications</span></div>
+      <div class="stat"><b data-count="11">11<sup>+</sup></b><span>patents filed</span></div>
+      <div class="stat"><b data-count="11">11</b><span>books authored</span></div>
+      <div class="stat"><b data-count="56">56</b><span>Ph.D. &amp; post-doctoral scholars</span></div>
+      <div class="stat"><b data-count="120">120</b><span>governed AlgoLang domain programs</span></div>
+      <div class="stat"><b>1982</b><span>publishing roots, as Satyans Publications</span></div>
+    </div>
+  </div>
+  <div class="marquee" aria-label="AlgoProfessor brands">
+    <div class="marquee-track">
+      <span>ProfAlgoLabs™</span><span>AlgoLang</span><span>QuantOracle™</span><span>AlgoCrew OS</span><span>CineForge</span><span>ASTRA</span><span>AlgoProfessor Publications</span><span>AlgoProfessor Campus</span><span>Q1 Research Training</span><span>Agentic AI Scientist</span><span>Cohort 2026</span>
+      <span aria-hidden="true">ProfAlgoLabs™</span><span aria-hidden="true">AlgoLang</span><span aria-hidden="true">QuantOracle™</span><span aria-hidden="true">AlgoCrew OS</span><span aria-hidden="true">CineForge</span><span aria-hidden="true">ASTRA</span><span aria-hidden="true">AlgoProfessor Publications</span><span aria-hidden="true">AlgoProfessor Campus</span><span aria-hidden="true">Q1 Research Training</span><span aria-hidden="true">Agentic AI Scientist</span><span aria-hidden="true">Cohort 2026</span>
+    </div>
+  </div>
+</section>
+
+<section class="band glass" id="about" aria-labelledby="h-about">
+  <div class="wrap">
+    <div class="head reveal"><div><span class="eyebrow">About ProfAlgoLabs™</span><h2 id="h-about">A Bell Labs–style home for <span class="gold">agentic AI</span></h2></div>
+      <p style="max-width:44ch">One corridor where researchers ask the hard questions and engineers build the tools to answer them.</p></div>
+    <div class="about-grid">
+      <article class="panel story tilt reveal">
+        <h3>What Bell Labs taught the world about research</h3>
+        <p>In the twentieth century, one laboratory changed computing more than any other. Bell Labs gave us the <strong>transistor</strong> (1947), <strong>information theory</strong> (1948), and the <strong>Unix</strong> operating system and <strong>C</strong> language (1969–1972).</p>
+        <p>Its secret was putting mathematicians, physicists and engineers in the same corridors, giving them long horizons, and expecting them to build what they imagined.</p>
+        <p><strong>ProfAlgoLabs™ takes that model into the age of agentic AI.</strong> Our researchers, Ph.D. scholars and engineers work on one question: how do we build AI that is powerful, accountable and teachable? When the tools are not good enough, we build new ones. That is why our first major release is a programming language.</p>
+      </article>
+      <div class="carry">
+        <div class="panel tilt reveal"><span class="k">Unix →</span><p>Small parts that do one job well. <em>In AlgoLang every unit of work is one agent with one goal.</em></p></div>
+        <div class="panel tilt reveal"><span class="k">C →</span><p>A language built by the people who needed it. <em>We built AlgoLang because we needed governed agents.</em></p></div>
+        <div class="panel tilt reveal"><span class="k">Shannon →</span><p>Measure what you transmit. <em>Every agent call carries its confidence, cost and provenance.</em></p></div>
+        <div class="panel tilt reveal"><span class="k">The corridor →</span><p>Theory and engineering in one building. <em>Our scholars publish; our engineers ship.</em></p></div>
+      </div>
+    </div>
+    <div class="principles">
+      <div class="panel tilt reveal"><h4>Build the instrument first</h4><p>When the tools are wrong, we make new ones: languages, compilers, runtimes and datasets.</p></div>
+      <div class="panel tilt reveal"><h4>Governance by design</h4><p>Human review, fairness rules and tamper-evident audit trails are built in from day one.</p></div>
+      <div class="panel tilt reveal"><h4>Publish and open-source</h4><p>Results go to peer review and code goes to GitHub, so anyone can check and build on our work.</p></div>
+      <div class="panel tilt reveal"><h4>Teach what we learn</h4><p>Every discovery becomes a course, an internship project or a book, taught by its researchers.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="band deep" aria-labelledby="h-div">
+  <div class="wrap">
+    <div class="head reveal"><div><span class="eyebrow">Research divisions</span><h2 id="h-div">Six departments, one corridor</h2></div><p style="max-width:44ch">Each division runs its own research programme and powers the services AlgoProfessor offers.</p></div>
+    <div class="divisions">
+      <div class="panel division tilt reveal"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M8 7l-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"/></svg></span><span class="code">DIV-01</span><h3>Languages &amp; Compilers</h3><p>Agent-native languages, type systems, compilers and runtimes. Home of AlgoLang.</p></div>
+      <div class="panel division tilt reveal"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="18" r="2.5"/><circle cx="19" cy="18" r="2.5"/><path d="M11 7.3L6.3 15.8M13 7.3l4.7 8.5M7.5 18h9"/></svg></span><span class="code">DIV-02</span><h3>Agentic Systems</h3><p>Multi-agent architectures, workflow products and the ASTRA model: Reason, Plan, Act, Deliver.</p></div>
+      <div class="panel division tilt reveal"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></svg></span><span class="code">DIV-03</span><h3>AI Security &amp; Assurance</h3><p>Enterprise AI supply-chain security, model provenance and verification.</p></div>
+      <div class="panel division tilt reveal"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 20h18M5 16l4-5 4 3 6-8"/><path d="M15 6h4v4"/></svg></span><span class="code">DIV-04</span><h3>Quantitative Finance</h3><p>Algorithmic trading research for Indian F&amp;O markets and the QuantOracle™ engine.</p></div>
+      <div class="panel division tilt reveal"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.5"/><path d="M12 3.5v3M12 17.5v3M3.5 12h3M17.5 12h3"/></svg></span><span class="code">DIV-05</span><h3>Health &amp; Vision AI</h3><p>Medical image analysis, explainable clinical decision support and computer vision.</p></div>
+      <div class="panel division tilt reveal"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M4 5.5C6.5 4 9.5 4 12 6c2.5-2 5.5-2 8-.5V19c-2.5-1.5-5.5-1.5-8 .5-2.5-2-5.5-2-8-.5z"/><path d="M12 6v13.5"/></svg></span><span class="code">DIV-06</span><h3>Learning Science &amp; Publishing</h3><p>Curriculum design, research training and AlgoProfessor Publications.</p></div>
+    </div>
+    <div class="story-row">
+      <div class="panel timeline reveal">
+        <h3>From a publishing house to a research lab</h3>
+        <div class="tl"><b>1982</b><h4>Satyans Publications</h4><p>The family publishing house begins producing technical books.</p></div>
+        <div class="tl"><b>2018</b><h4>AlgoProfessor Publications</h4><p>Renamed, and focused on books and journals in emerging technologies.</p></div>
+        <div class="tl"><b>2026</b><h4>Cohort 2026 &amp; live products</h4><p>Six 30-day AI tracks, the 90-day internship and QuantOracle™.</p></div>
+        <div class="tl"><b>Oct 2026</b><h4>AlgoLang is born</h4><p>An agent-native language where agents replace functions.</p></div>
+        <div class="tl"><b>Oct 2026</b><h4>ProfAlgoLabs™ launches</h4><p>AlgoLang v0.2 Enterprise is open-sourced with 120 domain programs.</p></div>
+        <div class="tl next"><b>Next</b><h4>AlgoLang v0.3</h4><p>Uncertainty types, evaluation with trace replay, MCP bindings.</p></div>
+      </div>
+      <aside class="panel director tilt reveal" aria-labelledby="h-dir">
+        <span class="eyebrow">Lab director</span>
+        <div class="top-row"><div class="monogram" aria-hidden="true">SS</div><div><h3 id="h-dir">Dr. S. Satyanarayana</h3><div class="role">Ph.D., PDF (AI) · Founder, CEO &amp; Chief Agentic AI Scientist</div></div></div>
+        <ul>
+          <li>Designer of the AlgoLang programming language</li>
+          <li>60+ SCI / Scopus / IEEE publications, 11+ patents, 11 books</li>
+          <li>Supervises 56 Ph.D. and post-doctoral scholars, including international postdoctoral co-supervision</li>
+          <li>Editor-in-Chief, IJCMI · Professor &amp; Advisor, AI &amp; Data Science</li>
+        </ul>
+        <div class="chips">
+          <a class="chip" href="https://orcid.org/0000-0001-8285-113X" target="_blank" rel="noopener">ORCID</a>
+          <a class="chip" href="https://scholar.google.com/citations?user=4Oo8gqoAAAAJ" target="_blank" rel="noopener">Google Scholar</a>
+          <a class="chip" href="https://github.com/drssnaiml1-cell/algolang" target="_blank" rel="noopener">GitHub</a>
+        </div>
+      </aside>
+    </div>
+    <p class="fine">ProfAlgoLabs™ is a lab of AlgoProfessor AI R&amp;D Solutions, Hyderabad. It is independent and not affiliated with Nokia Bell Labs; Bell Labs is mentioned only as historical inspiration.</p>
+  </div>
+</section>
+
+<section class="band glass" id="services" aria-labelledby="h-svc">
+  <div class="wrap">
+    <div class="head reveal"><div><span class="eyebrow">AlgoProfessor services</span><h2 id="h-svc">Ten ways to work with the lab</h2><p>Each service is run by the division that does the research behind it. Choose one and the contact form opens with it selected.</p></div>
+      <div class="filters" role="group" aria-label="Filter services" id="svcFilter">
+        <button type="button" data-f="all" aria-pressed="true">All 10</button><button type="button" data-f="build" aria-pressed="false">Build &amp; products</button><button type="button" data-f="research" aria-pressed="false">Research</button><button type="button" data-f="learn" aria-pressed="false">Learning &amp; talent</button>
+      </div></div>
+    <div class="svc-grid" id="svcGrid"></div>
+    <div class="process">
+      <div class="panel step tilt reveal"><span class="n">01</span><h4>Discovery call</h4><p>We learn the problem, your data and the constraints you work under.</p></div>
+      <div class="panel step tilt reveal"><span class="n">02</span><h4>Lab proposal</h4><p>Scope, milestones, team, governance needs, and a fixed price or retainer.</p></div>
+      <div class="panel step tilt reveal"><span class="n">03</span><h4>Weekly milestones</h4><p>One milestone a week, demonstrated live, with code on GitHub.</p></div>
+      <div class="panel step tilt reveal"><span class="n">04</span><h4>Handover &amp; training</h4><p>Your team runs it, with documentation and a full audit trail.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="band deep" id="algolang" aria-labelledby="h-al">
+  <div class="wrap">
+    <div class="head reveal"><div><span class="eyebrow">Flagship research · DIV-01</span><h2 id="h-al">AlgoLang: the agent-native programming language</h2><p>No functions. Every unit of work is an agent with a role, a goal, its tools, and a policy it cannot break. Open source.</p></div>
+      <a class="btn btn-gold" href="https://github.com/drssnaiml1-cell/algolang" target="_blank" rel="noopener">★ Star on GitHub</a></div>
+    <div class="al-grid">
+      <div class="console reveal" aria-label="Lab console demo">
+        <div class="console-bar"><span class="dots"><i></i><i></i><i></i></span>lab-console · AlgoLang v0.2<span>offline demo</span></div>
+        <div class="tabs" role="group" aria-label="Choose a problem">
+          <button type="button" data-demo="claims" aria-pressed="true">Insurance claim</button>
+          <button type="button" data-demo="outage" aria-pressed="false">IT outage</button>
+          <button type="button" data-demo="hiring" aria-pressed="false">Fair CV screening</button>
+        </div>
+        <pre id="demoCode"></pre>
+        <div class="run">
+          <div class="run-head"><span>Agent run</span><button class="btn btn-gold btn-sm" id="runDemo" type="button">▶ Run agents</button></div>
+          <div class="chain" id="demoChain"></div>
+          <div class="gov" id="demoGov"></div>
+          <div class="log" id="demoLog">Press “Run agents” to watch them work.</div>
+          <div class="note">A simulated walk-through of AlgoLang's offline mode. The real compiler and runtime are open source on GitHub.</div>
+        </div>
+      </div>
+      <div class="al-side">
+        <div class="feat">
+          <div class="panel tilt reveal"><span class="k">E101</span><h4>Only agents can be called</h4><p>Every step has a role, a goal and an owner.</p></div>
+          <div class="panel tilt reveal"><span class="k">E108</span><h4>Fairness at compile time</h4><p>Protected attributes are rejected before anything runs.</p></div>
+          <div class="panel tilt reveal"><span class="k">SHA-256</span><h4>Tamper-evident audit</h4><p>Every agent call is hash-chained. Edits are detected.</p></div>
+          <div class="panel tilt reveal"><span class="k">HITL</span><h4>Humans in the loop</h4><p>Low-confidence results wait for a named reviewer.</p></div>
+        </div>
+        <div class="panel install reveal">
+          <span class="eyebrow">Install in one line</span>
+          <div class="cmd"><code id="pipCmd">pip install "algolang @ git+https://github.com/drssnaiml1-cell/algolang"</code><button class="copy" type="button" data-copy="pipCmd">Copy</button></div>
+          <a class="btn btn-glass btn-sm" href="#contact" data-service="lang">Build your own language with us →</a>
+        </div>
+      </div>
+    </div>
+    <div class="modes">
+      <div class="panel tilt reveal"><code>algo run · algo batch</code><h4>Command line</h4><p>Scripts, CI pipelines and batch jobs over thousands of records.</p></div>
+      <div class="panel tilt reveal"><code>algo studio</code><h4>Graphical Studio</h4><p>Editor, agent graph, domain library, batch runner and governance dashboard.</p></div>
+      <div class="panel tilt reveal"><code>algo ui</code><h4>Prompt UI</h4><p>Describe a problem in plain English; get a governed multi-agent solution.</p></div>
+    </div>
+    <div class="sectors" aria-label="120 domain programs in 20 sectors">
+      <span>120 programs · 20 sectors</span><span>Healthcare</span><span>Pharma</span><span>Banking</span><span>Insurance</span><span>Capital markets</span><span>Education</span><span>Research</span><span>Government</span><span>Legal</span><span>HR</span><span>Manufacturing</span><span>Supply chain</span><span>Retail</span><span>IT operations</span><span>Cybersecurity</span><span>Energy</span><span>Agriculture</span><span>Media</span><span>Real estate</span><span>Hospitality</span>
+    </div>
+  </div>
+</section>
+
+<section class="band tight glass" aria-labelledby="h-pulse">
+  <div class="wrap pulse">
+    <div class="lead reveal"><span class="eyebrow">Lab pulse</span><h3 id="h-pulse">The lab, live</h3><p>Visitors, research and code, updated as people arrive.</p></div>
+    <div class="panel tilt reveal"><span class="k">Visitors</span><span class="big gold" id="visitBig">…</span><span class="k" id="visitBigLbl">counted on this site</span></div>
+    <div class="panel tilt reveal"><span class="k">Open-source programs</span><span class="big">120</span><span class="k">in 20 sectors</span></div>
+    <div class="panel tilt reveal"><span class="k">Research scholars</span><span class="big">56</span><span class="k">Ph.D. &amp; post-doc</span></div>
+  </div>
+</section>
+
+<section class="band deep" id="contact" aria-labelledby="h-contact">
+  <div class="wrap">
+    <div class="head reveal"><div><span class="eyebrow">Contact the lab</span><h2 id="h-contact">Tell us what you want to build</h2><p>A lab member replies within two working days.</p></div></div>
+    <div class="contact-grid">
+      <form class="panel enq" id="enqForm" novalidate>
+        <div class="field"><label for="f-name">Full name <span class="req">*</span></label><input id="f-name" name="name" autocomplete="name" required maxlength="120"><span class="err"></span></div>
+        <div class="field"><label for="f-email">Work email <span class="req">*</span></label><input id="f-email" name="email" type="email" autocomplete="email" required maxlength="160" inputmode="email"><span class="err"></span></div>
+        <div class="field"><label for="f-phone">Phone or WhatsApp</label><input id="f-phone" name="phone" type="tel" autocomplete="tel" maxlength="30" inputmode="tel" placeholder="+91 …"><span class="err"></span></div>
+        <div class="field"><label for="f-org">Organisation</label><input id="f-org" name="organisation" autocomplete="organization" maxlength="160" placeholder="University, company or startup"></div>
+        <div class="field"><label for="f-role">Your role</label><input id="f-role" name="role" autocomplete="organization-title" maxlength="80" placeholder="e.g. Director, CTO, Professor"></div>
+        <div class="field"><label for="f-country">Country</label><input id="f-country" name="country" autocomplete="country-name" maxlength="80" placeholder="India"></div>
+        <div class="field full"><label for="f-service">Service you're interested in <span class="req">*</span></label><select id="f-service" name="service" required><option value="">Choose a service</option></select><span class="err"></span></div>
+        <div class="field full"><span class="lbl" id="engLbl">Type of engagement</span>
+          <div class="engage" role="radiogroup" aria-labelledby="engLbl">
+            <label><input type="radio" name="engagement" id="g1" value="Project" checked>Project</label>
+            <label><input type="radio" name="engagement" id="g2" value="Training">Training</label>
+            <label><input type="radio" name="engagement" id="g3" value="Partnership">Partnership</label>
+            <label><input type="radio" name="engagement" id="g4" value="Research collaboration">Research collaboration</label>
+            <label><input type="radio" name="engagement" id="g5" value="Investment">Investment</label>
+          </div></div>
+        <div class="field"><label for="f-budget">Budget range</label><select id="f-budget" name="budget"><option>Not sure yet</option><option>Under ₹1 lakh</option><option>₹1–5 lakh</option><option>₹5–25 lakh</option><option>Above ₹25 lakh</option><option>International (USD)</option></select></div>
+        <div class="field"><label for="f-time">When do you want to start?</label><select id="f-time" name="timeline"><option>Within a month</option><option>1–3 months</option><option>3–6 months</option><option>Just exploring</option></select></div>
+        <div class="field full"><label for="f-msg">Your message <span class="req">*</span></label><textarea id="f-msg" name="message" required maxlength="4000" placeholder="What problem are you solving, and what would success look like?"></textarea><span class="count" id="msgCount">0 / 4000</span><span class="err"></span></div>
+        <div class="hp" aria-hidden="true"><label for="f-web">Website</label><input id="f-web" name="website" tabindex="-1" autocomplete="off"></div>
+        <input type="hidden" name="t0" id="f-t0">
+        <input type="hidden" name="token" id="f-token">
+        <div class="field full"><label class="consent" for="f-consent"><input type="checkbox" id="f-consent" name="consent" required><span>I agree that AlgoProfessor may store this enquiry and contact me about it.</span></label><span class="err"></span></div>
+        <div class="form-foot">
+          <span class="sec"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>Protected against spam. Your details go only to the AlgoProfessor team.</span>
+          <button class="btn btn-gold" type="submit" id="sendBtn">Send enquiry →</button>
+        </div>
+        <div class="status" id="formStatus" hidden role="status" aria-live="polite"></div>
+      </form>
+      <aside class="desks">
+        <div class="panel desk hq"><span class="k">Headquarters</span><p><strong style="color:var(--ink)">AlgoProfessor AI R&amp;D Solutions</strong><br>Hyderabad, Telangana, India</p><p><a href="https://www.algoprofessor.com" target="_blank" rel="noopener" style="color:var(--gold-2)">www.algoprofessor.com</a></p></div>
+        <div class="panel desk"><span class="k">General enquiries</span><div class="addr"><span id="m1">contact@algoprofessor.com</span><button type="button" data-copy="m1">Copy</button></div></div>
+        <div class="panel desk"><span class="k">Projects, partnerships &amp; research</span><div class="addr"><span id="m2">ceo@algoprofessor.com</span><button type="button" data-copy="m2">Copy</button></div></div>
+        <div class="panel desk"><span class="k">Internships &amp; products</span><div class="addr"><span id="m3">cto@algoprofessor.com</span><button type="button" data-copy="m3">Copy</button></div></div>
+        <div class="panel desk"><span class="k">Courses</span><div class="addr"><span id="m4">aicourses@algoprofessor.com</span><button type="button" data-copy="m4">Copy</button></div></div>
+      </aside>
+    </div>
+  </div>
+</section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <div><div class="bl">ProfAlgo<span>Labs</span><span class="tm">™</span></div><p>The research lab of AlgoProfessor AI R&amp;D Solutions, Hyderabad. Research. Build. Teach.</p></div>
+    <div><h5>Lab</h5><ul><li><a href="#about">About the Lab</a></li><li><a href="#services">Services</a></li><li><a href="#algolang">AlgoLang</a></li><li><a href="https://github.com/drssnaiml1-cell/algolang" target="_blank" rel="noopener">GitHub</a></li><li><a href="#contact">Contact</a></li></ul></div>
+    <div><h5>AlgoProfessor</h5><ul><li><a href="https://www.algoprofessor.com" target="_blank" rel="noopener">algoprofessor.com</a></li><li><a href="https://www.products.algoprofessor.com" target="_blank" rel="noopener">Products</a></li><li><a href="https://www.aicourses.algoprofessor.com" target="_blank" rel="noopener">AI Courses</a></li><li><a href="https://www.publications.algoprofessor.com" target="_blank" rel="noopener">Publications</a></li><li><a href="https://campus.algoprofessor.com" target="_blank" rel="noopener">Campus</a></li></ul></div>
+    <div><h5>Programmes</h5><ul><li><a href="https://www.q1.algoprofessor.com" target="_blank" rel="noopener">Q1 Research Training</a></li><li><a href="https://www.quant.algoprofessor.com" target="_blank" rel="noopener">QuantOracle™</a></li><li><a href="https://agenticai.algoprofessor.com" target="_blank" rel="noopener">Agentic AI Scientist</a></li><li><a href="https://aisecurity.algoprofessor.com" target="_blank" rel="noopener">AI Security</a></li><li><a href="https://www.algocrewos.algoprofessor.com" target="_blank" rel="noopener">AlgoCrew OS</a></li></ul></div>
+    <div class="base"><span>© <span id="yr">2026</span> AlgoProfessor AI R&amp;D Solutions. ProfAlgoLabs™ and AlgoLang are trademarks of AlgoProfessor.</span><span>Visitors: <b id="visitFoot" style="color:var(--gold-2)">…</b></span></div>
+  </div>
+</footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+"use strict";
+const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>Array.from(r.querySelectorAll(s));
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const ON_SITE=/(^|\.)algoprofessor\.com$/i.test(location.hostname);
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const ICON={
+ lang:'<path d="M8 7l-5 5 5 5M16 7l5 5-5 5M14 4l-4 16"/>',
+ agentic:'<circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="18" r="2.5"/><circle cx="19" cy="18" r="2.5"/><path d="M11 7.3L6.3 15.8M13 7.3l4.7 8.5M7.5 18h9"/>',
+ security:'<path d="M12 3l8 3v6c0 4.5-3.4 8-8 9-4.6-1-8-4.5-8-9V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/>',
+ quant:'<path d="M3 20h18M5 16l4-5 4 3 6-8"/><path d="M15 6h4v4"/>',
+ q1:'<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h5"/>',
+ courses:'<path d="M2 9l10-5 10 5-10 5z"/><path d="M6 11v5c3 2 9 2 12 0v-5"/>',
+ intern:'<rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5h8v2M3 13h18"/>',
+ campus:'<path d="M3 21h18M5 21V10l7-5 7 5v11M9 21v-6h6v6"/>',
+ pubs:'<path d="M4 5.5C6.5 4 9.5 4 12 6c2.5-2 5.5-2 8-.5V19c-2.5-1.5-5.5-1.5-8 .5-2.5-2-5.5-2-8-.5z"/><path d="M12 6v13.5"/>',
+ applied:'<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.5"/><path d="M12 3.5v3M12 17.5v3M3.5 12h3M17.5 12h3"/>'};
+const SERVICES=[
+ {id:"lang",cat:"build",isNew:true,name:"Programming Language & Compiler Development",text:"We design and build new programming languages for your domain: agent-native languages like AlgoLang, DSLs for finance, healthcare or engineering, and the whole toolchain around them.",items:["Language design, grammar and formal specification","Compiler, type checker and runtime","IDE, VS Code extension, notebooks and playground","Docs, test suites, CI and GitHub releases"],link:"https://github.com/drssnaiml1-cell/algolang",linkText:"See AlgoLang"},
+ {id:"agentic",cat:"build",name:"Agentic AI Systems & Products",text:"Multi-agent workflows for enterprises and software companies, built on our own products such as AlgoCrew OS.",items:["Agent architecture and workflow automation","Human review, fairness rules, audit trails"],link:"https://www.algocrewos.algoprofessor.com",linkText:"AlgoCrew OS"},
+ {id:"security",cat:"research",name:"Enterprise AI Security & Supply-Chain Assurance",text:"Assessments and controls for the AI models, datasets and dependencies your organisation relies on.",items:["AI supply-chain risk assessment","Model and data provenance checks"],link:"https://aisecurity.algoprofessor.com",linkText:"AI Security"},
+ {id:"quant",cat:"build",name:"Quant Research & Algo Trading Strategies",text:"Strategies built to your requirements and deployed on Tradetron with full backtests, plus our live QuantOracle™ engine.",items:["Custom strategy design and backtesting","Algo trading courses"],link:"https://www.quant.algoprofessor.com",linkText:"QuantOracle™"},
+ {id:"q1",cat:"research",name:"Q1 SCI Research & Publication Support",text:"Pre-submission due diligence for manuscripts and a 12-day live programme on writing Q1 SCI papers.",items:["Manuscript due-diligence review","12-day SCI Q1 paper training"],link:"https://www.q1.algoprofessor.com",linkText:"Q1 programme"},
+ {id:"courses",cat:"learn",name:"AI Courses & Certification",text:"Cohort 2026: six 30-day tracks from Data Scientist to Physical AI Scientist, and the Sunday-only Agentic AI Scientist programme.",items:["10 projects and 3 levels per track","Weekly GitHub portfolio"],link:"https://www.aicourses.algoprofessor.com",linkText:"AI Courses"},
+ {id:"intern",cat:"learn",name:"Live Internships & Forward Deployed Engineering",text:"A 90-day live AI internship on real lab projects, and a 90-day programme that prepares engineers to deliver AI at client sites.",items:["Fee-based, paid and sponsored models","Projects shipped to GitHub"],link:"https://www.algoprofessor.com/#internships",linkText:"Internships"},
+ {id:"campus",cat:"learn",name:"University Partnerships & AlgoProfessor Campus",text:"Design, training, research and consultancy for universities and startups, with 12-week UG, PG and Ph.D. project tracking.",items:["Curriculum for 2026–2035 skills","Weekly project milestones"],link:"https://campus.algoprofessor.com",linkText:"Campus"},
+ {id:"pubs",cat:"research",name:"AlgoProfessor Publications",text:"Books and journals in emerging technologies, with ISBN and identifier services. Publishing since 1982.",items:["Book writing support and publication","ISBN and identifier services"],link:"https://www.publications.algoprofessor.com",linkText:"Publications"},
+ {id:"applied",cat:"build",name:"Applied AI Products & Development",text:"Healthcare image analysis, CineForge cinematic video, LLM and vector-database systems, computer vision and RL.",items:["Healthcare imaging AI","LLM, RAG and vector-DB apps"],link:"https://www.products.algoprofessor.com",linkText:"Products"}];
+
+function bindTilt(root){
+  if(reduce||matchMedia("(hover:none)").matches)return;
+  $$(".tilt",root).forEach(el=>{if(el._t)return;el._t=1;
+    el.addEventListener("pointermove",e=>{const r=el.getBoundingClientRect(),x=(e.clientX-r.left)/r.width,y=(e.clientY-r.top)/r.height;
+      el.style.transform=`perspective(900px) rotateX(${(.5-y)*5}deg) rotateY(${(x-.5)*7}deg)`;el.style.setProperty("--mx",x*100+"%");el.style.setProperty("--my",y*100+"%");});
+    el.addEventListener("pointerleave",()=>{el.style.transform="";});});
+}
+function renderServices(f){
+  const g=$("#svcGrid");g.textContent="";
+  SERVICES.forEach((s,i)=>{if(f!=="all"&&s.cat!==f)return;
+    const feat=s.isNew&&f==="all";const el=document.createElement("article");
+    el.className="panel svc tilt"+(feat?" featured":"");
+    el.innerHTML=`<div class="row1"><span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">${ICON[s.id]}</svg></span>${s.isNew?'<span class="new">NEW SERVICE</span>':`<span class="num">${String(i+1).padStart(2,"0")}</span>`}</div>
+      <h3>${esc(s.name)}</h3><p>${esc(s.text)}</p><ul>${s.items.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>
+      ${feat?`<pre aria-hidden="true"><span class="tok-k">agent</span> <span class="tok-n">YourDomainExpert</span>(case: text) -> score {
+    <span class="tok-k">role</span>   <span class="tok-s">"your specialist"</span>
+    <span class="tok-k">goal</span>   <span class="tok-s">"apply your rules to {case}"</span>
+    <span class="tok-k">policy</span> { <span class="tok-k">require human when</span> confidence &lt; 0.85 }
+}</pre>`:""}
+      <div class="acts"><button type="button" class="ask" data-service="${s.id}">Enquire</button><a class="site" href="${s.link}" target="_blank" rel="noopener">${esc(s.linkText)} ↗</a></div>`;
+    g.appendChild(el);});
+  bindTilt(g);
+}
+const sel=$("#f-service");
+SERVICES.forEach((s,i)=>{const o=document.createElement("option");o.value=s.id;o.textContent=`${i+1}. ${s.name}${s.isNew?" (new)":""}`;sel.appendChild(o);});
+{const o=document.createElement("option");o.value="other";o.textContent="Something else";sel.appendChild(o);}
+$("#svcFilter").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;$$("#svcFilter button").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));renderServices(b.dataset.f);});
+document.addEventListener("click",e=>{const t=e.target.closest("[data-service]");if(!t)return;e.preventDefault();sel.value=t.dataset.service;
+  $("#contact").scrollIntoView({behavior:reduce?"auto":"smooth"});setTimeout(()=>$("#f-name").focus({preventScroll:true}),reduce?0:650);});
+renderServices("all");bindTilt(document);
+
+$("#menuBtn").addEventListener("click",()=>{const o=$("#mainNav").classList.toggle("open");$("#menuBtn").setAttribute("aria-expanded",o?"true":"false");});
+$$("#mainNav a").forEach(a=>a.addEventListener("click",()=>{$("#mainNav").classList.remove("open");$("#menuBtn").setAttribute("aria-expanded","false");}));
+const secs=["home","about","services","algolang","contact"].map(id=>document.getElementById(id));
+function spy(){const y=scrollY+innerHeight*.35;let cur="home";secs.forEach(s=>{if(s.offsetTop<=y)cur=s.id;});$$("#mainNav a").forEach(a=>a.classList.toggle("on",a.getAttribute("href")==="#"+cur));}
+addEventListener("scroll",spy,{passive:true});spy();
+
+if(!reduce&&"IntersectionObserver" in window){
+  const io=new IntersectionObserver(es=>es.forEach(en=>{if(en.isIntersecting){en.target.classList.remove("pre");io.unobserve(en.target);}}),{rootMargin:"0px 0px -8% 0px"});
+  $$(".reveal").forEach(el=>{if(el.getBoundingClientRect().top>innerHeight){el.classList.add("pre");io.observe(el);}});
+}
+if(!reduce){$$("[data-count]").forEach(el=>{const end=+el.dataset.count,sup=el.querySelector("sup"),st=sup?sup.outerHTML:"",t0=performance.now();
+  (function tick(t){const p=Math.min(1,(t-t0)/1300),v=Math.round(end*(1-Math.pow(1-p,3)));el.innerHTML=v+st;if(p<1)requestAnimationFrame(tick);})(t0);});}
+
+function toast(m){const t=$("#toast");t.textContent=m;t.classList.add("show");clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove("show"),2200);}
+document.addEventListener("click",e=>{const b=e.target.closest("[data-copy]");if(!b)return;const src=document.getElementById(b.dataset.copy),txt=src.textContent.trim();
+  const fb=()=>{const r=document.createRange();r.selectNodeContents(src);const s=getSelection();s.removeAllRanges();s.addRange(r);toast("Selected. Press Ctrl+C to copy.");};
+  try{navigator.clipboard.writeText(txt).then(()=>toast("Copied"),fb);}catch(_){fb();}});
+
+const DEMOS={
+ claims:{code:`<span class="tok-k">use pack</span> insurance.claims_triage <span class="tok-k">as</span> claims\n\n<span class="tok-k">flow</span> main(claim: text) {\n    c     = claims.<span class="tok-n">Intake</span>(claim)\n    cov   = claims.<span class="tok-n">Coverage</span>(c)\n    level = claims.<span class="tok-n">Complexity</span>(cov)   <span class="tok-c">// human if &lt; 0.90</span>\n    <span class="tok-k">emit</span> claims.<span class="tok-n">Routing</span>(cov, level)\n}`,steps:[["Intake",.89],["Coverage",.80],["Complexity",.75,true],["Routing",.91]],gov:["budget ≤ 6000 tokens","human review < 0.90","audit: SHA-256 chain"],input:"Rear-end collision in Pune, bumper damage"},
+ outage:{code:`<span class="tok-k">use pack</span> itops.incident_triage <span class="tok-k">as</span> ops\n<span class="tok-k">tool</span> kb.search\n\n<span class="tok-k">flow</span> main(incident: text) {\n    k = ops.<span class="tok-n">Classifier</span>(incident)\n    d = ops.<span class="tok-n">Diagnosis</span>(k)        <span class="tok-c">// uses kb.search</span>\n    <span class="tok-k">emit</span> ops.<span class="tok-n">Runbook</span>(d), ops.<span class="tok-n">Priority</span>(d)\n}`,steps:[["Classifier",.92],["Diagnosis",.86],["Priority",.83],["Runbook",.88]],gov:["tool: kb.search only","human review < 0.90","run cap 20k tokens"],input:"Login API returns 500 for all users"},
+ hiring:{code:`<span class="tok-k">use pack</span> hr.resume_screening <span class="tok-k">as</span> hr\n\n<span class="tok-k">flow</span> main(resume: text) {\n    views = <span class="tok-k">par</span> { hr.<span class="tok-n">SkillsReviewer</span>(resume),\n                  hr.<span class="tok-n">ExperienceReviewer</span>(resume),\n                  hr.<span class="tok-n">PotentialReviewer</span>(resume) }\n    <span class="tok-k">emit</span> hr.<span class="tok-n">HiringPanel</span>(views)  <span class="tok-c">// forbid gender, caste</span>\n}`,steps:[[["SkillsReviewer",.84],["ExperienceReviewer",.79],["PotentialReviewer",.81]],["HiringPanel",.82,true]],gov:["forbid: gender, caste, religion","human review < 0.90","parallel committee"],input:"Python, SQL, two internships"}};
+let dk="claims",running=false;
+function draw(){const d=DEMOS[dk];$("#demoCode").innerHTML=d.code;const ch=$("#demoChain");ch.textContent="";
+  const add=(h,c)=>{const s=document.createElement("span");s.className=c;s.innerHTML=h;ch.appendChild(s);return s;};
+  add("input","agent");d.steps.forEach(st=>{add("→","arrow");
+    if(Array.isArray(st[0])){const g=add("","par");st.forEach(x=>{const a=document.createElement("span");a.className="agent";a.dataset.name=x[0];a.textContent=x[0];g.appendChild(a);});}
+    else{const a=add(esc(st[0]),"agent");a.dataset.name=st[0];}});
+  add("→","arrow");add("emit","agent");
+  $("#demoGov").innerHTML=d.gov.map(g=>`<span class="${g.startsWith("forbid")?"f":""}">${esc(g)}</span>`).join("");
+  $("#demoLog").textContent="Press “Run agents” to watch them work.";}
+const wait=ms=>new Promise(r=>setTimeout(r,reduce?0:ms));
+async function runDemo(){if(running)return;running=true;$("#runDemo").disabled=true;draw();const d=DEMOS[dk],log=$("#demoLog");
+  log.innerHTML=`<b>run</b> input = "${esc(d.input)}"`;await wait(450);let tok=0,escN=0;
+  for(const st of d.steps){const grp=Array.isArray(st[0])?st:[st];const els=grp.map(g=>$(`#demoChain [data-name="${g[0]}"]`));
+    els.forEach(e=>e.classList.add("live"));log.innerHTML=`<b>→</b> ${grp.map(g=>esc(g[0])).join(" ∥ ")} working…`;await wait(700);
+    grp.forEach((g,i)=>{const e=els[i];e.classList.remove("live");e.classList.add(g[2]?"esc":"done");e.innerHTML=`${esc(g[0])}<small>${g[1].toFixed(2)}</small>`;tok+=90+Math.round(g[1]*40);if(g[2])escN++;});}
+  log.innerHTML=`<b>■</b> ${$$("#demoChain .agent[data-name]").length} agent calls · ~${tok} tokens · ${escN} sent to human review · audit chain intact`;
+  running=false;$("#runDemo").disabled=false;}
+$$(".tabs button").forEach(b=>b.addEventListener("click",()=>{if(running)return;dk=b.dataset.demo;$$(".tabs button").forEach(x=>x.setAttribute("aria-pressed",x===b?"true":"false"));draw();}));
+$("#runDemo").addEventListener("click",runDemo);draw();
+
+/* visitor counter: counter.php on algoprofessor.com, the artifact database here */
+function showVisits(n,label){const f=Number(n).toLocaleString("en-IN");["visitCount","visitBig","visitFoot"].forEach(id=>$("#"+id).textContent=f);
+  $("#visitLbl").textContent=label;$("#visitBigLbl").textContent=label+" counted on this site";}
+function visitsFallback(){$("#visitCount").textContent="Live";$("#visitLbl").textContent="lab";$("#visitBig").textContent="—";$("#visitBigLbl").textContent="count appears on the live site";$("#visitFoot").textContent="—";}
+async function visits(){
+  try{
+    if(ON_SITE){let first=true;try{first=!sessionStorage.getItem("pal_v");sessionStorage.setItem("pal_v","1");}catch(_){}
+      const r=await fetch("counter.php",{method:first?"POST":"GET",credentials:"same-origin",headers:{"Accept":"application/json"}});
+      const j=await r.json();if(!j.ok)throw 0;showVisits(j.total,"visits");return;}
+    if(!(window.claude&&window.claude.use))return visitsFallback();
+    const [db,user]=await Promise.all([window.claude.use("db"),window.claude.use("user")]);
+    if(!db||!user)return visitsFallback();
+    const uid=await user.id(),now=new Date().toISOString(),ref=db.doc("visits/"+uid),snap=await ref.get();
+    if(!snap.exists)await ref.set({first:now,last:now});else await ref.update({last:now});
+    const all=await db.collection("visits").limit(1000).get();showVisits(all.size,"visitors");
+  }catch(_){visitsFallback();}
+}
+visits();
+
+/* contact form */
+const form=$("#enqForm"),status=$("#formStatus");
+$("#f-t0").value=String(Date.now());
+function getToken(){return fetch("contact.php?token=1",{credentials:"same-origin",headers:{"Accept":"application/json"}}).then(r=>r.json()).then(j=>{if(j.token)$("#f-token").value=j.token;}).catch(()=>{});}
+if(ON_SITE)getToken();
+$("#f-msg").addEventListener("input",()=>{$("#msgCount").textContent=`${$("#f-msg").value.length} / 4000`;});
+function setErr(id,msg){const f=$("#"+id).closest(".field");f.classList.toggle("invalid",!!msg);const e=f.querySelector(".err");if(e)e.textContent=msg||"";}
+function validate(){let ok=true;const v=k=>($("#f-"+k).value||"").trim();
+  if(v("name").length<2){setErr("f-name","Enter your full name.");ok=false}else setErr("f-name");
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v("email"))){setErr("f-email","Enter an email like name@company.com.");ok=false}else setErr("f-email");
+  if(v("phone")&&!/^[+()\d\s-]{7,30}$/.test(v("phone"))){setErr("f-phone","Use digits, spaces, + or -.");ok=false}else setErr("f-phone");
+  if(!v("service")){setErr("f-service","Choose the service this is about.");ok=false}else setErr("f-service");
+  if(v("msg").length<20){setErr("f-msg","Tell us a little more: at least 20 characters.");ok=false}else setErr("f-msg");
+  if(!$("#f-consent").checked){setErr("f-consent","Tick the box so we can reply to you.");ok=false}else setErr("f-consent");
+  return ok;}
+function show(kind,html){status.className="status "+kind;status.innerHTML=html;status.hidden=false;status.scrollIntoView({block:"nearest",behavior:reduce?"auto":"smooth"});}
+let lastSend=0;
+form.addEventListener("submit",async e=>{
+  e.preventDefault();
+  if($("#f-web").value){show("ok","<b>Thank you.</b>");return;}
+  if(!validate()){const f=$(".field.invalid input,.field.invalid select,.field.invalid textarea");if(f)f.focus();return;}
+  if(Date.now()-lastSend<15000){show("info","<b>Please wait a moment.</b>You just sent an enquiry. Try again in a few seconds.");return;}
+  const fd=new FormData(form);
+  const data={name:fd.get("name").trim(),email:fd.get("email").trim(),phone:(fd.get("phone")||"").trim(),organisation:(fd.get("organisation")||"").trim(),role:(fd.get("role")||"").trim(),country:(fd.get("country")||"").trim(),
+    service:sel.options[sel.selectedIndex].textContent,serviceId:fd.get("service"),engagement:fd.get("engagement"),budget:fd.get("budget"),timeline:fd.get("timeline"),message:fd.get("message").trim(),submittedAt:new Date().toISOString()};
+  const btn=$("#sendBtn");btn.disabled=true;btn.textContent="Sending…";
+  try{let ref="";
+    if(ON_SITE){const r=await fetch("contact.php",{method:"POST",body:fd,credentials:"same-origin",headers:{"Accept":"application/json"}});
+      const j=await r.json().catch(()=>({ok:false,error:"The server sent an unexpected reply."}));
+      if(j.token)$("#f-token").value=j.token;
+      if(!r.ok||!j.ok)throw new Error(j.error||"The server could not send your enquiry.");ref=j.ref||"";}
+    else{const ok=window.claude&&window.claude.use;const [db,user]=ok?await Promise.all([window.claude.use("db"),window.claude.use("user")]):[null,null];
+      if(!db||!user)throw new Error("NO_DB");const uid=await user.id();
+      const doc=await db.doc("enquiries/"+uid).collection("messages").add(data);ref=doc.id.slice(0,8).toUpperCase();}
+    lastSend=Date.now();form.reset();sel.value="";$("#msgCount").textContent="0 / 4000";$("#f-t0").value=String(Date.now());
+    show("ok",`<b>Enquiry sent. Thank you, ${esc(data.name.split(" ")[0])}.</b>We'll reply to <code>${esc(data.email)}</code> within two working days.${ref?` Your reference: <code>${esc(ref)}</code>.`:""}`);
+  }catch(err){
+    if(err.message==="NO_DB")show("info",`<b>This preview can't send the form.</b>Please email <code>ceo@algoprofessor.com</code>. On the live site the form sends directly.`);
+    else show("bad",`<b>Your enquiry was not sent.</b>${esc(err.message||"Something went wrong.")} Try again, or email <code>ceo@algoprofessor.com</code>.`);
+  }finally{btn.disabled=false;btn.textContent="Send enquiry →";}
+});
+["name","email","phone","service","msg"].forEach(k=>$("#f-"+k).addEventListener("input",()=>{if($("#f-"+k).closest(".field").classList.contains("invalid"))validate();}));
+$("#yr").textContent=new Date().getFullYear();
+})();
+</script>
+
+<script type="module">
+/* 3D scene — the AlgoCore: a gold agent globe with orbiting agents, a message network and a starfield */
+import * as THREE from "three";
+const canvas=document.getElementById("webgl");
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+const weak=innerWidth<768||(navigator.hardwareConcurrency||8)<=4;
+let renderer;
+try{renderer=new THREE.WebGLRenderer({canvas,antialias:!weak,alpha:true,powerPreference:"high-performance"});}catch(e){canvas.remove();throw e;}
+renderer.setPixelRatio(Math.min(devicePixelRatio,weak?1.5:2));
+renderer.setSize(innerWidth,innerHeight,false);
+renderer.outputColorSpace=THREE.SRGBColorSpace;
+renderer.toneMapping=THREE.ACESFilmicToneMapping;
+const scene=new THREE.Scene();scene.fog=new THREE.FogExp2(0x050c1a,.045);
+const camera=new THREE.PerspectiveCamera(42,innerWidth/innerHeight,.1,120);camera.position.set(0,0,9);
+const GOLD=0xd9b54a,GOLD2=0xf1d27a,BLUE=0x6fa8ff;
+scene.add(new THREE.AmbientLight(0xffffff,.35));
+const key=new THREE.DirectionalLight(0xffe2a0,2.4);key.position.set(4,5,6);scene.add(key);
+const rim=new THREE.PointLight(BLUE,40,30);rim.position.set(-5,-3,-2);scene.add(rim);
+const core=new THREE.Group();scene.add(core);
+const sphere=new THREE.Mesh(new THREE.IcosahedronGeometry(1.25,4),new THREE.MeshPhysicalMaterial({color:0x0b1d3a,metalness:.6,roughness:.25,clearcoat:1,emissive:0x0a1a36,emissiveIntensity:.6}));core.add(sphere);
+const ico=new THREE.IcosahedronGeometry(1.62,1);
+const lattice=new THREE.LineSegments(new THREE.EdgesGeometry(ico),new THREE.LineBasicMaterial({color:GOLD,transparent:true,opacity:.85}));core.add(lattice);
+const vp=ico.attributes.position,seen=new Set(),verts=[];
+for(let i=0;i<vp.count;i++){const v=new THREE.Vector3().fromBufferAttribute(vp,i),k=v.toArray().map(n=>n.toFixed(3)).join();if(!seen.has(k)){seen.add(k);verts.push(v);}}
+const m4=new THREE.Matrix4();
+const agents=new THREE.InstancedMesh(new THREE.SphereGeometry(.055,12,12),new THREE.MeshStandardMaterial({color:GOLD2,emissive:GOLD,emissiveIntensity:1.6,metalness:.3,roughness:.3}),verts.length);
+verts.forEach((v,i)=>{m4.makeTranslation(v.x,v.y,v.z);agents.setMatrixAt(i,m4);});lattice.add(agents);
+const rings=[];
+[[2.25,0,.35],[2.6,1.1,-.2],[2.95,-.6,.9]].forEach(([r,rx,rz],i)=>{
+  const holder=new THREE.Group();holder.rotation.set(rx+Math.PI/2.4,0,rz);
+  holder.add(new THREE.Mesh(new THREE.TorusGeometry(r,.006,6,180),new THREE.MeshBasicMaterial({color:i===1?BLUE:GOLD,transparent:true,opacity:.45})));
+  const sats=[];for(let k=0;k<3;k++){const s=new THREE.Mesh(new THREE.SphereGeometry(.07,12,12),new THREE.MeshStandardMaterial({color:i===1?0xbcd8ff:GOLD2,emissive:i===1?BLUE:GOLD,emissiveIntensity:2}));holder.add(s);sats.push({m:s,a:k*Math.PI*2/3});}
+  core.add(holder);rings.push({r,sats,speed:.35+i*.12});});
+const NN=weak?40:70,nodes=[];
+for(let i=0;i<NN;i++){const th=2*Math.PI*Math.random(),ph=Math.acos(2*Math.random()-1),R=3.6+Math.random()*1.8;nodes.push(new THREE.Vector3(R*Math.sin(ph)*Math.cos(th),R*Math.sin(ph)*Math.sin(th),R*Math.cos(ph)));}
+const pairs=[];for(let i=0;i<NN;i++)for(let j=i+1;j<NN;j++)if(nodes[i].distanceTo(nodes[j])<1.75)pairs.push([i,j]);
+if(!pairs.length)pairs.push([0,1]);
+const lp=new Float32Array(pairs.length*6);pairs.forEach(([i,j],k)=>{lp.set(nodes[i].toArray(),k*6);lp.set(nodes[j].toArray(),k*6+3);});
+const lg=new THREE.BufferGeometry();lg.setAttribute("position",new THREE.BufferAttribute(lp,3));
+const net=new THREE.Group();
+net.add(new THREE.LineSegments(lg,new THREE.LineBasicMaterial({color:0x9fb7dc,transparent:true,opacity:.16})));
+const np=new Float32Array(NN*3);nodes.forEach((n,i)=>np.set(n.toArray(),i*3));
+const ng=new THREE.BufferGeometry();ng.setAttribute("position",new THREE.BufferAttribute(np,3));
+net.add(new THREE.Points(ng,new THREE.PointsMaterial({color:0xeef2f8,size:.06,transparent:true,opacity:.8})));
+const PULSES=weak?8:16,pulseMesh=new THREE.InstancedMesh(new THREE.SphereGeometry(.045,8,8),new THREE.MeshBasicMaterial({color:GOLD2}),PULSES);
+const pulses=Array.from({length:PULSES},()=>({p:pairs[Math.floor(Math.random()*pairs.length)],t:Math.random()}));
+net.add(pulseMesh);scene.add(net);
+const NS=weak?700:1600,sp=new Float32Array(NS*3);for(let i=0;i<NS*3;i++)sp[i]=(Math.random()-.5)*60;
+const sg=new THREE.BufferGeometry();sg.setAttribute("position",new THREE.BufferAttribute(sp,3));
+const stars=new THREE.Points(sg,new THREE.PointsMaterial({color:0xdfe6f1,size:.035,transparent:true,opacity:.7}));scene.add(stars);
+const st={mx:0,my:0,tx:0,ty:0,scroll:0};
+addEventListener("pointermove",e=>{st.tx=(e.clientX/innerWidth-.5)*2;st.ty=(e.clientY/innerHeight-.5)*2;},{passive:true});
+const layout=()=>innerWidth<600?{x:0,y:2.15,s:.46}:innerWidth<900?{x:0,y:1.9,s:.55}:{x:2.55,y:.15,s:1};
+let L=layout();core.position.set(L.x,L.y,0);core.scale.setScalar(L.s);
+const clock=new THREE.Clock(),v3=new THREE.Vector3();let running=true;
+function frame(){
+  if(!running)return;
+  const dt=Math.min(clock.getDelta(),.05),t=clock.elapsedTime;
+  const max=Math.max(1,document.documentElement.scrollHeight-innerHeight);st.scroll+=((scrollY/max)-st.scroll)*.06;
+  st.mx+=(st.tx-st.mx)*.05;st.my+=(st.ty-st.my)*.05;
+  const s=st.scroll,side=Math.cos(s*Math.PI*3);
+  core.position.x+=((L.x*side)-core.position.x)*.05;core.position.y+=((L.y-s*.6)-core.position.y)*.05;
+  const sc=L.s*(1+.18*Math.sin(s*Math.PI));core.scale.setScalar(core.scale.x+(sc-core.scale.x)*.05);
+  net.position.copy(core.position);net.scale.copy(core.scale);
+  if(!reduce){
+    core.rotation.y+=dt*.18;core.rotation.x=Math.sin(t*.2)*.15+st.my*.25+s*1.2;
+    lattice.rotation.y-=dt*.08;net.rotation.y+=dt*.03;net.rotation.x=s*.8;stars.rotation.y+=dt*.006;
+    rings.forEach(R=>R.sats.forEach(o=>{o.a+=dt*R.speed;o.m.position.set(Math.cos(o.a)*R.r,Math.sin(o.a)*R.r,0);}));
+    pulses.forEach((p,i)=>{p.t+=dt*.55;if(p.t>1){p.t=0;p.p=pairs[Math.floor(Math.random()*pairs.length)];}
+      v3.lerpVectors(nodes[p.p[0]],nodes[p.p[1]],p.t);m4.makeTranslation(v3.x,v3.y,v3.z);pulseMesh.setMatrixAt(i,m4);});
+    pulseMesh.instanceMatrix.needsUpdate=true;sphere.material.emissiveIntensity=.55+Math.sin(t*1.6)*.15;
+  }else rings.forEach(R=>R.sats.forEach(o=>o.m.position.set(Math.cos(o.a)*R.r,Math.sin(o.a)*R.r,0)));
+  camera.position.x=st.mx*.45;camera.position.y=-st.my*.35;camera.position.z=9+s*1.5;camera.lookAt(0,0,0);
+  renderer.render(scene,camera);
+  if(!reduce)requestAnimationFrame(frame);
+}
+frame();
+document.addEventListener("visibilitychange",()=>{running=!document.hidden;if(running&&!reduce){clock.getDelta();frame();}});
+addEventListener("resize",()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight,false);L=layout();if(reduce)frame();});
+if(reduce)addEventListener("scroll",()=>requestAnimationFrame(frame),{passive:true});
+</script>
+
+</body>
+</html>

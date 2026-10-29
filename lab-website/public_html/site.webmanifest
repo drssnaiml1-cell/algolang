@@ -1,0 +1,20 @@
+{
+  "name": "ProfAlgoLabs™ · AlgoProfessor",
+  "short_name": "ProfAlgoLabs",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#050c1a",
+  "theme_color": "#071328",
+  "icons": [
+    {
+      "src": "/assets/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "/assets/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

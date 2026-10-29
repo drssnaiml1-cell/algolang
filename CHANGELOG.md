@@ -4,6 +4,10 @@ All notable changes to AlgoLang are documented here. The format follows [Keep a 
 
 ## [Unreleased]
 
+### Added
+- **ProfAlgoLabs™ website** (`lab-website/`): a 3D branded site for www.profagentlabs.algoprofessor.com with 10 services, a lab console, a visitor counter, a hardened contact form, CSP/HSTS security headers and full SEO (schema.org, sitemap, Open Graph).
+- The project homepage is now www.profagentlabs.algoprofessor.com (README badge and package metadata).
+
 ## [0.2.0] — 2026-10-29 · Enterprise
 
 ### Added

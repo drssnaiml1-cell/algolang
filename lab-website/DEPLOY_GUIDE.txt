@@ -1,0 +1,48 @@
+PROFALGOLABS(TM) WEBSITE: cPanel DEPLOYMENT GUIDE
+=================================================
+
+WHAT'S INSIDE
+  public_html/          Upload the CONTENTS of this folder to your site's document root
+    index.html          The full 3D website (one page, SEO-ready)
+    contact.php         Contact form handler: emails ceo@algoprofessor.com and keeps a CSV backup
+    counter.php         Visitor counter (total visits, unique visitors; no IPs stored)
+    .htaccess           HTTPS redirect, security headers (CSP, HSTS, clickjacking), caching
+    data/               Private store for enquiries and visitor stats (web access blocked)
+    assets/             Logo, favicon, app icons and the social-share image
+    robots.txt, sitemap.xml, site.webmanifest   SEO and "add to home screen" files
+  source/               The editable page and the build script (not for upload)
+
+STEPS
+ 1. Choose the address. The files are set for https://www.profagentlabs.algoprofessor.com/.
+    To use a different address, open index.html, robots.txt and
+    sitemap.xml and replace "https://www.profagentlabs.algoprofessor.com/" with the new address.
+ 2. cPanel > File Manager > open the document root > Upload the zip > Extract.
+    Move the files from public_html/ into the document root if needed.
+    Show hidden files (Settings > Show Hidden Files) to confirm .htaccess is there.
+ 3. cPanel > Email Accounts: create no-reply@algoprofessor.com (the sender address).
+    Enquiries go to ceo@algoprofessor.com. To change this, edit the top of contact.php.
+ 4. Permissions: the data/ folder must be writable by PHP (755 or 750).
+ 5. cPanel > SSL/TLS Status > Run AutoSSL, so the site opens on https://.
+ 6. cPanel > Select PHP Version: choose 7.4 or newer.
+ 7. Test:
+    - Open the site. The visitor badge at the top shows a number.
+    - Send a test enquiry. You should see a reference, and the email should arrive.
+    - Google Search Console: add the site and submit sitemap.xml.
+
+READING ENQUIRIES AND STATS
+  Email: every enquiry arrives at ceo@algoprofessor.com.
+  Backup: File Manager > data/enquiries.csv (open in Excel).
+  Visitors: File Manager > data/visits.json (total, unique, today).
+
+SECURITY BUILT IN
+  HTTPS only (HSTS); a Content-Security-Policy that allows only this site's own scripts
+  plus the 3D library and Google Fonts; no framing; hidden files and data blocked.
+  Contact form: same-site check, one-time token in a secure cookie, 3-second time trap,
+  honeypot, 5 per hour per connection, strict validation, no email-header injection.
+
+IF YOU EDIT index.html
+  The security policy lists a fingerprint of every inline script. After editing the page,
+  rebuild so the fingerprints in .htaccess match; otherwise the browser blocks the edited scripts:
+      cd source && mkdir -p deploy/data deploy/assets && python3 build_deploy.py
+  Then upload the new deploy/index.html and deploy/.htaccess over the old ones.
+  Small text-only edits outside <script> blocks do not need a rebuild.

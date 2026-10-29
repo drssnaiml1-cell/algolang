@@ -80,6 +80,10 @@ algo studio                                     # graphical mode
 algo ui                                         # prompt-based mode
 ```
 
+## ProfAlgoLabs™ website
+
+The lab's 3D website lives in [`lab-website/`](lab-website/). It is ready to upload to cPanel at **[www.profagentlabs.algoprofessor.com](https://www.profagentlabs.algoprofessor.com)** and includes the 10 AlgoProfessor services, a secure contact form, a visitor counter, SEO files and security headers.
+
 ## Python SDK
 
 ```python
