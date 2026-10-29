@@ -1,0 +1,25 @@
+{
+  "program": "pack:healthcare.clinical_triage",
+  "cases": [
+    {
+      "name": "healthcare.clinical_triage runs end to end offline",
+      "inputs": {
+        "note": "Chest pain for two hours with sweating; history of hypertension"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "Extractor",
+          "Summariser",
+          "UrgencyScorer",
+          "Referral"
+        ],
+        "emits": 2,
+        "max_tokens": 2000,
+        "tools_used": [
+          "kb.search"
+        ]
+      }
+    }
+  ]
+}

@@ -23,13 +23,15 @@ jobs:
     name: Lint (ruff + every .algo file)
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with: {python-version: "3.12", cache: pip}
       - run: pip install -e ".[dev]"
       - run: ruff check .
       - name: Compile-check every example and domain pack
         run: python algoc.py dev lint examples packs
+      - name: Behaviour specs (tests/specs/*.algotest.json, offline and deterministic)
+        run: python algoc.py dev test tests/specs
 
   test:
     name: Tests · ${{ matrix.os }} · Python ${{ matrix.python }}
@@ -39,13 +41,16 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest]
-        python: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+        python: ["3.10", "3.11", "3.12", "3.13"]
         include:
+          # ubuntu-latest is Ubuntu 26.04, which has no Python 3.9 build (3.9 is end-of-life);
+          # keep testing the documented minimum on 24.04.
+          - {os: ubuntu-24.04, python: "3.9"}
           - {os: macos-latest, python: "3.12"}
           - {os: windows-latest, python: "3.12"}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with: {python-version: "${{ matrix.python }}", cache: pip}
       - run: pip install -e ".[dev]"
       - run: python -m pytest
@@ -55,8 +60,8 @@ jobs:
     needs: lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with: {python-version: "3.12"}
       - run: pip install build && python -m build
       - name: Install the wheel in a fresh venv and smoke-test it outside the source tree
@@ -75,8 +80,8 @@ jobs:
     needs: lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with: {python-version: "3.12", cache: pip}
       - run: pip install -e ".[dev]"
       - name: Execute AlgoLang_Notebook.ipynb in a clean folder (as Colab would)
@@ -95,8 +100,8 @@ jobs:
     needs: lint
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
         with: {python-version: "3.12", cache: pip}
       - run: pip install -e . markdown pillow
       - run: python tools/build_site.py

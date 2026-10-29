@@ -1,0 +1,25 @@
+{
+  "program": "pack:itops.incident_triage",
+  "cases": [
+    {
+      "name": "itops.incident_triage runs end to end offline",
+      "inputs": {
+        "incident": "Login API returns 500 for all users since 09:10"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "Classifier",
+          "Diagnosis",
+          "Priority",
+          "Runbook"
+        ],
+        "emits": 2,
+        "max_tokens": 2000,
+        "tools_used": [
+          "kb.search"
+        ]
+      }
+    }
+  ]
+}

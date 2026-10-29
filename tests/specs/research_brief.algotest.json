@@ -1,0 +1,22 @@
+{
+  "program": "../../examples/research_brief.algo",
+  "cases": [
+    {
+      "name": "Brief is drafted twice and reviewed",
+      "inputs": {
+        "topic": "Blockchain data integrity"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "Researcher",
+          "Writer",
+          "Reviewer"
+        ],
+        "emits": 2,
+        "max_tokens": 1500,
+        "max_calls": 8
+      }
+    }
+  ]
+}

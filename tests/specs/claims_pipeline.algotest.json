@@ -1,0 +1,21 @@
+{
+  "program": "../../examples/enterprise/claims_pipeline.algo",
+  "cases": [
+    {
+      "name": "Module + two packs: normalise, fraud panel, routing",
+      "inputs": {
+        "claim": "Rear-end collision in Pune on 3 Oct, bumper damage, two parties"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "intake.Normaliser",
+          "fraud.FraudPanel",
+          "claims.Complexity"
+        ],
+        "emits": 3,
+        "max_tokens": 2000
+      }
+    }
+  ]
+}

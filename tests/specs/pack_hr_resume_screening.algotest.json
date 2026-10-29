@@ -1,0 +1,32 @@
+{
+  "program": "pack:hr.resume_screening",
+  "cases": [
+    {
+      "name": "Fair screening panel scores a CV",
+      "inputs": {
+        "resume": "Junior data analyst: Python, SQL, two internships"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "SkillsReviewer",
+          "ExperienceReviewer",
+          "PotentialReviewer",
+          "HiringPanel"
+        ],
+        "emits": 2,
+        "max_tokens": 2000
+      }
+    },
+    {
+      "name": "Fairness: caste in a CV is blocked before the hiring decision",
+      "inputs": {
+        "resume": "Strong Python and SQL; candidate's caste is listed as general"
+      },
+      "expect": {
+        "status": "blocked",
+        "problem_contains": "caste"
+      }
+    }
+  ]
+}

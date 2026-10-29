@@ -226,7 +226,10 @@ pytest                       # everything (~15 s)
 pytest -m "not slow"         # skip "every pack runs"
 pytest tests/test_audit.py   # one area
 pytest --cov=. --cov-report=term-missing
+algo dev test tests/specs    # behaviour specs for the examples and a pack from several sectors
 ```
+
+`tests/specs/` holds the project's own `*.algotest.json` behaviour specs. They cover the research-brief and paper-review examples, the enterprise module program, and packs from six sectors, plus two **fairness cases** that must stay `blocked`: author nationality in paper review, and caste in a CV. CI runs them in the lint job, and a failing case fails the build. When you change a pack or the runtime, add or update a spec next to the pytest change.
 
 The `project` fixture in `tests/conftest.py` gives each test its own temporary folder, audit directory and fresh config. Tests never touch your real `runs/`. Live-mode code is tested with fake Anthropic clients (`test_ungranted_tool_is_refused_by_live_loop`), so CI needs no API key.
 
@@ -252,7 +255,7 @@ The `project` fixture in `tests/conftest.py` gives each test its own temporary f
 
 | Workflow | Trigger | Does |
 |---|---|---|
-| `ci.yml` | every push and PR | ruff and `.algo` lint · pytest on Python 3.9–3.13 (Ubuntu) plus macOS and Windows · wheel build and install smoke test · notebook execution · website build |
+| `ci.yml` | every push and PR | ruff and `.algo` lint · behaviour specs (`tests/specs`) · pytest on Python 3.9–3.13 (Ubuntu) plus macOS and Windows · wheel build and install smoke test · notebook execution · website build |
 | `release.yml` | tag `v*` | builds wheel, sdist, `AlgoLang_vX.Y.Z.zip` and the PDF manuals, then publishes a GitHub Release with them |
 | `pages.yml` | push to `main` | runs `tools/build_site.py` and deploys the website to GitHub Pages: overview, domain library, browser playground, guides, downloads |
 | `docker.yml` | tag `v*` / manual | builds the container and pushes it to `ghcr.io/drssnaiml1-cell/algolang` |

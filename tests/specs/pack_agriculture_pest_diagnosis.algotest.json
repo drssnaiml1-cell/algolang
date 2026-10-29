@@ -1,0 +1,26 @@
+{
+  "program": "pack:agriculture.pest_diagnosis",
+  "cases": [
+    {
+      "name": "agriculture.pest_diagnosis runs end to end offline",
+      "inputs": {
+        "symptoms": "Cotton leaves have yellow spots and small white insects underneath"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "Entomologist",
+          "Pathologist",
+          "Agronomist",
+          "Panel",
+          "Advice"
+        ],
+        "emits": 2,
+        "max_tokens": 2000,
+        "tools_used": [
+          "kb.search"
+        ]
+      }
+    }
+  ]
+}

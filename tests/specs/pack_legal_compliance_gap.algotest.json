@@ -1,0 +1,25 @@
+{
+  "program": "pack:legal.compliance_gap",
+  "cases": [
+    {
+      "name": "legal.compliance_gap runs end to end offline",
+      "inputs": {
+        "process": "Customer data is exported weekly to a vendor without a DPA"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "Obligations",
+          "Auditor",
+          "Compliance",
+          "Plan"
+        ],
+        "emits": 2,
+        "max_tokens": 2000,
+        "tools_used": [
+          "kb.search"
+        ]
+      }
+    }
+  ]
+}

@@ -17,6 +17,7 @@ All notable changes to AlgoLang are documented here. The format follows [Keep a 
   - usage reports (`algo report`);
   - a SQLite response cache.
 - **Executable tools:** built-in `calc.eval`, `file.read` and `kb.search`, plus plugin tools. Live mode runs a Claude tool-use loop, and refused tool requests are recorded.
+- **Behaviour specs:** `tests/specs/*.algotest.json` cover the examples, the enterprise module program, packs from six sectors and two fairness block cases. CI runs them with `algo dev test`.
 - **Scale:** `algo batch`, `Program.run_batch`, and a global concurrency limit.
 - **Python SDK** `import algolang`: `compile`, `load`, `pack`, `Program`, `RunResult`, `domains`, `compose`, `ask`, `audit`, `review`, `tool`, `configure` and `batch_csv`.
 - **Three modes on one SDK:**

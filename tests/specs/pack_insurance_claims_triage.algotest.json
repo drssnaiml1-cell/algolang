@@ -1,0 +1,25 @@
+{
+  "program": "pack:insurance.claims_triage",
+  "cases": [
+    {
+      "name": "insurance.claims_triage runs end to end offline",
+      "inputs": {
+        "claim": "Rear-end collision in Pune, bumper damage, no injuries"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "Intake",
+          "Coverage",
+          "Complexity",
+          "Routing"
+        ],
+        "emits": 2,
+        "max_tokens": 2000,
+        "tools_used": [
+          "kb.search"
+        ]
+      }
+    }
+  ]
+}

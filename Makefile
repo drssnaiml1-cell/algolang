@@ -1,12 +1,12 @@
 # AlgoLang developer shortcuts. Windows users: run the commands shown after each target.
 PY ?= python
 
-.PHONY: install check lint test fast algo-lint build packs docs clean
+.PHONY: install check lint test fast algo-lint specs build packs docs clean
 
 install:        ## pip install -e ".[dev,live]"
 	$(PY) -m pip install -e ".[dev,live]"
 
-check: lint test algo-lint   ## everything CI runs
+check: lint test algo-lint specs   ## everything CI runs
 
 lint:           ## ruff check .
 	ruff check .
@@ -19,6 +19,9 @@ fast:           ## pytest -m "not slow"
 
 algo-lint:      ## python algoc.py dev lint examples packs
 	$(PY) algoc.py dev lint examples packs
+
+specs:          ## behaviour specs in tests/specs
+	$(PY) algoc.py dev test tests/specs
 
 build:          ## python -m build
 	$(PY) -m build

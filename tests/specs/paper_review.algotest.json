@@ -1,0 +1,41 @@
+{
+  "program": "../../examples/paper_review.algo",
+  "cases": [
+    {
+      "name": "Committee reviews a paper and writes a decision letter",
+      "inputs": {
+        "paper": "LG-CEF: lesion-guided ensemble for diabetic retinopathy grading on IDRiD"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "Planner",
+          "CriterionReviewer",
+          "EthicsAuditor",
+          "Editor",
+          "DecisionLetter"
+        ],
+        "tools_used": [
+          "file.read"
+        ],
+        "emits": 2,
+        "max_tokens": 2500
+      }
+    },
+    {
+      "name": "Ethics guard: author nationality never reaches the Editor",
+      "inputs": {
+        "paper": "Does author nationality predict citation counts?"
+      },
+      "expect": {
+        "status": "blocked",
+        "problem_contains": "nationality",
+        "agents_not_called": [
+          "Editor",
+          "DecisionLetter"
+        ],
+        "emits": 0
+      }
+    }
+  ]
+}
