@@ -67,7 +67,7 @@ jobs:
           /tmp/v/bin/algo domains "triage insurance claims"
           /tmp/v/bin/algo run pack:insurance.claims_triage --arg "claim=Rear-end collision, bumper damage"
           /tmp/v/bin/algo audit verify runs
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with: {name: dist, path: dist/}
 
   notebook:
