@@ -56,7 +56,7 @@ jobs:
               "Or download `AlgoLang_v" + ver + ".zip`, unzip it and run `install.bat` (Windows) or `bash install.sh` (Linux/macOS).")
           open("RELEASE_NOTES.md", "w", encoding="utf-8").write(body)
           PY
-      - uses: softprops/action-gh-release@v2
+      - uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ env.TAG }}
           name: AlgoLang ${{ env.TAG }}
