@@ -3,6 +3,7 @@
 [![CI](https://github.com/drssnaiml1-cell/algolang/actions/workflows/ci.yml/badge.svg)](https://github.com/drssnaiml1-cell/algolang/actions/workflows/ci.yml)
 [![Release](https://img.shields.io/github/v/release/drssnaiml1-cell/algolang?color=c9a227)](https://github.com/drssnaiml1-cell/algolang/releases/latest)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-0e2140)](LICENSE)
+[![Lab website](https://img.shields.io/badge/lab-profagentlabs.algoprofessor.com-c9a227)](https://www.profagentlabs.algoprofessor.com)
 [![Website](https://img.shields.io/badge/website-playground%20%C2%B7%20library-0e2140)](https://drssnaiml1-cell.github.io/algolang/)
 
 

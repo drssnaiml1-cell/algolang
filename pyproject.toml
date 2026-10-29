@@ -33,7 +33,8 @@ dev = ["pytest>=7", "pytest-cov>=4", "ruff>=0.5", "build>=1", "nbformat>=5", "nb
 algo = "algolang.cli:main"
 
 [project.urls]
-Homepage = "https://www.algoprofessor.com"
+Homepage = "https://www.profagentlabs.algoprofessor.com"
+"AlgoProfessor" = "https://www.algoprofessor.com"
 Repository = "https://github.com/drssnaiml1-cell/algolang"
 Documentation = "https://drssnaiml1-cell.github.io/algolang/"
 Changelog = "https://github.com/drssnaiml1-cell/algolang/blob/main/CHANGELOG.md"
