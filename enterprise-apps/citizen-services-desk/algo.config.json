@@ -1,0 +1,38 @@
+{
+  "organisation": "Municipal Corporation Citizen Services (example organisation)",
+  "policy": {
+    "forbid": [
+      "gender",
+      "caste",
+      "religion",
+      "nationality"
+    ],
+    "max_budget_tokens": 8000,
+    "min_human_below": 0.75,
+    "allowed_tools": [
+      "kb.search",
+      "ward.directory"
+    ]
+  },
+  "max_concurrency": 16,
+  "max_run_tokens": 80000,
+  "cache": {
+    "enabled": true
+  },
+  "audit_dir": "runs",
+  "models": {
+    "smart": "claude-sonnet-5-5",
+    "fast": "claude-haiku-5-5"
+  },
+  "tools": {
+    "kb.search": {
+      "dir": "kb"
+    },
+    "file.read": {
+      "root": "data"
+    }
+  },
+  "plugins": [
+    "plugins/civic_tools.py"
+  ]
+}

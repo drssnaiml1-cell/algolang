@@ -29,9 +29,11 @@ jobs:
       - run: pip install -e ".[dev]"
       - run: ruff check .
       - name: Compile-check every example and domain pack
-        run: python algoc.py dev lint examples packs
+        run: python algoc.py dev lint examples packs enterprise-apps
       - name: Behaviour specs (tests/specs/*.algotest.json, offline and deterministic)
         run: python algoc.py dev test tests/specs
+      - name: Enterprise applications (8 apps · tests + batch + audit verification)
+        run: python enterprise-apps/run_all.py --batch
 
   test:
     name: Tests · ${{ matrix.os }} · Python ${{ matrix.python }}

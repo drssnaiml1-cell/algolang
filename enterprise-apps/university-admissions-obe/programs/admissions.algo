@@ -1,0 +1,18 @@
+// Fair admissions screening — three independent reviewers, a panel score, and a letter.
+// Caste, gender, religion, nationality and income are forbidden inputs (org policy, E108).
+use pack education.admissions as adm
+tool seats.lookup
+
+agent SeatDesk(application: text) -> text {
+    role "Admissions office seat-matrix officer"
+    goal "Report seats and the merit cut-off for the programme in {application}"
+    uses seats.lookup
+}
+
+flow main(application: text) {
+    seats   = SeatDesk(application)
+    views   = par { adm.AcademicReviewer(application), adm.StatementReviewer(application), adm.PotentialReviewer(application) }
+    verdict = adm.AdmissionsPanel(views)
+    letter  = adm.Letter(views, verdict)
+    emit seats, verdict, letter
+}

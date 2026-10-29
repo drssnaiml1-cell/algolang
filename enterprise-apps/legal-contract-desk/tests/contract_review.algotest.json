@@ -1,0 +1,27 @@
+{
+  "program": "../programs/contract_review.algo",
+  "cases": [
+    {
+      "name": "MSA reviewed clause by clause from the contract file",
+      "inputs": {
+        "contract": "Review contracts/MSA-ACME-2026.txt"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "cr.Clauses",
+          "cr.Analyst",
+          "cr.Risk",
+          "cr.Summary",
+          "Fallbacks"
+        ],
+        "tools_used": [
+          "file.read",
+          "clause.library"
+        ],
+        "emits": 3,
+        "max_tokens": 1300
+      }
+    }
+  ]
+}

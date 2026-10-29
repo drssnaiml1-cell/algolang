@@ -1,0 +1,21 @@
+// Citizen grievance desk — urgency, priority cell or department routing, a clear reply.
+use pack government.grievance_routing as gr
+tool ward.directory
+
+agent WardDesk(grievance: text) -> text {
+    role "Citizen facilitation officer"
+    goal "Find the ward, department, desk and service-level target for {grievance}"
+    uses ward.directory
+}
+
+flow main(grievance: text) {
+    owner   = WardDesk(grievance)
+    urgency = gr.Urgency(grievance)
+    if urgency > 0.7 {
+        reply = gr.PriorityCell(grievance)
+        emit owner, urgency, reply, gr.Clarity(reply)
+    } else {
+        routed = gr.Department(grievance)
+        emit owner, urgency, routed, gr.Clarity(routed)
+    }
+}

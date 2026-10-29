@@ -1,0 +1,4 @@
+Master Services Agreement between Meridian Technologies and Acme Retail (synthetic).
+1. Term: 5 years, auto-renewing. 2. Liability: unlimited for the supplier. 3. Governing law: Singapore.
+4. Payment: 90 days from invoice. 5. Data: supplier may use customer data to improve its services.
+6. Termination: customer may terminate for convenience with 7 days' notice.

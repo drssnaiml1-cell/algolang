@@ -1,0 +1,28 @@
+{
+  "program": "../programs/admissions.algo",
+  "cases": [
+    {
+      "name": "Three reviewers, panel score and seat matrix",
+      "inputs": {
+        "application": "Applicant AD-901 for B.Tech AI & Data Science: 12th PCM 91%, JEE percentile 93, built a crop-disease app"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "SeatDesk",
+          "adm.AcademicReviewer",
+          "adm.StatementReviewer",
+          "adm.PotentialReviewer",
+          "adm.AdmissionsPanel",
+          "adm.Letter"
+        ],
+        "tools_used": [
+          "seats.lookup"
+        ],
+        "output_contains": "merit cut-off 82.5",
+        "emits": 3,
+        "max_tokens": 1200
+      }
+    }
+  ]
+}

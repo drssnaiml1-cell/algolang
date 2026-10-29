@@ -1,0 +1,26 @@
+{
+  "program": "../programs/grievance_desk.algo",
+  "cases": [
+    {
+      "name": "Contaminated water: priority cell with a 24-hour target",
+      "inputs": {
+        "grievance": "Water supply in ward 7 is muddy for three days, elderly residents are falling sick"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "WardDesk",
+          "gr.Urgency",
+          "gr.PriorityCell",
+          "gr.Clarity"
+        ],
+        "tools_used": [
+          "ward.directory"
+        ],
+        "output_contains": "target 24 hours",
+        "emits": 4,
+        "max_tokens": 700
+      }
+    }
+  ]
+}

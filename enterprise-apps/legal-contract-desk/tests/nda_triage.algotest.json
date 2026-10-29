@@ -1,0 +1,26 @@
+{
+  "program": "../programs/nda_triage.algo",
+  "cases": [
+    {
+      "name": "Off-playbook NDA: deviation score, redlines, approved fallbacks",
+      "inputs": {
+        "nda": "Mutual NDA with Nimbus Analytics: perpetual confidentiality, governing law Delaware, unlimited liability, 24-month non-solicit"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "nt.Terms",
+          "nt.Deviation",
+          "nt.Redlines",
+          "FallbackWording"
+        ],
+        "tools_used": [
+          "clause.library"
+        ],
+        "output_contains": "Confidentiality lasts 3 years",
+        "emits": 3,
+        "max_tokens": 900
+      }
+    }
+  ]
+}

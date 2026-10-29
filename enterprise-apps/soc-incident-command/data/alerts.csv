@@ -1,0 +1,4 @@
+alerts
+"auth-api: 4,200 failed logins in 5 minutes from 185.220.101.7; payments-gw latency up 300%"
+"web-frontend: CDN cache hit ratio fell to 20% after a config push"
+"hr-portal: one admin login from a new country at 03:10, MFA approved"

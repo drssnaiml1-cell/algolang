@@ -1,0 +1,26 @@
+// Deccan Bank loan origination — committee decision with bureau data and affordability maths.
+// Protected attributes are forbidden by org policy: the compiler rejects any agent that takes one.
+use pack banking.loan_underwriting as uw
+tool bureau.score
+tool dti.calc
+
+agent Bureau(application: text) -> text {
+    role "Credit bureau analyst"
+    goal "Pull the bureau summary for the applicant in {application}"
+    uses bureau.score
+}
+
+agent Affordability(application: text) -> text {
+    role "Affordability analyst"
+    goal "Compute the new EMI and debt-to-income ratio for {application}"
+    uses dti.calc
+}
+
+flow main(application: text) {
+    history = Bureau(application)
+    afford  = Affordability(application)
+    views   = par { uw.CreditAnalyst(application), uw.RiskAnalyst(application), uw.PolicyChecker(application) }
+    verdict = uw.CreditCommittee(views)
+    memo    = uw.Memo(views, verdict)
+    emit history, afford, verdict, memo
+}

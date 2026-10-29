@@ -1,0 +1,30 @@
+{
+  "program": "../programs/exception_desk.algo",
+  "cases": [
+    {
+      "name": "Customs hold on a low-cover SKU: recovery plan",
+      "inputs": {
+        "exception": "SHP-50011 held at Chennai customs: invoice value mismatch; SKU-3307 has 2 days of cover"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "Tracker",
+          "StockImpact",
+          "ex.Critical",
+          "rd.Plan"
+        ],
+        "agents_not_called": [
+          "ex.Carrier"
+        ],
+        "tools_used": [
+          "shipment.track",
+          "inventory.levels"
+        ],
+        "output_contains": "2 days of cover",
+        "emits": 4,
+        "max_tokens": 1200
+      }
+    }
+  ]
+}

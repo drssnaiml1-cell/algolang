@@ -1,0 +1,44 @@
+{
+  "program": "../programs/kyc_onboarding.algo",
+  "cases": [
+    {
+      "name": "Clean customer file: no sanctions match",
+      "inputs": {
+        "customer_file": "kyc/CUST-5501.txt for Asha Rao"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "kyc.DocChecker",
+          "Sanctions",
+          "kyc.RiskRating"
+        ],
+        "tools_used": [
+          "file.read",
+          "sanctions.screen"
+        ],
+        "output_contains": "no sanctions or PEP match",
+        "emits": 3,
+        "max_tokens": 900
+      }
+    },
+    {
+      "name": "Watchlist hit is flagged for compliance",
+      "inputs": {
+        "customer_file": "kyc/CUST-5501.txt for Asha Rao, beneficial owner Global Shell Traders"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "Sanctions"
+        ],
+        "tools_used": [
+          "sanctions.screen"
+        ],
+        "output_contains": "POTENTIAL MATCH",
+        "emits": 3,
+        "max_tokens": 900
+      }
+    }
+  ]
+}

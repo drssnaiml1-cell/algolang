@@ -1,0 +1,52 @@
+{
+  "program": "../programs/claims_intake.algo",
+  "cases": [
+    {
+      "name": "Small motor claim: fast-track route and payout after deductible",
+      "inputs": {
+        "claim": "NS-10571: scratch on the left door in a parking lot, no third party, estimate INR 6,500"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "PolicyCheck",
+          "fraud.FraudPanel",
+          "triage.Routing",
+          "PayoutEstimator"
+        ],
+        "agents_not_called": [
+          "fraud.Referral"
+        ],
+        "tools_used": [
+          "policydb.lookup",
+          "payout.estimate"
+        ],
+        "output_contains": "estimated payout INR 4,000",
+        "emits": 4,
+        "max_tokens": 1800
+      }
+    },
+    {
+      "name": "High fraud score: SIU referral, no payout",
+      "inputs": {
+        "claim": "NS-10234: rear-end collision in Pune on 3 Oct, bumper and tail-light damage, garage quote INR 42,000, no injuries"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "fraud.FraudPanel",
+          "fraud.Referral"
+        ],
+        "agents_not_called": [
+          "PayoutEstimator"
+        ],
+        "tools_used": [
+          "policydb.lookup"
+        ],
+        "output_contains": "Motor comprehensive",
+        "emits": 3,
+        "max_tokens": 1500
+      }
+    }
+  ]
+}

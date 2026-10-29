@@ -1,0 +1,23 @@
+// NBA / NAAC course file — CO-PO mapping matrix plus a Bloom-balanced question paper.
+use pack education.outcome_mapping as obe
+use pack education.question_bank as qb
+tool kb.search
+
+agent OBEGuide(course: text) -> text {
+    role "IQAC accreditation coordinator"
+    goal "Find the institute's OBE rules that apply to {course}"
+    uses kb.search
+}
+
+flow main(course: text) {
+    rules     = OBEGuide(course)
+    cos       = obe.Outcomes(course)
+    maps      = par for co in cos { obe.Mapper(co, course) }
+    fit       = obe.Alignment(maps)
+    matrix    = obe.Matrix(maps, fit)
+    units     = qb.Units(course)
+    questions = par for u in units { qb.Setter(u, course) }
+    coverage  = qb.Coverage(questions)
+    paper     = qb.Paper(questions, coverage)
+    emit rules, fit, matrix, coverage, paper
+}

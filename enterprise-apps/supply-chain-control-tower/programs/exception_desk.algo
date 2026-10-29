@@ -1,0 +1,32 @@
+// Konark control tower — shipment exception → tracking + stock impact → critical? → recovery plan.
+use pack supplychain.shipment_exceptions as ex
+use pack supplychain.route_disruption as rd
+tool shipment.track
+tool inventory.levels
+
+agent Tracker(exception: text) -> text {
+    role "Shipment tracking analyst"
+    goal "Get the live status and ETA of the shipment in {exception}"
+    uses shipment.track
+}
+
+agent StockImpact(exception: text) -> text {
+    role "Inventory planner"
+    goal "Check stock and days of cover for the SKUs in {exception}"
+    uses inventory.levels
+}
+
+flow main(exception: text) {
+    [status, stock] = par { Tracker(exception), StockImpact(exception) }
+    critical = ex.Critical(exception)
+    if critical > 0.6 {
+        impact  = rd.Impact(exception)
+        options = rd.Options(impact)
+        cost    = rd.Cost(options)
+        plan    = rd.Plan(options, cost)
+        emit status, stock, critical, plan
+    } else {
+        note = ex.Carrier(exception)
+        emit status, stock, critical, note
+    }
+}

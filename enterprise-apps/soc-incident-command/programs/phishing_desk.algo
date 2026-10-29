@@ -1,0 +1,18 @@
+// Helix phishing desk — staff forward a suspicious email, the desk checks indicators and advises.
+use pack cyber.phishing as ph
+tool ioc.check
+
+agent LinkCheck(email: text) -> text {
+    role "Email security analyst"
+    goal "Check the links and sender domains in {email} against the blocklist"
+    uses ioc.check
+}
+
+flow main(email: text) {
+    intel  = LinkCheck(email)
+    signs  = ph.Indicators(email)
+    view   = ph.Assessment(signs)
+    risk   = ph.Likelihood(view)
+    advice = ph.Advice(view, risk)
+    emit intel, risk, advice
+}

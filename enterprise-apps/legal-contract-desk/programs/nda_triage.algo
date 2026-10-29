@@ -1,0 +1,18 @@
+// Meridian NDA triage — extract terms, compare with the playbook, score deviation, suggest redlines.
+use pack legal.nda_triage as nt
+tool clause.library
+
+agent FallbackWording(nda: text) -> text {
+    role "Contracts manager"
+    goal "Find Meridian's approved wording for the clauses that appear in {nda}"
+    uses clause.library
+}
+
+flow main(nda: text) {
+    terms     = nt.Terms(nda)
+    review    = nt.Playbook(terms)
+    deviation = nt.Deviation(review)
+    fallback  = FallbackWording(nda)
+    redlines  = nt.Redlines(review, deviation)
+    emit deviation, redlines, fallback
+}

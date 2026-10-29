@@ -1,0 +1,4 @@
+Inpatient IP-2207 (synthetic record). Age 58. Admitted 21 Oct with community-acquired pneumonia.
+Treated with IV antibiotics for 5 days, switched to oral on day 6. Oxygen weaned on day 4.
+Discharge on 28 Oct. Medicines: oral antibiotic for 5 more days, paracetamol as needed.
+Follow-up: chest X-ray and outpatient review in 2 weeks. Red flags: breathlessness, fever above 38.5 C.

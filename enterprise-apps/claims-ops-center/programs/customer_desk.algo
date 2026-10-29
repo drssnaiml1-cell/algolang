@@ -1,0 +1,21 @@
+// NovaShield customer desk — answers policyholder messages, checks tone before sending.
+use pack insurance.query_router as desk
+tool policydb.lookup
+
+agent PolicyFacts(query: text) -> text {
+    role "Policy services assistant"
+    goal "Look up the policy mentioned in this message so the reply is accurate: {query}"
+    uses policydb.lookup
+}
+
+flow main(query: text) {
+    facts = PolicyFacts(query)
+    is_claim = desk.IsClaim(query)
+    if is_claim > 0.5 {
+        reply = desk.ClaimsDesk(query)
+        emit facts, reply, desk.Clarity(reply)
+    } else {
+        answer = desk.PolicyDesk(query)
+        emit facts, answer, desk.Clarity(answer)
+    }
+}

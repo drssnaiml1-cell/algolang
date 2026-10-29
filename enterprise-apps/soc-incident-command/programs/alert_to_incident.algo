@@ -1,0 +1,34 @@
+// Helix SOC — alerts to an incident: batch & analyse, enrich (CMDB, IOC), severity, IT incident runbook.
+use pack cyber.soc_triage as soc
+use pack itops.incident_triage as ops
+tool cmdb.lookup
+tool ioc.check
+
+agent Enrich(alerts: text) -> text {
+    role "SOC enrichment analyst"
+    goal "Find the affected assets and their owners in {alerts}"
+    uses cmdb.lookup
+}
+
+agent ThreatCheck(alerts: text) -> text {
+    role "Threat-intelligence analyst"
+    goal "Check every IP and domain in {alerts} against the blocklist"
+    uses ioc.check
+}
+
+flow main(alerts: text) {
+    [assets, intel] = par { Enrich(alerts), ThreatCheck(alerts) }
+    parts    = soc.Batcher(alerts)
+    findings = par for p in parts { soc.Analyst(p, alerts) }
+    severity = soc.Severity(findings)
+    incident = soc.Incident(findings, severity)
+    if severity > 0.7 {
+        k      = ops.Classifier(incident)
+        d      = ops.Diagnosis(k)
+        p1     = ops.Priority(d)
+        steps  = ops.Runbook(d, p1)
+        emit assets, intel, severity, incident, steps
+    } else {
+        emit assets, intel, severity, incident
+    }
+}

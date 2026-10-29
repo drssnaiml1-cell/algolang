@@ -1,0 +1,11 @@
+// Sunrise discharge summary drafting — the treating doctor approves the final text.
+// The record input names a file under data/, e.g. "records/IP-2207.txt".
+use pack healthcare.discharge_summary as ds
+
+flow main(record: text) {
+    draft   = ds.Collector(record)
+    summary = ds.Writer(draft)
+    check   = ds.Checker(summary)
+    final   = ds.Finaliser(summary, check)
+    emit final, check
+}

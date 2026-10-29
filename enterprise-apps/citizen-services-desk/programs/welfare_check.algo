@@ -1,0 +1,10 @@
+// Welfare eligibility pre-check — the scheme officer decides; the citizen gets a clear notice.
+use pack government.welfare_eligibility as wf
+
+flow main(application: text) {
+    facts  = wf.Extractor(application)
+    rules  = wf.Rules(facts)
+    score  = wf.Eligibility(rules)
+    notice = wf.Notice(rules, score)
+    emit score, notice
+}

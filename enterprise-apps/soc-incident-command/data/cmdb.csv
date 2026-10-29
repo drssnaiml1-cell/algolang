@@ -1,0 +1,5 @@
+asset,tier,owner,depends_on
+auth-api,1,identity-team,postgres-auth|redis-session
+payments-gw,1,payments-team,auth-api|bank-connector
+web-frontend,2,web-team,auth-api|cdn
+hr-portal,3,it-apps,ldap

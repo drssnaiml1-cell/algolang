@@ -1,0 +1,25 @@
+{
+  "program": "../programs/phishing_desk.algo",
+  "cases": [
+    {
+      "name": "Known phishing-kit domain is detected",
+      "inputs": {
+        "email": "From: it-support@login-secure-verify.xyz Subject: Password expires today, click http://login-secure-verify.xyz/reset"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "LinkCheck",
+          "ph.Likelihood",
+          "ph.Advice"
+        ],
+        "tools_used": [
+          "ioc.check"
+        ],
+        "output_contains": "phishing kit domain",
+        "emits": 3,
+        "max_tokens": 900
+      }
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "program": "../programs/discharge.algo",
+  "cases": [
+    {
+      "name": "Discharge summary drafted from the inpatient record file",
+      "inputs": {
+        "record": "Draft the discharge summary from records/IP-2207.txt"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "ds.Collector",
+          "ds.Checker",
+          "ds.Finaliser"
+        ],
+        "tools_used": [
+          "file.read"
+        ],
+        "emits": 2,
+        "max_tokens": 700
+      }
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+// Deccan Bank KYC onboarding — document check, sanctions screening, risk rating, outcome.
+// The input names the customer file under data/, e.g. "kyc/CUST-5501.txt for Asha Rao".
+use pack banking.kyc_review as kyc
+tool sanctions.screen
+
+agent Sanctions(customer_file: text) -> text {
+    role "Sanctions and PEP screening officer"
+    goal "Screen the customer named in {customer_file} against the watchlist"
+    uses sanctions.screen
+}
+
+flow main(customer_file: text) {
+    docs   = kyc.DocChecker(customer_file)
+    screen = Sanctions(customer_file)
+    check  = kyc.Verifier(docs)
+    rating = kyc.RiskRating(check)
+    result = kyc.Outcome(check, rating)
+    emit screen, rating, result
+}

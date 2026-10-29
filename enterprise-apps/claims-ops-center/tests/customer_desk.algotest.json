@@ -1,0 +1,25 @@
+{
+  "program": "../programs/customer_desk.algo",
+  "cases": [
+    {
+      "name": "Policyholder question answered with live policy facts",
+      "inputs": {
+        "query": "My policy NS-20418 renews soon, does it cover a burst pipe?"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "PolicyFacts",
+          "desk.IsClaim"
+        ],
+        "tools_used": [
+          "policydb.lookup",
+          "kb.search"
+        ],
+        "output_contains": "Home contents",
+        "emits": 3,
+        "max_tokens": 700
+      }
+    }
+  ]
+}

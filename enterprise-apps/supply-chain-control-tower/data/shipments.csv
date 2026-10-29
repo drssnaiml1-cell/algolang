@@ -1,0 +1,4 @@
+shipment,status,location,eta,carrier,sku
+SHP-50011,held at customs,Chennai port,unknown,BlueOcean,SKU-3307
+SHP-50017,delayed (truck breakdown),NH-65 near Suryapet,+2 days,RoadLink,SKU-1101
+SHP-50023,on time,Nagpur hub,2026-11-02,RoadLink,SKU-2204

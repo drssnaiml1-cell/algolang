@@ -1,0 +1,25 @@
+{
+  "program": "../programs/obe_course_file.algo",
+  "cases": [
+    {
+      "name": "CO-PO matrix and Bloom-balanced paper for a course",
+      "inputs": {
+        "course": "Machine Learning (B.Tech AI&DS, semester 5): supervised learning, unsupervised learning, model evaluation, neural networks"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "OBEGuide",
+          "obe.Matrix",
+          "qb.Paper"
+        ],
+        "tools_used": [
+          "kb.search"
+        ],
+        "output_contains": "Bloom",
+        "emits": 5,
+        "max_tokens": 2700
+      }
+    }
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "program": "../programs/welfare_check.algo",
+  "cases": [
+    {
+      "name": "Pension pre-check goes to the scheme officer",
+      "inputs": {
+        "application": "Widow pension application: age 64, annual family income INR 80,000, resident of ward 9 for 12 years"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "wf.Extractor",
+          "wf.Eligibility",
+          "wf.Notice"
+        ],
+        "tools_used": [
+          "kb.search"
+        ],
+        "emits": 2,
+        "max_tokens": 700
+      }
+    }
+  ]
+}

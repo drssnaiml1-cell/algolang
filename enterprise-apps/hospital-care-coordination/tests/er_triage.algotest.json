@@ -1,0 +1,46 @@
+{
+  "program": "../programs/er_triage.algo",
+  "cases": [
+    {
+      "name": "STEMI: urgent path with a cardiac bed and a referral",
+      "inputs": {
+        "note": "62-year-old with crushing chest pain for 40 minutes, sweating, ECG shows ST elevation"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "triage.UrgencyScorer",
+          "BedManager",
+          "triage.Referral"
+        ],
+        "agents_not_called": [
+          "appt.RoutineDesk"
+        ],
+        "tools_used": [
+          "beds.availability"
+        ],
+        "output_contains": "Cardiac: 3 free",
+        "emits": 4,
+        "max_tokens": 900
+      }
+    },
+    {
+      "name": "Minor injury: routine appointment, no bed",
+      "inputs": {
+        "note": "35-year-old with ankle pain after a fall, can bear weight, mild swelling"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "triage.UrgencyScorer",
+          "appt.RoutineDesk"
+        ],
+        "agents_not_called": [
+          "BedManager"
+        ],
+        "emits": 3,
+        "max_tokens": 700
+      }
+    }
+  ]
+}

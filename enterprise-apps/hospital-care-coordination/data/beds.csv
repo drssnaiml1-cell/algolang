@@ -1,0 +1,6 @@
+ward,total,occupied,keywords
+ICU,20,18,critical|ventilat|sepsis|unconscious
+HDU,16,11,monitor|oxygen|unstable
+Cardiac,12,9,chest pain|cardiac|ecg|heart
+General,80,61,fever|fracture|infection|observation
+Paediatric,24,15,child|infant|paediatric|baby|toddler

@@ -1,0 +1,46 @@
+{
+  "program": "../programs/loan_decision.algo",
+  "cases": [
+    {
+      "name": "Strong applicant: DTI within policy",
+      "inputs": {
+        "application": "APP-3101 home loan INR 45,00,000 for 20 years, net monthly income INR 1,80,000, salaried 9 years"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "Bureau",
+          "Affordability",
+          "uw.CreditCommittee",
+          "uw.Memo"
+        ],
+        "tools_used": [
+          "bureau.score",
+          "dti.calc"
+        ],
+        "output_contains": "within policy",
+        "emits": 4,
+        "max_tokens": 1400
+      }
+    },
+    {
+      "name": "Over-leveraged applicant: DTI above the 50% limit",
+      "inputs": {
+        "application": "APP-3104 car loan INR 9,00,000 for 5 years, net monthly income INR 60,000, salaried 1 year"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "Affordability",
+          "uw.CreditCommittee"
+        ],
+        "tools_used": [
+          "dti.calc"
+        ],
+        "output_contains": "ABOVE the 50% policy limit",
+        "emits": 4,
+        "max_tokens": 1400
+      }
+    }
+  ]
+}

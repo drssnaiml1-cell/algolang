@@ -1,0 +1,19 @@
+// Meridian contract review — clause-by-clause analysis in parallel, risk score, summary for counsel.
+// The input names a contract file under data/, e.g. "contracts/MSA-ACME-2026.txt".
+use pack legal.contract_review as cr
+tool clause.library
+
+agent Fallbacks(contract: text) -> text {
+    role "Contracts manager"
+    goal "List approved fallback wording for liability, term and governing law relevant to {contract}"
+    uses clause.library
+}
+
+flow main(contract: text) {
+    clauses  = cr.Clauses(contract)
+    findings = par for c in clauses { cr.Analyst(c, contract) }
+    risk     = cr.Risk(findings)
+    summary  = cr.Summary(findings, risk)
+    fallback = Fallbacks(contract)
+    emit risk, summary, fallback
+}

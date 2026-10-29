@@ -1,0 +1,40 @@
+// NovaShield Claims Operations Center — first notice of loss to a governed decision.
+// intake → policy check → three-way fraud panel → (referral | complexity triage → routing → payout)
+use pack insurance.claims_triage as triage
+use pack insurance.fraud_screening as fraud
+tool policydb.lookup
+tool payout.estimate
+
+policy {
+    budget tokens 6000
+    retry 1
+}
+
+agent PolicyCheck(claim: text) -> text {
+    role  "Policy administration officer, NovaShield"
+    goal  "Find the policy in this claim and confirm cover, deductible and status: {claim}"
+    uses  policydb.lookup
+}
+
+agent PayoutEstimator(claim: text) -> text {
+    role  "Claims finance analyst"
+    goal  "Estimate the payout for {claim} after the deductible and within the sum insured"
+    uses  payout.estimate
+    policy { require human when confidence < 0.85 }
+}
+
+flow main(claim: text) {
+    c      = triage.Intake(claim)
+    cover  = PolicyCheck(claim)
+    views  = par { fraud.PatternAnalyst(c), fraud.DocumentExaminer(c), fraud.Adjuster(c) }
+    risk   = fraud.FraudPanel(views)
+    if risk > 0.85 {
+        referral = fraud.Referral(views, risk)
+        emit cover, risk, referral
+    } else {
+        level  = triage.Complexity(c)
+        route  = triage.Routing(c, level)
+        payout = PayoutEstimator(claim)
+        emit cover, risk, route, payout
+    }
+}

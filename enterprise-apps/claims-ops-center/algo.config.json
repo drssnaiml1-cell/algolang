@@ -1,0 +1,39 @@
+{
+  "organisation": "NovaShield General Insurance (example organisation)",
+  "policy": {
+    "forbid": [
+      "gender",
+      "caste",
+      "religion",
+      "nationality"
+    ],
+    "max_budget_tokens": 8000,
+    "min_human_below": 0.7,
+    "allowed_tools": [
+      "kb.search",
+      "policydb.lookup",
+      "payout.estimate"
+    ]
+  },
+  "max_concurrency": 16,
+  "max_run_tokens": 80000,
+  "cache": {
+    "enabled": true
+  },
+  "audit_dir": "runs",
+  "models": {
+    "smart": "claude-sonnet-5-5",
+    "fast": "claude-haiku-5-5"
+  },
+  "tools": {
+    "kb.search": {
+      "dir": "kb"
+    },
+    "file.read": {
+      "root": "data"
+    }
+  },
+  "plugins": [
+    "plugins/novashield_tools.py"
+  ]
+}

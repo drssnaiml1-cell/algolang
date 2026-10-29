@@ -1,0 +1,25 @@
+// Sunrise ER triage assistant — decision SUPPORT: the duty clinician signs off every result.
+// note → facts → summary → urgency (human gate) → (bed + referral | routine booking)
+use pack healthcare.clinical_triage as triage
+use pack healthcare.appointment_router as appt
+tool beds.availability
+
+agent BedManager(summary: text) -> text {
+    role "Bed management coordinator, Sunrise Hospital"
+    goal "Find a suitable free bed for this patient: {summary}"
+    uses beds.availability
+}
+
+flow main(note: text) {
+    facts   = triage.Extractor(note)
+    summary = triage.Summariser(facts)
+    urgency = triage.UrgencyScorer(summary)
+    if urgency > 0.85 {
+        bed      = BedManager(note)
+        referral = triage.Referral(summary, urgency)
+        emit summary, urgency, bed, referral
+    } else {
+        booking = appt.RoutineDesk(note)
+        emit summary, urgency, booking
+    }
+}

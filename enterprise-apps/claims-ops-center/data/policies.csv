@@ -1,0 +1,6 @@
+policy_no,holder_id,product,sum_insured,deductible,status,renewal
+NS-10234,C-7781,Motor comprehensive,800000,5000,active,2027-03-31
+NS-10571,C-8823,Motor third-party plus,300000,2500,active,2026-12-15
+NS-20418,C-1190,Home contents,1500000,10000,active,2027-06-30
+NS-20999,C-4402,Home structure,5000000,25000,lapsed,2026-08-01
+NS-30112,C-5530,Motor comprehensive,1200000,7500,active,2027-01-20

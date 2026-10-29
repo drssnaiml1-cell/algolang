@@ -1,0 +1,51 @@
+{
+  "program": "../programs/alert_to_incident.algo",
+  "cases": [
+    {
+      "name": "Credential stuffing on a tier-1 service: incident plus runbook",
+      "inputs": {
+        "alerts": "auth-api: 4,200 failed logins in 5 minutes from 185.220.101.7; payments-gw latency up 300%"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "Enrich",
+          "ThreatCheck",
+          "soc.Severity",
+          "soc.Incident",
+          "ops.Runbook"
+        ],
+        "tools_used": [
+          "cmdb.lookup",
+          "ioc.check"
+        ],
+        "output_contains": "KNOWN BAD",
+        "emits": 5,
+        "max_tokens": 2200
+      }
+    },
+    {
+      "name": "Lower-severity CDN alert: incident summary only, no runbook",
+      "inputs": {
+        "alerts": "web-frontend: CDN cache hit ratio fell to 20% after a config push"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "Enrich",
+          "soc.Severity",
+          "soc.Incident"
+        ],
+        "agents_not_called": [
+          "ops.Runbook"
+        ],
+        "tools_used": [
+          "cmdb.lookup"
+        ],
+        "output_contains": "web-frontend: tier 2",
+        "emits": 4,
+        "max_tokens": 1400
+      }
+    }
+  ]
+}
