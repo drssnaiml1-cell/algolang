@@ -1,0 +1,19 @@
+// Legal — contract clause review with lawyer sign-off
+tool file.read
+agent ClauseFinder(contract: text) -> list {
+    goal "List every clause in {contract}"
+    uses file.read
+}
+agent ClauseRisk(clause: text) -> text {
+    role "Contract analyst"
+    goal "Flag risks and missing protections in: {clause}"
+}
+agent RiskScore(notes: list) -> score {
+    goal "Score overall contract risk 0 to 1 from {notes}"
+    policy { require human when confidence < 0.90 }
+}
+flow main(contract: text) {
+    clauses = ClauseFinder(contract)
+    notes   = par for c in clauses { ClauseRisk(c) }
+    emit RiskScore(notes), notes
+}

@@ -1,0 +1,94 @@
+\chapter{Inside the Compiler}
+\label{ch:internals}
+
+The compiler \file{algoc.py} is about 600 lines of Python. It is deliberately small so that students can read it end to end, and so that new language features can be prototyped in an afternoon.
+
+\section{Pipeline}
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[
+  st/.style={fill=navy,text=white,rounded corners=3pt,font=\sffamily\scriptsize,
+             minimum width=22mm,minimum height=12mm,align=center},
+  art/.style={fill=goldlight,draw=gold,text=navy,rounded corners=2pt,font=\ttfamily\scriptsize,
+              minimum height=7mm,align=center},
+  ar/.style={-{Stealth[length=2mm]},navy,line width=0.7pt}]
+  \node[art] (src) {.algo};
+  \node[st,right=5mm of src] (p) {Parse\\{\tiny Lark, Earley}};
+  \node[st,right=5mm of p] (a) {Build AST\\{\tiny models, tools,}\\{\tiny agents, flows}};
+  \node[st,right=5mm of a] (c) {Check\\{\tiny types, effects,}\\{\tiny policies}};
+  \node[st,right=5mm of c] (g) {Generate\\{\tiny Python}};
+  \node[art,right=5mm of g] (py) {.py};
+  \node[art,below=6mm of c] (d) {diagnostics\\E100–E115};
+  \foreach \x/\y in {src/p,p/a,a/c,c/g,g/py} \draw[ar] (\x) -- (\y);
+  \draw[ar,cautionred] (c) -- (d);
+\end{tikzpicture}
+\caption{Compilation pipeline. Any diagnostic stops the pipeline before code generation.}
+\end{figure}
+
+\begin{enumerate}
+  \item \textbf{Parse.} The grammar in \file{grammar.lark} (Appendix~\ref{app:grammar}) is loaded by the Lark parser with the Earley algorithm, which tolerates the overlap between keywords and names without extra rules. Syntax errors become \errcode{E100} with a source excerpt.
+  \item \textbf{Build the AST.} The parse tree is converted into a \code{Program} with dictionaries of models, tools, agents (\code{Agent}: name, parameters, return type, role, goal, uses, model, policy) and flows (\code{Flow}: name, parameters, body). Duplicate names give \errcode{E107}.
+  \item \textbf{Check.} The \code{Checker} validates each agent (types, placeholders, tools, model, forbidden parameters, goal present) and walks each flow with a type environment, checking calls (\errcode{E101}, \errcode{E102}), variables (\errcode{E103}), comparisons (\errcode{E110}), parallel bindings (\errcode{E113}) and loops (\errcode{E114}). All diagnostics are collected and sorted by line.
+  \item \textbf{Generate.} The \code{CodeGen} emits a Python module that imports the runtime, registers models and tools, defines one governed callable per agent, and one Python function per flow.
+\end{enumerate}
+
+\section{Generated code}
+
+The generated code is readable and is the best way to understand the semantics precisely. For \file{research\_brief.algo}:
+
+\begin{pycode}[title=build/research\_brief.py (excerpt)]
+rt = Runtime(program='research_brief')
+rt.model('smart', 'claude-sonnet-5-5')
+rt.model('fast', 'claude-haiku-5-5')
+rt.tool('web.search')
+
+Researcher = rt.agent(AgentSpec(
+    name='Researcher', params=[('topic', 'text', None)], returns='text',
+    role='Senior research analyst',
+    goal='Find five verified, recent facts about {topic}, with sources',
+    uses=['web.search'], model='smart', policy={'budget_tokens': 6000, 'retry': 2}))
+
+def flow_main(topic):
+    rt.begin_flow('main', {'topic': topic})
+    facts = Researcher(topic=topic)
+    formal, simple = rt.par(lambda: Writer(facts=facts),
+                            lambda: Writer(facts=facts, tone='plain-English'))
+    quality = Reviewer(draft=formal)
+    if rt.value(quality) < rt.value(0.80):
+        formal = Writer(facts=facts, tone='rigorous academic')
+    rt.emit(formal, simple)
+    return rt.end_flow()
+\end{pycode}
+
+Observe the translation rules:
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}L{4.6cm}Y@{}}
+\toprule
+\thead{AlgoLang} & \thead{Generated Python}\\
+\goldrule
+\code{agent A(…) -> t \{ … \}} & \code{A = rt.agent(AgentSpec(…))}\\
+\code{A(x, k = y)} & \code{A(p1=x, k=y)} --- positional arguments become keywords\\
+\code{par \{ A(x), B(x) \}} & \code{rt.par(lambda: A(…), lambda: B(…))}\\
+\code{par for v in xs \{ A(v) \}} & \code{rt.par\_map(lambda v: A(…), xs)}\\
+\code{if a < 0.8 \{ … \}} & \code{if rt.value(a) < rt.value(0.80): …}\\
+\code{emit a, b} & \code{rt.emit(a, b)}\\
+\code{flow main(p: t)} & \code{def flow\_main(p): …} plus a command-line entry point\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Extending the language}
+
+A typical feature touches four places. Suppose you want a new policy rule \code{max calls N}:
+
+\begin{enumerate}
+  \item \textbf{Grammar:} add \code{| "max" "calls" NUMBER -> max\_calls} to \code{policy\_rule}.
+  \item \textbf{AST:} in \code{to\_ast}, store \code{a.policy["max\_calls"]}.
+  \item \textbf{Checker:} optionally validate the value.
+  \item \textbf{Runtime:} count calls per agent in \code{\_invoke} and raise \code{PolicyViolation} when the limit is exceeded.
+\end{enumerate}
+
+Then add an example, a test, and a paragraph to this book. Chapter~\ref{ch:project} explains how to propose such a change for the official language.

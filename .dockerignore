@@ -1,0 +1,9 @@
+.git
+.venv
+dist
+**/__pycache__
+**/runs
+**/build
+docs/*.pdf
+slides/*.pdf
+*.zip

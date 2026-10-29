@@ -1,0 +1,22 @@
+// Customer support — route each ticket to the right specialist
+agent IsTechnical(ticket: text) -> score {
+    goal "Score 0 to 1 how technical this ticket is: {ticket}"
+}
+agent TechSupport(ticket: text) -> text {
+    goal "Give step-by-step technical help for: {ticket}"
+}
+agent Billing(ticket: text) -> text {
+    goal "Resolve this billing or account question: {ticket}"
+}
+agent ToneCheck(reply: text) -> score {
+    goal "Score 0 to 1 how polite and clear this reply is: {reply}"
+}
+flow main(ticket: text) {
+    if IsTechnical(ticket) >= 0.5 {
+        reply = TechSupport(ticket)
+    } else {
+        reply = Billing(ticket)
+    }
+    if ToneCheck(reply) < 0.8 { reply = Billing(ticket) }
+    emit reply
+}

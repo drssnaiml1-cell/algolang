@@ -1,0 +1,90 @@
+\chapter{Programs and Lexical Structure}
+\label{ch:lexical}
+
+\section{Source files}
+
+An \algolang\ program is a single UTF-8 text file with the extension \file{.algo}. It consists of top-level declarations in any order:
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}L{2.6cm}L{4.2cm}Y@{}}
+\toprule
+\thead{Declaration} & \thead{Form} & \thead{Purpose}\\
+\goldrule
+\kw{model} & \code{model name = "id"} & Names a model identifier\\
+\kw{tool} & \code{tool web.search} & Declares a capability agents may be granted\\
+\kw{agent} & \code{agent N(p: t) -> t \{ … \}} & Declares a unit of work\\
+\kw{flow} & \code{flow main(p: t) \{ … \}} & Orchestrates agents\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Every program must contain exactly one \code{flow main}, which is where execution starts (error \errcode{E111} otherwise).
+
+\section{Comments, whitespace and semicolons}
+
+\begin{itemize}
+  \item A comment starts with \code{//} and runs to the end of the line.
+  \item Whitespace, including newlines, separates tokens and is otherwise ignored. Indentation has no meaning.
+  \item Semicolons are allowed and ignored, so \code{a = A(x); b = B(a)} on one line is the same as two lines.
+\end{itemize}
+
+\section{Identifiers}
+
+Identifiers match \code{[a-zA-Z\_][a-zA-Z0-9\_]*}. By convention agents use \code{PascalCase} (\code{Researcher}), and variables, parameters and models use \code{lower\_case} (\code{facts}, \code{smart}). Names of agents and flows share one namespace; defining the same name twice is error \errcode{E107}.
+
+Tool names are \emph{dotted} identifiers with at least two parts, such as \code{web.search} or \code{file.read}.
+
+\section{Keywords}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}L{3.3cm}Y@{}}
+\toprule
+\thead{Group} & \thead{Keywords}\\
+\goldrule
+Declarations & \kw{model} \kw{tool} \kw{agent} \kw{flow}\\
+Agent clauses & \kw{role} \kw{goal} \kw{uses} \kw{model} \kw{policy}\\
+Policy rules & \kw{budget} \kw{tokens} \kw{retry} \kw{timeout} \kw{require} \kw{human} \kw{when} \kw{confidence} \kw{forbid}\\
+Flow statements & \kw{par} \kw{for} \kw{in} \kw{if} \kw{else} \kw{emit}\\
+Literals & \kw{true} \kw{false}\\
+Types & \kw{text} \kw{score} \kw{list} \kw{json} \kw{bool}\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Literals}
+
+\begin{itemize}
+  \item \textbf{Strings} are enclosed in double quotes. Backslash escapes such as \code{\textbackslash n} and \code{\textbackslash"} are supported.
+  \item \textbf{Numbers} are written as \code{6000} or \code{0.75}. Negative and exponent forms are not part of version 0.1.
+  \item \textbf{Booleans} are \kw{true} and \kw{false}.
+\end{itemize}
+
+\section{Placeholders in goals}
+
+Inside a \kw{goal} string, \code{\{name\}} is a placeholder for the parameter \code{name}. When the agent runs, the placeholder is replaced by the argument's value (a list is joined with \code{"; "}). The compiler checks that every placeholder names a real parameter (\errcode{E109}).
+
+\begin{algo}
+agent Translator(passage: text, language: text) -> text {
+    goal "Translate into {language}, keeping technical terms: {passage}"
+}
+\end{algo}
+
+\section{Operators}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}L{3.3cm}Y@{}}
+\toprule
+\thead{Operator} & \thead{Use}\\
+\goldrule
+\code{->} & Separates an agent's parameters from its return type\\
+\code{=} & Assignment in flows; default values in parameters; keyword arguments\\
+\code{<} \code{<=} \code{>} \code{>=} \code{==} \code{!=} & Comparisons in \kw{if} conditions\\
+\code{[ , ]} & Binds several results of a \kw{par} block\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\algolang\ has no arithmetic or string operators. Computation is done by agents; flows only route values between them.

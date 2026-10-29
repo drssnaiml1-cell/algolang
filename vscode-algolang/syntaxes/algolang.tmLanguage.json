@@ -1,0 +1,60 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "AlgoLang",
+  "scopeName": "source.algolang",
+  "patterns": [
+    { "include": "#comment" },
+    { "include": "#declaration" },
+    { "include": "#string" },
+    { "include": "#keyword" },
+    { "include": "#policy" },
+    { "include": "#type" },
+    { "include": "#tool" },
+    { "include": "#agentcall" },
+    { "include": "#number" },
+    { "include": "#operator" }
+  ],
+  "repository": {
+    "comment": { "name": "comment.line.double-slash.algolang", "match": "//.*$" },
+    "declaration": {
+      "match": "\\b(agent|flow|model)\\s+([A-Za-z_][A-Za-z0-9_]*)",
+      "captures": {
+        "1": { "name": "storage.type.algolang" },
+        "2": { "name": "entity.name.function.algolang" }
+      }
+    },
+    "string": {
+      "name": "string.quoted.double.algolang",
+      "begin": "\"", "end": "\"",
+      "patterns": [
+        { "name": "constant.character.escape.algolang", "match": "\\\\." },
+        { "name": "variable.parameter.algolang", "match": "\\{[A-Za-z_][A-Za-z0-9_]*\\}" }
+      ]
+    },
+    "keyword": {
+      "patterns": [
+        { "name": "keyword.control.algolang", "match": "\\b(if|else|emit|par|for|in)\\b" },
+        { "name": "keyword.other.algolang", "match": "\\b(tool|role|goal|uses|model|policy)\\b" },
+        { "name": "constant.language.algolang", "match": "\\b(true|false)\\b" }
+      ]
+    },
+    "policy": {
+      "name": "keyword.other.policy.algolang",
+      "match": "\\b(budget|tokens|retry|timeout|require|human|when|confidence|forbid)\\b"
+    },
+    "type": {
+      "name": "support.type.algolang",
+      "match": "\\b(text|score|list|json|bool)\\b"
+    },
+    "tool": {
+      "name": "support.function.tool.algolang",
+      "match": "\\b[a-z_][a-z0-9_]*(\\.[a-z_][a-z0-9_]*)+\\b"
+    },
+    "agentcall": {
+      "match": "\\b([A-Z][A-Za-z0-9_]*)\\s*(?=\\()",
+      "captures": { "1": { "name": "entity.name.function.call.algolang" } }
+    },
+    "number": { "name": "constant.numeric.algolang", "match": "\\b\\d+(\\.\\d+)?\\b" },
+    "operator": { "name": "keyword.operator.algolang", "match": "->|<=|>=|==|!=|<|>|=" }
+  }
+}

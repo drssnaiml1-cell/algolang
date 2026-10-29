@@ -1,0 +1,61 @@
+// paper_review.algo — a planner splits the job, worker agents run
+// in parallel, a responsible-AI agent audits, an editor decides.
+
+model smart = "claude-sonnet-5-5"
+model fast  = "claude-haiku-5-5"
+
+tool file.read
+tool web.search
+
+agent Planner(paper: text) -> list {
+    role  "Associate editor"
+    goal  "List the review criteria that matter most for this manuscript: {paper}"
+    uses  file.read
+    model smart
+}
+
+agent CriterionReviewer(criterion: text, paper: text) -> text {
+    role  "Domain reviewer"
+    goal  "Review {paper} strictly on: {criterion}. Give strengths, weaknesses, fixes."
+    uses  file.read, web.search
+    model fast
+    policy {
+        budget tokens 4000
+        retry 1
+    }
+}
+
+agent EthicsAuditor(paper: text) -> text {
+    role  "Responsible-AI auditor"
+    goal  "Check {paper} for dataset consent, bias, reproducibility and dual-use risk"
+    model smart
+}
+
+agent Editor(reports: list, ethics: text) -> score {
+    role  "Editor-in-Chief"
+    goal  "Weigh {reports} and {ethics}; score acceptance likelihood 0 to 1"
+    model smart
+    policy {
+        require human when confidence < 0.75
+        forbid gender, caste, religion, nationality   // decision must not see author identity
+    }
+}
+
+agent DecisionLetter(reports: list, verdict: score) -> text {
+    role  "Editorial assistant"
+    goal  "Draft a courteous decision letter (score {verdict}) summarising {reports}"
+    model fast
+}
+
+flow main(paper: text) {
+    criteria = Planner(paper)
+
+    // one reviewer agent per criterion, all in parallel
+    reports = par for c in criteria { CriterionReviewer(c, paper) }
+
+    ethics  = EthicsAuditor(paper)
+    verdict = Editor(reports, ethics)
+    letter  = DecisionLetter(reports, verdict)
+
+    emit verdict, letter
+}

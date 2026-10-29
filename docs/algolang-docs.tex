@@ -1,0 +1,139 @@
+% ═════════════════════════════════════════════════════════════════════
+%  The AlgoLang Programming Language — Official Documentation, v0.2 Enterprise
+%  Dr. S. Satyanarayana, Ph.D., PDF (AI)
+%  AlgoProfessor AI R&D Solutions, Hyderabad
+%
+%  Build:  latexmk -xelatex algolang-docs.tex      (or: xelatex ×2)
+%  Overleaf: set Compiler = XeLaTeX.
+% ═════════════════════════════════════════════════════════════════════
+\documentclass[11pt,oneside,openany]{book}
+\usepackage{algolang-docs}
+
+\hypersetup{
+  pdftitle={The AlgoLang Programming Language — Official Documentation v0.2},
+  pdfauthor={Dr. S. Satyanarayana, Ph.D., PDF (AI)},
+  pdfsubject={AlgoLang: an open-source, agent-native programming language for building AI systems},
+  pdfkeywords={AlgoLang, agentic AI, programming language, responsible AI, AlgoProfessor},
+}
+
+\begin{document}
+\frontmatter
+\pagestyle{empty}
+
+% ─────────────────────────── title page ───────────────────────────
+\begin{titlepage}
+\begin{tikzpicture}[remember picture,overlay]
+  \fill[navy] (current page.south west) rectangle (current page.north east);
+  \fill[gold] ([yshift=-14mm]current page.north west) rectangle ([yshift=-15.2mm]current page.north east);
+  \fill[gold] (current page.south west) rectangle ([yshift=9mm]current page.south east);
+  % faint code texture
+  \node[anchor=north east,align=left,font=\ttfamily\footnotesize,text=white,opacity=0.07]
+    at ([xshift=-12mm,yshift=-26mm]current page.north east) {%
+    agent Researcher(topic: text) -> text \{\\
+    \quad role  "Senior research analyst"\\
+    \quad goal  "Find five facts about \{topic\}"\\
+    \quad policy \{ require human when confidence < 0.70 \}\\
+    \}\\[4pt]
+    flow main(topic: text) \{\\
+    \quad facts = Researcher(topic)\\
+    \quad [a, b] = par \{ Writer(facts), Critic(facts) \}\\
+    \quad emit a, b\\
+    \}};
+  \node at ([yshift=-88mm]current page.north) {\algologo[1.9]};
+  \node[anchor=north,align=center,text=white] at ([yshift=-130mm]current page.north) {%
+    {\color{gold}\sffamily\bfseries\addfontfeature{LetterSpace=25}\small OFFICIAL DOCUMENTATION}\\[7mm]
+    {\displayfont\fontsize{40}{44}\selectfont The \textcolor{gold}{AlgoLang}}\\[3mm]
+    {\displayfont\fontsize{26}{30}\selectfont Programming Language}\\[8mm]
+    {\lightfont\large An open-source, agent-native language for building AI systems}\\[3mm]
+    {\lightfont\normalsize Every unit of work is an agent.}};
+  \node[anchor=north] at ([yshift=-205mm]current page.north) {%
+    \badge{version}{0.2.0}\enspace
+    \badge{license}{Apache-2.0}\enspace
+    \badge{python}{$\geq$ 3.9}\enspace
+    \badge{runs on}{Windows · Linux · macOS · Colab}\enspace
+    \badge[goldlight]{status}{preview}};
+  \node[anchor=south,align=center,text=white] at ([yshift=24mm]current page.south) {%
+    {\sffamily\bfseries\Large Dr.\ S.\ Satyanarayana}\\[1.5mm]
+    {\sffamily\normalsize Ph.D., PDF (AI)}\\[2.5mm]
+    {\lightfont\small Founder, CEO \& Chief Agentic AI Scientist}\\[0.8mm]
+    {\lightfont\small AlgoProfessor AI R\&D Solutions, Hyderabad}\\[0.8mm]
+    {\lightfont\small\color{gold} www.algoprofessor.com}};
+  \node[anchor=south,font=\sffamily\scriptsize\bfseries,text=navy] at ([yshift=2.6mm]current page.south)
+    {VERSION 0.2 ENTERPRISE · OCTOBER 2026};
+\end{tikzpicture}
+\end{titlepage}
+
+% ─────────────────────────── copyright page ───────────────────────
+\newpage
+\vspace*{\fill}
+{\small\color{muted}
+\textbf{\color{navy}The AlgoLang Programming Language — Official Documentation}\\
+Version 0.2 Enterprise · October 2026
+
+Author: Dr.\ S.\ Satyanarayana, Ph.D., PDF (AI)\\
+Founder, CEO \& Chief Agentic AI Scientist, AlgoProfessor AI R\&D Solutions, Hyderabad, India\\
+\href{mailto:ceo@algoprofessor.com}{ceo@algoprofessor.com} · \href{https://www.algoprofessor.com}{www.algoprofessor.com}
+
+Copyright \textcopyright\ 2026 Dr.\ S.\ Satyanarayana and AlgoProfessor AI R\&D Solutions.
+
+\textbf{Software licence.} The AlgoLang compiler, runtime, notebook extension and examples are open-source software, licensed under the Apache License, Version 2.0. You may use, modify and redistribute them under the terms of that licence.
+
+\textbf{Documentation licence.} This document is licensed under the Creative Commons Attribution 4.0 International licence (CC BY 4.0). You may share and adapt it, including for teaching, provided you give appropriate credit.
+
+\textbf{How to cite.} See Chapter~\ref{ch:project}, Section~\ref{sec:cite}.
+
+\textbf{Trademarks.} Claude is a product of Anthropic. Other names are the property of their respective owners and are used for identification only.
+
+\textbf{Status.} AlgoLang 0.2 Enterprise adds modules, organisation policy, 120 domain packs, tamper-evident auditing, a human review queue, a Python SDK and a Prompt-based UI (Chapter~\ref{ch:enterprise}). It remains a preview release. Language details may change before version 1.0; changes are proposed and discussed through the process in Chapter~\ref{ch:project}.
+
+Typeset with XeLaTeX in TeX Gyre Pagella, Inter and DejaVu Sans Mono.\par}
+
+% ─────────────────────────── preface ──────────────────────────────
+\pagestyle{plain}
+\chapter*{Preface}
+\addcontentsline{toc}{chapter}{Preface}
+\markboth{Preface}{}
+\input{chapters/00-preface}
+
+\cleardoublepage
+{\hypersetup{linkcolor=ink}\tableofcontents}
+
+\mainmatter
+\pagestyle{fancy}
+
+\docpart{Getting Started}
+\input{chapters/01-introduction}
+\input{chapters/02-installation}
+\input{chapters/02b-three-ways}
+\input{chapters/03-first-program}
+
+\docpart{The Language}
+\input{chapters/04-lexical}
+\input{chapters/05-types}
+\input{chapters/06-declarations}
+\input{chapters/07-policies}
+\input{chapters/08-flows}
+\input{chapters/09-errors}
+
+\docpart{Toolchain and Runtime}
+\input{chapters/10-cli}
+\input{chapters/11-runtime}
+\input{chapters/12-notebooks}
+\input{chapters/13-internals}
+\input{chapters/18-enterprise}
+
+\docpart{Patterns and Practice}
+\input{chapters/14-patterns}
+\input{chapters/15-responsible-ai}
+\input{chapters/16-teaching}
+
+\docpart{The Project}
+\input{chapters/17-project}
+
+\appendix
+\appendixmarks
+\input{chapters/A-grammar}
+\input{chapters/B-reference}
+\input{chapters/C-examples}
+
+\end{document}

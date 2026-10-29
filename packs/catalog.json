@@ -1,0 +1,2964 @@
+{
+ "version": "0.2.0",
+ "sectors": {
+  "healthcare": "Healthcare",
+  "pharma": "Pharma & Life Sciences",
+  "banking": "Banking",
+  "insurance": "Insurance",
+  "markets": "Capital Markets & Investment",
+  "education": "Education",
+  "research": "Research & Academia",
+  "government": "Government & Public Services",
+  "legal": "Legal & Compliance",
+  "hr": "HR & Workforce",
+  "manufacturing": "Manufacturing",
+  "supplychain": "Supply Chain & Logistics",
+  "retail": "Retail & E-commerce",
+  "itops": "Telecom & IT Operations",
+  "cyber": "Cybersecurity",
+  "energy": "Energy & Utilities",
+  "agriculture": "Agriculture",
+  "media": "Media & Marketing",
+  "realestate": "Real Estate & Construction",
+  "hospitality": "Hospitality & Travel"
+ },
+ "packs": [
+  {
+   "id": "healthcare.clinical_triage",
+   "sector": "healthcare",
+   "sector_name": "Healthcare",
+   "title": "Clinical note triage",
+   "description": "Summarise clinical notes, score urgency and draft referrals for doctor review",
+   "input": "note",
+   "risk": "high",
+   "people": true,
+   "pattern": "pipe",
+   "tools": [
+    "kb.search"
+   ],
+   "agents": [
+    "Extractor",
+    "Summariser",
+    "UrgencyScorer",
+    "Referral"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [
+    "caste",
+    "religion"
+   ],
+   "path": "packs/healthcare/clinical_triage.algo"
+  },
+  {
+   "id": "healthcare.discharge_summary",
+   "sector": "healthcare",
+   "sector_name": "Healthcare",
+   "title": "Discharge summary drafting",
+   "description": "Draft discharge summaries for clinician sign-off",
+   "input": "record",
+   "risk": "high",
+   "people": true,
+   "pattern": "pipe",
+   "tools": [
+    "file.read"
+   ],
+   "agents": [
+    "Collector",
+    "Writer",
+    "Checker",
+    "Finaliser"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [
+    "caste",
+    "religion"
+   ],
+   "path": "packs/healthcare/discharge_summary.algo"
+  },
+  {
+   "id": "healthcare.radiology_qa",
+   "sector": "healthcare",
+   "sector_name": "Healthcare",
+   "title": "Radiology report quality check",
+   "description": "Check radiology reports for consistency and completeness",
+   "input": "report",
+   "risk": "high",
+   "people": false,
+   "pattern": "pipe",
+   "tools": [],
+   "agents": [
+    "Parser",
+    "Consistency",
+    "QualityScorer",
+    "Feedback"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [],
+   "path": "packs/healthcare/radiology_qa.algo"
+  },
+  {
+   "id": "healthcare.appointment_router",
+   "sector": "healthcare",
+   "sector_name": "Healthcare",
+   "title": "Patient appointment router",
+   "description": "Route patient requests to urgent or routine booking",
+   "input": "request",
+   "risk": "medium",
+   "people": false,
+   "pattern": "router",
+   "tools": [],
+   "agents": [
+    "UrgencyCheck",
+    "UrgentDesk",
+    "RoutineDesk",
+    "ToneCheck"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/healthcare/appointment_router.algo"
+  },
+  {
+   "id": "healthcare.drug_interaction",
+   "sector": "healthcare",
+   "sector_name": "Healthcare",
+   "title": "Drug interaction review",
+   "description": "Multi-expert review of prescription interactions",
+   "input": "prescription",
+   "risk": "high",
+   "people": false,
+   "pattern": "committee",
+   "tools": [
+    "kb.search"
+   ],
+   "agents": [
+    "Pharmacologist",
+    "Clinician",
+    "SafetyOfficer",
+    "RiskJudge",
+    "Advisor"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [],
+   "path": "packs/healthcare/drug_interaction.algo"
+  },
+  {
+   "id": "healthcare.patient_feedback",
+   "sector": "healthcare",
+   "sector_name": "Healthcare",
+   "title": "Patient feedback analysis",
+   "description": "Find themes in patient feedback and suggest improvements",
+   "input": "feedback",
+   "risk": "low",
+   "people": false,
+   "pattern": "fan",
+   "tools": [],
+   "agents": [
+    "Splitter",
+    "Analyst",
+    "Satisfaction",
+    "Reporter"
+   ],
+   "human_threshold": 0.7,
+   "budget_tokens": 3000,
+   "forbid": [],
+   "path": "packs/healthcare/patient_feedback.algo"
+  },
+  {
+   "id": "pharma.adverse_events",
+   "sector": "pharma",
+   "sector_name": "Pharma & Life Sciences",
+   "title": "Adverse event case processing",
+   "description": "Process adverse event reports into coded case narratives",
+   "input": "case",
+   "risk": "high",
+   "people": true,
+   "pattern": "pipe",
+   "tools": [
+    "kb.search"
+   ],
+   "agents": [
+    "Intake",
+    "Coder",
+    "Seriousness",
+    "Narrative"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [
+    "caste",
+    "religion"
+   ],
+   "path": "packs/pharma/adverse_events.algo"
+  },
+  {
+   "id": "pharma.trial_matching",
+   "sector": "pharma",
+   "sector_name": "Pharma & Life Sciences",
+   "title": "Clinical trial matching",
+   "description": "Match patient profiles to trial criteria for investigator review",
+   "input": "patient_profile",
+   "risk": "high",
+   "people": true,
+   "pattern": "fan",
+   "tools": [
+    "kb.search"
+   ],
+   "agents": [
+    "Criteria",
+    "Matcher",
+    "Eligibility",
+    "Summary"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [
+    "caste",
+    "religion"
+   ],
+   "path": "packs/pharma/trial_matching.algo"
+  },
+  {
+   "id": "pharma.submission_review",
+   "sector": "pharma",
+   "sector_name": "Pharma & Life Sciences",
+   "title": "Regulatory submission review",
+   "description": "Review regulatory dossiers section by section",
+   "input": "dossier",
+   "risk": "high",
+   "people": false,
+   "pattern": "fan",
+   "tools": [
+    "file.read"
+   ],
+   "agents": [
+    "Sections",
+    "Reviewer",
+    "Readiness",
+    "GapReport"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [],
+   "path": "packs/pharma/submission_review.algo"
+  },
+  {
+   "id": "pharma.literature_watch",
+   "sector": "pharma",
+   "sector_name": "Pharma & Life Sciences",
+   "title": "Safety literature surveillance",
+   "description": "Weekly literature watch for drug safety signals",
+   "input": "drug",
+   "risk": "medium",
+   "people": false,
+   "pattern": "fan",
+   "tools": [
+    "web.search"
+   ],
+   "agents": [
+    "Searcher",
+    "Reader",
+    "SignalScore",
+    "Digest"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/pharma/literature_watch.algo"
+  },
+  {
+   "id": "pharma.protocol_deviation",
+   "sector": "pharma",
+   "sector_name": "Pharma & Life Sciences",
+   "title": "Protocol deviation assessment",
+   "description": "Assess trial protocol deviations and propose CAPA",
+   "input": "deviation",
+   "risk": "high",
+   "people": false,
+   "pattern": "pipe",
+   "tools": [],
+   "agents": [
+    "Classifier",
+    "Impact",
+    "Severity",
+    "CAPA"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [],
+   "path": "packs/pharma/protocol_deviation.algo"
+  },
+  {
+   "id": "pharma.label_compliance",
+   "sector": "pharma",
+   "sector_name": "Pharma & Life Sciences",
+   "title": "Product label compliance",
+   "description": "Check product labels against regulations",
+   "input": "label",
+   "risk": "medium",
+   "people": false,
+   "pattern": "committee",
+   "tools": [
+    "kb.search"
+   ],
+   "agents": [
+    "RegulatoryExpert",
+    "MedicalWriter",
+    "QualityLead",
+    "ComplianceJudge",
+    "Findings"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/pharma/label_compliance.algo"
+  },
+  {
+   "id": "banking.loan_underwriting",
+   "sector": "banking",
+   "sector_name": "Banking",
+   "title": "Loan underwriting assistant",
+   "description": "Committee-style loan assessment with fairness safeguards",
+   "input": "application",
+   "risk": "high",
+   "people": true,
+   "pattern": "committee",
+   "tools": [
+    "calc.eval"
+   ],
+   "agents": [
+    "CreditAnalyst",
+    "RiskAnalyst",
+    "PolicyChecker",
+    "CreditCommittee",
+    "Memo"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [
+    "gender",
+    "caste",
+    "religion",
+    "nationality"
+   ],
+   "path": "packs/banking/loan_underwriting.algo"
+  },
+  {
+   "id": "banking.kyc_review",
+   "sector": "banking",
+   "sector_name": "Banking",
+   "title": "KYC document review",
+   "description": "Review KYC files for completeness and risk",
+   "input": "customer_file",
+   "risk": "high",
+   "people": true,
+   "pattern": "pipe",
+   "tools": [
+    "file.read"
+   ],
+   "agents": [
+    "DocChecker",
+    "Verifier",
+    "RiskRating",
+    "Outcome"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [
+    "gender",
+    "caste",
+    "religion",
+    "nationality"
+   ],
+   "path": "packs/banking/kyc_review.algo"
+  },
+  {
+   "id": "banking.aml_alerts",
+   "sector": "banking",
+   "sector_name": "Banking",
+   "title": "AML alert triage",
+   "description": "Triage AML alerts and draft investigation summaries",
+   "input": "alerts",
+   "risk": "high",
+   "people": true,
+   "pattern": "fan",
+   "tools": [
+    "kb.search"
+   ],
+   "agents": [
+    "Batcher",
+    "Investigator",
+    "Priority",
+    "SAR"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [
+    "gender",
+    "caste",
+    "religion",
+    "nationality"
+   ],
+   "path": "packs/banking/aml_alerts.algo"
+  },
+  {
+   "id": "banking.complaints",
+   "sector": "banking",
+   "sector_name": "Banking",
+   "title": "Customer complaint router",
+   "description": "Route complaints by severity and draft responses",
+   "input": "complaint",
+   "risk": "medium",
+   "people": false,
+   "pattern": "router",
+   "tools": [],
+   "agents": [
+    "Severity",
+    "Escalations",
+    "ServiceDesk",
+    "ToneCheck"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/banking/complaints.algo"
+  },
+  {
+   "id": "banking.credit_memo",
+   "sector": "banking",
+   "sector_name": "Banking",
+   "title": "Credit memo writer",
+   "description": "Draft credit memos from borrower data",
+   "input": "borrower",
+   "risk": "medium",
+   "people": true,
+   "pattern": "pipe",
+   "tools": [
+    "calc.eval"
+   ],
+   "agents": [
+    "Financials",
+    "Analysis",
+    "RiskScore",
+    "Memo"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [
+    "gender",
+    "caste",
+    "religion",
+    "nationality"
+   ],
+   "path": "packs/banking/credit_memo.algo"
+  },
+  {
+   "id": "banking.fraud_cases",
+   "sector": "banking",
+   "sector_name": "Banking",
+   "title": "Card fraud case review",
+   "description": "Review suspected card-fraud cases",
+   "input": "cases",
+   "risk": "high",
+   "people": true,
+   "pattern": "fan",
+   "tools": [],
+   "agents": [
+    "Splitter",
+    "Analyst",
+    "FraudScore",
+    "Report"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [
+    "gender",
+    "caste",
+    "religion",
+    "nationality"
+   ],
+   "path": "packs/banking/fraud_cases.algo"
+  },
+  {
+   "id": "insurance.claims_triage",
+   "sector": "insurance",
+   "sector_name": "Insurance",
+   "title": "Claims triage",
+   "description": "Triage new insurance claims and check coverage",
+   "input": "claim",
+   "risk": "high",
+   "people": true,
+   "pattern": "pipe",
+   "tools": [
+    "kb.search"
+   ],
+   "agents": [
+    "Intake",
+    "Coverage",
+    "Complexity",
+    "Routing"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [
+    "gender",
+    "caste",
+    "religion",
+    "nationality"
+   ],
+   "path": "packs/insurance/claims_triage.algo"
+  },
+  {
+   "id": "insurance.fraud_screening",
+   "sector": "insurance",
+   "sector_name": "Insurance",
+   "title": "Claims fraud screening",
+   "description": "Panel review of claims for fraud indicators",
+   "input": "claim",
+   "risk": "high",
+   "people": true,
+   "pattern": "committee",
+   "tools": [],
+   "agents": [
+    "PatternAnalyst",
+    "DocumentExaminer",
+    "Adjuster",
+    "FraudPanel",
+    "Referral"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [
+    "gender",
+    "caste",
+    "religion",
+    "nationality"
+   ],
+   "path": "packs/insurance/fraud_screening.algo"
+  },
+  {
+   "id": "insurance.policy_compare",
+   "sector": "insurance",
+   "sector_name": "Insurance",
+   "title": "Policy comparison",
+   "description": "Compare insurance policies for a customer",
+   "input": "policies",
+   "risk": "low",
+   "people": false,
+   "pattern": "fan",
+   "tools": [
+    "file.read"
+   ],
+   "agents": [
+    "Policies",
+    "Analyst",
+    "BestFit",
+    "Advice"
+   ],
+   "human_threshold": 0.7,
+   "budget_tokens": 3000,
+   "forbid": [],
+   "path": "packs/insurance/policy_compare.algo"
+  },
+  {
+   "id": "insurance.underwriting",
+   "sector": "insurance",
+   "sector_name": "Insurance",
+   "title": "Underwriting risk assessment",
+   "description": "Assess proposals and suggest underwriting terms",
+   "input": "proposal",
+   "risk": "high",
+   "people": true,
+   "pattern": "pipe",
+   "tools": [
+    "calc.eval"
+   ],
+   "agents": [
+    "Profile",
+    "Assessor",
+    "RiskScore",
+    "Terms"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [
+    "gender",
+    "caste",
+    "religion",
+    "nationality"
+   ],
+   "path": "packs/insurance/underwriting.algo"
+  },
+  {
+   "id": "insurance.subrogation",
+   "sector": "insurance",
+   "sector_name": "Insurance",
+   "title": "Subrogation opportunity finder",
+   "description": "Find recovery opportunities in closed claims",
+   "input": "claims",
+   "risk": "medium",
+   "people": false,
+   "pattern": "fan",
+   "tools": [],
+   "agents": [
+    "Splitter",
+    "Reviewer",
+    "Recovery",
+    "Report"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/insurance/subrogation.algo"
+  },
+  {
+   "id": "insurance.query_router",
+   "sector": "insurance",
+   "sector_name": "Insurance",
+   "title": "Policyholder query router",
+   "description": "Route policyholder questions to the right desk",
+   "input": "query",
+   "risk": "low",
+   "people": false,
+   "pattern": "router",
+   "tools": [
+    "kb.search"
+   ],
+   "agents": [
+    "IsClaim",
+    "ClaimsDesk",
+    "PolicyDesk",
+    "Clarity"
+   ],
+   "human_threshold": 0.7,
+   "budget_tokens": 3000,
+   "forbid": [],
+   "path": "packs/insurance/query_router.algo"
+  },
+  {
+   "id": "markets.earnings_call",
+   "sector": "markets",
+   "sector_name": "Capital Markets & Investment",
+   "title": "Earnings call summariser",
+   "description": "Summarise earnings calls into investor briefs",
+   "input": "transcript",
+   "risk": "low",
+   "people": false,
+   "pattern": "fan",
+   "tools": [
+    "file.read"
+   ],
+   "agents": [
+    "Sections",
+    "Analyst",
+    "Sentiment",
+    "Brief"
+   ],
+   "human_threshold": 0.7,
+   "budget_tokens": 3000,
+   "forbid": [],
+   "path": "packs/markets/earnings_call.algo"
+  },
+  {
+   "id": "markets.esg_screening",
+   "sector": "markets",
+   "sector_name": "Capital Markets & Investment",
+   "title": "ESG screening",
+   "description": "Three-pillar ESG review of companies",
+   "input": "company",
+   "risk": "medium",
+   "people": false,
+   "pattern": "committee",
+   "tools": [
+    "web.search"
+   ],
+   "agents": [
+    "Environmental",
+    "Social",
+    "Governance",
+    "ESGPanel",
+    "Report"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/markets/esg_screening.algo"
+  },
+  {
+   "id": "markets.portfolio_risk",
+   "sector": "markets",
+   "sector_name": "Capital Markets & Investment",
+   "title": "Portfolio risk brief",
+   "description": "Portfolio risk briefs for investment committees",
+   "input": "portfolio",
+   "risk": "high",
+   "people": false,
+   "pattern": "pipe",
+   "tools": [
+    "calc.eval"
+   ],
+   "agents": [
+    "Exposures",
+    "Stress",
+    "RiskLevel",
+    "Brief"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [],
+   "path": "packs/markets/portfolio_risk.algo"
+  },
+  {
+   "id": "markets.research_review",
+   "sector": "markets",
+   "sector_name": "Capital Markets & Investment",
+   "title": "Research note review",
+   "description": "Pre-publication review of research notes",
+   "input": "note",
+   "risk": "medium",
+   "people": false,
+   "pattern": "committee",
+   "tools": [],
+   "agents": [
+    "Analyst",
+    "Compliance",
+    "Editor",
+    "Reviewers",
+    "Feedback"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/markets/research_review.algo"
+  },
+  {
+   "id": "markets.trade_surveillance",
+   "sector": "markets",
+   "sector_name": "Capital Markets & Investment",
+   "title": "Trade surveillance",
+   "description": "Review trading alerts for market abuse",
+   "input": "trades",
+   "risk": "high",
+   "people": true,
+   "pattern": "fan",
+   "tools": [],
+   "agents": [
+    "Splitter",
+    "Investigator",
+    "Concern",
+    "Report"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [
+    "gender",
+    "caste",
+    "religion",
+    "nationality"
+   ],
+   "path": "packs/markets/trade_surveillance.algo"
+  },
+  {
+   "id": "markets.suitability",
+   "sector": "markets",
+   "sector_name": "Capital Markets & Investment",
+   "title": "Client suitability check",
+   "description": "Check investment suitability for clients",
+   "input": "client_profile",
+   "risk": "high",
+   "people": true,
+   "pattern": "pipe",
+   "tools": [],
+   "agents": [
+    "Profiler",
+    "Matcher",
+    "Suitability",
+    "Record"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [
+    "gender",
+    "caste",
+    "religion",
+    "nationality"
+   ],
+   "path": "packs/markets/suitability.algo"
+  },
+  {
+   "id": "education.ai_tutor",
+   "sector": "education",
+   "sector_name": "Education",
+   "title": "AI tutor",
+   "description": "Explain topics with examples for students",
+   "input": "topic",
+   "risk": "low",
+   "people": false,
+   "pattern": "pipe",
+   "tools": [],
+   "agents": [
+    "Explainer",
+    "Examples",
+    "Accuracy",
+    "Lesson"
+   ],
+   "human_threshold": 0.7,
+   "budget_tokens": 3000,
+   "forbid": [],
+   "path": "packs/education/ai_tutor.algo"
+  },
+  {
+   "id": "education.question_bank",
+   "sector": "education",
+   "sector_name": "Education",
+   "title": "Exam question bank",
+   "description": "Generate exam questions mapped to syllabus units",
+   "input": "syllabus",
+   "risk": "medium",
+   "people": false,
+   "pattern": "fan",
+   "tools": [],
+   "agents": [
+    "Units",
+    "Setter",
+    "Coverage",
+    "Paper"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/education/question_bank.algo"
+  },
+  {
+   "id": "education.essay_feedback",
+   "sector": "education",
+   "sector_name": "Education",
+   "title": "Essay feedback",
+   "description": "Moderated essay feedback with integrity checks",
+   "input": "essay",
+   "risk": "medium",
+   "people": true,
+   "pattern": "committee",
+   "tools": [],
+   "agents": [
+    "ContentExaminer",
+    "LanguageExaminer",
+    "IntegrityChecker",
+    "Moderator",
+    "Feedback"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [
+    "gender",
+    "caste",
+    "religion",
+    "nationality"
+   ],
+   "path": "packs/education/essay_feedback.algo"
+  },
+  {
+   "id": "education.admissions",
+   "sector": "education",
+   "sector_name": "Education",
+   "title": "Admissions screening",
+   "description": "Panel-style admissions screening with fairness safeguards",
+   "input": "application",
+   "risk": "high",
+   "people": true,
+   "pattern": "committee",
+   "tools": [],
+   "agents": [
+    "AcademicReviewer",
+    "StatementReviewer",
+    "PotentialReviewer",
+    "AdmissionsPanel",
+    "Letter"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [
+    "gender",
+    "caste",
+    "religion",
+    "nationality"
+   ],
+   "path": "packs/education/admissions.algo"
+  },
+  {
+   "id": "education.outcome_mapping",
+   "sector": "education",
+   "sector_name": "Education",
+   "title": "Course outcome mapping",
+   "description": "Map course outcomes to programme outcomes for accreditation",
+   "input": "course",
+   "risk": "low",
+   "people": false,
+   "pattern": "fan",
+   "tools": [
+    "file.read"
+   ],
+   "agents": [
+    "Outcomes",
+    "Mapper",
+    "Alignment",
+    "Matrix"
+   ],
+   "human_threshold": 0.7,
+   "budget_tokens": 3000,
+   "forbid": [],
+   "path": "packs/education/outcome_mapping.algo"
+  },
+  {
+   "id": "education.student_support",
+   "sector": "education",
+   "sector_name": "Education",
+   "title": "Student support router",
+   "description": "Route student queries to support or the academic office",
+   "input": "query",
+   "risk": "medium",
+   "people": false,
+   "pattern": "router",
+   "tools": [
+    "kb.search"
+   ],
+   "agents": [
+    "Wellbeing",
+    "Counsellor",
+    "Office",
+    "Care"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/education/student_support.algo"
+  },
+  {
+   "id": "research.literature_review",
+   "sector": "research",
+   "sector_name": "Research & Academia",
+   "title": "Literature review",
+   "description": "Literature reviews for research scholars",
+   "input": "question",
+   "risk": "medium",
+   "people": false,
+   "pattern": "fan",
+   "tools": [
+    "web.search"
+   ],
+   "agents": [
+    "Searcher",
+    "Reader",
+    "Coverage",
+    "Writer"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/research/literature_review.algo"
+  },
+  {
+   "id": "research.peer_review",
+   "sector": "research",
+   "sector_name": "Research & Academia",
+   "title": "Manuscript peer review",
+   "description": "Editorial first-round peer review",
+   "input": "manuscript",
+   "risk": "high",
+   "people": true,
+   "pattern": "fan",
+   "tools": [
+    "file.read"
+   ],
+   "agents": [
+    "Criteria",
+    "Reviewer",
+    "Editor",
+    "Letter"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [
+    "gender",
+    "caste",
+    "religion",
+    "nationality"
+   ],
+   "path": "packs/research/peer_review.algo"
+  },
+  {
+   "id": "research.grant_review",
+   "sector": "research",
+   "sector_name": "Research & Academia",
+   "title": "Grant proposal review",
+   "description": "Panel review of research grant proposals",
+   "input": "proposal",
+   "risk": "high",
+   "people": true,
+   "pattern": "committee",
+   "tools": [],
+   "agents": [
+    "ScienceReviewer",
+    "FeasibilityReviewer",
+    "ImpactReviewer",
+    "Panel",
+    "Summary"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [
+    "gender",
+    "caste",
+    "religion",
+    "nationality"
+   ],
+   "path": "packs/research/grant_review.algo"
+  },
+  {
+   "id": "research.originality_check",
+   "sector": "research",
+   "sector_name": "Research & Academia",
+   "title": "Originality risk check",
+   "description": "Spot uncited claims and originality risks",
+   "input": "text",
+   "risk": "medium",
+   "people": false,
+   "pattern": "pipe",
+   "tools": [],
+   "agents": [
+    "Claims",
+    "Overlap",
+    "Risk",
+    "Advice"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/research/originality_check.algo"
+  },
+  {
+   "id": "research.thesis_feedback",
+   "sector": "research",
+   "sector_name": "Research & Academia",
+   "title": "Thesis chapter feedback",
+   "description": "Supervisor-style feedback on thesis chapters",
+   "input": "chapter",
+   "risk": "medium",
+   "people": false,
+   "pattern": "fan",
+   "tools": [],
+   "agents": [
+    "Sections",
+    "Supervisor",
+    "Readiness",
+    "Plan"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/research/thesis_feedback.algo"
+  },
+  {
+   "id": "research.ethics_check",
+   "sector": "research",
+   "sector_name": "Research & Academia",
+   "title": "Research ethics check",
+   "description": "Pre-screen protocols for the ethics committee",
+   "input": "protocol",
+   "risk": "high",
+   "people": false,
+   "pattern": "pipe",
+   "tools": [],
+   "agents": [
+    "Risks",
+    "Consent",
+    "EthicsScore",
+    "Recommendation"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [],
+   "path": "packs/research/ethics_check.algo"
+  },
+  {
+   "id": "government.grievance_routing",
+   "sector": "government",
+   "sector_name": "Government & Public Services",
+   "title": "Citizen grievance routing",
+   "description": "Route citizen grievances to the right department",
+   "input": "grievance",
+   "risk": "medium",
+   "people": false,
+   "pattern": "router",
+   "tools": [
+    "kb.search"
+   ],
+   "agents": [
+    "Urgency",
+    "PriorityCell",
+    "Department",
+    "Clarity"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/government/grievance_routing.algo"
+  },
+  {
+   "id": "government.policy_brief",
+   "sector": "government",
+   "sector_name": "Government & Public Services",
+   "title": "Policy impact brief",
+   "description": "Multi-perspective policy impact briefs",
+   "input": "policy",
+   "risk": "medium",
+   "people": false,
+   "pattern": "committee",
+   "tools": [
+    "web.search"
+   ],
+   "agents": [
+    "Economist",
+    "SocialAnalyst",
+    "LegalAnalyst",
+    "Panel",
+    "Brief"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/government/policy_brief.algo"
+  },
+  {
+   "id": "government.tender_evaluation",
+   "sector": "government",
+   "sector_name": "Government & Public Services",
+   "title": "Tender evaluation",
+   "description": "Transparent tender evaluation committees",
+   "input": "bids",
+   "risk": "high",
+   "people": false,
+   "pattern": "committee",
+   "tools": [
+    "calc.eval"
+   ],
+   "agents": [
+    "TechnicalEvaluator",
+    "FinancialEvaluator",
+    "IntegrityChecker",
+    "Committee",
+    "Minutes"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [],
+   "path": "packs/government/tender_evaluation.algo"
+  },
+  {
+   "id": "government.welfare_eligibility",
+   "sector": "government",
+   "sector_name": "Government & Public Services",
+   "title": "Welfare scheme eligibility",
+   "description": "Check scheme eligibility for officer approval",
+   "input": "application",
+   "risk": "high",
+   "people": true,
+   "pattern": "pipe",
+   "tools": [
+    "kb.search"
+   ],
+   "agents": [
+    "Extractor",
+    "Rules",
+    "Eligibility",
+    "Notice"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [
+    "gender",
+    "caste",
+    "religion",
+    "nationality"
+   ],
+   "path": "packs/government/welfare_eligibility.algo"
+  },
+  {
+   "id": "government.rti_response",
+   "sector": "government",
+   "sector_name": "Government & Public Services",
+   "title": "RTI response drafting",
+   "description": "Draft Right-to-Information replies",
+   "input": "request",
+   "risk": "medium",
+   "people": false,
+   "pattern": "pipe",
+   "tools": [
+    "file.read"
+   ],
+   "agents": [
+    "Parser",
+    "Locator",
+    "Exemptions",
+    "Response"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/government/rti_response.algo"
+  },
+  {
+   "id": "government.public_consultation",
+   "sector": "government",
+   "sector_name": "Government & Public Services",
+   "title": "Public consultation analysis",
+   "description": "Summarise public consultation responses",
+   "input": "submissions",
+   "risk": "low",
+   "people": false,
+   "pattern": "fan",
+   "tools": [],
+   "agents": [
+    "Splitter",
+    "Analyst",
+    "Support",
+    "Report"
+   ],
+   "human_threshold": 0.7,
+   "budget_tokens": 3000,
+   "forbid": [],
+   "path": "packs/government/public_consultation.algo"
+  },
+  {
+   "id": "legal.contract_review",
+   "sector": "legal",
+   "sector_name": "Legal & Compliance",
+   "title": "Contract clause review",
+   "description": "Clause-by-clause contract risk review",
+   "input": "contract",
+   "risk": "high",
+   "people": false,
+   "pattern": "fan",
+   "tools": [
+    "file.read"
+   ],
+   "agents": [
+    "Clauses",
+    "Analyst",
+    "Risk",
+    "Summary"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [],
+   "path": "packs/legal/contract_review.algo"
+  },
+  {
+   "id": "legal.case_research",
+   "sector": "legal",
+   "sector_name": "Legal & Compliance",
+   "title": "Case law research",
+   "description": "Research precedents for legal issues",
+   "input": "issue",
+   "risk": "medium",
+   "people": false,
+   "pattern": "fan",
+   "tools": [
+    "web.search"
+   ],
+   "agents": [
+    "Questions",
+    "Researcher",
+    "Strength",
+    "Memo"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/legal/case_research.algo"
+  },
+  {
+   "id": "legal.compliance_gap",
+   "sector": "legal",
+   "sector_name": "Legal & Compliance",
+   "title": "Compliance gap analysis",
+   "description": "Find compliance gaps against regulations",
+   "input": "process",
+   "risk": "high",
+   "people": false,
+   "pattern": "fan",
+   "tools": [
+    "kb.search"
+   ],
+   "agents": [
+    "Obligations",
+    "Auditor",
+    "Compliance",
+    "Plan"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [],
+   "path": "packs/legal/compliance_gap.algo"
+  },
+  {
+   "id": "legal.nda_triage",
+   "sector": "legal",
+   "sector_name": "Legal & Compliance",
+   "title": "NDA triage",
+   "description": "Triage NDAs against the legal playbook",
+   "input": "nda",
+   "risk": "medium",
+   "people": false,
+   "pattern": "pipe",
+   "tools": [
+    "kb.search"
+   ],
+   "agents": [
+    "Terms",
+    "Playbook",
+    "Deviation",
+    "Redlines"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/legal/nda_triage.algo"
+  },
+  {
+   "id": "legal.litigation_risk",
+   "sector": "legal",
+   "sector_name": "Legal & Compliance",
+   "title": "Litigation risk assessment",
+   "description": "Assess disputes and settlement options",
+   "input": "dispute",
+   "risk": "high",
+   "people": false,
+   "pattern": "committee",
+   "tools": [],
+   "agents": [
+    "Counsel",
+    "Economist",
+    "Strategist",
+    "Panel",
+    "Memo"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [],
+   "path": "packs/legal/litigation_risk.algo"
+  },
+  {
+   "id": "legal.regulatory_change",
+   "sector": "legal",
+   "sector_name": "Legal & Compliance",
+   "title": "Regulatory change impact",
+   "description": "Track regulatory changes and their impact",
+   "input": "regulation",
+   "risk": "medium",
+   "people": false,
+   "pattern": "pipe",
+   "tools": [
+    "web.search"
+   ],
+   "agents": [
+    "Changes",
+    "Impact",
+    "Urgency",
+    "Actions"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/legal/regulatory_change.algo"
+  },
+  {
+   "id": "hr.resume_screening",
+   "sector": "hr",
+   "sector_name": "HR & Workforce",
+   "title": "Resume screening",
+   "description": "Fair, panel-style resume screening",
+   "input": "resume",
+   "risk": "high",
+   "people": true,
+   "pattern": "committee",
+   "tools": [],
+   "agents": [
+    "SkillsReviewer",
+    "ExperienceReviewer",
+    "PotentialReviewer",
+    "HiringPanel",
+    "Note"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [
+    "gender",
+    "caste",
+    "religion",
+    "nationality"
+   ],
+   "path": "packs/hr/resume_screening.algo"
+  },
+  {
+   "id": "hr.job_description",
+   "sector": "hr",
+   "sector_name": "HR & Workforce",
+   "title": "Job description writer",
+   "description": "Write inclusive job descriptions",
+   "input": "role_brief",
+   "risk": "low",
+   "people": false,
+   "pattern": "pipe",
+   "tools": [],
+   "agents": [
+    "Drafter",
+    "InclusiveEditor",
+    "Quality",
+    "Final"
+   ],
+   "human_threshold": 0.7,
+   "budget_tokens": 3000,
+   "forbid": [],
+   "path": "packs/hr/job_description.algo"
+  },
+  {
+   "id": "hr.interview_kit",
+   "sector": "hr",
+   "sector_name": "HR & Workforce",
+   "title": "Interview kit builder",
+   "description": "Structured interview questions and rubrics",
+   "input": "role",
+   "risk": "low",
+   "people": false,
+   "pattern": "fan",
+   "tools": [],
+   "agents": [
+    "Competencies",
+    "QuestionWriter",
+    "Coverage",
+    "Kit"
+   ],
+   "human_threshold": 0.7,
+   "budget_tokens": 3000,
+   "forbid": [],
+   "path": "packs/hr/interview_kit.algo"
+  },
+  {
+   "id": "hr.employee_router",
+   "sector": "hr",
+   "sector_name": "HR & Workforce",
+   "title": "Employee query router",
+   "description": "Route employee questions to the right HR channel",
+   "input": "query",
+   "risk": "low",
+   "people": false,
+   "pattern": "router",
+   "tools": [
+    "kb.search"
+   ],
+   "agents": [
+    "IsSensitive",
+    "HRPartner",
+    "HRDesk",
+    "Helpfulness"
+   ],
+   "human_threshold": 0.7,
+   "budget_tokens": 3000,
+   "forbid": [],
+   "path": "packs/hr/employee_router.algo"
+  },
+  {
+   "id": "hr.performance_review",
+   "sector": "hr",
+   "sector_name": "HR & Workforce",
+   "title": "Performance review assistant",
+   "description": "Evidence-based performance review drafts",
+   "input": "review_notes",
+   "risk": "high",
+   "people": true,
+   "pattern": "pipe",
+   "tools": [],
+   "agents": [
+    "Evidence",
+    "Balance",
+    "Rating",
+    "Draft"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [
+    "gender",
+    "caste",
+    "religion",
+    "nationality"
+   ],
+   "path": "packs/hr/performance_review.algo"
+  },
+  {
+   "id": "hr.exit_interviews",
+   "sector": "hr",
+   "sector_name": "HR & Workforce",
+   "title": "Exit interview analysis",
+   "description": "Find attrition drivers in exit interviews",
+   "input": "interviews",
+   "risk": "low",
+   "people": false,
+   "pattern": "fan",
+   "tools": [],
+   "agents": [
+    "Splitter",
+    "Analyst",
+    "Attrition",
+    "Report"
+   ],
+   "human_threshold": 0.7,
+   "budget_tokens": 3000,
+   "forbid": [],
+   "path": "packs/hr/exit_interviews.algo"
+  },
+  {
+   "id": "manufacturing.quality_inspection",
+   "sector": "manufacturing",
+   "sector_name": "Manufacturing",
+   "title": "Quality inspection report",
+   "description": "Classify defects and recommend batch disposition",
+   "input": "inspection",
+   "risk": "medium",
+   "people": false,
+   "pattern": "pipe",
+   "tools": [
+    "file.read"
+   ],
+   "agents": [
+    "Defects",
+    "Classifier",
+    "Quality",
+    "Disposition"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/manufacturing/quality_inspection.algo"
+  },
+  {
+   "id": "manufacturing.predictive_maintenance",
+   "sector": "manufacturing",
+   "sector_name": "Manufacturing",
+   "title": "Predictive maintenance",
+   "description": "Prioritise maintenance from sensor summaries",
+   "input": "sensor_summary",
+   "risk": "medium",
+   "people": false,
+   "pattern": "fan",
+   "tools": [
+    "calc.eval"
+   ],
+   "agents": [
+    "Assets",
+    "Engineer",
+    "Urgency",
+    "WorkOrders"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/manufacturing/predictive_maintenance.algo"
+  },
+  {
+   "id": "manufacturing.root_cause",
+   "sector": "manufacturing",
+   "sector_name": "Manufacturing",
+   "title": "Root cause analysis",
+   "description": "Fishbone-style root cause analysis",
+   "input": "incident",
+   "risk": "high",
+   "people": false,
+   "pattern": "committee",
+   "tools": [],
+   "agents": [
+    "ProcessEngineer",
+    "EquipmentEngineer",
+    "QualityEngineer",
+    "RCAPanel",
+    "Report"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [],
+   "path": "packs/manufacturing/root_cause.algo"
+  },
+  {
+   "id": "manufacturing.sop_compliance",
+   "sector": "manufacturing",
+   "sector_name": "Manufacturing",
+   "title": "SOP compliance audit",
+   "description": "Audit shop-floor compliance with SOPs",
+   "input": "sop",
+   "risk": "medium",
+   "people": false,
+   "pattern": "fan",
+   "tools": [
+    "kb.search"
+   ],
+   "agents": [
+    "Steps",
+    "Auditor",
+    "Compliance",
+    "Findings"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/manufacturing/sop_compliance.algo"
+  },
+  {
+   "id": "manufacturing.supplier_quality",
+   "sector": "manufacturing",
+   "sector_name": "Manufacturing",
+   "title": "Supplier quality review",
+   "description": "Supplier quality scorecards",
+   "input": "supplier_data",
+   "risk": "medium",
+   "people": false,
+   "pattern": "pipe",
+   "tools": [],
+   "agents": [
+    "Metrics",
+    "Trends",
+    "Rating",
+    "Scorecard"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/manufacturing/supplier_quality.algo"
+  },
+  {
+   "id": "manufacturing.safety_incident",
+   "sector": "manufacturing",
+   "sector_name": "Manufacturing",
+   "title": "Safety incident report",
+   "description": "Safety incident investigation reports",
+   "input": "incident",
+   "risk": "high",
+   "people": true,
+   "pattern": "pipe",
+   "tools": [],
+   "agents": [
+    "Facts",
+    "Hazards",
+    "Severity",
+    "Actions"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [
+    "gender",
+    "caste",
+    "religion",
+    "nationality"
+   ],
+   "path": "packs/manufacturing/safety_incident.algo"
+  },
+  {
+   "id": "supplychain.demand_forecast",
+   "sector": "supplychain",
+   "sector_name": "Supply Chain & Logistics",
+   "title": "Demand forecast brief",
+   "description": "Consensus demand forecast briefs",
+   "input": "sales_history",
+   "risk": "medium",
+   "people": false,
+   "pattern": "committee",
+   "tools": [
+    "calc.eval"
+   ],
+   "agents": [
+    "Statistician",
+    "MarketAnalyst",
+    "SalesLead",
+    "ForecastPanel",
+    "Brief"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/supplychain/demand_forecast.algo"
+  },
+  {
+   "id": "supplychain.shipment_exceptions",
+   "sector": "supplychain",
+   "sector_name": "Supply Chain & Logistics",
+   "title": "Shipment exception router",
+   "description": "Route shipment exceptions by criticality",
+   "input": "exception",
+   "risk": "medium",
+   "people": false,
+   "pattern": "router",
+   "tools": [],
+   "agents": [
+    "Critical",
+    "ControlTower",
+    "Carrier",
+    "Clarity"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/supplychain/shipment_exceptions.algo"
+  },
+  {
+   "id": "supplychain.supplier_risk",
+   "sector": "supplychain",
+   "sector_name": "Supply Chain & Logistics",
+   "title": "Supplier risk monitoring",
+   "description": "Monitor supplier risk across the portfolio",
+   "input": "suppliers",
+   "risk": "medium",
+   "people": false,
+   "pattern": "fan",
+   "tools": [
+    "web.search"
+   ],
+   "agents": [
+    "Splitter",
+    "Analyst",
+    "Risk",
+    "Report"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/supplychain/supplier_risk.algo"
+  },
+  {
+   "id": "supplychain.route_disruption",
+   "sector": "supplychain",
+   "sector_name": "Supply Chain & Logistics",
+   "title": "Route disruption response",
+   "description": "Respond to transport disruptions",
+   "input": "disruption",
+   "risk": "high",
+   "people": false,
+   "pattern": "pipe",
+   "tools": [],
+   "agents": [
+    "Impact",
+    "Options",
+    "Cost",
+    "Plan"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [],
+   "path": "packs/supplychain/route_disruption.algo"
+  },
+  {
+   "id": "supplychain.inventory_rebalance",
+   "sector": "supplychain",
+   "sector_name": "Supply Chain & Logistics",
+   "title": "Inventory rebalancing",
+   "description": "Rebalance stock between locations",
+   "input": "stock_report",
+   "risk": "low",
+   "people": false,
+   "pattern": "pipe",
+   "tools": [
+    "calc.eval"
+   ],
+   "agents": [
+    "Imbalances",
+    "Transfers",
+    "Benefit",
+    "Plan"
+   ],
+   "human_threshold": 0.7,
+   "budget_tokens": 3000,
+   "forbid": [],
+   "path": "packs/supplychain/inventory_rebalance.algo"
+  },
+  {
+   "id": "supplychain.customs_documents",
+   "sector": "supplychain",
+   "sector_name": "Supply Chain & Logistics",
+   "title": "Customs document check",
+   "description": "Pre-check customs documents",
+   "input": "shipment_docs",
+   "risk": "high",
+   "people": false,
+   "pattern": "fan",
+   "tools": [
+    "file.read"
+   ],
+   "agents": [
+    "Documents",
+    "Checker",
+    "Readiness",
+    "Corrections"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [],
+   "path": "packs/supplychain/customs_documents.algo"
+  },
+  {
+   "id": "retail.product_description",
+   "sector": "retail",
+   "sector_name": "Retail & E-commerce",
+   "title": "Product description writer",
+   "description": "Write accurate product descriptions",
+   "input": "product",
+   "risk": "low",
+   "people": false,
+   "pattern": "pipe",
+   "tools": [],
+   "agents": [
+    "Features",
+    "Writer",
+    "Accuracy",
+    "Final"
+   ],
+   "human_threshold": 0.7,
+   "budget_tokens": 3000,
+   "forbid": [],
+   "path": "packs/retail/product_description.algo"
+  },
+  {
+   "id": "retail.review_insights",
+   "sector": "retail",
+   "sector_name": "Retail & E-commerce",
+   "title": "Customer review insights",
+   "description": "Turn reviews into product insights",
+   "input": "reviews",
+   "risk": "low",
+   "people": false,
+   "pattern": "fan",
+   "tools": [],
+   "agents": [
+    "Splitter",
+    "Analyst",
+    "Satisfaction",
+    "Report"
+   ],
+   "human_threshold": 0.7,
+   "budget_tokens": 3000,
+   "forbid": [],
+   "path": "packs/retail/review_insights.algo"
+  },
+  {
+   "id": "retail.return_fraud",
+   "sector": "retail",
+   "sector_name": "Retail & E-commerce",
+   "title": "Return fraud screening",
+   "description": "Screen returns for abuse with fair review",
+   "input": "return_request",
+   "risk": "medium",
+   "people": true,
+   "pattern": "committee",
+   "tools": [],
+   "agents": [
+    "PatternAnalyst",
+    "OrderAnalyst",
+    "PolicyChecker",
+    "Panel",
+    "Decision"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [
+    "gender",
+    "caste",
+    "religion",
+    "nationality"
+   ],
+   "path": "packs/retail/return_fraud.algo"
+  },
+  {
+   "id": "retail.customer_service",
+   "sector": "retail",
+   "sector_name": "Retail & E-commerce",
+   "title": "Customer service router",
+   "description": "Route customer messages to the right desk",
+   "input": "message",
+   "risk": "low",
+   "people": false,
+   "pattern": "router",
+   "tools": [
+    "kb.search"
+   ],
+   "agents": [
+    "IsOrder",
+    "OrderDesk",
+    "HelpDesk",
+    "Tone"
+   ],
+   "human_threshold": 0.7,
+   "budget_tokens": 3000,
+   "forbid": [],
+   "path": "packs/retail/customer_service.algo"
+  },
+  {
+   "id": "retail.pricing_brief",
+   "sector": "retail",
+   "sector_name": "Retail & E-commerce",
+   "title": "Pricing recommendation",
+   "description": "Evidence-based pricing recommendations",
+   "input": "product_data",
+   "risk": "medium",
+   "people": false,
+   "pattern": "committee",
+   "tools": [
+    "calc.eval"
+   ],
+   "agents": [
+    "CostAnalyst",
+    "CompetitorAnalyst",
+    "DemandAnalyst",
+    "PricingPanel",
+    "Brief"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/retail/pricing_brief.algo"
+  },
+  {
+   "id": "retail.catalog_quality",
+   "sector": "retail",
+   "sector_name": "Retail & E-commerce",
+   "title": "Catalogue quality audit",
+   "description": "Audit product catalogue quality",
+   "input": "catalog",
+   "risk": "low",
+   "people": false,
+   "pattern": "fan",
+   "tools": [],
+   "agents": [
+    "Items",
+    "Auditor",
+    "Quality",
+    "Fixes"
+   ],
+   "human_threshold": 0.7,
+   "budget_tokens": 3000,
+   "forbid": [],
+   "path": "packs/retail/catalog_quality.algo"
+  },
+  {
+   "id": "itops.incident_triage",
+   "sector": "itops",
+   "sector_name": "Telecom & IT Operations",
+   "title": "IT incident triage",
+   "description": "Classify incidents and suggest first response",
+   "input": "incident",
+   "risk": "high",
+   "people": false,
+   "pattern": "pipe",
+   "tools": [
+    "kb.search"
+   ],
+   "agents": [
+    "Classifier",
+    "Diagnosis",
+    "Priority",
+    "Runbook"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [],
+   "path": "packs/itops/incident_triage.algo"
+  },
+  {
+   "id": "itops.change_review",
+   "sector": "itops",
+   "sector_name": "Telecom & IT Operations",
+   "title": "Change risk review",
+   "description": "Change advisory board review",
+   "input": "change_request",
+   "risk": "high",
+   "people": false,
+   "pattern": "committee",
+   "tools": [],
+   "agents": [
+    "Architect",
+    "Operations",
+    "Security",
+    "CAB",
+    "Decision"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [],
+   "path": "packs/itops/change_review.algo"
+  },
+  {
+   "id": "itops.log_anomaly",
+   "sector": "itops",
+   "sector_name": "Telecom & IT Operations",
+   "title": "Log anomaly detection",
+   "description": "Find anomalies in system logs",
+   "input": "logs",
+   "risk": "medium",
+   "people": false,
+   "pattern": "fan",
+   "tools": [
+    "file.read"
+   ],
+   "agents": [
+    "Windows",
+    "Detector",
+    "Severity",
+    "Report"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/itops/log_anomaly.algo"
+  },
+  {
+   "id": "itops.helpdesk",
+   "sector": "itops",
+   "sector_name": "Telecom & IT Operations",
+   "title": "IT helpdesk router",
+   "description": "Route helpdesk tickets",
+   "input": "ticket",
+   "risk": "low",
+   "people": false,
+   "pattern": "router",
+   "tools": [
+    "kb.search"
+   ],
+   "agents": [
+    "IsAccess",
+    "AccessDesk",
+    "ServiceDesk",
+    "Clarity"
+   ],
+   "human_threshold": 0.7,
+   "budget_tokens": 3000,
+   "forbid": [],
+   "path": "packs/itops/helpdesk.algo"
+  },
+  {
+   "id": "itops.capacity_planning",
+   "sector": "itops",
+   "sector_name": "Telecom & IT Operations",
+   "title": "Capacity planning",
+   "description": "Forecast infrastructure capacity",
+   "input": "usage_report",
+   "risk": "medium",
+   "people": false,
+   "pattern": "pipe",
+   "tools": [
+    "calc.eval"
+   ],
+   "agents": [
+    "Trends",
+    "Forecast",
+    "Risk",
+    "Plan"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/itops/capacity_planning.algo"
+  },
+  {
+   "id": "itops.postmortem",
+   "sector": "itops",
+   "sector_name": "Telecom & IT Operations",
+   "title": "Incident postmortem writer",
+   "description": "Blameless incident postmortems",
+   "input": "timeline",
+   "risk": "low",
+   "people": false,
+   "pattern": "fan",
+   "tools": [],
+   "agents": [
+    "Phases",
+    "Analyst",
+    "Learning",
+    "Postmortem"
+   ],
+   "human_threshold": 0.7,
+   "budget_tokens": 3000,
+   "forbid": [],
+   "path": "packs/itops/postmortem.algo"
+  },
+  {
+   "id": "cyber.soc_triage",
+   "sector": "cyber",
+   "sector_name": "Cybersecurity",
+   "title": "SOC alert triage",
+   "description": "Triage security alerts and summarise incidents",
+   "input": "alerts",
+   "risk": "high",
+   "people": false,
+   "pattern": "fan",
+   "tools": [
+    "kb.search"
+   ],
+   "agents": [
+    "Batcher",
+    "Analyst",
+    "Severity",
+    "Incident"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [],
+   "path": "packs/cyber/soc_triage.algo"
+  },
+  {
+   "id": "cyber.phishing",
+   "sector": "cyber",
+   "sector_name": "Cybersecurity",
+   "title": "Phishing email analysis",
+   "description": "Analyse suspicious emails",
+   "input": "email",
+   "risk": "medium",
+   "people": false,
+   "pattern": "pipe",
+   "tools": [],
+   "agents": [
+    "Indicators",
+    "Assessment",
+    "Likelihood",
+    "Advice"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/cyber/phishing.algo"
+  },
+  {
+   "id": "cyber.vulnerability_priority",
+   "sector": "cyber",
+   "sector_name": "Cybersecurity",
+   "title": "Vulnerability prioritisation",
+   "description": "Prioritise vulnerabilities by real risk",
+   "input": "scan_results",
+   "risk": "high",
+   "people": false,
+   "pattern": "fan",
+   "tools": [],
+   "agents": [
+    "Findings",
+    "Assessor",
+    "Risk",
+    "Plan"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [],
+   "path": "packs/cyber/vulnerability_priority.algo"
+  },
+  {
+   "id": "cyber.threat_intel",
+   "sector": "cyber",
+   "sector_name": "Cybersecurity",
+   "title": "Threat intelligence brief",
+   "description": "Threat intelligence briefs for defenders",
+   "input": "threat",
+   "risk": "medium",
+   "people": false,
+   "pattern": "committee",
+   "tools": [
+    "web.search"
+   ],
+   "agents": [
+    "Analyst",
+    "Defender",
+    "Hunter",
+    "IntelPanel",
+    "Brief"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/cyber/threat_intel.algo"
+  },
+  {
+   "id": "cyber.access_review",
+   "sector": "cyber",
+   "sector_name": "Cybersecurity",
+   "title": "Access rights review",
+   "description": "Periodic least-privilege access reviews",
+   "input": "access_list",
+   "risk": "high",
+   "people": false,
+   "pattern": "fan",
+   "tools": [
+    "file.read"
+   ],
+   "agents": [
+    "Accounts",
+    "Reviewer",
+    "Risk",
+    "Actions"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [],
+   "path": "packs/cyber/access_review.algo"
+  },
+  {
+   "id": "cyber.policy_qa",
+   "sector": "cyber",
+   "sector_name": "Cybersecurity",
+   "title": "Security policy Q&A",
+   "description": "Answer staff security-policy questions",
+   "input": "question",
+   "risk": "low",
+   "people": false,
+   "pattern": "pipe",
+   "tools": [
+    "kb.search"
+   ],
+   "agents": [
+    "Finder",
+    "Answer",
+    "Confidence",
+    "Final"
+   ],
+   "human_threshold": 0.7,
+   "budget_tokens": 3000,
+   "forbid": [],
+   "path": "packs/cyber/policy_qa.algo"
+  },
+  {
+   "id": "energy.outage_response",
+   "sector": "energy",
+   "sector_name": "Energy & Utilities",
+   "title": "Outage response router",
+   "description": "Route outages to emergency or planned repair",
+   "input": "outage_report",
+   "risk": "high",
+   "people": false,
+   "pattern": "router",
+   "tools": [],
+   "agents": [
+    "Critical",
+    "Emergency",
+    "Planned",
+    "Clarity"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [],
+   "path": "packs/energy/outage_response.algo"
+  },
+  {
+   "id": "energy.grid_fault",
+   "sector": "energy",
+   "sector_name": "Energy & Utilities",
+   "title": "Grid fault analysis",
+   "description": "Analyse grid protection events",
+   "input": "fault_record",
+   "risk": "high",
+   "people": false,
+   "pattern": "pipe",
+   "tools": [],
+   "agents": [
+    "Events",
+    "Cause",
+    "Confidence",
+    "Report"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [],
+   "path": "packs/energy/grid_fault.algo"
+  },
+  {
+   "id": "energy.meter_anomaly",
+   "sector": "energy",
+   "sector_name": "Energy & Utilities",
+   "title": "Meter anomaly detection",
+   "description": "Find meter faults and possible theft",
+   "input": "meter_data",
+   "risk": "medium",
+   "people": true,
+   "pattern": "fan",
+   "tools": [
+    "calc.eval"
+   ],
+   "agents": [
+    "Meters",
+    "Analyst",
+    "Risk",
+    "Report"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [
+    "gender",
+    "caste",
+    "religion",
+    "nationality"
+   ],
+   "path": "packs/energy/meter_anomaly.algo"
+  },
+  {
+   "id": "energy.renewable_site",
+   "sector": "energy",
+   "sector_name": "Energy & Utilities",
+   "title": "Renewable site assessment",
+   "description": "Assess sites for renewable projects",
+   "input": "site",
+   "risk": "medium",
+   "people": false,
+   "pattern": "committee",
+   "tools": [
+    "web.search"
+   ],
+   "agents": [
+    "ResourceAnalyst",
+    "GridAnalyst",
+    "EnvironmentAnalyst",
+    "Panel",
+    "Report"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/energy/renewable_site.algo"
+  },
+  {
+   "id": "energy.energy_audit",
+   "sector": "energy",
+   "sector_name": "Energy & Utilities",
+   "title": "Building energy audit",
+   "description": "Find energy savings in buildings",
+   "input": "audit_data",
+   "risk": "low",
+   "people": false,
+   "pattern": "fan",
+   "tools": [
+    "calc.eval"
+   ],
+   "agents": [
+    "Systems",
+    "Auditor",
+    "Savings",
+    "Report"
+   ],
+   "human_threshold": 0.7,
+   "budget_tokens": 3000,
+   "forbid": [],
+   "path": "packs/energy/energy_audit.algo"
+  },
+  {
+   "id": "energy.emissions_report",
+   "sector": "energy",
+   "sector_name": "Energy & Utilities",
+   "title": "Emissions report",
+   "description": "Greenhouse-gas emissions reporting",
+   "input": "activity_data",
+   "risk": "medium",
+   "people": false,
+   "pattern": "pipe",
+   "tools": [
+    "calc.eval"
+   ],
+   "agents": [
+    "Inventory",
+    "Calculator",
+    "Quality",
+    "Report"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/energy/emissions_report.algo"
+  },
+  {
+   "id": "agriculture.crop_advisory",
+   "sector": "agriculture",
+   "sector_name": "Agriculture",
+   "title": "Crop advisory",
+   "description": "Crop advice in local languages",
+   "input": "crop_and_region",
+   "risk": "low",
+   "people": false,
+   "pattern": "pipe",
+   "tools": [
+    "web.search"
+   ],
+   "agents": [
+    "Advisor",
+    "Translator",
+    "Safety",
+    "Final"
+   ],
+   "human_threshold": 0.7,
+   "budget_tokens": 3000,
+   "forbid": [],
+   "path": "packs/agriculture/crop_advisory.algo"
+  },
+  {
+   "id": "agriculture.pest_diagnosis",
+   "sector": "agriculture",
+   "sector_name": "Agriculture",
+   "title": "Pest and disease diagnosis",
+   "description": "Diagnose crop problems from symptoms",
+   "input": "symptoms",
+   "risk": "medium",
+   "people": false,
+   "pattern": "committee",
+   "tools": [
+    "kb.search"
+   ],
+   "agents": [
+    "Entomologist",
+    "Pathologist",
+    "Agronomist",
+    "Panel",
+    "Advice"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/agriculture/pest_diagnosis.algo"
+  },
+  {
+   "id": "agriculture.soil_report",
+   "sector": "agriculture",
+   "sector_name": "Agriculture",
+   "title": "Soil report advisor",
+   "description": "Turn soil tests into fertiliser advice",
+   "input": "soil_test",
+   "risk": "low",
+   "people": false,
+   "pattern": "pipe",
+   "tools": [
+    "calc.eval"
+   ],
+   "agents": [
+    "Reader",
+    "Plan",
+    "Confidence",
+    "Card"
+   ],
+   "human_threshold": 0.7,
+   "budget_tokens": 3000,
+   "forbid": [],
+   "path": "packs/agriculture/soil_report.algo"
+  },
+  {
+   "id": "agriculture.market_prices",
+   "sector": "agriculture",
+   "sector_name": "Agriculture",
+   "title": "Market price brief",
+   "description": "Market price trends for farmers",
+   "input": "commodity",
+   "risk": "low",
+   "people": false,
+   "pattern": "fan",
+   "tools": [
+    "web.search"
+   ],
+   "agents": [
+    "Markets",
+    "Analyst",
+    "Outlook",
+    "Brief"
+   ],
+   "human_threshold": 0.7,
+   "budget_tokens": 3000,
+   "forbid": [],
+   "path": "packs/agriculture/market_prices.algo"
+  },
+  {
+   "id": "agriculture.farmer_queries",
+   "sector": "agriculture",
+   "sector_name": "Agriculture",
+   "title": "Farmer query router",
+   "description": "Route farmer queries to field officers or the helpline",
+   "input": "query",
+   "risk": "low",
+   "people": false,
+   "pattern": "router",
+   "tools": [
+    "kb.search"
+   ],
+   "agents": [
+    "IsUrgent",
+    "FieldOfficer",
+    "Helpline",
+    "Clarity"
+   ],
+   "human_threshold": 0.7,
+   "budget_tokens": 3000,
+   "forbid": [],
+   "path": "packs/agriculture/farmer_queries.algo"
+  },
+  {
+   "id": "agriculture.scheme_eligibility",
+   "sector": "agriculture",
+   "sector_name": "Agriculture",
+   "title": "Farmer scheme eligibility",
+   "description": "Check farmer eligibility for government schemes",
+   "input": "farmer_profile",
+   "risk": "high",
+   "people": true,
+   "pattern": "pipe",
+   "tools": [
+    "kb.search"
+   ],
+   "agents": [
+    "Extractor",
+    "Rules",
+    "Eligibility",
+    "Notice"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [
+    "gender",
+    "caste",
+    "religion",
+    "nationality"
+   ],
+   "path": "packs/agriculture/scheme_eligibility.algo"
+  },
+  {
+   "id": "media.campaign_brief",
+   "sector": "media",
+   "sector_name": "Media & Marketing",
+   "title": "Campaign brief",
+   "description": "Marketing campaign briefs",
+   "input": "product_goal",
+   "risk": "low",
+   "people": false,
+   "pattern": "pipe",
+   "tools": [],
+   "agents": [
+    "Strategist",
+    "Creative",
+    "Fit",
+    "Brief"
+   ],
+   "human_threshold": 0.7,
+   "budget_tokens": 3000,
+   "forbid": [],
+   "path": "packs/media/campaign_brief.algo"
+  },
+  {
+   "id": "media.content_moderation",
+   "sector": "media",
+   "sector_name": "Media & Marketing",
+   "title": "Content moderation",
+   "description": "Consistent content moderation decisions",
+   "input": "post",
+   "risk": "high",
+   "people": false,
+   "pattern": "committee",
+   "tools": [
+    "kb.search"
+   ],
+   "agents": [
+    "SafetyReviewer",
+    "PolicyReviewer",
+    "ContextReviewer",
+    "ModerationPanel",
+    "Decision"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [],
+   "path": "packs/media/content_moderation.algo"
+  },
+  {
+   "id": "media.brand_sentiment",
+   "sector": "media",
+   "sector_name": "Media & Marketing",
+   "title": "Brand sentiment monitor",
+   "description": "Track brand sentiment",
+   "input": "mentions",
+   "risk": "low",
+   "people": false,
+   "pattern": "fan",
+   "tools": [],
+   "agents": [
+    "Splitter",
+    "Analyst",
+    "Sentiment",
+    "Report"
+   ],
+   "human_threshold": 0.7,
+   "budget_tokens": 3000,
+   "forbid": [],
+   "path": "packs/media/brand_sentiment.algo"
+  },
+  {
+   "id": "media.seo_audit",
+   "sector": "media",
+   "sector_name": "Media & Marketing",
+   "title": "SEO content audit",
+   "description": "Audit web pages for SEO",
+   "input": "pages",
+   "risk": "low",
+   "people": false,
+   "pattern": "fan",
+   "tools": [
+    "web.search"
+   ],
+   "agents": [
+    "Pages",
+    "Auditor",
+    "Health",
+    "Plan"
+   ],
+   "human_threshold": 0.7,
+   "budget_tokens": 3000,
+   "forbid": [],
+   "path": "packs/media/seo_audit.algo"
+  },
+  {
+   "id": "media.press_release",
+   "sector": "media",
+   "sector_name": "Media & Marketing",
+   "title": "Press release writer",
+   "description": "Fact-checked press releases",
+   "input": "announcement",
+   "risk": "medium",
+   "people": false,
+   "pattern": "pipe",
+   "tools": [],
+   "agents": [
+    "Facts",
+    "Writer",
+    "Accuracy",
+    "Final"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/media/press_release.algo"
+  },
+  {
+   "id": "media.audience_segments",
+   "sector": "media",
+   "sector_name": "Media & Marketing",
+   "title": "Audience segment brief",
+   "description": "Audience segments and personas",
+   "input": "customer_data",
+   "risk": "medium",
+   "people": true,
+   "pattern": "pipe",
+   "tools": [],
+   "agents": [
+    "Segmenter",
+    "Personas",
+    "Value",
+    "Brief"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [
+    "gender",
+    "caste",
+    "religion",
+    "nationality"
+   ],
+   "path": "packs/media/audience_segments.algo"
+  },
+  {
+   "id": "realestate.lease_abstraction",
+   "sector": "realestate",
+   "sector_name": "Real Estate & Construction",
+   "title": "Lease abstraction",
+   "description": "Abstract key terms from leases",
+   "input": "lease",
+   "risk": "medium",
+   "people": false,
+   "pattern": "fan",
+   "tools": [
+    "file.read"
+   ],
+   "agents": [
+    "Clauses",
+    "Abstractor",
+    "Risk",
+    "Abstract"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/realestate/lease_abstraction.algo"
+  },
+  {
+   "id": "realestate.site_safety",
+   "sector": "realestate",
+   "sector_name": "Real Estate & Construction",
+   "title": "Construction site safety audit",
+   "description": "Construction site safety audits",
+   "input": "site_report",
+   "risk": "high",
+   "people": false,
+   "pattern": "fan",
+   "tools": [],
+   "agents": [
+    "Areas",
+    "Inspector",
+    "Risk",
+    "Actions"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [],
+   "path": "packs/realestate/site_safety.algo"
+  },
+  {
+   "id": "realestate.valuation",
+   "sector": "realestate",
+   "sector_name": "Real Estate & Construction",
+   "title": "Property valuation brief",
+   "description": "Three-method property valuation briefs",
+   "input": "property",
+   "risk": "medium",
+   "people": false,
+   "pattern": "committee",
+   "tools": [
+    "calc.eval"
+   ],
+   "agents": [
+    "MarketAnalyst",
+    "IncomeAnalyst",
+    "CostAnalyst",
+    "Panel",
+    "Report"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/realestate/valuation.algo"
+  },
+  {
+   "id": "realestate.bid_comparison",
+   "sector": "realestate",
+   "sector_name": "Real Estate & Construction",
+   "title": "Contractor bid comparison",
+   "description": "Compare contractor bids fairly",
+   "input": "bids",
+   "risk": "medium",
+   "people": false,
+   "pattern": "committee",
+   "tools": [
+    "calc.eval"
+   ],
+   "agents": [
+    "CostEstimator",
+    "Engineer",
+    "RiskAnalyst",
+    "Panel",
+    "Recommendation"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [],
+   "path": "packs/realestate/bid_comparison.algo"
+  },
+  {
+   "id": "realestate.building_code",
+   "sector": "realestate",
+   "sector_name": "Real Estate & Construction",
+   "title": "Building code check",
+   "description": "Pre-check designs against building codes",
+   "input": "design_summary",
+   "risk": "high",
+   "people": false,
+   "pattern": "fan",
+   "tools": [
+    "kb.search"
+   ],
+   "agents": [
+    "Elements",
+    "Checker",
+    "Compliance",
+    "Report"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [],
+   "path": "packs/realestate/building_code.algo"
+  },
+  {
+   "id": "realestate.tenant_queries",
+   "sector": "realestate",
+   "sector_name": "Real Estate & Construction",
+   "title": "Tenant query router",
+   "description": "Route tenant requests",
+   "input": "request",
+   "risk": "low",
+   "people": false,
+   "pattern": "router",
+   "tools": [
+    "kb.search"
+   ],
+   "agents": [
+    "IsMaintenance",
+    "Maintenance",
+    "Leasing",
+    "Clarity"
+   ],
+   "human_threshold": 0.7,
+   "budget_tokens": 3000,
+   "forbid": [],
+   "path": "packs/realestate/tenant_queries.algo"
+  },
+  {
+   "id": "hospitality.guest_reviews",
+   "sector": "hospitality",
+   "sector_name": "Hospitality & Travel",
+   "title": "Guest review insights",
+   "description": "Turn guest reviews into actions",
+   "input": "reviews",
+   "risk": "low",
+   "people": false,
+   "pattern": "fan",
+   "tools": [],
+   "agents": [
+    "Splitter",
+    "Analyst",
+    "Satisfaction",
+    "Report"
+   ],
+   "human_threshold": 0.7,
+   "budget_tokens": 3000,
+   "forbid": [],
+   "path": "packs/hospitality/guest_reviews.algo"
+  },
+  {
+   "id": "hospitality.itinerary",
+   "sector": "hospitality",
+   "sector_name": "Hospitality & Travel",
+   "title": "Itinerary planner",
+   "description": "Plan trips day by day",
+   "input": "trip_request",
+   "risk": "low",
+   "people": false,
+   "pattern": "pipe",
+   "tools": [
+    "web.search"
+   ],
+   "agents": [
+    "Planner",
+    "Logistics",
+    "Fit",
+    "Final"
+   ],
+   "human_threshold": 0.7,
+   "budget_tokens": 3000,
+   "forbid": [],
+   "path": "packs/hospitality/itinerary.algo"
+  },
+  {
+   "id": "hospitality.booking_router",
+   "sector": "hospitality",
+   "sector_name": "Hospitality & Travel",
+   "title": "Booking query router",
+   "description": "Route guest booking questions",
+   "input": "query",
+   "risk": "low",
+   "people": false,
+   "pattern": "router",
+   "tools": [
+    "kb.search"
+   ],
+   "agents": [
+    "IsChange",
+    "Reservations",
+    "Concierge",
+    "Tone"
+   ],
+   "human_threshold": 0.7,
+   "budget_tokens": 3000,
+   "forbid": [],
+   "path": "packs/hospitality/booking_router.algo"
+  },
+  {
+   "id": "hospitality.allergen_check",
+   "sector": "hospitality",
+   "sector_name": "Hospitality & Travel",
+   "title": "Menu allergen check",
+   "description": "Allergen labelling for menus",
+   "input": "menu",
+   "risk": "high",
+   "people": false,
+   "pattern": "pipe",
+   "tools": [
+    "kb.search"
+   ],
+   "agents": [
+    "Ingredients",
+    "Allergens",
+    "Confidence",
+    "Labels"
+   ],
+   "human_threshold": 0.9,
+   "budget_tokens": 6000,
+   "forbid": [],
+   "path": "packs/hospitality/allergen_check.algo"
+  },
+  {
+   "id": "hospitality.travel_policy",
+   "sector": "hospitality",
+   "sector_name": "Hospitality & Travel",
+   "title": "Travel policy check",
+   "description": "Check business travel against policy",
+   "input": "travel_request",
+   "risk": "medium",
+   "people": true,
+   "pattern": "pipe",
+   "tools": [
+    "kb.search"
+   ],
+   "agents": [
+    "Details",
+    "Policy",
+    "Compliance",
+    "Decision"
+   ],
+   "human_threshold": 0.8,
+   "budget_tokens": 4000,
+   "forbid": [
+    "gender",
+    "caste",
+    "religion",
+    "nationality"
+   ],
+   "path": "packs/hospitality/travel_policy.algo"
+  },
+  {
+   "id": "hospitality.loyalty_offers",
+   "sector": "hospitality",
+   "sector_name": "Hospitality & Travel",
+   "title": "Loyalty offer designer",
+   "description": "Design loyalty offers by segment",
+   "input": "guest_segment",
+   "risk": "low",
+   "people": false,
+   "pattern": "pipe",
+   "tools": [
+    "calc.eval"
+   ],
+   "agents": [
+    "Insights",
+    "Offers",
+    "Value",
+    "Plan"
+   ],
+   "human_threshold": 0.7,
+   "budget_tokens": 3000,
+   "forbid": [],
+   "path": "packs/hospitality/loyalty_offers.algo"
+  }
+ ]
+}

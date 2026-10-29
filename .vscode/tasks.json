@@ -1,0 +1,38 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "AlgoLang: run current file",
+      "type": "shell",
+      "command": "${workspaceFolder}/algo",
+      "windows": { "command": "${workspaceFolder}\\algo.bat" },
+      "args": ["run", "${file}", "--arg", "${input:flowArg}"],
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": []
+    },
+    {
+      "label": "AlgoLang: run current file (live Claude)",
+      "type": "shell",
+      "command": "${workspaceFolder}/algo",
+      "windows": { "command": "${workspaceFolder}\\algo.bat" },
+      "args": ["run", "${file}", "--arg", "${input:flowArg}", "--live"],
+      "problemMatcher": []
+    },
+    {
+      "label": "AlgoLang: check current file",
+      "type": "shell",
+      "command": "${workspaceFolder}/algo",
+      "windows": { "command": "${workspaceFolder}\\algo.bat" },
+      "args": ["check", "${file}"],
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "flowArg",
+      "type": "promptString",
+      "description": "Flow input as name=value",
+      "default": "topic=Blockchain data integrity"
+    }
+  ]
+}

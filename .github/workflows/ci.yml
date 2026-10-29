@@ -1,0 +1,102 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHONUTF8: "1"
+  PYTHONIOENCODING: utf-8
+  NO_COLOR: "1"
+
+jobs:
+  lint:
+    name: Lint (ruff + every .algo file)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12", cache: pip}
+      - run: pip install -e ".[dev]"
+      - run: ruff check .
+      - name: Compile-check every example and domain pack
+        run: python algoc.py dev lint examples packs
+
+  test:
+    name: Tests · ${{ matrix.os }} · Python ${{ matrix.python }}
+    needs: lint
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest]
+        python: ["3.9", "3.10", "3.11", "3.12", "3.13"]
+        include:
+          - {os: macos-latest, python: "3.12"}
+          - {os: windows-latest, python: "3.12"}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "${{ matrix.python }}", cache: pip}
+      - run: pip install -e ".[dev]"
+      - run: python -m pytest
+
+  package:
+    name: Wheel builds and installs cleanly
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - run: pip install build && python -m build
+      - name: Install the wheel in a fresh venv and smoke-test it outside the source tree
+        run: |
+          python -m venv /tmp/v && /tmp/v/bin/pip install dist/*.whl
+          cd "$RUNNER_TEMP"
+          /tmp/v/bin/algo doctor
+          /tmp/v/bin/algo domains "triage insurance claims"
+          /tmp/v/bin/algo run pack:insurance.claims_triage --arg "claim=Rear-end collision, bumper damage"
+          /tmp/v/bin/algo audit verify runs
+      - uses: actions/upload-artifact@v4
+        with: {name: dist, path: dist/}
+
+  notebook:
+    name: Notebook runs top to bottom
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12", cache: pip}
+      - run: pip install -e ".[dev]"
+      - name: Execute AlgoLang_Notebook.ipynb in a clean folder (as Colab would)
+        run: |
+          mkdir "$RUNNER_TEMP/nb" && cp AlgoLang_Notebook.ipynb "$RUNNER_TEMP/nb/" && cd "$RUNNER_TEMP/nb"
+          python - <<'PY'
+          import nbformat
+          from nbclient import NotebookClient
+          nb = nbformat.read("AlgoLang_Notebook.ipynb", 4)
+          NotebookClient(nb, timeout=180, kernel_name="python3").execute()
+          print("notebook OK:", sum(c.cell_type == "code" for c in nb.cells), "code cells")
+          PY
+
+  site:
+    name: Website builds
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12", cache: pip}
+      - run: pip install -e . markdown pillow
+      - run: python tools/build_site.py

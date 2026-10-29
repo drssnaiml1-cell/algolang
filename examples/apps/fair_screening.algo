@@ -1,0 +1,22 @@
+// Finance / scholarships — fair screening with separation of duties
+agent Splitter(batch: text) -> list {
+    goal "List each application in {batch} separately"
+}
+agent Scorer(application: text) -> score {
+    goal "Score {application} on the published merit criteria only"
+    policy {
+        forbid gender, caste, religion, nationality
+        require human when confidence < 0.85
+        budget tokens 3000
+    }
+}
+agent FairnessAuditor(scores: list) -> text {
+    role "Independent fairness auditor"
+    goal "Check {scores} for unfair patterns across groups"
+}
+flow main(batch: text) {
+    apps   = Splitter(batch)
+    scores = par for a in apps { Scorer(a) }
+    audit  = FairnessAuditor(scores)
+    emit scores, audit
+}

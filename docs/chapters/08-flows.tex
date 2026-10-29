@@ -1,0 +1,115 @@
+\chapter{Flows}
+\label{ch:flows}
+
+A \kw{flow} connects agents. It has typed parameters and a body of statements, and it can do exactly five things: call an agent, run agents in parallel, map an agent over a list in parallel, branch on a comparison, and emit results. It cannot compute anything itself, and it cannot be called---every program's entry point is \code{flow main}.
+
+\section{Calling agents}
+
+\begin{algo}
+facts  = Researcher(topic)                       // positional
+brief  = Writer(facts, tone = "plain-English")   // positional + keyword
+letter = DecisionLetter(verdict = v, reports = r) // keywords in any order
+\end{algo}
+
+Positional arguments bind to parameters in order; keyword arguments bind by name. Parameters with defaults may be omitted. The compiler reports too many arguments, unknown names, duplicates and missing required arguments as \errcode{E102}.
+
+A call may also stand alone as a statement when only its effect matters, for example an agent that files a report:
+
+\begin{algo}
+Notifier(summary)
+\end{algo}
+
+\section{Variables}
+
+Assignment binds a name to an agent's result. Variables need no declaration; a variable's type is its agent's return type. Using a name that has not been assigned (and is not a flow input) is \errcode{E103}. A variable may be reassigned, as in the redraft pattern:
+
+\begin{algo}
+draft = Writer(facts)
+if Reviewer(draft) < 0.8 { draft = Writer(facts, tone = "rigorous") }
+\end{algo}
+
+\section{Parallel blocks: \kw{par}}
+
+\begin{algo}[]
+[formal, simple, hindi] = par {
+    Writer(facts),
+    Writer(facts, tone = "plain-English"),
+    Translator(facts, language = "Hindi")
+}
+\end{algo}
+
+All calls inside \kw{par} run at the same time. The bracketed names receive the results in the order the calls are written, whatever order they finish in. The number of names must equal the number of calls (\errcode{E113}). Assigned to a single name, a \kw{par} block yields a \kw{list}:
+
+\begin{algo}
+opinions = par { ExpertA(q), ExpertB(q), ExpertC(q) }   // list of three results
+\end{algo}
+
+\section{Parallel map: \kw{par for}}
+
+\begin{algo}
+criteria = Planner(paper)                                    // list
+reports  = par for c in criteria { CriterionReviewer(c, paper) }
+\end{algo}
+
+\kw{par for} runs one call per item of a list, all concurrently, and collects the results in the list's order. The source must be a \kw{list} (\errcode{E114}); the loop variable is visible only inside the braces. This is the ``fan-out / fan-in'' pattern of multi-agent systems in one line.
+
+\section{Branching: \kw{if} and \kw{else}}
+
+\begin{algo}
+verdict = Editor(reports, ethics)
+if verdict >= 0.5 {
+    letter = AcceptLetter(reports)
+} else {
+    letter = RejectLetter(reports)
+}
+\end{algo}
+
+A condition compares two values with \code{<}, \code{<=}, \code{>}, \code{>=}, \code{==} or \code{!=}. Each side may be a variable, a number or an agent call that returns a \kw{score}, so \code{if Reviewer(draft) < 0.8 \{ … \}} is valid. Only scores, numbers and booleans can be compared (\errcode{E110}).
+
+\section{Returning results: \kw{emit}}
+
+\begin{algo}
+emit verdict, letter
+\end{algo}
+
+\kw{emit} adds values to the flow's output. A flow may emit several times; the outputs accumulate in order. The terminal shows them after the run; notebooks place them in \code{algo\_result}; Python callers receive them as a list.
+
+\section{Complete example}
+
+\begin{algo}[title=paper\_review.algo — flow]
+flow main(paper: text) {
+    criteria = Planner(paper)
+    reports  = par for c in criteria { CriterionReviewer(c, paper) }
+    ethics   = EthicsAuditor(paper)
+    verdict  = Editor(reports, ethics)
+    letter   = DecisionLetter(reports, verdict)
+    emit verdict, letter
+}
+\end{algo}
+
+The notebook extension draws this flow as a graph (Chapter~\ref{ch:notebooks}). Its shape is shown in Figure~\ref{fig:paperflow}.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[
+  node distance=7mm and 9mm,
+  ag/.style={draw=none,fill=navy,text=white,rounded corners=3pt,font=\sffamily\footnotesize,
+             minimum height=9mm,align=center,inner xsep=6pt},
+  pa/.style={ag,fill=navy2,draw=gold,line width=1.2pt},
+  io/.style={ellipse,fill=goldlight,draw=gold,font=\sffamily\footnotesize,text=navy,minimum height=8mm},
+  ar/.style={-{Stealth[length=2.2mm]},navy,line width=0.7pt}]
+  \node[io] (in) {paper};
+  \node[ag,right=of in,yshift=9mm] (plan) {Planner\\[-1pt]{\scriptsize → criteria}};
+  \node[pa,right=of plan] (rev) {CriterionReviewer × each\\[-1pt]{\scriptsize par for c in criteria}};
+  \node[ag,below=10mm of rev] (eth) {EthicsAuditor\\[-1pt]{\scriptsize → ethics}};
+  \node[ag,right=of rev,yshift=-9mm] (ed) {Editor\\[-1pt]{\scriptsize → verdict}};
+  \node[ag,above=8mm of ed] (dl) {DecisionLetter\\[-1pt]{\scriptsize → letter}};
+  \node[io,right=of ed,xshift=4mm,yshift=5mm] (out) {emit};
+  \draw[ar] (in) -- (plan); \draw[ar] (plan) -- (rev); \draw[ar] (in) |- (eth);
+  \draw[ar] (in.east) -- ++(4mm,0) |- (rev.west);
+  \draw[ar] (rev) -- (ed); \draw[ar] (eth) -- (ed); \draw[ar] (rev) -- (dl); \draw[ar] (ed) -- (dl);
+  \draw[ar] (ed) -- (out); \draw[ar] (dl) -- (out);
+\end{tikzpicture}
+\caption{Data flow of \file{paper\_review.algo}. The gold-edged node runs once per criterion, in parallel.}
+\label{fig:paperflow}
+\end{figure}

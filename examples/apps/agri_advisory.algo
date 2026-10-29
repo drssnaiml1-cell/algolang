@@ -1,0 +1,23 @@
+// Agriculture — crop advisory in three Indian languages
+tool web.search
+agent Advisor(crop: text, region: text) -> text {
+    goal "Give weather-aware sowing and pest advice for {crop} in {region}"
+    uses web.search
+}
+agent Translator(advice: text, language: text) -> text {
+    goal "Translate for farmers into {language}, keep it simple: {advice}"
+}
+agent SafetyCheck(advice: text) -> bool {
+    goal "Answer true only if {advice} contains no unsafe pesticide dosing"
+}
+flow main(crop: text, region: text) {
+    advice = Advisor(crop, region)
+    if SafetyCheck(advice) == true {
+        [hi, mr, te] = par {
+            Translator(advice, language = "Hindi"),
+            Translator(advice, language = "Marathi"),
+            Translator(advice, language = "Telugu")
+        }
+        emit advice, hi, mr, te
+    }
+}

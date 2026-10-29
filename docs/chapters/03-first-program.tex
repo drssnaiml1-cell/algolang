@@ -1,0 +1,101 @@
+\chapter{Your First Program}
+\label{ch:first}
+
+This chapter builds a small teaching assistant: one agent explains a topic, a second writes quiz questions on the explanation, and a third checks the explanation's accuracy. Along the way you will meet every part of an \algolang\ program.
+
+\section{Create a starter}
+
+\begin{terminal}
+$ algo new mylesson
+✓ created mylesson.algo
+  next:  algo run mylesson.algo --arg "topic=Neural networks"
+\end{terminal}
+
+Open \file{mylesson.algo} in any editor:
+
+\begin{algo}[title=mylesson.algo]
+model smart = "claude-sonnet-5-5"
+model fast  = "claude-haiku-5-5"
+
+agent Explainer(topic: text) -> text {
+    role  "Friendly professor"
+    goal  "Explain {topic} to a first-year student in 5 sentences"
+    model fast
+}
+
+agent QuizMaker(lesson: text) -> list {
+    role  "Exam setter"
+    goal  "Write three short quiz questions on this lesson: {lesson}"
+    model fast
+}
+
+agent Checker(lesson: text) -> score {
+    role  "Senior reviewer"
+    goal  "Score this lesson 0 to 1 for accuracy: {lesson}"
+    model smart
+    policy {
+        require human when confidence < 0.70
+    }
+}
+
+flow main(topic: text) {
+    lesson = Explainer(topic)
+    [quiz, quality] = par { QuizMaker(lesson), Checker(lesson) }
+    if quality < 0.75 {
+        lesson = Explainer(topic)
+    }
+    emit lesson, quiz
+}
+\end{algo}
+
+\section{Reading the program}
+
+\begin{description}[style=nextline,leftmargin=1.2em,font=\sffamily\bfseries\color{navy}]
+  \item[Models] \kw{model} gives a short name to a model identifier. Agents refer to the short name, so changing models later is a one-line edit.
+  \item[Agents] Each \kw{agent} has typed parameters, a return type after \code{->}, and clauses. The \kw{goal} is the instruction the model receives; \code{\{topic\}} is replaced by the argument's value when the agent runs.
+  \item[Return types] \code{Explainer} returns \kw{text}, \code{QuizMaker} a \kw{list}, and \code{Checker} a \kw{score}---a number from 0 to 1. Only scores and numbers can be compared.
+  \item[Policy] \code{Checker} sends any result whose confidence is below 0.70 for human review.
+  \item[Flow] \code{flow main} is the entry point. Its input \code{topic} comes from the command line.
+  \item[Parallelism] \kw{par} runs \code{QuizMaker} and \code{Checker} at the same time; their results are bound to \code{quiz} and \code{quality} in order.
+  \item[Branching] If the quality score is below 0.75, the explanation is regenerated.
+  \item[Output] \kw{emit} returns the final values from the flow.
+\end{description}
+
+\section{Check, then run}
+
+\begin{terminal}
+$ algo check mylesson.algo
+✓ mylesson.algo: 3 agents, 1 flow(s), 0 tool(s) — no errors
+
+$ algo run mylesson.algo --arg "topic=Neural networks"
+▶ flow main  run=a8a5732e  backend=mock
+    topic = 'Neural networks'
+  → Explainer          conf=0.88  «Explainer #4348» Explain Neural networks to a first-…
+  → QuizMaker          conf=0.78  [3 items]
+  → Checker            conf=0.89  0.61
+  → Explainer          conf=0.88  «Explainer #4348» Explain Neural networks to a first-…
+■ emitted:
+    • «Explainer #4348» Explain Neural networks to a first-year student in 5 sentences
+    • item 1 for: Write three short quiz questions on this lesson: …
+    • item 2 for: Write three short quiz questions on this lesson: …
+    • item 3 for: Write three short quiz questions on this lesson: …
+■ 4 agent calls · ~372 tokens · 0 retries · 0 escalated · 0 blocked · audit → runs/mylesson.audit.jsonl
+\end{terminal}
+
+Each line beginning with \code{→} is one agent call, with its confidence and a preview of its output. The \code{Checker} scored the lesson 0.61, below the flow's 0.75 bar, so the \code{Explainer} ran a second time---four calls in total.
+
+\begin{note}
+On the mock backend an agent's output is a labelled echo of its goal, such as \code{«Explainer \#4348» Explain Neural networks…}. The number is a fingerprint of the input, so the same input always gives the same output and confidence. This makes runs repeatable for teaching and testing. Run with \code{--live} to get real model answers (Section~\ref{sec:live-setup}).
+\end{note}
+
+\section{What just happened}
+
+Before running, \code{algo} compiled \file{mylesson.algo} to Python in \file{build/mylesson.py}, after checking every name, argument count, type, model and tool. At run time each agent call passed through the runtime's policy checks and was written to the audit log \file{runs/mylesson.audit.jsonl}---one JSON line per call, recording the model, a hash of the inputs, the confidence, the token count and the outcome. Chapter~\ref{ch:runtime} describes this in detail.
+
+\section{Try it yourself}
+
+\begin{enumerate}
+  \item Change \code{Checker}'s threshold to \code{0.95} and run again. How many results are now escalated?
+  \item Add a \code{Summariser(lesson: text) -> text} agent and \kw{emit} its output as a third value.
+  \item Call an agent that does not exist, for example \code{x = Translate(lesson)}, and read the compiler's message.
+\end{enumerate}

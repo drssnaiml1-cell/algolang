@@ -1,0 +1,23 @@
+// bad_example.algo — deliberately broken, to show the compiler's checks.
+
+model smart = "claude-sonnet-5-5"
+
+agent Summariser(doc: text) -> text {
+    role "Summariser"
+    goal "Summarise {document}"          // E109: no parameter named 'document'
+    uses email.send                      // E104: tool never declared
+    model turbo                          // E106: unknown model
+}
+
+agent Screener(caste: text) -> score {   // E108: forbidden attribute as input
+    role "Loan screener"
+    goal "Score applicant {caste}"
+    policy { forbid caste }
+}
+
+flow main(doc: text) {
+    s = Summariser(doc, doc)             // E102: too many arguments
+    t = summarise_text(doc)              // E101: not an agent
+    if s < 0.5 { emit s }                // E110: 's' is text, not a score
+    emit missing                         // E103: undefined variable
+}

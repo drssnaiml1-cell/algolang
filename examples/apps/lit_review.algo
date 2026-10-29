@@ -1,0 +1,21 @@
+// Research — literature review for a Ph.D. scholar
+tool web.search
+agent Searcher(question: text) -> list {
+    goal "Find 6 key recent papers on {question}"
+    uses web.search
+}
+agent Reader(paper: text, question: text) -> text {
+    goal "Summarise method, data and findings of {paper} for {question}"
+}
+agent GapFinder(summaries: list) -> text {
+    goal "Identify open research gaps across {summaries}"
+}
+agent Writer(summaries: list, gaps: text) -> text {
+    goal "Write a related-work section from {summaries}, ending with {gaps}"
+}
+flow main(question: text) {
+    papers    = Searcher(question)
+    summaries = par for p in papers { Reader(p, question) }
+    gaps      = GapFinder(summaries)
+    emit Writer(summaries, gaps)
+}

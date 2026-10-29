@@ -1,0 +1,96 @@
+// ─────────────────────────────────────────────────────────────
+//  AlgoLang v0.2 grammar  —  AlgoProfessor AI R&D Solutions
+//  Core rule: there are no functions. Every unit of work is an
+//  `agent`; a `flow` only orchestrates agents.
+// ─────────────────────────────────────────────────────────────
+
+start: item*
+
+?item: use_decl
+     | model_decl
+     | tool_decl
+     | policy_decl
+     | agent_decl
+     | flow_decl
+
+// use "shared/agents.algo"           import another file's models, tools and agents
+// use pack insurance.claims_triage    import a domain pack from the library
+// use pack legal.contract_review as legal   …and call its agents as legal.Agent(…)
+use_decl: "use" STRING ["as" NAME]              -> use_file
+        | "use" "pack" DOTTED ["as" NAME]       -> use_pack
+
+// policy { … } at top level: default policy for every agent in this file
+policy_decl: "policy" "{" policy_rule* "}"
+
+// model fast = "claude-haiku-5-5"
+model_decl: "model" NAME "=" STRING
+
+// tool web.search   (declares a tool agents may be granted)
+tool_decl: "tool" DOTTED
+
+// agent Name(p: type, q: type = "x") -> type { ... }
+agent_decl: "agent" NAME "(" [params] ")" "->" NAME "{" agent_clause* "}"
+
+params: param ("," param)*
+param: NAME ":" NAME ["=" literal]
+
+?agent_clause: "role" STRING            -> role
+             | "goal" STRING            -> goal
+             | "uses" DOTTED ("," DOTTED)* -> uses
+             | "model" NAME             -> model_ref
+             | "policy" "{" policy_rule* "}" -> policy
+
+?policy_rule: "budget" "tokens" NUMBER                       -> budget
+            | "retry" NUMBER                                 -> retry
+            | "require" "human" "when" "confidence" "<" NUMBER -> human_gate
+            | "forbid" NAME ("," NAME)*                      -> forbid
+            | "timeout" NUMBER                               -> timeout
+            | "cache"                                        -> cache
+
+// flow main(topic: text) { ... }
+flow_decl: "flow" NAME "(" [params] ")" "{" stmt* "}"
+
+?stmt: target "=" expr                                   -> assign
+     | "if" cond "{" stmt* "}" ["else" "{" stmt* "}"]    -> if_stmt
+     | "emit" expr ("," expr)*                           -> emit
+     | call                                              -> expr_stmt
+
+target: NAME                         -> single_target
+      | "[" NAME ("," NAME)* "]"     -> multi_target
+
+?expr: call
+     | par_block
+     | par_for
+     | NAME                          -> var
+     | literal
+
+call: (NAME | DOTTED) "(" [args] ")"
+args: arg ("," arg)*
+?arg: kwarg | expr
+kwarg: NAME "=" expr
+
+// [a, b] = par { Writer(x), Critic(x) }
+par_block: "par" "{" call ("," call)* "}"
+
+// results = par for t in tasks { Worker(t) }
+par_for: "par" "for" NAME "in" NAME "{" call "}"
+
+cond: expr COMPARE expr
+COMPARE: "<=" | ">=" | "==" | "!=" | "<" | ">"
+
+?literal: STRING -> string
+        | NUMBER -> number
+        | "true"  -> true
+        | "false" -> false
+
+DOTTED: /[a-zA-Z_][a-zA-Z0-9_]*(\.[a-zA-Z_][a-zA-Z0-9_]*)+/
+NAME: /[a-zA-Z_][a-zA-Z0-9_]*/
+STRING: /"([^"\\]|\\.)*"/
+NUMBER: /\d+(\.\d+)?/
+
+COMMENT: /\/\/[^\n]*/
+%ignore COMMENT
+%import common.WS
+%ignore WS
+SEMI: ";"
+%ignore SEMI

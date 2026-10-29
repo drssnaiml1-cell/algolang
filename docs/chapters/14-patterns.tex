@@ -1,0 +1,159 @@
+\chapter{Multi-Agent Design Patterns}
+\label{ch:patterns}
+
+Good multi-agent systems are built from a small number of recurring shapes. This chapter gives each pattern in \algolang, with guidance on when to use it. All snippets assume suitable agent declarations.
+
+\section{Pipeline}
+
+Each agent refines the previous agent's output.
+
+\begin{algo}
+flow main(topic: text) {
+    facts   = Researcher(topic)
+    outline = Outliner(facts)
+    draft   = Writer(outline)
+    final   = Editor(draft)
+    emit final
+}
+\end{algo}
+
+\textbf{Use when} the work has clear stages with different skills. \textbf{Tip:} give later, cheaper stages a \code{fast} model and reserve \code{smart} for the stage that needs judgement.
+
+\section{Fan-out / fan-in}
+
+A planner splits the work, one worker per part runs in parallel, and an aggregator combines the results.
+
+\begin{algo}
+flow main(paper: text) {
+    criteria = Planner(paper)                                       // fan-out plan
+    reports  = par for c in criteria { CriterionReviewer(c, paper) } // parallel workers
+    summary  = Synthesiser(reports)                                  // fan-in
+    emit summary
+}
+\end{algo}
+
+\textbf{Use when} a task decomposes into independent parts. Total time is roughly that of the slowest worker, not the sum of all workers.
+
+\section{Committee}
+
+Several agents with different perspectives answer the same question; a judge weighs their answers.
+
+\begin{algo}
+flow main(question: text) {
+    [clinician, statistician, ethicist] = par {
+        ClinicalExpert(question), StatsExpert(question), EthicsExpert(question)
+    }
+    verdict = Judge(clinician, statistician, ethicist)
+    emit verdict
+}
+\end{algo}
+
+\textbf{Use when} decisions benefit from diverse viewpoints, or to reduce the errors of any single agent. Give the members different roles, and if possible different models.
+
+\section{Critic and revise}
+
+A generator drafts, a critic scores, and the generator revises when the score is low.
+
+\begin{algo}
+flow main(brief: text) {
+    draft = Writer(brief)
+    if Critic(draft) < 0.8 {
+        draft = Writer(brief, tone = "more rigorous, address the critic's points")
+    }
+    if Critic(draft) < 0.8 {
+        draft = Writer(brief, tone = "concise and fully referenced")
+    }
+    emit draft
+}
+\end{algo}
+
+\begin{note}
+\algolang\ has no unbounded loops. Revision rounds are written out, so every program is guaranteed to finish and its maximum number of agent calls---and therefore its maximum cost---can be read from the source. This is a deliberate design choice, not an omission.
+\end{note}
+
+\section{Router}
+
+A classifier agent decides which specialist handles the input.
+
+\begin{algo}
+flow main(query: text) {
+    technical = IsTechnical(query)          // returns score
+    if technical >= 0.5 {
+        answer = TechSupport(query)
+    } else {
+        answer = GeneralHelp(query)
+    }
+    emit answer
+}
+\end{algo}
+
+\section{Guardrail}
+
+A checking agent screens input before the main work begins.
+
+\begin{algo}
+agent SafetyCheck(request: text) -> bool {
+    role "Safety reviewer"
+    goal "Answer true only if this request is safe and appropriate to fulfil: {request}"
+}
+
+flow main(request: text) {
+    safe = SafetyCheck(request)
+    if safe == true {
+        emit Assistant(request)
+    } else {
+        emit Refusal(request)
+    }
+}
+\end{algo}
+
+\section{Human-in-the-loop}
+
+Place a confidence gate on the agent whose output matters most, and run with \code{--interactive} where a person is present.
+
+\begin{algo}
+agent Grader(answer: text, rubric: text) -> score {
+    role  "Examiner"
+    goal  "Grade {answer} against {rubric}; 0 to 1"
+    policy { require human when confidence < 0.85 }
+}
+\end{algo}
+
+\section{Separation of duties}
+
+The agent that \emph{decides} must not be the agent that \emph{audits}. Keep them separate, with separate policies.
+
+\begin{algo}
+agent Decider(application: text) -> score {
+    goal   "Score {application} for the scholarship criteria only"
+    policy { forbid gender, caste, religion  require human when confidence < 0.8 }
+}
+
+agent FairnessAuditor(decisions: list) -> text {
+    role "Independent fairness auditor"
+    goal "Review {decisions} for patterns of unfair treatment and explain any concerns"
+}
+\end{algo}
+
+\begin{ethics}[Why separation matters]
+An agent asked to both decide and justify its own fairness has a conflict of interest, just as a person would. Separate agents make the audit independent, appear as separate entries in the audit log, and can be given different models and different reviewers.
+\end{ethics}
+
+\section{Choosing a pattern}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}L{3.6cm}Y@{}}
+\toprule
+\thead{If you need…} & \thead{Use}\\
+\goldrule
+Stages with different skills & Pipeline\\
+Speed on decomposable work & Fan-out / fan-in\\
+Robust decisions & Committee\\
+Higher quality output & Critic and revise\\
+Different handling per input & Router\\
+Safety before work begins & Guardrail\\
+Accountable decisions about people & Human-in-the-loop + separation of duties\\
+\bottomrule
+\end{tabularx}
+\end{center}

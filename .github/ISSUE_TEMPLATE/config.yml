@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Security vulnerability
+    url: https://github.com/drssnaiml1-cell/algolang/security/advisories/new
+    about: Please report security problems privately.
+  - name: Documentation
+    url: https://drssnaiml1-cell.github.io/algolang/
+    about: Guides, the language manual and the domain library.

@@ -1,0 +1,298 @@
+% ─────────────────────────────────────────────────────────────────────
+%  algolang-docs.sty — house style for the AlgoLang documentation
+%  AlgoProfessor AI R&D Solutions · navy & gold
+%  Engine: XeLaTeX or LuaLaTeX (uses fontspec).
+% ─────────────────────────────────────────────────────────────────────
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{algolang-docs}[2026/10/28 AlgoLang documentation style]
+
+\RequirePackage[a4paper,top=26mm,bottom=26mm,left=27mm,right=24mm,headheight=15pt]{geometry}
+\RequirePackage{fontspec}
+\RequirePackage{xcolor}
+\RequirePackage{graphicx}
+\RequirePackage{tikz}
+\usetikzlibrary{shapes.geometric,positioning,arrows.meta,calc,shadows,fit,backgrounds}
+\RequirePackage{titlesec}
+\RequirePackage{titletoc}
+\RequirePackage{fancyhdr}
+\RequirePackage{booktabs}
+\RequirePackage{tabularx}
+\RequirePackage{array}
+\RequirePackage{longtable}
+\RequirePackage{enumitem}
+\RequirePackage{listings}
+\RequirePackage[most]{tcolorbox}
+\RequirePackage{microtype}
+\RequirePackage{etoolbox}
+\RequirePackage{ragged2e}
+\RequirePackage[hidelinks,bookmarksnumbered,pdfusetitle]{hyperref}
+\RequirePackage{bookmark}
+
+% ── colours ────────────────────────────────────────────────────────────
+\definecolor{navy}{HTML}{0B1F3A}
+\definecolor{navy2}{HTML}{1D3B66}
+\definecolor{navylight}{HTML}{E8EDF5}
+\definecolor{gold}{HTML}{C9A227}
+\definecolor{goldlight}{HTML}{F3EFE1}
+\definecolor{ink}{HTML}{1B1B1B}
+\definecolor{muted}{HTML}{5A6270}
+\definecolor{rule}{HTML}{D9D4C3}
+\definecolor{cautionred}{HTML}{7A1020}
+\definecolor{cautionbg}{HTML}{FBEDEF}
+\definecolor{codebg}{HTML}{F7F6F1}
+\definecolor{strgreen}{HTML}{2F6B3A}
+\definecolor{cmtgrey}{HTML}{7C8591}
+\definecolor{termbg}{HTML}{0E1A2B}
+\definecolor{termfg}{HTML}{E6E9EF}
+
+\hypersetup{colorlinks=true,linkcolor=navy2,urlcolor=navy2,citecolor=navy2}
+
+% ── fonts (with fallbacks so the source builds on any TeX Live / Overleaf) ──
+\IfFontExistsTF{TeX Gyre Pagella}
+  {\setmainfont{TeX Gyre Pagella}}
+  {\setmainfont{texgyrepagella}[Extension=.otf,UprightFont=*-regular,BoldFont=*-bold,
+     ItalicFont=*-italic,BoldItalicFont=*-bolditalic]}
+\IfFontExistsTF{Inter}
+  {\setsansfont{Inter}[BoldFont={Inter SemiBold},BoldItalicFont={Inter SemiBold Italic}]
+   \newfontfamily\displayfont{Inter}[UprightFont={Inter Bold},BoldFont={Inter ExtraBold}]
+   \newfontfamily\lightfont{Inter Light}}
+  {\setsansfont{texgyreheros}[Extension=.otf,UprightFont=*-regular,BoldFont=*-bold,
+     ItalicFont=*-italic,BoldItalicFont=*-bolditalic]
+   \newfontfamily\displayfont{texgyreheros}[Extension=.otf,UprightFont=*-bold,BoldFont=*-bold]
+   \newfontfamily\lightfont{texgyreheros}[Extension=.otf,UprightFont=*-regular]}
+\IfFontExistsTF{DejaVu Sans Mono}
+  {\setmonofont{DejaVu Sans Mono}[Scale=0.84]}
+  {\setmonofont{DejaVuSansMono}[Extension=.ttf,Scale=0.84,BoldFont=*-Bold]}
+
+\linespread{1.08}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt plus 1pt}
+\setlength{\emergencystretch}{3em}
+\color{ink}
+
+% ── headings ───────────────────────────────────────────────────────────
+\newcommand{\partbackground}{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[navy] (current page.south west) rectangle (current page.north east);
+    \fill[gold] (current page.south west) rectangle ([yshift=6mm]current page.south east);
+    \node[opacity=0.10] at ([xshift=-45mm,yshift=62mm]current page.south east) {\algologo[2.6]};
+  \end{tikzpicture}}
+\newcommand{\docpart}[1]{\clearpage\AddToHookNext{shipout/background}{\partbackground}\part{#1}}
+\titleformat{\part}[display]
+  {\thispagestyle{empty}\color{white}\displayfont\centering}
+  {\vspace*{50mm}{\color{gold}\Large\addfontfeature{LetterSpace=20}PART \thepart}}
+  {14pt}
+  {\fontsize{34}{40}\selectfont}
+  [\vspace{10mm}{\color{gold}\rule{40mm}{1.2pt}}]
+\titleformat{\chapter}[display]
+  {\sffamily\color{navy}}
+  {\begin{tikzpicture}[baseline]
+     \node[fill=navy,text=gold,minimum width=16mm,minimum height=16mm,
+           font=\displayfont\fontsize{30}{30}\selectfont,inner sep=0pt]{\thechapter};
+   \end{tikzpicture}}
+  {12pt}
+  {\displayfont\fontsize{26}{31}\selectfont\raggedright\hyphenpenalty=10000}
+  [\vspace{2pt}{\color{gold}\titlerule[1.4pt]}]
+\titlespacing*{\chapter}{0pt}{0pt}{22pt}
+\titleformat{name=\chapter,numberless}[display]
+  {\sffamily\color{navy}}{}{0pt}
+  {\displayfont\fontsize{26}{31}\selectfont}
+  [\vspace{2pt}{\color{gold}\titlerule[1.4pt]}]
+\titlespacing*{name=\chapter,numberless}{0pt}{0pt}{22pt}
+\titleformat{\section}{\sffamily\bfseries\Large\color{navy}}{{\color{gold}\thesection}}{0.8em}{}
+\titleformat{\subsection}{\sffamily\bfseries\large\color{navy2}}{{\color{gold}\thesubsection}}{0.7em}{}
+\titleformat{\subsubsection}{\sffamily\bfseries\normalsize\color{navy2}}{}{0em}{}
+\titlespacing*{\section}{0pt}{16pt}{6pt}
+\titlespacing*{\subsection}{0pt}{12pt}{4pt}
+\titlespacing*{\subsubsection}{0pt}{9pt}{2pt}
+\setcounter{secnumdepth}{2}
+\setcounter{tocdepth}{1}
+
+
+% ── table of contents ─────────────────────────────────────────────────
+\titlecontents{part}[0pt]{\addvspace{14pt}\sffamily\bfseries\color{gold}\addfontfeature{LetterSpace=10}}
+  {PART \thecontentslabel\quad\color{navy}}{}{\hfill}[\addvspace{2pt}]
+\titlecontents{chapter}[2.4em]{\addvspace{5pt}\sffamily\bfseries\color{navy}}
+  {\contentslabel[\color{gold}\thecontentslabel]{2.4em}}{}{\titlerule*[0.6pc]{.}\contentspage}
+\titlecontents{section}[4.8em]{\small\color{ink}}
+  {\contentslabel[\color{muted}\thecontentslabel]{2.4em}}{}{\titlerule*[0.6pc]{.}\contentspage}
+
+% ── page style ────────────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyhead[L]{\sffamily\footnotesize\color{muted}\textcolor{navy}{\bfseries AlgoLang}\enspace Documentation\enspace·\enspace v0.1}
+\fancyhead[R]{\sffamily\footnotesize\color{muted}\nouppercase{\leftmark}}
+\fancyfoot[R]{\sffamily\footnotesize\bfseries\color{navy}\thepage}
+\fancyfoot[L]{\sffamily\scriptsize\color{muted}Dr.\ S.\ Satyanarayana, Ph.D., PDF (AI) · AlgoProfessor AI R\&D Solutions}
+\renewcommand{\chaptermark}[1]{\markboth{\ifnum\value{chapter}>0 \thechapter.\enspace\fi #1}{}}
+\newcommand{\appendixmarks}{\renewcommand{\chaptermark}[1]{\markboth{Appendix \thechapter.\enspace ##1}{}}}
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot[R]{\sffamily\footnotesize\bfseries\color{navy}\thepage}
+  \fancyfoot[L]{\sffamily\scriptsize\color{muted}Dr.\ S.\ Satyanarayana, Ph.D., PDF (AI) · AlgoProfessor AI R\&D Solutions}
+  \renewcommand{\headrulewidth}{0pt}}
+\AtBeginDocument{\renewcommand{\headrule}{\ifdim\headrulewidth>0pt{\color{gold}\hrule height\headrulewidth}\fi}}
+\renewcommand{\headrulewidth}{0.6pt}
+
+% ── lists ─────────────────────────────────────────────────────────────
+\setlist{topsep=3pt,itemsep=2pt,parsep=0pt}
+\setlist[itemize,1]{label={\color{gold}\rule[0.22ex]{0.42em}{0.42em}}}
+\setlist[itemize,2]{label={\color{navy2}\textbullet}}
+\setlist[enumerate,1]{label={\color{navy}\sffamily\bfseries\arabic*.}}
+
+% ── tables ────────────────────────────────────────────────────────────
+\newcolumntype{L}[1]{>{\RaggedRight\arraybackslash}p{#1}}
+\newcolumntype{Y}{>{\RaggedRight\arraybackslash}X}
+\renewcommand{\arraystretch}{1.25}
+\newcommand{\thead}[1]{\sffamily\bfseries\small\color{navy}#1}
+\newcommand{\goldrule}{\arrayrulecolor{gold}\midrule\arrayrulecolor{black}}
+\RequirePackage{colortbl}
+
+% ── inline helpers ────────────────────────────────────────────────────
+\newcommand{\code}[1]{\texttt{\color{navy2}#1}}
+\newcommand{\kw}[1]{\texttt{\bfseries\color{navy}#1}}
+\newcommand{\file}[1]{\texttt{\color{muted}#1}}
+\newcommand{\algolang}{\textsf{\bfseries\color{navy}Algo\textcolor{gold}{Lang}}}
+\newcommand{\errcode}[1]{\textsf{\bfseries\color{cautionred}#1}}
+
+% ── code listings ─────────────────────────────────────────────────────
+\lstdefinelanguage{AlgoLang}{
+  morekeywords={agent,flow,model,tool,par,for,in,if,else,emit,true,false},
+  morekeywords=[2]{role,goal,uses,policy},
+  morekeywords=[3]{budget,tokens,retry,timeout,require,human,when,confidence,forbid},
+  morekeywords=[4]{text,score,list,json,bool},
+  sensitive=true,
+  morecomment=[l]{//},
+  morestring=[b]",
+}
+\lstdefinelanguage{AlgoJSON}{morestring=[b]",sensitive=true}
+\lstset{
+  basicstyle=\ttfamily\small\color{ink},
+  keywordstyle=\bfseries\color{navy},
+  keywordstyle=[2]\bfseries\color{navy2},
+  keywordstyle=[3]\color{gold!75!black}\bfseries,
+  keywordstyle=[4]\color{navy2}\itshape,
+  commentstyle=\color{cmtgrey}\itshape,
+  stringstyle=\color{strgreen},
+  showstringspaces=false,
+  columns=fullflexible,
+  keepspaces=true,
+  breaklines=true,
+  breakatwhitespace=false,
+  postbreak=\mbox{\textcolor{gold}{$\hookrightarrow$}\space},
+  tabsize=4,
+  upquote=true,
+  extendedchars=true,
+  literate={✓}{{✓}}1 {✗}{{✗}}1 {→}{{→}}1 {←}{{←}}1 {▶}{{▶}}1 {«}{{«}}1 {»}{{»}}1
+           {⚠}{{⚠}}1 {■}{{■}}1 {•}{{•}}1 {—}{{—}}1 {–}{{–}}1 {·}{{·}}1 {…}{{…}}1 {✔}{{✔}}1
+           {≥}{{≥}}1 {≤}{{≤}}1 {─}{{─}}1 {├}{{├}}1 {└}{{└}}1 {│}{{│}}1 {×}{{×}}1 {é}{{é}}1,
+  numbers=none,
+  aboveskip=0pt,belowskip=0pt,
+}
+\lstdefinestyle{python}{language=Python,
+  morekeywords={self,None,True,False},
+  keywordstyle=\bfseries\color{navy},
+  stringstyle=\color{strgreen}}
+
+% Source code boxes
+\newtcblisting{algo}[1][]{
+  enhanced,breakable,listing only,
+  colback=codebg,colframe=navy,boxrule=0pt,leftrule=3pt,arc=2pt,outer arc=2pt,
+  left=8pt,right=6pt,top=5pt,bottom=5pt,
+  listing options={language=AlgoLang},
+  fonttitle=\sffamily\footnotesize\bfseries,coltitle=gold,
+  attach boxed title to top right={yshift=-2.2mm,xshift=-3mm},
+  boxed title style={colback=navy,arc=1pt,boxrule=0pt,left=4pt,right=4pt,top=1pt,bottom=1pt},
+  before skip=8pt,after skip=10pt,
+  #1}
+\newtcblisting{pycode}[1][]{
+  enhanced,breakable,listing only,
+  colback=codebg,colframe=navy2,boxrule=0pt,leftrule=3pt,arc=2pt,
+  left=8pt,right=6pt,top=5pt,bottom=5pt,
+  listing options={style=python},
+  fonttitle=\sffamily\footnotesize\bfseries,coltitle=gold,
+  attach boxed title to top right={yshift=-2.2mm,xshift=-3mm},
+  boxed title style={colback=navy2,arc=1pt,boxrule=0pt,left=4pt,right=4pt,top=1pt,bottom=1pt},
+  before skip=8pt,after skip=10pt,
+  #1}
+\newtcolorbox{plainbox}[1][]{
+  enhanced,breakable,
+  colback=codebg,colframe=muted,boxrule=0pt,leftrule=3pt,arc=2pt,
+  left=8pt,right=6pt,top=5pt,bottom=5pt,
+  fonttitle=\sffamily\footnotesize\bfseries,coltitle=gold,
+  attach boxed title to top right={yshift=-2.2mm,xshift=-3mm},
+  boxed title style={colback=muted,arc=1pt,boxrule=0pt,left=4pt,right=4pt,top=1pt,bottom=1pt},
+  before skip=8pt,after skip=10pt,
+  #1}
+\newenvironment{plaincode}[1][]
+  {\VerbatimEnvironment\begin{plainbox}[#1]%
+   \begin{Verbatim}[fontsize=\small,breaklines,breakanywhere,
+     breaksymbolleft={\textcolor{gold}{\tiny$\hookrightarrow$}},breakindent=1.2em]}
+  {\end{Verbatim}\end{plainbox}}
+
+% Terminal: dark navy, light text (fancyvrb: Unicode-safe at line starts)
+\RequirePackage{fvextra}
+\newtcolorbox{terminalbox}{enhanced,breakable,
+  colback=termbg,colframe=termbg,colupper=termfg,boxrule=0pt,arc=3pt,
+  left=9pt,right=6pt,top=16pt,bottom=7pt,
+  overlay={
+    \fill[cautionred!80] ([xshift=9pt,yshift=-7pt]frame.north west) circle (2.1pt);
+    \fill[gold] ([xshift=17pt,yshift=-7pt]frame.north west) circle (2.1pt);
+    \fill[strgreen!80] ([xshift=25pt,yshift=-7pt]frame.north west) circle (2.1pt);
+    \node[anchor=north east,font=\sffamily\tiny\color{termfg!60},inner sep=3pt]
+      at ([yshift=-1pt]frame.north east) {terminal};},
+  before skip=8pt,after skip=10pt}
+\newenvironment{terminal}
+  {\VerbatimEnvironment\begin{terminalbox}%
+   \begin{Verbatim}[formatcom=\color{termfg},fontsize=\footnotesize,breaklines,breakanywhere,
+     breaksymbolleft={\textcolor{gold}{\tiny$\hookrightarrow$}},breakindent=1.2em]}
+  {\end{Verbatim}\end{terminalbox}}
+
+% ── callouts ──────────────────────────────────────────────────────────
+\newtcolorbox{note}[1][Note]{enhanced,colback=navylight,colframe=navy,
+  boxrule=0pt,leftrule=3pt,arc=2pt,left=9pt,right=8pt,top=6pt,bottom=6pt,
+  fontupper=\small,before upper={{\sffamily\bfseries\color{navy}#1.\enspace}},
+  before skip=8pt,after skip=8pt}
+\newtcolorbox{tip}[1][Tip]{enhanced,colback=goldlight,colframe=gold,
+  boxrule=0pt,leftrule=3pt,arc=2pt,left=9pt,right=8pt,top=6pt,bottom=6pt,
+  fontupper=\small,before upper={{\sffamily\bfseries\color{gold!70!black}#1.\enspace}},
+  before skip=8pt,after skip=8pt}
+\newtcolorbox{caution}[1][Caution]{enhanced,colback=cautionbg,colframe=cautionred,
+  boxrule=0pt,leftrule=3pt,arc=2pt,left=9pt,right=8pt,top=6pt,bottom=6pt,
+  fontupper=\small,before upper={{\sffamily\bfseries\color{cautionred}#1.\enspace}},
+  before skip=8pt,after skip=8pt}
+\newtcolorbox{ethics}[1][Responsible AI]{enhanced,colback=white,colframe=gold,
+  boxrule=0.8pt,arc=2pt,left=9pt,right=8pt,top=6pt,bottom=6pt,
+  fontupper=\small,
+  title={\sffamily\bfseries\small #1},coltitle=navy,colbacktitle=goldlight,
+  attach boxed title to top left={xshift=8pt,yshift=-2.5mm},
+  boxed title style={boxrule=0.8pt,colframe=gold,arc=1pt},
+  before skip=10pt,after skip=8pt,top=9pt}
+\newtcolorbox{definitionbox}[1]{enhanced,breakable,colback=white,colframe=navy,
+  boxrule=0.6pt,arc=2pt,left=9pt,right=8pt,top=6pt,bottom=6pt,
+  title={\sffamily\bfseries\small #1},colbacktitle=navy,coltitle=white,
+  before skip=8pt,after skip=8pt}
+
+% ── shields.io-style badges ───────────────────────────────────────────
+\newcommand{\badge}[3][gold]{%
+  \tikz[baseline=(L.base)]{%
+    \node[fill=navy2,text=white,font=\sffamily\scriptsize,inner xsep=5pt,inner ysep=3.2pt,
+          anchor=east,text height=1.6ex,text depth=0.4ex](L) at (0,0){#2};
+    \node[fill=#1,text=navy,font=\sffamily\scriptsize\bfseries,inner xsep=5pt,inner ysep=3.2pt,
+          anchor=west,text height=1.6ex,text depth=0.4ex](R) at (0,0){#3};
+  }}
+
+% ── logo: an agent network inside a gold ring ─────────────────────────
+\newcommand{\algologo}[1][1]{%
+  \begin{tikzpicture}[scale=#1,every node/.style={transform shape}]
+    \draw[gold,line width=2.2pt] (0,0) circle (1.55);
+    \draw[gold!60,line width=0.6pt] (0,0) circle (1.38);
+    \coordinate (A) at (90:0.82);  \coordinate (B) at (210:0.82); \coordinate (C) at (330:0.82);
+    \coordinate (O) at (0,0);
+    \draw[white,line width=1.4pt] (A)--(B)--(C)--cycle;
+    \draw[white,line width=1.0pt] (A)--(O) (B)--(O) (C)--(O);
+    \foreach \p in {A,B,C}{\fill[white] (\p) circle (0.22); \fill[navy] (\p) circle (0.11);}
+    \fill[gold] (O) circle (0.28);
+    \fill[navy] (O) circle (0.12);
+  \end{tikzpicture}}
+
+\endinput

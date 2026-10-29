@@ -1,0 +1,594 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AlgoLang Studio</title>
+<style>
+:root{
+  --navy:#0b1f3a; --navy2:#1d3b66; --navy3:#2c4f80; --gold:#c9a227; --goldlight:#f3efe1;
+  --ink:#1b1b1b; --muted:#5a6270; --line:#e3e1d9; --bg:#f7f6f1; --panel:#ffffff;
+  --red:#a01020; --redbg:#fbedef; --green:#1d6b35; --amber:#9a5b00;
+  --code:"Cascadia Code","JetBrains Mono","DejaVu Sans Mono",Consolas,Menlo,monospace;
+  --ui:"Inter","Segoe UI",system-ui,-apple-system,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font:14px/1.45 var(--ui)}
+button{font:inherit;cursor:pointer}
+header{height:56px;background:var(--navy);color:#fff;display:flex;align-items:center;gap:10px;padding:0 14px;
+  border-bottom:3px solid var(--gold)}
+.brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:16px;white-space:nowrap}
+.brand b{color:var(--gold)}
+.brand small{font-weight:400;color:#c9d2e3;font-size:11px;margin-left:2px}
+.fname{background:var(--navy2);border:1px solid var(--navy3);color:#fff;border-radius:6px;padding:6px 9px;width:200px;font:13px var(--code)}
+.sp{flex:1}
+.btn{background:var(--navy2);color:#fff;border:1px solid var(--navy3);border-radius:6px;padding:6px 11px;white-space:nowrap}
+.btn:hover{background:var(--navy3)}
+.btn.gold{background:var(--gold);border-color:var(--gold);color:var(--navy);font-weight:700}
+.btn.gold:hover{filter:brightness(1.07)}
+.btn.ghost{background:transparent}
+.menu{position:relative}
+.menu-list{display:none;position:absolute;top:38px;left:0;background:#fff;color:var(--ink);border:1px solid var(--line);
+  border-radius:8px;box-shadow:0 10px 30px rgba(11,31,58,.18);min-width:290px;max-height:60vh;overflow:auto;z-index:20;padding:6px}
+.menu.open .menu-list{display:block}
+.menu-list .hd{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;padding:8px 10px 4px}
+.menu-list button{display:block;width:100%;text-align:left;background:none;border:0;padding:7px 10px;border-radius:6px;color:var(--ink)}
+.menu-list button:hover{background:var(--goldlight)}
+.toggle{display:flex;align-items:center;gap:7px;font-size:13px;color:#dfe5ef;white-space:nowrap}
+.toggle input{accent-color:var(--gold);width:16px;height:16px}
+main{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);height:calc(100% - 56px)}
+.left{display:flex;flex-direction:column;border-right:1px solid var(--line);min-height:0}
+.editor{position:relative;flex:1;display:flex;min-height:0;background:#fff;overflow:hidden}
+.gutter{width:46px;padding:12px 6px 12px 0;text-align:right;color:#9aa3b1;font:13px/21px var(--code);
+  background:#faf9f5;border-right:1px solid var(--line);user-select:none;overflow:hidden}
+.gutter div.err{color:#fff;background:var(--red);border-radius:0 4px 4px 0}
+.code-wrap{position:relative;flex:1;overflow:hidden}
+.code-wrap pre,.code-wrap textarea{position:absolute;inset:0;margin:0;padding:12px 14px;font:13px/21px var(--code);
+  white-space:pre;tab-size:4;border:0;overflow:auto}
+.code-wrap pre{pointer-events:none;color:var(--ink)}
+.code-wrap textarea{background:transparent;color:transparent;caret-color:var(--navy);resize:none;outline:none}
+.code-wrap textarea::selection{background:rgba(201,162,39,.35)}
+.t-kw{color:var(--navy);font-weight:700}.t-cl{color:var(--navy2);font-weight:700}
+.t-po{color:#8a6a07;font-weight:700}.t-ty{color:var(--navy3);font-style:italic}
+.t-str{color:#2f6b3a}.t-cm{color:#7c8591;font-style:italic}.t-num{color:#8a3b8f}
+.t-ag{color:#0b5c8c;font-weight:600}.t-ph{color:#b06000;font-weight:600}
+.status{display:flex;align-items:center;gap:8px;padding:7px 12px;border-top:1px solid var(--line);background:#fff;font-size:13px;min-height:36px}
+.dot{width:9px;height:9px;border-radius:50%;background:#bbb;flex:none}
+.dot.ok{background:var(--green)}.dot.bad{background:var(--red)}
+.right{display:flex;flex-direction:column;min-height:0;background:var(--panel)}
+.tabs{display:flex;gap:2px;padding:8px 10px 0;border-bottom:1px solid var(--line);background:#fbfaf6;overflow-x:auto}
+.tab{background:none;border:0;padding:8px 12px;border-bottom:3px solid transparent;color:var(--muted);font-weight:600;white-space:nowrap}
+.tab.on{color:var(--navy);border-color:var(--gold)}
+.tab .cnt{background:var(--red);color:#fff;border-radius:10px;padding:0 6px;font-size:11px;margin-left:4px}
+.pane{display:none;flex:1;overflow:auto;padding:14px}
+.pane.on{display:block}
+.card{border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:8px;padding:12px;margin-bottom:12px;background:#fff}
+.card h3{margin:0 0 8px;font-size:14px;color:var(--navy)}
+.inputs{display:grid;gap:8px}
+.inputs label{font-size:12px;color:var(--muted);font-weight:600}
+.inputs input,textarea.ask,select,input.txt{width:100%;border:1px solid #d6d2c4;border-radius:6px;padding:8px 10px;font:14px var(--ui);background:#fff}
+textarea.ask{min-height:92px;resize:vertical}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.muted{color:var(--muted);font-size:12.5px}
+.sumbar{background:var(--navy);color:#fff;border-radius:8px;padding:9px 12px;margin-bottom:10px;font-size:13px}
+.sumbar b{color:var(--gold)}
+.sumbar.bad{background:var(--red)}
+table{border-collapse:collapse;width:100%;font-size:12.5px}
+th{background:var(--goldlight);color:var(--navy);text-align:left;padding:6px 8px;border-bottom:2px solid var(--gold);white-space:nowrap}
+td{padding:6px 8px;border-bottom:1px solid #eee;vertical-align:top}
+td.ok{color:var(--green);font-weight:600}td.warn{color:var(--amber);font-weight:600}td.bad{color:var(--red);font-weight:600}
+ol.emit{margin:6px 0 0;padding-left:20px}ol.emit li{margin-bottom:6px}
+pre.py,pre.log{background:#0e1a2b;color:#e6e9ef;border-radius:8px;padding:12px;font:12px/1.5 var(--code);overflow:auto;white-space:pre-wrap}
+.problem{display:flex;gap:10px;padding:8px 10px;border:1px solid #f0d0d6;background:var(--redbg);border-radius:6px;margin-bottom:6px;cursor:pointer}
+.problem b{color:var(--red);font-family:var(--code)}
+.problem span{white-space:pre-wrap;font-family:var(--ui)}
+td.model{white-space:nowrap}
+.empty{color:var(--muted);text-align:center;padding:40px 10px}
+.empty svg{opacity:.5}
+#graph .gwrap{overflow-x:auto;padding-bottom:6px}
+#graph svg{display:block;height:auto;max-width:none;margin:0 auto}
+.note{background:#e8edf5;border-left:4px solid var(--navy);padding:9px 12px;border-radius:6px;font-size:13px;margin-bottom:10px}
+.warnbox{background:var(--goldlight);border-left:4px solid var(--gold);padding:9px 12px;border-radius:6px;font-size:13px;margin-bottom:10px}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:9px 16px;border-radius:8px;
+  border-bottom:3px solid var(--gold);opacity:0;transition:opacity .2s;pointer-events:none;z-index:50}
+.toast.on{opacity:1}
+.spin{display:inline-block;width:13px;height:13px;border:2px solid currentColor;border-right-color:transparent;border-radius:50%;animation:s .7s linear infinite;vertical-align:-2px}
+@keyframes s{to{transform:rotate(360deg)}}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.chip{border:1px solid #d6d2c4;background:#fff;border-radius:16px;padding:4px 10px;font-size:12px;color:var(--navy)}
+.chip.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.chip b{color:var(--gold)}
+.dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.dcard{border:1px solid var(--line);border-top:4px solid var(--gold);border-radius:8px;padding:10px;background:#fff;display:flex;flex-direction:column;gap:6px}
+.dcard h4{margin:0;font-size:14px;color:var(--navy)}
+.dcard .meta{font-size:11.5px;color:var(--muted)}
+.dcard .acts{display:flex;gap:6px;margin-top:auto}
+.btn.small{padding:4px 9px;font-size:12px}
+.btn.light{background:#fff;color:var(--navy);border-color:#cfd6e3}
+.btn.light:hover{background:var(--goldlight)}
+.tag{display:inline-block;border-radius:10px;padding:1px 7px;font-size:11px;font-weight:600;margin-right:3px}
+.tag.high{background:#fbe3e6;color:#a01020}.tag.medium{background:#fdf0d8;color:#8a5a00}.tag.low{background:#e3f4e6;color:#1d6b35}
+.tag.pat{background:#e8edf5;color:var(--navy2)}.tag.ppl{background:#efe7fb;color:#5b3a99}
+.stats{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-bottom:12px}
+.stat{background:var(--navy);color:#fff;border-radius:8px;padding:9px 10px;border-bottom:3px solid var(--gold)}
+.stat b{display:block;font-size:20px;color:var(--gold)}
+.stat span{font-size:11.5px;color:#d7deea}
+.kv{font-size:12.5px}.kv td:first-child{color:var(--muted);white-space:nowrap}
+@media (max-width:900px){
+  header{height:auto;flex-wrap:wrap;padding:8px}
+  main{grid-template-columns:1fr;grid-template-rows:55vh auto;height:auto}
+  .right{min-height:60vh}.fname{width:150px}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">
+    <svg width="28" height="28" viewBox="-1.7 -1.7 3.4 3.4" aria-hidden="true">
+      <circle r="1.55" fill="none" stroke="#c9a227" stroke-width="0.16"/>
+      <path d="M0,-0.82 L-0.71,0.41 L0.71,0.41 Z M0,-0.82 L0,0 M-0.71,0.41 L0,0 M0.71,0.41 L0,0" stroke="#fff" stroke-width="0.1" fill="none"/>
+      <circle cx="0" cy="-0.82" r="0.2" fill="#fff"/><circle cx="-0.71" cy="0.41" r="0.2" fill="#fff"/><circle cx="0.71" cy="0.41" r="0.2" fill="#fff"/>
+      <circle r="0.27" fill="#c9a227"/>
+    </svg>
+    <span>Algo<b>Lang</b> Studio <small id="ver"></small></span>
+  </div>
+  <input class="fname" id="fname" value="untitled.algo" aria-label="File name">
+  <button class="btn ghost" id="bNew" title="New program">New</button>
+  <div class="menu" id="mOpen"><button class="btn ghost" id="bOpen">Open ▾</button><div class="menu-list" id="openList"></div></div>
+  <div class="menu" id="mTpl"><button class="btn ghost" id="bTpl">Templates ▾</button><div class="menu-list" id="tplList"></div></div>
+  <button class="btn" id="bSave" title="Save (Ctrl+S)">Save</button>
+  <span class="sp"></span>
+  <a class="btn" href="/prompt" title="Describe a problem in plain English">💬 Prompt UI</a>
+  <label class="toggle" title="Use real Claude models (needs ANTHROPIC_API_KEY)"><input type="checkbox" id="live"> Live Claude</label>
+  <button class="btn" id="bCheck" title="Check for errors">Check</button>
+  <button class="btn gold" id="bRun" title="Run (Ctrl+Enter)">▶ Run</button>
+</header>
+
+<main>
+  <section class="left">
+    <div class="editor">
+      <div class="gutter" id="gutter"></div>
+      <div class="code-wrap">
+        <pre id="hl" aria-hidden="true"></pre>
+        <textarea id="src" spellcheck="false" autocapitalize="off" autocomplete="off" aria-label="AlgoLang source"></textarea>
+      </div>
+    </div>
+    <div class="status"><span class="dot" id="dot"></span><span id="statusText">Ready</span></div>
+  </section>
+
+  <section class="right">
+    <nav class="tabs">
+      <button class="tab on" data-p="results">Run &amp; Results</button>
+      <button class="tab" data-p="graph">Agent Graph</button>
+      <button class="tab" data-p="ask">✨ Ask AI</button>
+      <button class="tab" data-p="python">Python</button>
+      <button class="tab" data-p="problems">Problems<span class="cnt" id="pcnt" hidden>0</span></button>
+      <button class="tab" data-p="domains">Domains</button>
+      <button class="tab" data-p="batch">Batch</button>
+      <button class="tab" data-p="gov">Governance<span class="cnt" id="rcnt" hidden>0</span></button>
+    </nav>
+
+    <div class="pane on" id="p-results">
+      <div class="card"><h3>Inputs to <code>flow main</code></h3>
+        <div class="inputs" id="inputs"><div class="muted">Write or open a program with a <code>flow main</code>.</div></div>
+        <div class="row" style="margin-top:10px"><button class="btn gold" id="bRun2">▶ Run program</button>
+          <span class="muted" id="backendNote">Offline mock backend — free and repeatable.</span></div>
+      </div>
+      <div id="out"><div class="empty">Results appear here after you run a program.</div></div>
+    </div>
+
+    <div class="pane" id="p-graph"><div id="graph"><div class="empty">The agent graph appears when the program has no errors.</div></div></div>
+
+    <div class="pane" id="p-ask">
+      <div class="card"><h3>Describe what you want — an AI agent writes the AlgoLang</h3>
+        <div id="askNote"></div>
+        <textarea class="ask" id="askText" placeholder="Example: Build a team that reviews a research paper: plan criteria, review each in parallel, check ethics, and draft a decision letter. Send low-confidence decisions to a human."></textarea>
+        <div class="row" style="margin-top:8px">
+          <label class="toggle" style="color:var(--ink)"><input type="checkbox" id="askModify"> Change the current program instead of starting fresh</label>
+        </div>
+        <div class="row" style="margin-top:8px"><button class="btn gold" id="bAsk">✨ Write program</button>
+          <button class="btn" id="bUndo" hidden>Undo AI change</button></div>
+        <p class="muted">The AI's program is compiled by the real AlgoLang compiler. If there are errors, they are sent back to the AI to fix — up to 3 attempts. Only a program with zero errors is placed in the editor.</p>
+        <pre class="log" id="askLog" hidden></pre>
+      </div>
+      <div class="card"><h3>No API key? Start from a pattern</h3>
+        <div class="inputs">
+          <label for="tplPattern">Design pattern</label><select id="tplPattern"></select>
+          <label for="tplPurpose">What should it do?</label><input class="txt" id="tplPurpose" value="answer student questions about AI">
+          <label for="tplInput">Name of the input</label><input class="txt" id="tplInput" value="request">
+        </div>
+        <div class="row" style="margin-top:10px"><button class="btn gold" id="bTplGo">Create program</button>
+          <span class="muted">Includes human review, a token budget and protected-attribute rules.</span></div>
+      </div>
+    </div>
+
+    <div class="pane" id="p-python"><pre class="py" id="py">// The generated Python appears here.</pre></div>
+    <div class="pane" id="p-problems"><div id="problems"><div class="empty">No problems.</div></div></div>
+
+    <div class="pane" id="p-domains">
+      <div class="card"><h3>Domain library — <span id="dtotal">…</span> ready-made multi-agent programs</h3>
+        <input class="txt" id="dq" placeholder="Search in plain English, e.g. “triage insurance claims” or “screen CVs fairly”">
+        <div class="chips" id="dsectors"></div>
+      </div>
+      <div class="dgrid" id="dlist"></div>
+    </div>
+
+    <div class="pane" id="p-batch">
+      <div class="card"><h3>Batch: run the program in the editor over every row of a CSV</h3>
+        <p class="muted" style="margin-top:0">The first line of the CSV must hold column names that match the flow's inputs (<span id="binputs">…</span>). With one input, the first column is used.</p>
+        <div class="row"><input type="file" id="bfile" accept=".csv,text/csv">
+          <label class="muted">Workers <input class="txt" id="bworkers" type="number" value="8" min="1" max="64" style="width:70px"></label>
+          <button class="btn gold" id="bGo">▶ Run batch</button></div>
+        <textarea class="ask" id="bcsv" placeholder="…or paste CSV here" style="margin-top:8px;min-height:80px"></textarea>
+      </div>
+      <div id="bout"></div>
+    </div>
+
+    <div class="pane" id="p-gov">
+      <div id="govstats"></div>
+      <div class="card"><h3>Human review queue</h3>
+        <div class="row" style="margin-bottom:8px"><input class="txt" id="reviewer" placeholder="Your name (recorded with each decision)" style="max-width:280px">
+          <label class="toggle" style="color:var(--ink)"><input type="checkbox" id="rall"> Show decided items too</label></div>
+        <div id="rlist"></div>
+      </div>
+      <div class="card"><h3>Organisation policy</h3><div id="orgpol"></div></div>
+    </div>
+  </section>
+</main>
+<div class="toast" id="toast"></div>
+
+<script>
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const post = (u, b) => fetch(u, {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(b)}).then(r => r.json());
+const get = u => fetch(u).then(r => r.json());
+let status = {}, summary = null, lastProblems = [], undoSource = null, checkTimer = null;
+
+const STARTER = `// Welcome to AlgoLang Studio — every unit of work is an agent.
+// Press ▶ Run (Ctrl+Enter). Try the Agent Graph tab, or ✨ Ask AI to write a program for you.
+
+model smart = "claude-sonnet-5-5"
+model fast  = "claude-haiku-5-5"
+
+agent Explainer(topic: text) -> text {
+    role  "Friendly professor"
+    goal  "Explain {topic} to a first-year student in 5 sentences"
+    model fast
+}
+
+agent QuizMaker(lesson: text) -> list {
+    role  "Exam setter"
+    goal  "Write three short quiz questions on this lesson: {lesson}"
+    model fast
+}
+
+agent Checker(lesson: text) -> score {
+    role  "Senior reviewer"
+    goal  "Score this lesson 0 to 1 for accuracy: {lesson}"
+    model smart
+    policy {
+        require human when confidence < 0.70
+    }
+}
+
+flow main(topic: text) {
+    lesson = Explainer(topic)
+    [quiz, quality] = par { QuizMaker(lesson), Checker(lesson) }
+    if quality < 0.75 {
+        lesson = Explainer(topic)
+    }
+    emit lesson, quiz
+}
+`;
+
+// ── editor: highlighting, gutter, keys ─────────────────────────────
+const KW = new Set("agent flow model tool par for in if else emit true false".split(" "));
+const CL = new Set("role goal uses policy".split(" "));
+const PO = new Set("budget tokens retry timeout require human when confidence forbid".split(" "));
+const TY = new Set("text score list json bool".split(" "));
+function highlight(src){
+  const re = /(\/\/[^\n]*)|("(?:[^"\\\n]|\\.)*"?)|(\b\d+(?:\.\d+)?\b)|([A-Za-z_][A-Za-z0-9_]*(?:\.[A-Za-z_][A-Za-z0-9_]*)*)|([\s\S])/g;
+  let out = "", m;
+  while ((m = re.exec(src))) {
+    if (m[1]) out += `<span class="t-cm">${esc(m[1])}</span>`;
+    else if (m[2]) out += `<span class="t-str">${esc(m[2]).replace(/\{(\w+)\}/g,'<span class="t-ph">{$1}</span>')}</span>`;
+    else if (m[3]) out += `<span class="t-num">${m[3]}</span>`;
+    else if (m[4]) {
+      const w = m[4];
+      if (KW.has(w)) out += `<span class="t-kw">${w}</span>`;
+      else if (CL.has(w)) out += `<span class="t-cl">${w}</span>`;
+      else if (PO.has(w)) out += `<span class="t-po">${w}</span>`;
+      else if (TY.has(w)) out += `<span class="t-ty">${w}</span>`;
+      else if (/^[A-Z]/.test(w)) out += `<span class="t-ag">${w}</span>`;
+      else out += esc(w);
+    } else out += esc(m[5]);
+  }
+  return out + "\n";
+}
+const ta = $("#src"), hl = $("#hl"), gutter = $("#gutter");
+function render(){
+  hl.innerHTML = highlight(ta.value);
+  const n = ta.value.split("\n").length, bad = new Set(lastProblems.map(p => p.line));
+  let g = ""; for (let i = 1; i <= n; i++) g += `<div class="${bad.has(i) ? "err" : ""}">${i}</div>`;
+  gutter.innerHTML = g; sync();
+}
+function sync(){ hl.scrollTop = ta.scrollTop; hl.scrollLeft = ta.scrollLeft; gutter.scrollTop = ta.scrollTop; }
+ta.addEventListener("scroll", sync);
+ta.addEventListener("input", () => { render(); clearTimeout(checkTimer); checkTimer = setTimeout(check, 500); save_local(); });
+ta.addEventListener("keydown", e => {
+  if (e.key === "Tab") { e.preventDefault(); const s = ta.selectionStart; ta.setRangeText("    ", s, ta.selectionEnd, "end"); ta.dispatchEvent(new Event("input")); }
+  if (e.key === "Enter" && !e.ctrlKey && !e.metaKey) {
+    const s = ta.selectionStart, line = ta.value.slice(0, s).split("\n").pop();
+    const ind = (line.match(/^\s*/) || [""])[0] + (/\{\s*$/.test(line) ? "    " : "");
+    e.preventDefault(); ta.setRangeText("\n" + ind, s, ta.selectionEnd, "end"); ta.dispatchEvent(new Event("input"));
+  }
+});
+document.addEventListener("keydown", e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === "Enter") { e.preventDefault(); run(); }
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "s") { e.preventDefault(); save(); }
+});
+function setSource(src, name){ ta.value = src; if (name) $("#fname").value = name; render(); check(); save_local(); }
+function save_local(){ try { localStorage.setItem("algo-src", ta.value); localStorage.setItem("algo-name", $("#fname").value); } catch(e){} }
+function toast(msg){ const t = $("#toast"); t.textContent = msg; t.classList.add("on"); setTimeout(() => t.classList.remove("on"), 2200); }
+
+// ── tabs & menus ───────────────────────────────────────────────────
+document.querySelectorAll(".tab").forEach(b => b.onclick = () => showTab(b.dataset.p));
+function showTab(p){
+  document.querySelectorAll(".tab").forEach(x => x.classList.toggle("on", x.dataset.p === p));
+  document.querySelectorAll(".pane").forEach(x => x.classList.toggle("on", x.id === "p-" + p));
+  if (p === "graph") graph(); if (p === "python") python();
+  if (p === "domains") loadDomains(); if (p === "gov") loadGov(); if (p === "batch") $("#binputs").textContent = (summary && summary.inputs.join(", ")) || "—";
+}
+for (const id of ["mOpen","mTpl"]) {
+  const m = $("#" + id); m.querySelector(".btn").onclick = e => { e.stopPropagation();
+    document.querySelectorAll(".menu").forEach(x => x !== m && x.classList.remove("open")); m.classList.toggle("open");
+    if (id === "mOpen" && m.classList.contains("open")) loadFiles(); };
+}
+document.addEventListener("click", () => document.querySelectorAll(".menu").forEach(x => x.classList.remove("open")));
+
+async function loadFiles(){
+  const r = await get("/api/files"), L = $("#openList");
+  const ws = r.files.filter(f => f.kind === "workspace"), ex = r.files.filter(f => f.kind === "example");
+  L.innerHTML = `<div class="hd">Your programs</div>` + (ws.length ? ws.map(f => `<button data-p="${esc(f.path)}">${esc(f.name)}</button>`).join("") : `<div class="muted" style="padding:4px 10px">None saved yet</div>`)
+    + `<div class="hd">Examples</div>` + ex.map(f => `<button data-p="${esc(f.path)}">${esc(f.name)}</button>`).join("");
+  L.querySelectorAll("button").forEach(b => b.onclick = async () => {
+    const o = await post("/api/open", {path:b.dataset.p});
+    if (o.ok) { setSource(o.source, o.name); toast("Opened " + o.name); } else toast(o.problem);
+  });
+}
+async function loadTemplates(){
+  const r = await get("/api/templates");
+  $("#tplList").innerHTML = `<div class="hd">Start from a design pattern</div>` + r.patterns.map(p => `<button data-id="${p.id}">${esc(p.title)}</button>`).join("");
+  $("#tplPattern").innerHTML = r.patterns.map(p => `<option value="${p.id}">${esc(p.title)}</option>`).join("");
+  $("#tplList").querySelectorAll("button").forEach(b => b.onclick = () => makeTemplate(b.dataset.id, $("#tplPurpose").value, $("#tplInput").value));
+}
+async function makeTemplate(pattern, purpose, input){
+  const r = await post("/api/template", {pattern, purpose, input});
+  if (r.ok) { setSource(r.source, pattern + "_program.algo"); toast("Created a " + pattern + " program"); } else toast(r.problem);
+}
+$("#bTplGo").onclick = () => makeTemplate($("#tplPattern").value, $("#tplPurpose").value, $("#tplInput").value);
+
+// ── check / problems / inputs ──────────────────────────────────────
+async function check(){
+  const r = await post("/api/check", {source: ta.value});
+  lastProblems = r.ok ? [] : r.diagnostics;
+  $("#dot").className = "dot " + (r.ok ? "ok" : "bad");
+  if (r.ok) { summary = r.summary;
+    $("#statusText").innerHTML = `No errors — <b>${summary.agents.length}</b> agent(s) · ${summary.flows.length} flow(s) · ${summary.tools.length} tool(s)`;
+    renderInputs();
+  } else $("#statusText").innerHTML = `<b style="color:var(--red)">${r.diagnostics.length} error(s)</b> — see Problems`;
+  const c = $("#pcnt"); c.hidden = r.ok; c.textContent = lastProblems.length;
+  $("#problems").innerHTML = r.ok ? `<div class="empty">No problems — the program compiles.</div>` :
+    lastProblems.map(p => `<div class="problem" data-l="${p.line}"><b>${p.code}</b><span>line ${p.line}: ${esc(p.msg)}</span></div>`).join("");
+  document.querySelectorAll(".problem").forEach(d => d.onclick = () => gotoLine(+d.dataset.l));
+  render();
+  if ($("#p-graph").classList.contains("on")) graph();
+  return r;
+}
+function gotoLine(n){
+  const lines = ta.value.split("\n"); let pos = 0; for (let i = 0; i < n - 1 && i < lines.length; i++) pos += lines[i].length + 1;
+  ta.focus(); ta.setSelectionRange(pos, pos + (lines[n-1] || "").length); ta.scrollTop = Math.max(0, (n - 5) * 21);
+}
+function renderInputs(){
+  const box = $("#inputs"), prev = {};
+  box.querySelectorAll("input").forEach(i => prev[i.dataset.k] = i.value);
+  if (!summary || !summary.inputs.length) { box.innerHTML = `<div class="muted">This flow takes no inputs.</div>`; return; }
+  const defaults = {topic:"Neural networks", paper:"LG-CEF: lesion-guided ensemble for diabetic retinopathy grading", request:"How do transformers work?"};
+  box.innerHTML = summary.inputs.map(k => `<label for="in-${k}">${esc(k)}</label><input id="in-${k}" data-k="${esc(k)}" value="${esc(prev[k] ?? defaults[k] ?? "")}" placeholder="Value for ${esc(k)}">`).join("");
+}
+
+// ── run ────────────────────────────────────────────────────────────
+async function run(){
+  showTab("results");
+  const c = await check(); if (!c.ok) { showTab("problems"); return; }
+  const args = {}; document.querySelectorAll("#inputs input").forEach(i => args[i.dataset.k] = i.value);
+  $("#out").innerHTML = `<div class="sumbar"><span class="spin"></span>&nbsp; Running agents…</div>`;
+  $("#bRun").disabled = $("#bRun2").disabled = true;
+  try {
+    const r = await post("/api/run", {source: ta.value, args, live: $("#live").checked, name: $("#fname").value.replace(/\.algo$/, "")});
+    showResult(r);
+  } finally { $("#bRun").disabled = $("#bRun2").disabled = false; }
+}
+function fmt(v){
+  if (Array.isArray(v)) return `<ol style="margin:0;padding-left:18px">${v.map(x => `<li>${esc(x)}</li>`).join("")}</ol>`;
+  return esc(v);
+}
+function showResult(r){
+  if (r.diagnostics) { showTab("problems"); return; }
+  const s = r.stats || {};
+  let h = r.ok
+    ? `<div class="sumbar">✓ Run complete · <b>${s.calls}</b> agent calls · ~${s.tokens} tokens · ${s.escalations} sent for human review · backend <b>${esc(r.backend)}</b></div>`
+    : `<div class="sumbar bad">✗ ${esc(r.problem)}</div>`;
+  if (r.ok && r.result) h += `<div class="card"><h3>Emitted results</h3><ol class="emit">${r.result.map(v => `<li>${fmt(v)}</li>`).join("")}</ol></div>`;
+  if (r.calls && r.calls.length) {
+    h += `<div class="card"><h3>Agent calls</h3><div style="overflow:auto"><table><tr><th>Agent</th><th>Model</th><th>Conf.</th><th>Status</th><th>Tokens</th><th>Output</th></tr>` +
+      r.calls.map(c => { const st = c.status, cls = st === "escalated" ? "warn" : (st === "ok" || st === "approved") ? "ok" : "bad";
+        const lab = {escalated:"⚠ human review", ok:"ok", approved:"✔ approved"}[st] || st;
+        return `<tr><td><b>${esc(c.agent)}</b></td><td class="model">${esc(c.model || "—")}</td><td>${c.confidence != null ? c.confidence.toFixed(2) : "—"}</td><td class="${cls}">${esc(lab)}</td><td>${c.tokens ?? "—"}</td><td>${c.output != null ? fmt(c.output) : esc(c.reason || c.error || "")}</td></tr>`; }).join("") +
+      `</table></div><p class="muted">Audit log: <code>${esc(r.audit)}</code></p></div>`;
+  }
+  if (r.log) h += `<details><summary class="muted">Console log</summary><pre class="log">${esc(r.log)}</pre></details>`;
+  $("#out").innerHTML = h;
+}
+
+// ── graph ──────────────────────────────────────────────────────────
+async function graph(){
+  const r = await post("/api/graph", {source: ta.value}), G = $("#graph");
+  if (!r.ok) { G.innerHTML = `<div class="empty">Fix the errors first — see Problems.</div>`; return; }
+  const ins = {}, depth = {}; r.edges.forEach(e => (ins[e.dst] ||= []).push(e.src));
+  r.nodes.forEach(n => depth[n.id] = 1 + Math.max(-1, ...(ins[n.id] || []).map(a => depth[a] ?? 0)));
+  const cols = {}; r.nodes.forEach(n => (cols[depth[n.id]] ||= []).push(n));
+  const W = 168, H = 50, GX = 18, GY = 44, P = 16, pos = {};
+  const rows = Object.values(cols), maxCols = Math.max(...rows.map(r => r.length));
+  const width = P*2 + maxCols*W + (maxCols-1)*GX, height = P*2 + rows.length*H + (rows.length-1)*GY;
+  rows.forEach((list, ri) => {
+    const rowW = list.length*W + (list.length-1)*GX, x0 = (width - rowW)/2;
+    list.forEach((n, i) => pos[n.id] = {x: x0 + i*(W+GX), y: P + ri*(H+GY)});
+  });
+  const style = {input:["#f3efe1","#0b1f3a","#c9a227"], agent:["#0b1f3a","#fff","#0b1f3a"], par:["#1d3b66","#fff","#c9a227"],
+                 cond:["#c9a227","#0b1f3a","#c9a227"], branch:["#fff","#0b1f3a","#0b1f3a"], emit:["#fff","#0b1f3a","#c9a227"]};
+  let svg = `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" font-family="Inter,Segoe UI,sans-serif">
+    <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#0b1f3a"/></marker></defs>`;
+  r.edges.forEach(e => { const a = pos[e.src], b = pos[e.dst]; if (!a || !b) return;
+    const x1 = a.x + W/2, y1 = a.y + H, x2 = b.x + W/2, y2 = b.y - 2, my = (y1 + y2)/2;
+    svg += `<path d="M${x1},${y1} C${x1},${my} ${x2},${my} ${x2},${y2}" fill="none" stroke="#0b1f3a" stroke-width="1.4" ${e.dashed ? 'stroke-dasharray="5 4"' : ""} marker-end="url(#ar)" opacity=".8"/>`; });
+  r.nodes.forEach(n => { const p = pos[n.id], [bg, fg, bd] = style[n.kind];
+    const rx = n.kind === "input" || n.kind === "emit" ? 25 : n.kind === "cond" ? 4 : 8;
+    svg += `<g><rect x="${p.x}" y="${p.y}" width="${W}" height="${H}" rx="${rx}" fill="${bg}" stroke="${bd}" stroke-width="${n.kind==="par"?2.4:1.4}" ${n.kind==="branch"?'stroke-dasharray="5 3"':""}/>
+      <text x="${p.x+W/2}" y="${p.y+21}" text-anchor="middle" font-size="13" font-weight="700" fill="${fg}">${esc(n.label.length>22?n.label.slice(0,21)+"…":n.label)}</text>
+      <text x="${p.x+W/2}" y="${p.y+38}" text-anchor="middle" font-size="10.5" fill="${fg}" opacity=".85">${esc(n.sub.length>28?n.sub.slice(0,27)+"…":n.sub)}</text></g>`; });
+  svg += `</svg>`;
+  G.innerHTML = `<div class="note">Top to bottom: how data flows between agents in <b>flow main</b>. Gold borders run in parallel; dashed boxes run only when their condition holds.</div><div class="gwrap">` + svg + `</div>`;
+}
+async function python(){ const r = await post("/api/python", {source: ta.value}); $("#py").textContent = r.ok ? r.python : "// Fix the errors first — see Problems."; }
+
+// ── ask AI ─────────────────────────────────────────────────────────
+$("#bAsk").onclick = async () => {
+  const req = $("#askText").value.trim(); if (!req) { toast("Describe what you want first"); return; }
+  const log = $("#askLog"); log.hidden = false; log.textContent = "Asking the AI to write your program…";
+  $("#bAsk").disabled = true; $("#bAsk").innerHTML = `<span class="spin"></span> Writing…`;
+  try {
+    const r = await post("/api/ask", {request: req, current: $("#askModify").checked ? ta.value : ""});
+    log.textContent = (r.log || []).join("\n") + (r.problem ? "\n" + r.problem : "");
+    if (r.ok) { undoSource = ta.value; setSource(r.source, $("#fname").value === "untitled.algo" ? "ai_program.algo" : $("#fname").value);
+      $("#bUndo").hidden = false; toast(`Program written in ${r.attempts} attempt(s) — it compiles`); }
+    else if (r.source) log.textContent += "\n\nThe AI could not produce an error-free program. Try rephrasing, or start from a pattern below.";
+  } finally { $("#bAsk").disabled = false; $("#bAsk").textContent = "✨ Write program"; }
+};
+$("#bUndo").onclick = () => { if (undoSource != null) { setSource(undoSource); undoSource = null; $("#bUndo").hidden = true; toast("Restored your previous program"); } };
+
+// ── header buttons ─────────────────────────────────────────────────
+$("#bRun").onclick = run; $("#bRun2").onclick = run;
+$("#bCheck").onclick = async () => { const r = await check(); toast(r.ok ? "No errors" : `${r.diagnostics.length} error(s)`); if (!r.ok) showTab("problems"); };
+$("#bNew").onclick = () => { if (confirm("Start a new program? Unsaved changes in the editor will be replaced.")) setSource(STARTER, "untitled.algo"); };
+async function save(){ const r = await post("/api/save", {name: $("#fname").value, source: ta.value});
+  if (r.ok) { $("#fname").value = r.name; toast("Saved " + r.path); } else toast(r.problem); }
+$("#bSave").onclick = save;
+
+// ── domain library ────────────────────────────────────────────────
+let dsector = "", dtimer = null;
+async function loadDomains(){
+  const r = await post("/api/domains", {q: $("#dq").value, sector: dsector});
+  $("#dtotal").textContent = r.total;
+  $("#dsectors").innerHTML = `<button class="chip ${dsector ? "" : "on"}" data-s="">All</button>` +
+    r.sectors.map(s => `<button class="chip ${dsector === s.id ? "on" : ""}" data-s="${s.id}">${esc(s.name)} <b>${s.packs}</b></button>`).join("");
+  $("#dsectors").querySelectorAll(".chip").forEach(b => b.onclick = () => { dsector = b.dataset.s; $("#dq").value = ""; loadDomains(); });
+  $("#dlist").innerHTML = r.packs.length ? r.packs.map(p => `<div class="dcard">
+      <h4>${esc(p.title)}</h4><div class="meta">${esc(p.sector_name)} · <code>${esc(p.id)}</code></div>
+      <div style="font-size:12.5px">${esc(p.description)}</div>
+      <div><span class="tag pat">${p.pattern}</span><span class="tag ${p.risk}">${p.risk} risk</span>${p.people ? '<span class="tag ppl">fairness rules</span>' : ""}</div>
+      <div class="meta">Agents: ${p.agents.map(esc).join(" → ")}</div>
+      <div class="acts"><button class="btn small" data-open="${p.id}">Open in editor</button><button class="btn small light" data-use="${p.id}">Use in my program</button></div></div>`).join("")
+    : `<div class="empty">No pack matches. Try other words.</div>`;
+  $("#dlist").querySelectorAll("[data-open]").forEach(b => b.onclick = async () => {
+    const x = await post("/api/pack", {id: b.dataset.open}); if (x.ok) { setSource(x.source, b.dataset.open.split(".")[1] + ".algo"); toast("Opened " + x.meta.title); showTab("results"); } });
+  $("#dlist").querySelectorAll("[data-use]").forEach(b => b.onclick = () => {
+    const id = b.dataset.use, alias = id.split(".")[1].split("_")[0];
+    setSource(`use pack ${id} as ${alias}\n` + ta.value, $("#fname").value); toast(`Added: use pack ${id} as ${alias} — call its agents as ${alias}.Name(…)`); });
+}
+$("#dq").addEventListener("input", () => { clearTimeout(dtimer); dsector = ""; dtimer = setTimeout(loadDomains, 250); });
+
+// ── batch ─────────────────────────────────────────────────────────
+$("#bfile").onchange = async e => { const f = e.target.files[0]; if (f) $("#bcsv").value = await f.text(); };
+$("#bGo").onclick = async () => {
+  if (!$("#bcsv").value.trim()) { toast("Choose or paste a CSV first"); return; }
+  $("#bout").innerHTML = `<div class="sumbar"><span class="spin"></span>&nbsp; Running the batch…</div>`;
+  const r = await post("/api/batch", {source: ta.value, csv: $("#bcsv").value, workers: +$("#bworkers").value || 8,
+                                      live: $("#live").checked, name: $("#fname").value.replace(/\.algo$/, "")});
+  if (r.diagnostics) { $("#bout").innerHTML = `<div class="sumbar bad">✗ The program has errors — see Problems</div>`; check(); return; }
+  if (!r.ok) { $("#bout").innerHTML = `<div class="sumbar bad">✗ ${esc(r.problem)}</div>`; return; }
+  const s = r.summary, st = Object.entries(s.status).map(([k, v]) => `${v} ${k}`).join(" · ");
+  const url = URL.createObjectURL(new Blob([r.csv], {type: "text/csv"}));
+  $("#bout").innerHTML = `<div class="sumbar">✓ ${s.rows} rows in ${r.seconds}s · ${st} · <b>${s.escalated_rows}</b> rows sent for human review · ~${s.tokens} tokens</div>
+    <div class="row" style="margin-bottom:8px"><a class="btn gold" download="batch_results.csv" href="${url}">⬇ Download results CSV</a>
+      ${s.escalated_rows ? `<button class="btn" onclick="showTab('gov')">Review escalated items</button>` : ""}</div>
+    <div class="card" style="overflow:auto"><table><tr><th>#</th>${r.inputs.map(i => `<th>${esc(i)}</th>`).join("")}<th>Status</th><th>Review</th><th>Outputs</th></tr>` +
+    r.rows.slice(0, 300).map(x => `<tr><td>${x.row}</td>${r.inputs.map(i => `<td>${esc(String(x.inputs[i]).slice(0, 60))}</td>`).join("")}
+      <td class="${x.status === "ok" ? "ok" : "bad"}">${x.status}</td><td class="${x.escalated ? "warn" : ""}">${x.escalated ? "⚠ " + x.escalated : "—"}</td>
+      <td>${esc((x.problem || x.outputs.join(" | ")).slice(0, 140))}</td></tr>`).join("") + `</table>${r.rows.length > 300 ? `<p class="muted">Showing 300 of ${r.rows.length} rows — download the CSV for all.</p>` : ""}</div>`;
+};
+
+// ── governance ────────────────────────────────────────────────────
+async function loadGov(){
+  const [rep, rv, cfg] = await Promise.all([get("/api/report"), get("/api/reviews"), get("/api/config")]);
+  const t = rep.totals || {}, chains = Object.entries(rep.chains || {}), bad = chains.filter(c => !c[1]);
+  $("#govstats").innerHTML = `<div class="stats">
+    <div class="stat"><b>${t.calls ?? 0}</b><span>agent calls</span></div>
+    <div class="stat"><b>${(t.tokens ?? 0).toLocaleString()}</b><span>tokens</span></div>
+    <div class="stat"><b>${rv.pending}</b><span>awaiting review</span></div>
+    <div class="stat"><b>${t.blocked ?? 0}</b><span>blocked by policy</span></div>
+    <div class="stat"><b>${t.cached ?? 0}</b><span>served from cache</span></div>
+    <div class="stat"><b>${bad.length ? "✗ " + bad.length : "✓ " + chains.length}</b><span>${bad.length ? "audit chains BROKEN" : "audit chains intact"}</span></div></div>
+    ${Object.keys(rep.programs || {}).length ? `<div class="card"><h3>Usage by program</h3><table><tr><th>Program</th><th>Calls</th><th>Tokens</th><th>Escalated</th><th>Blocked</th><th>Avg. confidence</th></tr>` +
+      Object.entries(rep.programs).sort((a, b) => b[1].tokens - a[1].tokens).map(([k, v]) => `<tr><td><b>${esc(k)}</b></td><td>${v.calls}</td><td>${v.tokens}</td><td>${v.escalated}</td><td>${v.blocked}</td><td>${v.avg_confidence ?? "—"}</td></tr>`).join("") +
+      `</table><p class="muted">Audit folder: <code>${esc(rep.audit_dir)}</code></p></div>` : ""}`;
+  renderReviews(rv);
+  const pol = cfg.policy || {};
+  $("#orgpol").innerHTML = `<table class="kv">
+    <tr><td>Config file</td><td>${cfg.path ? `<code>${esc(cfg.path)}</code>` : "none — defaults apply (create one with <code>algo init</code>)"}</td></tr>
+    <tr><td>Organisation</td><td>${esc(cfg.organisation || "—")}</td></tr>
+    <tr><td>Always forbidden</td><td>${(pol.forbid || []).map(esc).join(", ") || "—"}</td></tr>
+    <tr><td>Token budget cap</td><td>${pol.max_budget_tokens ?? "—"}</td></tr>
+    <tr><td>Human review below</td><td>${pol.min_human_below ?? "—"}</td></tr>
+    <tr><td>Allowed tools</td><td>${pol.allowed_tools ? pol.allowed_tools.map(esc).join(", ") : "any declared tool"}</td></tr>
+    <tr><td>Concurrency limit</td><td>${cfg.max_concurrency} model calls at once</td></tr>
+    <tr><td>Run token cap</td><td>${cfg.max_run_tokens ?? "—"}</td></tr>
+    <tr><td>Cache</td><td>${cfg.cache && cfg.cache.enabled ? "on for every agent" : "only agents with <code>cache</code> in their policy"}</td></tr>
+    <tr><td>Registered tools</td><td>${cfg.tools.map(t => `<code>${esc(t)}</code>`).join(" ")}</td></tr></table>`;
+}
+function renderReviews(rv){
+  $("#rcnt").hidden = !rv.pending; $("#rcnt").textContent = rv.pending;
+  const items = rv.items || [];
+  $("#rlist").innerHTML = items.length ? `<div style="overflow:auto"><table><tr><th>Program / agent</th><th>Confidence</th><th>Output</th><th>Status</th><th></th></tr>` +
+    items.map(i => `<tr><td><b>${esc(i.agent)}</b><br><span class="muted">${esc(i.program)} · ${esc(i.ts || "")}</span></td>
+      <td>${i.confidence.toFixed(2)} &lt; ${i.threshold.toFixed(2)}</td><td>${esc(String(i.output).slice(0, 160))}</td>
+      <td class="${i.status === "pending" ? "warn" : i.status === "approved" ? "ok" : "bad"}">${i.status}${i.reviewer ? `<br><span class="muted">${esc(i.reviewer)}</span>` : ""}</td>
+      <td style="white-space:nowrap">${i.status === "pending" ? `<button class="btn small" data-a="${i.id}">Approve</button> <button class="btn small light" data-r="${i.id}">Reject</button>` : ""}</td></tr>`).join("") + `</table></div>`
+    : `<div class="empty">Nothing waiting for review.</div>`;
+  const act = async (id, decision) => {
+    const r = await post("/api/review", {id, decision, reviewer: $("#reviewer").value});
+    if (!r.ok) { toast(r.problem); return; }
+    toast(decision === "approved" ? "Approved" : "Rejected"); renderReviews(await post("/api/reviews", {all: $("#rall").checked}));
+  };
+  $("#rlist").querySelectorAll("[data-a]").forEach(b => b.onclick = () => act(b.dataset.a, "approved"));
+  $("#rlist").querySelectorAll("[data-r]").forEach(b => b.onclick = () => act(b.dataset.r, "rejected"));
+}
+$("#rall").onchange = async () => renderReviews(await post("/api/reviews", {all: $("#rall").checked}));
+
+// ── start ──────────────────────────────────────────────────────────
+(async () => {
+  status = await get("/api/status"); $("#ver").textContent = "v" + status.version;
+  if (!status.live_ready) {
+    $("#live").disabled = true;
+    $("#live").parentElement.title = status.sdk ? "Set ANTHROPIC_API_KEY before starting Studio to enable live mode" : "Install the anthropic package and set ANTHROPIC_API_KEY to enable live mode";
+    $("#askNote").innerHTML = `<div class="warnbox">AI writing needs an API key. Set <code>ANTHROPIC_API_KEY</code> ${status.sdk ? "" : "and install the <code>anthropic</code> package (<code>install --live</code>) "}before starting Studio. Until then, start from a pattern below — no AI needed.</div>`;
+  }
+  $("#live").onchange = () => $("#backendNote").textContent = $("#live").checked ? "Live: real Claude models (uses API credits)." : "Offline mock backend — free and repeatable.";
+  loadTemplates();
+  let saved = null, name = null; try { saved = localStorage.getItem("algo-src"); name = localStorage.getItem("algo-name");
+    const h = localStorage.getItem("algo-handoff"); if (h) { const x = JSON.parse(h); saved = x.source; name = x.name; localStorage.removeItem("algo-handoff"); } } catch(e){}
+  setSource(saved || STARTER, name || "untitled.algo");
+})();
+</script>
+</body>
+</html>

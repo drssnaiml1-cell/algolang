@@ -1,0 +1,170 @@
+\chapter{Installation}
+\label{ch:install}
+
+\algolang\ needs only \textbf{Python 3.9 or newer}. The installers create a private virtual environment (\file{.venv}) inside the \algolang\ folder, so they never disturb other Python projects. Choose the route that suits you:
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}L{3.4cm}YL{3.3cm}@{}}
+\toprule
+\thead{Route} & \thead{Best for} & \thead{Install effort}\\
+\goldrule
+Windows installer & Students and labs on Windows PCs & Double-click\\
+Linux / macOS installer & Developers, servers, Mac laptops & One command\\
+Google Colab & Classrooms, no installation at all & Upload one file\\
+Local Jupyter & Notebook-style work on your own PC & One command\\
+Docker & Identical environments on any machine & Two commands\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Get the distribution}
+
+Unzip \file{AlgoLang\_v0.2.zip} to a folder of your choice, for example \file{D:\textbackslash algolang} on Windows or \file{\textasciitilde/algolang} on Linux and macOS. The folder contains:
+
+\begin{plaincode}[title=distribution layout]
+algolang/
+├── algo, algo.bat              the `algo` command (Linux/macOS, Windows)
+├── install.sh, install.bat     one-time installers
+├── algoc.py                    compiler
+├── algoruntime.py              runtime
+├── algomagic.py                Jupyter / Colab extension
+├── grammar.lark                formal grammar
+├── AlgoLang_Notebook.ipynb     self-contained notebook
+├── requirements.txt            lark
+├── requirements-live.txt       lark + anthropic (for --live)
+├── Dockerfile
+├── RUN_GUIDE.md, README.md
+├── examples/                   example programs, compiled output, run logs
+├── vscode-algolang/            VS Code syntax highlighting
+├── .vscode/tasks.json          Ctrl+Shift+B runs the open .algo file
+└── docs/                       this book (LaTeX source and PDF)
+\end{plaincode}
+
+\section{Windows}
+
+\begin{enumerate}
+  \item Install Python from \href{https://www.python.org/downloads/}{python.org}. On the first installer screen, tick \textbf{Add python.exe to PATH}.
+  \item Open the \algolang\ folder and double-click \file{install.bat}. It creates \file{.venv}, installs the parser and finishes with an environment check.
+  \item Open \emph{Command Prompt} in the folder (type \code{cmd} in the Explorer address bar) and run a program:
+\end{enumerate}
+
+\begin{terminal}
+D:\algolang> algo run examples\research_brief.algo --arg "topic=Blockchain data integrity"
+\end{terminal}
+
+To use \code{algo} from any folder, add the \algolang\ folder to your user \code{PATH} (\emph{Start} → \emph{Edit environment variables for your account} → \emph{Path} → \emph{New}). The installer prints the exact folder to add.
+
+\section{Linux and macOS}
+
+\begin{terminal}
+$ cd ~/algolang
+$ bash install.sh
+== AlgoLang installer ==
+✓ using Python 3.12.3
+→ creating virtual environment in .venv
+→ installing lark
+✓ linked 'algo' command into ~/.local/bin
+\end{terminal}
+
+The installer links \code{algo} into \file{\textasciitilde/.local/bin}. If that folder is not on your \code{PATH}, the installer prints the line to add to \file{\textasciitilde/.bashrc} or \file{\textasciitilde/.zshrc}. Until then, run \code{./algo} from inside the folder.
+
+\section{Checking the installation}
+
+Both installers end by running \code{algo doctor}. Run it again at any time:
+
+\begin{terminal}
+$ algo doctor
+AlgoLang 0.2.0 environment check
+  ✓ Python                 3.12.3
+  ✓ lark (parser)          1.3.1
+  • anthropic (live mode)  not installed — optional; pip install anthropic for --live
+  • ANTHROPIC_API_KEY      not set — optional; needed only for --live
+  ✓ runtime                /home/you/algolang/algoruntime.py
+  ✓ compiler self-test     examples/research_brief.algo compiles
+
+Ready.
+\end{terminal}
+
+A \texttt{✓} is required and working; a \texttt{•} is optional and only needed for live mode; a \texttt{✗} must be fixed before \algolang\ will run.
+
+\section{Live mode with Claude (optional)}
+\label{sec:live-setup}
+
+By default agents run on the \emph{mock} backend: an offline, deterministic simulator that is free and gives the same answer for the same input. To run agents on real Claude models:
+
+\begin{enumerate}
+  \item Create an API key at \href{https://console.anthropic.com}{console.anthropic.com}.
+  \item Install the SDK: \code{install.bat --live} (Windows) or \code{bash install.sh --live} (Linux/macOS).
+  \item Set the key in the same terminal you will run from:
+\end{enumerate}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}L{3.6cm}Y@{}}
+\toprule
+\thead{Shell} & \thead{Command}\\
+\goldrule
+Windows Command Prompt & \code{set ANTHROPIC\_API\_KEY=sk-ant-...}\\
+Windows PowerShell & \code{\$env:ANTHROPIC\_API\_KEY="sk-ant-..."}\\
+Linux / macOS & \code{export ANTHROPIC\_API\_KEY=sk-ant-...}\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Then add \code{--live} to any \code{algo run} command.
+
+\begin{caution}
+Live calls consume API credits. Give every agent a \kw{budget tokens} policy (Chapter~\ref{ch:policies}) so that a mistake cannot become expensive. Never commit an API key to a shared folder or repository.
+\end{caution}
+
+\section{Google Colab}
+
+No installation is needed. Open \href{https://colab.research.google.com}{colab.research.google.com}, choose \emph{File → Upload notebook}, select \file{AlgoLang\_Notebook.ipynb}, then \emph{Runtime → Run all}. The notebook installs the parser and writes the toolchain into the Colab machine itself. Chapter~\ref{ch:notebooks} explains notebook use in full.
+
+\section{Jupyter on your computer}
+
+After installing, run:
+
+\begin{terminal}
+$ algo notebook
+→ installing Jupyter Notebook (one time, takes a minute)…
+→ opening AlgoLang_Notebook.ipynb in your browser (press Ctrl+C here to stop Jupyter)
+\end{terminal}
+
+\section{Docker}
+
+\begin{terminal}
+$ docker build -t algolang .
+$ docker run --rm -v "$PWD:/work" algolang run examples/research_brief.algo --arg "topic=AI ethics"
+$ docker run --rm -e ANTHROPIC_API_KEY -v "$PWD:/work" algolang run my.algo --arg "topic=..." --live
+\end{terminal}
+
+The image includes the live-mode SDK. Your current folder is mounted at \file{/work}, so programs and audit logs stay on your machine.
+
+\section{Editor support}
+
+\begin{itemize}
+  \item \textbf{Syntax colours:} copy the \file{vscode-algolang} folder into your VS Code extensions folder (\file{\%USERPROFILE\%\textbackslash.vscode\textbackslash extensions} on Windows, \file{\textasciitilde/.vscode/extensions} elsewhere) and restart VS Code. Files ending in \file{.algo} are then highlighted.
+  \item \textbf{Run with a keypress:} open the \algolang\ folder in VS Code, open any \file{.algo} file and press \textbf{Ctrl+Shift+B}. VS Code asks for the flow input (for example \code{topic=AI ethics}) and runs the program. \emph{Terminal → Run Task} offers live and check-only variants.
+\end{itemize}
+
+\section{Troubleshooting}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}L{5.4cm}Y@{}}
+\toprule
+\thead{Message} & \thead{Fix}\\
+\goldrule
+\code{'algo' is not recognized} (Windows) & Run from inside the \algolang\ folder, or add it to \code{PATH}\\
+\code{algo: command not found} & Use \code{./algo}, or add \file{\textasciitilde/.local/bin} to \code{PATH}\\
+\code{Python 3.9 or newer is required} & Install Python, then rerun the installer\\
+\code{No module named 'lark'} & Rerun the installer\\
+\code{--live needs ANTHROPIC\_API\_KEY} & Set the key in the \emph{same} terminal (Section~\ref{sec:live-setup})\\
+\code{--live needs the anthropic package} & Rerun the installer with \code{--live}\\
+\code{✗ POLICY VIOLATION} & Not a fault: a policy stopped the run; read the message\\
+\code{E1xx} messages & Compile errors; see Chapter~\ref{ch:errors}\\
+\bottomrule
+\end{tabularx}
+\end{center}

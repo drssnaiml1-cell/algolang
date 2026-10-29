@@ -1,0 +1,22 @@
+// AlgoLang v0.2 Enterprise: one program built from a local module and two domain packs.
+use "common/intake.algo" as intake
+use pack insurance.fraud_screening as fraud
+use pack insurance.claims_triage as claims
+
+policy {
+    budget tokens 8000
+    forbid religion, caste
+}
+
+flow main(claim: text) {
+    c     = intake.Normaliser(claim)
+    views = par { fraud.PatternAnalyst(c), fraud.DocumentExaminer(c), fraud.Adjuster(c) }
+    risk  = fraud.FraudPanel(views)
+    level = claims.Complexity(c)
+    if risk > 0.7 {
+        note = fraud.Referral(views, risk)
+        emit c, risk, note
+    }
+    route = claims.Routing(c, level)
+    emit c, risk, route
+}

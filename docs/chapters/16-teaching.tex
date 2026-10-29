@@ -1,0 +1,60 @@
+\chapter{Teaching with AlgoLang}
+\label{ch:teaching}
+
+\algolang\ is small enough to learn in one session and rich enough to support a full course module on agentic AI and responsible AI. The mock backend makes every lab free, repeatable and runnable offline; Google Colab removes installation entirely.
+
+\section{Suggested lab sequence}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}L{0.7cm}L{3.6cm}YL{2.4cm}@{}}
+\toprule
+\thead{Lab} & \thead{Topic} & \thead{Students build} & \thead{Concepts}\\
+\goldrule
+1 & First agents & The starter program from \code{algo new}; change goals and roles & agent, goal, flow\\
+2 & Types and scores & A grader that returns a \kw{score} and a branch on it & types, \kw{if}, \errcode{E110}\\
+3 & Reading errors & Fix a broken program with eight errors & compiler diagnostics\\
+4 & Parallel agents & A committee of three experts and a judge & \kw{par}\\
+5 & Planning & A planner and \kw{par for} workers & fan-out / fan-in\\
+6 & Capabilities & Grant and remove tools; observe \errcode{E104} & least privilege\\
+7 & Human oversight & Gate a decision agent; run with \code{--interactive} & oversight, thresholds\\
+8 & Fairness & A screening flow with \kw{forbid}; probe it with proxy attributes & fairness limits\\
+9 & Audit & Load the audit log into \code{pandas}; reconstruct a run & accountability\\
+10 & Going live & Run a finished flow on Claude with budgets & cost, real outputs\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Exercises}
+
+\begin{enumerate}
+  \item \textbf{Translator.} Add \code{Translator(passage: text, language: text) -> text} and produce Hindi and Marathi versions of a brief in one \kw{par} block.
+  \item \textbf{Budget discipline.} Give \code{Writer} the policy \code{budget tokens 50} and run. Explain the outcome and why it is better to fail before a call than to discover the cost afterwards.
+  \item \textbf{Committee size.} Extend a committee from three to five experts. How does run time change on the mock backend, and why?
+  \item \textbf{Bounded revision.} Write a critic-and-revise flow with at most three revisions. What is the maximum number of agent calls? Prove it from the source.
+  \item \textbf{Scholarship screening.} Design a flow that scores applications without seeing gender or caste, sends uncertain cases to a human, and has a separate fairness auditor. Then try to break it.
+  \item \textbf{Audit questions.} From an audit log alone, answer: which agent was least confident on average? How many results were escalated? Which model handled which agent?
+  \item \textbf{Language design.} Propose a new policy rule (for example, a maximum number of calls per agent). Write the grammar change and describe the runtime check (Chapter~\ref{ch:internals}).
+\end{enumerate}
+
+\section{Assessment ideas}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}L{3.6cm}Y@{}}
+\toprule
+\thead{Criterion} & \thead{Evidence}\\
+\goldrule
+Correctness & Program compiles with no errors and produces the required outputs\\
+Decomposition & Agents have single, clear goals and appropriate return types\\
+Use of patterns & Parallelism and branching are used where they fit\\
+Governance & Budgets, human-review thresholds and forbidden attributes are present and justified in writing\\
+Evidence & Audit log analysed; escalations and blocks explained\\
+Reflection & A short essay on one limitation from Section~\ref{sec:limits} and how to mitigate it\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Using the notebook in class}
+
+Share \file{AlgoLang\_Notebook.ipynb} with students; each opens it in their own Colab session. The notebook's ten sections follow the order of this book and end with exercises. Students can edit the toolchain cells themselves, which makes the notebook suitable for compiler-construction and programming-languages courses as well as AI courses.

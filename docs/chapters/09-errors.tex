@@ -1,0 +1,103 @@
+\chapter{Compile-Time Errors}
+\label{ch:errors}
+
+The compiler checks the whole program before generating any code and reports \emph{every} error it finds, each with a code and a line number. A program with errors is never built or run.
+
+\begin{terminal}
+$ algo check examples/bad_example.algo
+✗ bad_example.algo: 8 error(s)
+  line 5: E109 agent Summariser: goal mentions {document} but there is no parameter 'document'
+  line 5: E104 agent Summariser uses tool 'email.send', which is not declared (add `tool email.send`)
+  line 5: E106 agent Summariser: unknown model 'turbo'
+  line 12: E108 agent Screener takes forbidden attribute 'caste' as an input
+  line 19: E102 Summariser takes 1 argument(s) (doc), got 2 positional
+  line 20: E101 'summarise_text' is not an agent — in AlgoLang every unit of work is an agent …
+  line 21: E110 's' is text, not a score — only scores/numbers can be compared
+  line 22: E103 undefined variable 'missing'
+\end{terminal}
+
+Errors about an agent's declaration are reported at the line where the agent starts.
+
+\newcommand{\errhead}[2]{\subsection*{\errcode{#1}\enspace\textcolor{navy}{#2}}}
+
+\section{Error catalogue}
+
+\errhead{E100}{Syntax error}
+The source does not match the grammar. The message shows the line and column with a pointer. Common causes: a missing \code{\}}, a missing \code{->} return type, an unquoted goal, or a keyword used as a name.
+
+\errhead{E101}{Not an agent}
+A call names something that is not a declared agent. This is \algolang's central rule. If the name is a flow, the message says that flows orchestrate and cannot be called.
+\begin{algo}
+t = summarise_text(doc)   // E101 — declare an agent instead
+\end{algo}
+\textbf{Fix:} declare \code{agent summarise\_text(doc: text) -> text \{ goal "…" \}}, or call an existing agent.
+
+\errhead{E102}{Wrong arguments}
+Too many positional arguments, an unknown keyword, a parameter given twice, or a required parameter missing.
+\begin{algo}
+s = Summariser(doc, doc)        // takes 1 argument(s) (doc), got 2 positional
+w = Writer(facts, style = "x")  // Writer has no parameter 'style'
+\end{algo}
+
+\errhead{E103}{Undefined variable}
+A name is used before it is assigned and is not a flow input. Check spelling and statement order.
+
+\errhead{E104}{Undeclared tool}
+An agent \kw{uses} a tool that the program never declares. \textbf{Fix:} add \code{tool email.send} at top level---a visible, reviewable decision to grant that capability.
+
+\errhead{E105}{Unknown type}
+A parameter or return type is not one of \kw{text}, \kw{score}, \kw{list}, \kw{json}, \kw{bool}.
+
+\errhead{E106}{Unknown model}
+An agent's \kw{model} clause names a model that was not declared with \kw{model}.
+
+\errhead{E107}{Defined twice}
+Two agents or flows share a name. Agents and flows share one namespace.
+
+\errhead{E108}{Forbidden attribute as input}
+An agent declares a parameter whose name appears in its own \kw{forbid} list.
+\begin{algo}
+agent Screener(caste: text) -> score {   // E108
+    goal "Score applicant {caste}"
+    policy { forbid caste }
+}
+\end{algo}
+\textbf{Fix:} remove the parameter. If the attribute is genuinely needed---for example, to \emph{audit} outcomes across groups---give that job to a separate auditing agent whose policy does not forbid it, and document why.
+
+\errhead{E109}{Unknown placeholder}
+A \kw{goal} contains \code{\{name\}} but the agent has no parameter called \code{name}. Usually a typo, as in \code{\{document\}} for parameter \code{doc}.
+
+\errhead{E110}{Comparing a non-score}
+An \kw{if} condition compares a value that is not a score, number or boolean---typically \kw{text}. \textbf{Fix:} add an agent that returns a \kw{score} and compare that.
+
+\errhead{E111}{No entry point}
+The program has no \code{flow main}.
+
+\errhead{E112}{Agent without a goal}
+Every agent must state its work in a \kw{goal} clause.
+
+\errhead{E113}{Mismatched parallel binding}
+\code{[a, b] = …} needs a \kw{par} block on the right with the same number of calls.
+
+\errhead{E114}{\kw{par for} over a non-list}
+The source of \kw{par for} must be a \kw{list}, such as the output of a planning agent.
+
+\errhead{E115}{Tool not allowed by organisation policy}
+An agent \kw{uses} a tool that is missing from \code{allowed\_tools} in \file{algo.config.json} (Chapter~\ref{ch:enterprise}). Ask your administrator to approve the tool, or remove it. Org-forbidden attributes are reported as \errcode{E108}, before anything runs.
+
+\section{Run-time outcomes}
+
+Some problems can only be detected while the program runs. They are not compile errors; each stops the run with a clear message and an exit code (Chapter~\ref{ch:cli}).
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}L{4.3cm}L{1.3cm}Y@{}}
+\toprule
+\thead{Outcome} & \thead{Exit} & \thead{Cause}\\
+\goldrule
+Policy violation & 2 & A forbidden attribute in an agent's input, or a prompt over its token budget\\
+Agent call failed & 3 & The model or service failed after all retries, or a timeout\\
+Missing input / bad option & 1 & A flow input was not supplied, or \code{--arg} was not \code{name=value}\\
+\bottomrule
+\end{tabularx}
+\end{center}

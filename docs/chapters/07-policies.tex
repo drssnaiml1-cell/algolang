@@ -1,0 +1,96 @@
+\chapter{Policies}
+\label{ch:policies}
+
+A \kw{policy} block attaches governance rules to an agent. Policies are part of the agent's declaration, so they travel with it, appear in its audit records and cannot be forgotten by a caller.
+
+\begin{algo}
+agent Editor(reports: list, ethics: text) -> score {
+    role  "Editor-in-Chief"
+    goal  "Weigh {reports} and {ethics}; score acceptance likelihood 0 to 1"
+    policy {
+        budget tokens 6000
+        retry 2
+        timeout 60
+        require human when confidence < 0.75
+        forbid gender, caste, religion, nationality
+    }
+}
+\end{algo}
+
+\section{Summary of rules}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}L{4.6cm}L{2.2cm}Y@{}}
+\toprule
+\thead{Rule} & \thead{Checked} & \thead{Effect}\\
+\goldrule
+\kw{budget tokens} \code{N} & run time & Stops the call before it is sent if the prompt is estimated above \code{N} tokens; in live mode also caps the reply length\\
+\kw{retry} \code{N} & run time & Retries a failed call up to \code{N} more times\\
+\kw{timeout} \code{S} & run time & Treats a call that took longer than \code{S} seconds as failed\\
+\kw{require human when confidence <} \code{X} & run time & Marks a result with confidence below \code{X} as \code{escalated}, or asks a person to approve it\\
+\kw{forbid} \code{a, b, …} & compile \emph{and} run time & Rejects agents that take a forbidden attribute as a parameter; stops calls whose inputs mention one\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Token budgets}
+
+\code{budget tokens N} protects against runaway cost. Before every call the runtime estimates the prompt's size (about four characters per token). If the estimate exceeds \code{N}, the call is not sent: the run stops with a policy violation. In live mode the budget also sets the maximum length of the model's reply (capped at 8,000 tokens; without a budget the reply is limited to 2,000 tokens).
+
+\begin{tip}
+A budget that is too small for an agent's normal input is a design signal: the agent is being asked to do too much at once. Split the work, or summarise the input with another agent first.
+\end{tip}
+
+\section{Retries and timeouts}
+
+\code{retry N} makes the runtime try a failed call up to \code{N} more times---useful for transient network or service errors. Policy violations are never retried. \code{timeout S} marks a call as failed if it took longer than \code{S} seconds; the check is made when the call returns, and a timed-out call can then be retried.
+
+\section{Human oversight}
+
+\code{require human when confidence < X} is the human-in-the-loop gate. When an agent's result has confidence below \code{X}:
+
+\begin{itemize}
+  \item By default the result is marked \code{escalated}: the flow continues, the run summary counts the escalation, and the audit record carries \code{"status": "escalated"} so that a person can review it afterwards.
+  \item With \code{--interactive} (terminal or notebook) the run pauses and shows the result. Typing \code{y} records \code{approved}; any other answer keeps it \code{escalated}.
+\end{itemize}
+
+\begin{terminal}
+  → Reviewer           conf=0.68  0.78  ⚠ ESCALATED to human (conf < 0.70)
+\end{terminal}
+
+\begin{ethics}[Meaningful human oversight]
+Oversight is only meaningful if people see the right cases. Put the gate on the agents whose outputs affect people---decisions, scores, letters---and choose thresholds deliberately. Review the escalation count in every run summary: if it is always zero, the threshold may be too low to matter; if it is always high, the agent or its model may not be fit for the task.
+\end{ethics}
+
+\section{Forbidden attributes}
+\label{sec:forbid}
+
+\code{forbid} names attributes that must not influence an agent's work---typically protected characteristics such as gender, caste, religion, nationality or age. It acts twice:
+
+\begin{enumerate}
+  \item \textbf{At compile time}, an agent may not declare a parameter with a forbidden name (\errcode{E108}):
+\begin{terminal}
+  line 12: E108 agent Screener takes forbidden attribute 'caste' as an input
+\end{terminal}
+  \item \textbf{At run time}, before each call, the runtime searches the rendered prompt (role, goal with all arguments filled in, and tools) for each forbidden word, as a whole word and ignoring case. If one is found, the call is not made and the run stops:
+\begin{terminal}
+  → EthicsAuditor      conf=0.79  «EthicsAuditor #1139» Check Does author nationality …
+✗ POLICY VIOLATION: Editor: input mentions forbidden attribute 'nationality'
+\end{terminal}
+\end{enumerate}
+
+The blocked call is recorded in the audit log with \code{"status": "blocked"} and the reason, and the program exits with code~2.
+
+\begin{caution}
+The run-time check is \emph{lexical}: it finds the forbidden words themselves, not their proxies. A surname, a home town or a school can still reveal caste, religion or nationality. \kw{forbid} is a strong safeguard against accidental and obvious leakage and a clear statement of intent, but it is not a guarantee of fairness. Combine it with careful input design and with audits of outcomes across groups (Chapter~\ref{ch:responsible}).
+\end{caution}
+
+\section{Where policies are recorded}
+
+Every audit record includes the agent's full policy, so a reviewer can see which rules were in force for each call:
+
+\begin{plaincode}[title=from an audit record]
+"status": "ok",
+"policy": {"budget_tokens": 6000, "retry": 2}
+\end{plaincode}

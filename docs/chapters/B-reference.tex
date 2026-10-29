@@ -1,0 +1,109 @@
+\chapter{Quick Reference}
+\label{app:reference}
+
+\section{Language card}
+
+\begin{algo}[title=everything in one screen]
+// ── declarations ─────────────────────────────────────────────
+model smart = "claude-sonnet-5-5"          // name a model
+tool  web.search                            // declare a capability
+
+agent Name(p: text, q: score = 0.5) -> list {   // types: text score list json bool
+    role   "who it acts as"
+    goal   "what to do with {p} and {q}"         // {param} placeholders
+    uses   web.search                            // granted tools
+    model  smart
+    policy {
+        budget tokens 4000                       // stop if prompt larger
+        retry 2                                  // retry failures
+        timeout 60                               // seconds
+        require human when confidence < 0.75     // human oversight
+        forbid gender, caste, religion           // protected attributes
+    }
+}
+
+// ── flow statements ──────────────────────────────────────────
+flow main(input: text) {
+    x       = Agent(input, q = 0.9)                   // call
+    [a, b]  = par { AgentA(x), AgentB(x) }            // parallel block
+    rs      = par for item in x { Worker(item) }      // parallel map over list
+    if a < 0.8 { b = AgentB(x) } else { b = AgentC(x) }   // branch on score
+    Notifier(b)                                        // call for effect
+    emit a, rs                                         // output
+}
+\end{algo}
+
+\section{Error codes}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}L{1.3cm}Y L{1.3cm}Y@{}}
+\toprule
+\thead{Code} & \thead{Meaning} & \thead{Code} & \thead{Meaning}\\
+\goldrule
+E100 & Syntax error & E108 & Forbidden attribute as parameter\\
+E101 & Not an agent & E109 & Unknown \code{\{placeholder\}} in goal\\
+E102 & Wrong arguments & E110 & Comparing a non-score\\
+E103 & Undefined variable & E111 & No \code{flow main}\\
+E104 & Undeclared tool & E112 & Agent without a goal\\
+E105 & Unknown type & E113 & \code{[a, b]} does not match \kw{par}\\
+E106 & Unknown model & E114 & \kw{par for} over a non-list\\
+E107 & Defined twice & E115 & Tool not allowed by org policy\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Command line}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}L{6.4cm}Y@{}}
+\toprule
+\thead{Command} & \thead{Purpose}\\
+\goldrule
+\code{algo doctor} & Check the environment\\
+\code{algo new NAME} & Create a starter program\\
+\code{algo check F.algo} & Find errors\\
+\code{algo build F.algo [-o out.py]} & Compile to Python\\
+\code{algo run F.algo --arg "k=v"} & Run on the mock backend\\
+\code{  … --live} & Run on Claude\\
+\code{  … --interactive} & Approve low-confidence results\\
+\code{  … --audit-dir DIR} & Choose where audit logs go\\
+\code{algo notebook} & Open the Jupyter notebook\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Notebook}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}L{6.4cm}Y@{}}
+\toprule
+\thead{Cell or magic} & \thead{Purpose}\\
+\goldrule
+\code{\%load\_ext algomagic} & Enable \algolang\ in a notebook\\
+\code{\%\%algo --arg "k=v" [--graph] [--python]} & Run the cell\\
+\code{\%\%algo --define} & Add declarations to the session\\
+\code{\%\%algo --check} & Check only\\
+\code{\%algo\_run F.algo --arg "k=v"} & Run a file\\
+\code{\%algo\_list}, \code{\%algo\_reset}, \code{\%algo\_help} & Session tools\\
+\code{algo\_result}, \code{algo\_calls} & Results for Python cells\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Glossary}
+
+\begin{description}[leftmargin=0pt,font=\sffamily\bfseries\color{navy}]
+  \item[Agent] A declared unit of work with a goal, optional role, tools, model and policy. The only callable thing in \algolang.
+  \item[Audit record] One JSON line per agent call describing what ran, under which rules, with what confidence and outcome.
+  \item[Backend] What executes agent calls: \emph{mock} (offline, deterministic) or \emph{live} (Claude models).
+  \item[Confidence] A number from 0 to 1 returned with every result.
+  \item[Escalated] Status of a result whose confidence fell below its agent's human-review threshold.
+  \item[Flow] A sequence of statements that orchestrates agents. \code{flow main} is the entry point.
+  \item[Policy] Governance rules attached to an agent: budget, retry, timeout, human review, forbidden attributes.
+  \item[Result] The value of an agent call together with its confidence, agent, call identifier and status.
+  \item[Session] In notebooks, the declarations collected from \code{--define} cells.
+  \item[Tool] A declared capability that agents may be granted with \kw{uses}.
+\end{description}

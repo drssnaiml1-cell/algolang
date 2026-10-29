@@ -1,0 +1,86 @@
+[build-system]
+requires = ["hatchling>=1.21"]
+build-backend = "hatchling.build"
+
+[project]
+name = "algolang"
+version = "0.2.0"
+description = "AlgoLang: an agent-native programming language for governed, enterprise multi-agent AI systems"
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+requires-python = ">=3.9"
+authors = [{ name = "Dr. S. Satyanarayana", email = "ceo@algoprofessor.com" }]
+keywords = ["agents", "multi-agent", "programming-language", "llm", "claude", "ai-governance", "compiler"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Education",
+  "Intended Audience :: Science/Research",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Topic :: Software Development :: Compilers",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+dependencies = ["lark>=1.1"]
+
+[project.optional-dependencies]
+live = ["anthropic>=0.40"]
+notebook = ["notebook>=7", "ipython>=8"]
+dev = ["pytest>=7", "pytest-cov>=4", "ruff>=0.5", "build>=1", "nbformat>=5", "nbclient>=0.9", "ipykernel>=6"]
+
+[project.scripts]
+algo = "algolang.cli:main"
+
+[project.urls]
+Homepage = "https://www.algoprofessor.com"
+Repository = "https://github.com/drssnaiml1-cell/algolang"
+Documentation = "https://drssnaiml1-cell.github.io/algolang/"
+Changelog = "https://github.com/drssnaiml1-cell/algolang/blob/main/CHANGELOG.md"
+
+# ── wheel: the SDK package, plus the engine and its data under algolang/_home ──
+[tool.hatch.build.targets.wheel]
+packages = ["algolang"]
+
+[tool.hatch.build.targets.wheel.force-include]
+"algoc.py" = "algolang/_home/algoc.py"
+"algoruntime.py" = "algolang/_home/algoruntime.py"
+"algocli_ext.py" = "algolang/_home/algocli_ext.py"
+"algoshell.py" = "algolang/_home/algoshell.py"
+"algostudio.py" = "algolang/_home/algostudio.py"
+"algomagic.py" = "algolang/_home/algomagic.py"
+"algoagent.py" = "algolang/_home/algoagent.py"
+"algodev.py" = "algolang/_home/algodev.py"
+"grammar.lark" = "algolang/_home/grammar.lark"
+"algostudio.html" = "algolang/_home/algostudio.html"
+"algoprompt.html" = "algolang/_home/algoprompt.html"
+"AlgoLang_Notebook.ipynb" = "algolang/_home/AlgoLang_Notebook.ipynb"
+"packs" = "algolang/_home/packs"
+"examples" = "algolang/_home/examples"
+
+[tool.hatch.build.targets.sdist]
+include = [
+  "/algolang", "/*.py", "/grammar.lark", "/*.html", "/AlgoLang_Notebook.ipynb", "/packs", "/examples",
+  "/tests", "/tools", "/README.md", "/RUN_GUIDE.md", "/DEVELOPER_GUIDE.md", "/CHANGELOG.md", "/LICENSE",
+]
+exclude = ["**/build/**", "**/runs/**", "**/__pycache__/**"]
+
+# ── tests ──
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+markers = ["slow: runs every domain pack or starts servers"]
+
+# ── lint ──
+[tool.ruff]
+line-length = 120
+target-version = "py39"
+extend-exclude = ["examples/build", "docs", "slides", "vscode-algolang", "*.ipynb"]
+
+[tool.ruff.lint]
+select = ["E9", "F63", "F7", "F82", "F401", "F811", "F841", "B006", "B008"]
+ignore = []
+
+[tool.ruff.lint.per-file-ignores]
+"algolang/__init__.py" = ["F401"]
+"tests/*" = ["F841"]

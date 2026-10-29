@@ -1,0 +1,88 @@
+\chapter{Responsible AI with AlgoLang}
+\label{ch:responsible}
+
+\algolang\ was designed so that the responsible way to build an AI system is also the easiest way. This chapter maps its features to widely used principles of trustworthy AI, shows how to use them together, and states plainly what the language does \emph{not} guarantee.
+
+\section{Principles and features}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}L{3.2cm}YL{3.6cm}@{}}
+\toprule
+\thead{Principle} & \thead{How AlgoLang supports it} & \thead{Feature}\\
+\goldrule
+Accountability & Every unit of work is named and has a stated goal; every call is recorded & agents only (\errcode{E101}); audit log\\
+Human oversight & Low-confidence results are routed to people; reviewers can approve & \kw{require human when}; \code{--interactive}\\
+Fairness & Protected attributes cannot be declared as inputs and are blocked in prompts & \kw{forbid} (\errcode{E108}, run-time block)\\
+Transparency & Capabilities, models and policies are visible in the source and in each audit record & \kw{tool}, \kw{uses}, \kw{model}, \kw{policy}\\
+Security & Agents receive only explicitly granted capabilities & declared tools (\errcode{E104})\\
+Privacy & The log stores prompt hashes, not prompts or outputs & \code{inputs\_sha}\\
+Sustainability \& cost & Per-agent token budgets; bounded programs with no unbounded loops & \kw{budget tokens}; flow design\\
+Reliability & Retries, timeouts; deterministic offline testing & \kw{retry}, \kw{timeout}; mock backend\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Supporting governance frameworks}
+
+Organisations increasingly align AI systems with frameworks such as the NIST AI Risk Management Framework (with its functions \emph{Govern}, \emph{Map}, \emph{Measure} and \emph{Manage}) and, in Europe, the AI Act's requirements for high-risk systems, which include record-keeping (Article~12) and human oversight (Article~14). \algolang\ does not make a system compliant with any framework---compliance depends on the whole system and its context---but its features produce evidence that such work needs:
+
+\begin{itemize}
+  \item the \textbf{source program} documents what each agent does, with which model and capabilities, under which rules;
+  \item the \textbf{audit log} records every call, its confidence and its outcome;
+  \item \textbf{escalation counts} and \textbf{approvals} show where human oversight was exercised;
+  \item \textbf{blocked calls} show where safeguards acted.
+\end{itemize}
+
+\section{A responsible design checklist}
+
+\begin{enumerate}
+  \item Does every agent have one clear goal and the narrowest return type?
+  \item Does each agent hold only the tools it needs?
+  \item Do agents that affect people have a human-review threshold, chosen deliberately?
+  \item Are protected attributes listed in \kw{forbid} for every decision-making agent?
+  \item Is auditing done by a separate agent from deciding?
+  \item Does every live agent have a token budget?
+  \item Have you run the program on the mock backend and read the audit log before going live?
+  \item Who reviews escalated results, how quickly, and where is that recorded?
+  \item Have you tested outcomes across groups, not only individual cases?
+\end{enumerate}
+
+\section{Known limitations}
+\label{sec:limits}
+
+Version 0.1 is a preview. The following limitations are known and documented so that no one relies on a guarantee the language does not give.
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}L{3.4cm}Y@{}}
+\toprule
+\thead{Area} & \thead{Limitation in v0.1}\\
+\goldrule
+\kw{forbid} & Lexical: blocks the forbidden words, not proxies (names, places, schools) that may reveal the same attribute. Not a fairness guarantee.\\
+Confidence (live) & Reported by the model itself. It is not a calibrated probability and should be validated against real outcomes before thresholds are trusted.\\
+Confidence (mock) & Synthetic, derived from a hash of the input; useful only for demonstrating behaviour.\\
+Token budget & Estimated at about four characters per token before the call; real counts may differ.\\
+Timeout & Checked when the call returns; a slow call is not interrupted.\\
+Tools & Declared and enforced as capabilities, but not executed by the runtime yet.\\
+Types & Argument types are not yet checked against parameter types; flow inputs arrive as text.\\
+Prompt injection & Text inside inputs can try to steer an agent. Policies limit what an agent may do, but do not detect injected instructions.\\
+Audit log & Local append-only file; it is not tamper-proof. Protect and back it up as you would any record.\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{caution}[Use with care]
+Do not use \algolang~0.1 as the sole basis for decisions with legal or similarly significant effects on people---admissions, hiring, credit, health or justice---without independent validation, human review of every decision, and the governance your institution and law require.
+\end{caution}
+
+\section{Teaching AI ethics with AlgoLang}
+
+Because policies are code, ethical questions become concrete design exercises that students can run, break and discuss:
+
+\begin{itemize}
+  \item \textbf{Proxy discrimination.} Build a screening flow that forbids \code{caste}, then show that a surname or home-district input can still carry the same information. Discuss what \kw{forbid} can and cannot do.
+  \item \textbf{Automation bias.} Run with \code{--interactive} and track how often reviewers approve without reading. Discuss how to design review that is meaningful.
+  \item \textbf{Threshold setting.} Vary \kw{require human} thresholds and measure escalation rates. Who should choose the threshold, and how should it be justified?
+  \item \textbf{Accountability.} Given only an audit log, reconstruct what happened in a run. What is missing that a regulator or an affected person would need?
+\end{itemize}

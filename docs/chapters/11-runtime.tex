@@ -1,0 +1,130 @@
+\chapter{Runtime Semantics}
+\label{ch:runtime}
+
+This chapter defines precisely what happens when a compiled program runs. The reference implementation is \file{algoruntime.py}.
+
+\section{Lifecycle of a run}
+
+\begin{enumerate}
+  \item The runtime is created with the program's name and a fresh \emph{run identifier}; models and tools are registered; the backend is chosen (mock, or live when \code{ALGO\_LIVE=1}).
+  \item Each agent declaration becomes a governed callable.
+  \item \code{flow main} starts with its inputs and prints a header line.
+  \item Statements execute in order; \kw{par} and \kw{par for} execute their calls concurrently.
+  \item Emitted values accumulate; at the end the runtime prints them with a summary line: calls, estimated tokens, retries, escalations and blocked calls.
+\end{enumerate}
+
+\section{Lifecycle of an agent call}
+\label{sec:callsteps}
+
+Every agent call passes through the same seven steps, shown in Figure~\ref{fig:callsteps}.
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[
+  st/.style={fill=navy,text=white,rounded corners=3pt,font=\sffamily\scriptsize,
+             minimum width=19mm,minimum height=11mm,align=center,inner sep=3pt},
+  ch/.style={st,fill=gold,text=navy,font=\sffamily\scriptsize\bfseries},
+  ar/.style={-{Stealth[length=2mm]},navy,line width=0.7pt},
+  stop/.style={font=\sffamily\scriptsize,text=cautionred,align=center}]
+  \node[st] (s1) {1. bind\\arguments};
+  \node[st,right=4mm of s1] (s2) {2. render\\prompt};
+  \node[ch,right=4mm of s2] (s3) {3. forbid\\check};
+  \node[ch,right=4mm of s3] (s4) {4. budget\\check};
+  \node[st,right=4mm of s4] (s5) {5. call model\\(retry, timeout)};
+  \node[ch,below=9mm of s5] (s6) {6. human\\gate};
+  \node[st,left=4mm of s6] (s7) {7. audit +\\return Result};
+  \foreach \a/\b in {s1/s2,s2/s3,s3/s4,s4/s5,s5/s6,s6/s7} \draw[ar] (\a) -- (\b);
+  \node[stop,below=3mm of $(s3.south)!0.5!(s4.south)$] {policy violation: blocked → exit 2};
+  \node[stop,above=2.5mm of s5] {fails after retries → exit 3};
+\end{tikzpicture}
+\caption{The seven steps of every agent call. Gold steps enforce policy.}
+\label{fig:callsteps}
+\end{figure}
+
+\begin{enumerate}
+  \item \textbf{Bind arguments.} Positional and keyword arguments are matched to parameters; defaults fill the rest. Results passed as arguments contribute their values.
+  \item \textbf{Render the prompt.} Placeholders in the goal are replaced with argument values (lists joined with \code{"; "}), and the prompt is assembled from role, goal and tools.
+  \item \textbf{Forbid check.} If the prompt contains a forbidden attribute as a whole word (ignoring case), the call is recorded as \code{blocked} and a policy violation stops the run.
+  \item \textbf{Budget check.} If the prompt's estimated size (characters ÷ 4) exceeds the token budget, the call is recorded as \code{blocked} and a policy violation stops the run.
+  \item \textbf{Call the model} through the backend, retrying failures up to the \kw{retry} count and treating calls longer than \kw{timeout} as failures. If all attempts fail, the call is recorded as \code{failed} and the run stops.
+  \item \textbf{Human gate.} If the confidence is below the \kw{require human} threshold, the Result's status becomes \code{escalated}, or \code{approved} if a reviewer approves it in interactive mode.
+  \item \textbf{Audit and return.} One audit record is written and the Result is returned to the flow.
+\end{enumerate}
+
+\section{Concurrency}
+
+\kw{par} and \kw{par for} submit their calls to a thread pool sized to the number of calls and wait for all of them. Results are returned in source order, not completion order, so programs are deterministic in structure even when timing varies. Console output and audit writes are serialised by a lock, so lines never interleave.
+
+\begin{note}
+If one call in a parallel group fails or violates a policy, the error stops the run after the group's other calls have finished; their audit records are still written.
+\end{note}
+
+\section{Backends}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}L{2.2cm}YY@{}}
+\toprule
+\thead{} & \thead{Mock (default)} & \thead{Live (\code{--live})}\\
+\goldrule
+Purpose & Teaching, testing, CI, offline demos & Real work\\
+Cost & Free & API credits\\
+Determinism & Same input → same output & Varies between runs\\
+Output & Labelled echo of the goal; shaped by return type & The model's answer, in a JSON envelope\\
+Confidence & Derived from a hash of the input (0.62--0.95) & Reported by the model\\
+Tokens & Estimated & Counted by the API\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+In live mode, the role becomes the system persona, and the model is instructed to reply only with JSON of the form \code{\{"value": …, "confidence": …\}}, where the value's shape matches the return type (a number for \kw{score}, an array for \kw{list}, and so on). If the reply contains no JSON object, the whole reply is used as the value with confidence 0.5.
+
+\section{The audit log}
+\label{sec:audit}
+
+Every agent call appends one JSON line to \file{<audit-dir>/<program>.audit.jsonl}:
+
+\begin{plaincode}[title=one audit record (pretty-printed)]
+{
+  "call": "d5a1ba",
+  "agent": "Researcher",
+  "model": "claude-sonnet-5-5",
+  "backend": "mock",
+  "inputs_sha": "23cd4baf6ab210a5",
+  "returns": "text",
+  "confidence": 0.83,
+  "tokens": 93,
+  "status": "ok",
+  "tools": ["web.search"],
+  "policy": {"budget_tokens": 6000, "retry": 2},
+  "run": "832d55bb",
+  "program": "research_brief",
+  "ts": "2026-10-28T11:20:13"
+}
+\end{plaincode}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}L{2.4cm}Y@{}}
+\toprule
+\thead{Field} & \thead{Meaning}\\
+\goldrule
+\code{run}, \code{call} & Identifiers of the run and of this call\\
+\code{program}, \code{agent} & What ran\\
+\code{model}, \code{backend} & Which model, and mock or live\\
+\code{inputs\_sha} & First 16 hex digits of the SHA-256 hash of the full prompt\\
+\code{returns}, \code{confidence} & Declared return type and reported confidence\\
+\code{tokens} & Tokens used (estimated on mock)\\
+\code{status} & \code{ok}, \code{escalated}, \code{approved}, \code{blocked} or \code{failed}\\
+\code{tools}, \code{policy} & Capabilities and rules in force for this call\\
+\code{reason}, \code{error} & Present on \code{blocked} and \code{failed} records\\
+\code{ts} & Local timestamp\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{ethics}[Accountability without over-collection]
+The log stores a \emph{hash} of each prompt, not the prompt itself, and does not store outputs. This lets an auditor verify that a given input produced a given decision---by recomputing the hash---without the log becoming a second copy of sensitive data. If your setting requires full records, store prompts and outputs separately under proper access control, keyed by the call identifier.
+\end{ethics}
+
+The log is append-only plain text, one record per line, so it can be loaded directly into a spreadsheet, \code{pandas} (\code{pd.read\_json(path, lines=True)}) or any log system.

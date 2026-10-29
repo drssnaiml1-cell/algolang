@@ -1,0 +1,125 @@
+\chapter{Introduction}
+\label{ch:intro}
+
+\algolang\ is a small, statically checked programming language for building AI systems out of cooperating agents. A program declares agents and connects them in flows; the compiler checks the program; the runtime executes it with policies enforced and every agent call recorded.
+
+\section{AlgoLang at a glance}
+
+\begin{algo}[title=brief.algo]
+model fast = "claude-haiku-5-5"
+
+agent Writer(facts: text, tone: text = "academic") -> text {
+    role  "Technical writer"
+    goal  "Write a 200-word brief from {facts} in a {tone} tone"
+    model fast
+    policy { budget tokens 4000  retry 1 }
+}
+
+agent Reviewer(draft: text) -> score {
+    role  "Peer reviewer"
+    goal  "Score {draft} from 0 to 1 for accuracy"
+    policy { require human when confidence < 0.70 }
+}
+
+flow main(facts: text) {
+    [formal, simple] = par { Writer(facts), Writer(facts, tone = "plain") }
+    if Reviewer(formal) < 0.80 {
+        formal = Writer(facts, tone = "rigorous academic")
+    }
+    emit formal, simple
+}
+\end{algo}
+
+In twenty lines this program declares two agents, runs two writers at the same time, asks a reviewer to score the formal draft, sends any low-confidence score to a human, redrafts when the score is low, and returns both drafts. The compiler has already checked that every name, argument, type and tool is correct before anything runs.
+
+\section{The core idea: agents, not functions}
+
+\begin{definitionbox}{The AlgoLang rule}
+There are no functions, methods or lambdas. The only thing a program can call is an \kw{agent}. An agent must state its \kw{goal}; it may state its \kw{role}, the \kw{tools} it \kw{uses}, its \kw{model} and its \kw{policy}. A \kw{flow} orchestrates agents and can do nothing else.
+\end{definitionbox}
+
+This rule is enforced by the compiler. Calling anything that is not a declared agent is error \errcode{E101}, and the message explains why:
+
+\begin{terminal}
+$ algo check bad_example.algo
+✗ bad_example.algo: 8 error(s)
+  line 20: E101 'summarise_text' is not an agent - in AlgoLang every unit
+           of work is an agent (declare it with `agent summarise_text(...)
+           -> type { goal "..." }`)
+\end{terminal}
+
+Why insist on this? Because each requirement of an agent answers a question that matters when AI does the work:
+
+\begin{center}
+\begin{tabularx}{\linewidth}{@{}L{3.1cm}Y@{}}
+\toprule
+\thead{Agent clause} & \thead{Question it answers}\\
+\goldrule
+\kw{goal} & What exactly was this worker asked to do?\\
+\kw{role} & In what capacity did it act?\\
+\kw{uses} & Which external capabilities could it touch?\\
+\kw{model} & Which model produced the result?\\
+\kw{policy} & What limits applied: cost, retries, human review, forbidden inputs?\\
+audit record & What happened, when, with what confidence?\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Design goals}
+
+\begin{enumerate}
+  \item \textbf{Agents only.} Work is always visible and accountable.
+  \item \textbf{No ambient capabilities.} Tools must be declared and then granted to specific agents.
+  \item \textbf{Governance in the language.} Policies are syntax, checked at compile time where possible and enforced at run time.
+  \item \textbf{Uncertainty is visible.} Every agent call returns a value \emph{and} a confidence.
+  \item \textbf{Accountable by default.} Every agent call is written to an audit log without extra code.
+  \item \textbf{Concurrency is a keyword.} \kw{par} and \kw{par for} express multi-agent parallelism directly.
+  \item \textbf{Small and familiar.} Brace syntax, about two dozen keywords, five types---easy for people and for coding assistants to read and write.
+  \item \textbf{Runs everywhere.} Windows, Linux, macOS, Docker, Jupyter and Google Colab, with an offline backend for teaching and testing.
+\end{enumerate}
+
+\section{How AlgoLang compares}
+
+\algolang\ does not replace general-purpose languages. It compiles \emph{to} Python and is meant for the layer where agents are composed and governed.
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}L{3.6cm}YY@{}}
+\toprule
+\thead{Concern} & \thead{General-purpose language + agent library} & \thead{AlgoLang}\\
+\goldrule
+Unit of work & Any function; AI calls hidden inside & Declared agents only (\errcode{E101})\\
+Tool access & Whatever the code can import & Declared and granted per agent (\errcode{E104})\\
+Human oversight & Written by hand, if at all & \kw{require human when confidence < x}\\
+Protected attributes & Convention & \kw{forbid}: compile and run-time checks (\errcode{E108})\\
+Cost control & External monitoring & \kw{budget tokens N} per agent\\
+Audit trail & Added logging & Automatic, one record per call\\
+Parallel agents & Thread or async code & \kw{par} and \kw{par for}\\
+Confidence & Rarely exposed & Part of every result\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{What is in version 0.1}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}L{4.2cm}Y@{}}
+\toprule
+\thead{Component} & \thead{Description}\\
+\goldrule
+Grammar & Formal grammar in Lark EBNF (Appendix~\ref{app:grammar})\\
+Compiler \file{algoc.py} & Parser, semantic checker with 15 error codes, Python code generator\\
+Runtime \file{algoruntime.py} & Policy enforcement, concurrency, audit log; mock and live (Claude) backends\\
+\code{algo} command & \code{check}, \code{build}, \code{run}, \code{new}, \code{doctor}, \code{notebook}\\
+Notebook extension & \code{\%\%algo} cell magic for Jupyter and Google Colab, with diagrams\\
+Installers & Windows, Linux/macOS, Docker\\
+Editor support & VS Code syntax highlighting and run tasks\\
+Examples & Research brief, paper review, error showcase, starter template\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{caution}
+Version 0.2 Enterprise adds executable tools, modules, organisation policy, 120 domain packs, tamper-evident audit logs, a review queue, a Python SDK and a Prompt UI (Chapter~\ref{ch:enterprise}). Section~\ref{sec:limits} lists every known limitation.
+\end{caution}

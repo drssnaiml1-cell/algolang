@@ -1,0 +1,37 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+dist/
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# AlgoLang run output (regenerate with `algo run`)
+runs/
+build/
+*.audit.jsonl
+review_queue.jsonl
+*.cache.sqlite
+.algo_cache*
+
+# LaTeX intermediates
+*.aux
+*.log
+*.toc
+*.out
+*.nav
+*.snm
+*.vrb
+*.listing
+*.synctex.gz
+
+# editors / OS
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
+site/

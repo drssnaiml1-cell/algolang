@@ -1,0 +1,80 @@
+\chapter{Types and Results}
+\label{ch:types}
+
+\section{The five types}
+
+Every agent parameter, agent return value and flow input has one of five types.
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}L{1.6cm}L{4.4cm}YL{2.4cm}@{}}
+\toprule
+\thead{Type} & \thead{Meaning} & \thead{Typical use} & \thead{Mock value}\\
+\goldrule
+\kw{text} & Free text & Facts, drafts, summaries, letters & labelled echo of the goal\\
+\kw{score} & Number from 0 to 1 & Quality, risk, acceptance likelihood & 0.55--0.95\\
+\kw{list} & Ordered list of items & Criteria, sub-tasks, questions & 3--4 items\\
+\kw{json} & Structured object & Extracted fields, records & small object\\
+\kw{bool} & True or false & Pass/fail checks & true or false\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+An unknown type name is error \errcode{E105}. Literals have their own types: a string literal is \kw{text}, \kw{true} and \kw{false} are \kw{bool}, and a number literal is a \emph{number}, which can be compared with scores.
+
+\section{Where types matter}
+
+The compiler uses types in three places:
+
+\begin{enumerate}
+  \item \textbf{Comparisons.} An \kw{if} condition may compare only scores, numbers and booleans. Comparing text is error \errcode{E110}:
+\begin{algo}
+summary = Summariser(doc)          // text
+if summary < 0.5 { emit summary }  // E110: 'summary' is text, not a score
+\end{algo}
+  \item \textbf{Parallel loops.} \kw{par for} iterates over a \kw{list}; anything else is error \errcode{E114}.
+  \item \textbf{Variables.} Each variable takes the type of the agent that produced it. A \kw{par} block bound to a single name produces a \kw{list}; the loop variable of \kw{par for} is \kw{text}.
+\end{enumerate}
+
+\begin{caution}
+In version 0.1 the compiler does not yet check that an argument's type matches the parameter's declared type (for example, passing a \kw{list} where \kw{text} is expected). Lists passed to text parameters are joined with \code{"; "} when the goal is rendered. Full argument type checking is planned for version 0.2.
+\end{caution}
+
+\section{Results: value plus provenance}
+
+Every agent call returns a \emph{Result}, not a bare value. A Result carries:
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}L{2.6cm}Y@{}}
+\toprule
+\thead{Field} & \thead{Meaning}\\
+\goldrule
+\code{value} & The agent's output, of its declared return type\\
+\code{confidence} & A number from 0 to 1 reported with the output\\
+\code{agent} & Which agent produced it\\
+\code{call\_id} & A short identifier linking it to its audit record\\
+\code{status} & \code{ok}, \code{escalated} (sent for human review) or \code{approved} (a human approved it)\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+In flows you use a Result exactly like its value: passing it to another agent passes the value, and comparing it compares the value. The extra fields are visible in the audit log, in notebooks (\code{algo\_calls}), and to Python code that uses the generated program.
+
+\begin{ethics}[Uncertainty is part of the answer]
+Hiding uncertainty encourages over-trust in AI output. By making confidence part of every result, \algolang\ makes it natural to route uncertain results to people (Chapter~\ref{ch:policies}) and to report uncertainty to end users. Remember, however, that a model's \emph{self-reported} confidence is not a calibrated probability (Section~\ref{sec:limits}).
+\end{ethics}
+
+\section{Flow inputs}
+
+Flow parameters are declared with types like agent parameters:
+
+\begin{algo}
+flow main(topic: text, audience: text) { ... }
+\end{algo}
+
+Values are supplied on the command line with \code{--arg "name=value"}, in notebooks with the same option, or interactively when omitted.
+
+\begin{note}
+In version 0.1 every flow input arrives as text, whatever its declared type. Declare flow inputs as \kw{text} and let an agent convert them if needed.
+\end{note}

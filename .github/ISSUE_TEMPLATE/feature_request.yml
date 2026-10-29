@@ -1,0 +1,14 @@
+name: Feature request
+description: Propose a language, runtime, SDK or UI improvement
+labels: [enhancement]
+body:
+  - type: textarea
+    id: problem
+    attributes: {label: Problem, description: "What are you trying to do that is hard today?"}
+    validations: {required: true}
+  - type: textarea
+    id: proposal
+    attributes: {label: Proposal, description: "Syntax, API or UI you have in mind (examples welcome)"}
+  - type: textarea
+    id: governance
+    attributes: {label: Governance impact, description: "Could this weaken policies, audit, review or tool capabilities? How is that prevented?"}

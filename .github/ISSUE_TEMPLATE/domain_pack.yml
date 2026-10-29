@@ -1,0 +1,21 @@
+name: Domain pack proposal
+description: Suggest a new ready-made multi-agent program for the domain library
+labels: [domain-pack]
+body:
+  - type: input
+    id: id
+    attributes: {label: Pack id, placeholder: "logistics.customs_check"}
+    validations: {required: true}
+  - type: textarea
+    id: users
+    attributes: {label: Who uses it and for what decision?}
+    validations: {required: true}
+  - type: textarea
+    id: agents
+    attributes: {label: Agents and their goals, placeholder: "Intake = extract the shipment facts\nClassifier = …"}
+  - type: dropdown
+    id: risk
+    attributes: {label: Risk level, options: [low, medium, high]}
+  - type: textarea
+    id: never
+    attributes: {label: What must never be automated / which attributes must be forbidden?}

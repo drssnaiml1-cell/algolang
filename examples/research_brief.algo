@@ -1,0 +1,50 @@
+// research_brief.algo — three agents, one flow.
+// Every piece of work is an agent; the flow only wires them together.
+
+model smart = "claude-sonnet-5-5"
+model fast  = "claude-haiku-5-5"
+
+tool web.search
+
+agent Researcher(topic: text) -> text {
+    role  "Senior research analyst"
+    goal  "Find five verified, recent facts about {topic}, with sources"
+    uses  web.search
+    model smart
+    policy {
+        budget tokens 6000
+        retry 2
+    }
+}
+
+agent Writer(facts: text, tone: text = "academic") -> text {
+    role  "Technical writer"
+    goal  "Write a 200-word brief from these facts in a {tone} tone: {facts}"
+    model fast
+}
+
+agent Reviewer(draft: text) -> score {
+    role  "Peer reviewer"
+    goal  "Score this draft from 0 to 1 for factual accuracy and clarity: {draft}"
+    model smart
+    policy {
+        require human when confidence < 0.70
+    }
+}
+
+flow main(topic: text) {
+    facts = Researcher(topic)
+
+    // two writers work at the same time
+    [formal, simple] = par {
+        Writer(facts),
+        Writer(facts, tone = "plain-English")
+    }
+
+    quality = Reviewer(formal)
+    if quality < 0.80 {
+        formal = Writer(facts, tone = "rigorous academic")
+    }
+
+    emit formal, simple
+}

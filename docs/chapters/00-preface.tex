@@ -1,0 +1,45 @@
+Most of today's AI systems are written in languages designed decades before large language models existed. In those languages the basic unit of work is the \emph{function}: a block of code that runs silently, takes whatever it can reach, and leaves no record of what it did. When the work inside a function is done by an AI model, that silence becomes a problem. Who decided? On what evidence? With how much confidence? Who checked it? Was a protected attribute such as caste or gender used? A function cannot tell us.
+
+\algolang\ starts from a different premise. In \algolang\ there are no functions. \textbf{Every unit of work is an agent}: a named worker with a stated role, a goal written in plain language, an explicit list of the tools it may use, the model it runs on, and a policy that governs it. Programs are \emph{flows} that connect agents, run them in parallel, and branch on their scores. Governance---budgets, retries, human review, forbidden attributes, audit trails---is part of the language, not an afterthought in a library.
+
+This book is the official documentation for \algolang\ version~0.2 Enterprise. It is written for three audiences:
+
+\begin{itemize}
+  \item \textbf{Students and teachers} who want a clear, small language for learning how multi-agent AI systems are built, and for discussing responsible AI with real code.
+  \item \textbf{Researchers} who want to prototype agentic pipelines with built-in provenance, and to study language-level approaches to AI governance.
+  \item \textbf{Engineers} who want to know exactly what the compiler checks, what the runtime enforces, and where the current limits are.
+\end{itemize}
+
+\section*{How this book is organised}
+
+\textbf{Part I} gets you running: what \algolang\ is, how to install it on Windows, Linux, macOS, Google Colab and Jupyter, and a first program. \textbf{Part II} is the language reference: lexical structure, types, declarations, policies, flows and every compile-time error. \textbf{Part III} covers the toolchain and runtime: the \code{algo} command, execution semantics, the audit log, notebooks and the compiler's internals. \textbf{Part IV} turns to practice: multi-agent design patterns, responsible AI, and ready-to-use teaching material. \textbf{Part V} describes the open-source project: roadmap, contribution process, licence and citation. The appendices hold the formal grammar, quick-reference tables and complete example programs.
+
+\section*{Conventions}
+
+\algolang\ source code appears in light boxes with a navy edge; terminal sessions appear in dark boxes. Every example in this book was compiled and run with \algolang~0.1.0 and 0.2.0, and the outputs shown are real outputs from the offline (mock) backend unless stated otherwise.
+
+\begin{note}
+Notes give extra detail.
+\end{note}
+\begin{tip}
+Tips suggest a better or faster way.
+\end{tip}
+\begin{caution}
+Cautions mark limitations you must understand before relying on a feature.
+\end{caution}
+\begin{ethics}
+Responsible-AI boxes connect a language feature to the ethical principle it supports.
+\end{ethics}
+
+\section*{Acknowledgements}
+
+\algolang\ grew out of teaching agentic AI and AI ethics to students and research scholars, and out of the research programme at AlgoProfessor AI R\&D Solutions. I thank the students, Ph.D.\ scholars and postdoctoral researchers whose questions shaped its design. Errors that remain are mine; reports and proposals are warmly welcomed through the process in Chapter~\ref{ch:project}.
+
+\vspace{10pt}
+\begin{flushright}
+\sffamily
+\textbf{Dr.\ S.\ Satyanarayana}, Ph.D., PDF (AI)\\
+{\small Founder, CEO \& Chief Agentic AI Scientist}\\
+{\small AlgoProfessor AI R\&D Solutions, Hyderabad}\\
+{\small\color{muted} October 2026}
+\end{flushright}

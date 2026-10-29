@@ -1,0 +1,77 @@
+name: Release
+
+# Push a tag like v0.2.1 and this publishes a GitHub Release with the wheel, sdist,
+# the full source zip and the PDF manuals. See DEVELOPER_GUIDE.md §3.2.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Existing tag to (re)publish, e.g. v0.2.0"
+        required: true
+
+permissions:
+  contents: write
+
+env:
+  PYTHONUTF8: "1"
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag || github.ref }}
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.12"}
+      - name: Version in the tag must match the code
+        run: |
+          TAG="${{ github.event.inputs.tag || github.ref_name }}"
+          CODE="v$(python -c 'import algoruntime; print(algoruntime.VERSION)')"
+          echo "tag=$TAG code=$CODE"
+          test "$TAG" = "$CODE" || { echo "::error::tag $TAG does not match algoruntime.VERSION ($CODE)"; exit 1; }
+          echo "TAG=$TAG" >> "$GITHUB_ENV"
+          echo "VER=${TAG#v}" >> "$GITHUB_ENV"
+      - run: pip install -e ".[dev]" && python -m pytest -m "not slow"
+      - name: Build wheel and sdist
+        run: python -m build
+      - name: Build the source zip (what install.bat / install.sh expect)
+        run: git archive --format=zip --prefix=algolang/ -o "dist/AlgoLang_v${VER}.zip" HEAD
+      - name: Collect manuals and notebook
+        run: |
+          cp docs/AlgoLang_Documentation_v*.pdf slides/AlgoLang_Presentation.pdf AlgoLang_Notebook.ipynb dist/
+          (cd dist && sha256sum * > SHA256SUMS.txt)
+      - name: Release notes from CHANGELOG.md
+        run: |
+          python - <<'PY'
+          import os, re
+          ver = os.environ["VER"]
+          text = open("CHANGELOG.md", encoding="utf-8").read()
+          m = re.search(rf"^## \[{re.escape(ver)}\].*?$(.*?)(?=^## \[|\Z)", text, re.S | re.M)
+          body = (m.group(1).strip() if m else "See CHANGELOG.md.") + (
+              "\n\n### Install\n```bash\npip install algolang-" + ver + "-py3-none-any.whl\n"
+              "# or\npip install \"git+https://github.com/${{ github.repository }}@v" + ver + "\"\n```\n"
+              "Or download `AlgoLang_v" + ver + ".zip`, unzip it and run `install.bat` (Windows) or `bash install.sh` (Linux/macOS).")
+          open("RELEASE_NOTES.md", "w", encoding="utf-8").write(body)
+          PY
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.TAG }}
+          name: AlgoLang ${{ env.TAG }}
+          body_path: RELEASE_NOTES.md
+          files: dist/*
+
+  # To publish on PyPI: set up a trusted publisher for this repository on pypi.org, then uncomment.
+  # pypi:
+  #   needs: release
+  #   runs-on: ubuntu-latest
+  #   environment: pypi
+  #   permissions: {id-token: write}
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: actions/setup-python@v5
+  #       with: {python-version: "3.12"}
+  #     - run: pip install build && python -m build
+  #     - uses: pypa/gh-action-pypi-publish@release/v1

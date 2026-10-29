@@ -1,0 +1,83 @@
+\chapter{The AlgoLang Project}
+\label{ch:project}
+
+\algolang\ is an open-source project led by AlgoProfessor AI R\&D Solutions. This chapter describes how the project is organised, where it is going and how you can take part.
+
+\section{Versioning}
+
+\algolang\ follows semantic versioning. During the 0.x series, minor versions (0.2, 0.3, …) may change the language; patch versions (0.1.1, …) fix defects without changing valid programs. From version 1.0, any program that compiles under 1.$x$ will compile under every later 1.$y$.
+
+\section{Roadmap}
+
+\begin{figure}[ht]
+\centering
+\begin{tikzpicture}[
+  ms/.style={circle,fill=gold,draw=navy,line width=1pt,minimum size=4mm,inner sep=0pt},
+  now/.style={ms,fill=navy},
+  lab/.style={font=\sffamily\bfseries\small,text=navy,anchor=south},
+  txt/.style={font=\sffamily\scriptsize,text=ink,align=left,anchor=north,text width=36mm}]
+  \draw[navy,line width=1.6pt] (0.2,0) -- (15.3,0);
+  \node[ms] at (1.9,0) {};  \node[lab] at (1.9,0.3)  {v0.1};
+  \node[now] at (6.0,0) {};  \node[lab] at (6.0,0.3)  {v0.2 · now};
+  \node[ms]  at (10.1,0) {}; \node[lab] at (10.1,0.3) {v0.3};
+  \node[ms]  at (14.0,0) {}; \node[lab] at (14.0,0.3) {v1.0};
+  \node[txt] at (1.9,-0.35)  {Agents, flows, policies\\ par / par for\\ mock + live backends\\ audit log, notebooks};
+  \node[txt] at (6.0,-0.35)  {Enterprise: modules, org policy\\ 120 domain packs\\ executable tools, batch\\ hash-chained audit, review\\ SDK + Prompt UI};
+  \node[txt] at (10.1,-0.35) {\texttt{uncertain<T>}, type checks\\ \texttt{eval} + trace replay\\ MCP bindings, LSP\\ cost and energy budgets};
+  \node[txt] at (14.0,-0.35) {Stable language\\ typed agent messaging\\ native runtime\\ package registry};
+\end{tikzpicture}
+\caption{Roadmap. Dates are not fixed; each step ships when its features are complete and documented.}
+\end{figure}
+
+\section{Proposing changes: AEPs}
+
+Significant changes to the language are made through \textbf{AlgoLang Enhancement Proposals (AEPs)}, short design documents in the tradition of other open-source languages.
+
+\begin{enumerate}
+  \item \textbf{Discuss} the idea informally first.
+  \item \textbf{Write an AEP} with: motivation; the proposed syntax and semantics; examples; effect on existing programs; implementation sketch (grammar, checker, runtime); and the responsible-AI implications of the change.
+  \item \textbf{Review.} Proposals are reviewed for clarity, consistency with the design goals in Chapter~\ref{ch:intro}, and the impact on accountability and safety.
+  \item \textbf{Decide.} Accepted AEPs are numbered, implemented with tests and documentation, and listed in the release notes.
+\end{enumerate}
+
+\begin{ethics}[A required section]
+Every AEP must include a section on responsible-AI implications. A feature that makes AI work less visible, less accountable or harder to oversee needs a strong justification and compensating safeguards.
+\end{ethics}
+
+\section{Contributing}
+
+Contributions of every size are welcome:
+
+\begin{itemize}
+  \item \textbf{Report a problem:} include the \file{.algo} file, the exact command, the full output and the output of \code{algo doctor}.
+  \item \textbf{Improve documentation or examples:} new examples, teaching material and translations are especially valuable.
+  \item \textbf{Change the code:} keep the compiler and runtime small and readable; add an example that exercises the change; run every example with \code{algo check} and \code{algo run} on the mock backend before submitting.
+\end{itemize}
+
+Contact: \href{mailto:ceo@algoprofessor.com}{ceo@algoprofessor.com} · \href{https://www.algoprofessor.com}{www.algoprofessor.com}.
+
+\section{Code of conduct}
+
+The \algolang\ community is open to everyone. Participants are expected to be respectful and constructive, to welcome newcomers and students, to give credit, and to assume good faith. Harassment and discrimination of any kind are not tolerated.
+
+\section{Licence}
+
+The \algolang\ software (compiler, runtime, notebook extension, installers and examples) is licensed under the \textbf{Apache License, Version 2.0}. This documentation is licensed under \textbf{Creative Commons Attribution 4.0 International (CC BY 4.0)}.
+
+\section{How to cite AlgoLang}
+\label{sec:cite}
+
+If you use \algolang\ in research or teaching, please cite this documentation:
+
+\begin{plaincode}[title=BibTeX,unbreakable]
+@manual{satyanarayana2026algolang,
+  title        = {The {AlgoLang} Programming Language: Official Documentation, Version 0.1},
+  author       = {Satyanarayana, S.},
+  organization = {AlgoProfessor AI R\&D Solutions},
+  address      = {Hyderabad, India},
+  year         = {2026},
+  month        = oct,
+  url          = {https://www.algoprofessor.com},
+  note         = {Open-source, agent-native programming language for building AI systems}
+}
+\end{plaincode}

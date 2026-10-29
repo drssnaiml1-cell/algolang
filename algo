@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# `algo` command — Linux / macOS launcher for the AlgoLang toolchain
+SOURCE="${BASH_SOURCE[0]}"
+while [ -L "$SOURCE" ]; do
+  DIR="$(cd -P "$(dirname "$SOURCE")" && pwd)"
+  SOURCE="$(readlink "$SOURCE")"
+  [[ $SOURCE != /* ]] && SOURCE="$DIR/$SOURCE"
+done
+ALGO_HOME="$(cd -P "$(dirname "$SOURCE")" && pwd)"
+export ALGO_HOME
+if [ -x "$ALGO_HOME/.venv/bin/python" ]; then
+  PY="$ALGO_HOME/.venv/bin/python"
+else
+  PY="$(command -v python3 || command -v python)"
+fi
+exec "$PY" "$ALGO_HOME/algoc.py" "$@"

@@ -1,0 +1,213 @@
+% ─────────────────────────────────────────────────────────────────────
+%  beamerthemeAlgoLang.sty — colourful navy & gold theme for AlgoLang talks
+%  AlgoProfessor AI R&D Solutions · build with XeLaTeX
+% ─────────────────────────────────────────────────────────────────────
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{beamerthemeAlgoLang}[2026/10/29 AlgoLang Beamer theme]
+
+\RequirePackage{fontspec}
+\RequirePackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,calc,shapes.geometric,fit,backgrounds,shadows}
+\RequirePackage[most]{tcolorbox}
+\RequirePackage{listings}
+\RequirePackage{fvextra}
+\RequirePackage{booktabs}
+\RequirePackage{tabularx}
+\RequirePackage{array}
+\RequirePackage{colortbl}
+\RequirePackage{ragged2e}
+
+% ── palette ───────────────────────────────────────────────────────────
+\definecolor{navy}{HTML}{0B1F3A}
+\definecolor{navy2}{HTML}{1D3B66}
+\definecolor{navylight}{HTML}{E8EDF5}
+\definecolor{gold}{HTML}{C9A227}
+\definecolor{goldlight}{HTML}{F6F0DC}
+\definecolor{ink}{HTML}{1B1B1B}
+\definecolor{muted}{HTML}{5A6270}
+% accents — one per part of the talk
+\definecolor{teal}{HTML}{0FA3B1}
+\definecolor{coral}{HTML}{E4572E}
+\definecolor{violet}{HTML}{7B5EA7}
+\definecolor{leaf}{HTML}{2BA84A}
+\definecolor{amber}{HTML}{F29E1F}
+\definecolor{sky}{HTML}{2F80ED}
+\definecolor{rose}{HTML}{D6336C}
+\definecolor{lilac}{HTML}{9F86F0}
+\definecolor{termbg}{HTML}{0E1A2B}
+\definecolor{termfg}{HTML}{E6E9EF}
+\definecolor{codebg}{HTML}{F8F7F2}
+\definecolor{strgreen}{HTML}{2F6B3A}
+\definecolor{cmtgrey}{HTML}{7C8591}
+
+% the accent colour of the current part (changed with \partcolor{...})
+\colorlet{accent}{gold}
+\newcommand{\partcolor}[1]{\colorlet{accent}{#1}}
+
+% ── fonts ─────────────────────────────────────────────────────────────
+\IfFontExistsTF{Inter}
+  {\setsansfont{Inter}[BoldFont={Inter SemiBold}]
+   \newfontfamily\heavy{Inter}[UprightFont={Inter ExtraBold}]
+   \newfontfamily\lightf{Inter Light}}
+  {\setsansfont{texgyreheros}[Extension=.otf,UprightFont=*-regular,BoldFont=*-bold,
+     ItalicFont=*-italic,BoldItalicFont=*-bolditalic]
+   \newfontfamily\heavy{texgyreheros}[Extension=.otf,UprightFont=*-bold]
+   \newfontfamily\lightf{texgyreheros}[Extension=.otf,UprightFont=*-regular]}
+\IfFontExistsTF{DejaVu Sans Mono}
+  {\setmonofont{DejaVu Sans Mono}[Scale=0.86]}
+  {\setmonofont{DejaVuSansMono}[Extension=.ttf,Scale=0.86,BoldFont=*-Bold]}
+
+% ── beamer colours & fonts ────────────────────────────────────────────
+\setbeamercolor{normal text}{fg=ink,bg=white}
+\setbeamercolor{structure}{fg=navy}
+\setbeamercolor{alerted text}{fg=coral}
+\setbeamercolor{frametitle}{fg=white,bg=navy}
+\setbeamercolor{itemize item}{fg=accent}
+\setbeamercolor{itemize subitem}{fg=navy2}
+\setbeamercolor{enumerate item}{fg=accent}
+\setbeamerfont{frametitle}{size=\large,series=\bfseries}
+\setbeamerfont{itemize/enumerate body}{}
+\setbeamerfont{itemize/enumerate subbody}{}
+\setbeamertemplate{itemize item}{\tikz[baseline=-0.6ex]\fill[accent] (0,0) circle (2.1pt);}
+\setbeamertemplate{itemize subitem}{\tikz[baseline=-0.6ex]\fill[navy2] (0,0) circle (1.4pt);}
+\setbeamertemplate{enumerate item}{\tikz[baseline=(n.base)]\node[circle,fill=accent,text=white,
+  inner sep=1.2pt,minimum size=4.2mm,font=\scriptsize\bfseries](n){\insertenumlabel};}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{caption}{\raggedright\insertcaption\par}
+\setlength{\leftmargini}{1.3em}
+
+% ── frame title: navy bar with accent stripe and logo ─────────────────
+\setbeamertemplate{frametitle}{%
+  \nointerlineskip
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[navy] (current page.north west) rectangle ([yshift=-11.5mm]current page.north east);
+    \fill[accent] ([yshift=-11.5mm]current page.north west) rectangle ([yshift=-12.4mm]current page.north east);
+    \node[anchor=west,text=white,font=\usebeamerfont{frametitle}]
+      at ([xshift=6mm,yshift=-5.9mm]current page.north west) {\insertframetitle};
+    \node[anchor=east] at ([xshift=-5mm,yshift=-5.8mm]current page.north east) {\algologo[0.21]};
+  \end{tikzpicture}%
+  \vspace*{9mm}%
+}
+\setbeamertemplate{frametitle continuation}{}
+
+% ── footline: author · section · page with progress bar ───────────────
+\setbeamertemplate{footline}{%
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[navylight] (current page.south west) rectangle ([yshift=5mm]current page.south east);
+    \fill[accent] (current page.south west) rectangle
+      ([xshift={\paperwidth*min(1,\insertframenumber/\inserttotalframenumber)},yshift=0.9mm]current page.south west);
+    \node[anchor=west,font=\tiny,text=navy] at ([xshift=6mm,yshift=2.7mm]current page.south west)
+      {\textbf{AlgoLang} · Dr.\ S.\ Satyanarayana, Ph.D., PDF (AI) · AlgoProfessor AI R\&D Solutions};
+    \node[anchor=east,font=\tiny,text=navy] at ([xshift=-6mm,yshift=2.7mm]current page.south east)
+      {\insertsectionhead\quad\textbf{\insertframenumber}\,/\,\inserttotalframenumber};
+  \end{tikzpicture}%
+}
+
+% ── logo: an agent network inside a gold ring ─────────────────────────
+\newcommand{\algologo}[1][1]{%
+  \begin{tikzpicture}[scale=#1,every node/.style={transform shape},baseline=-0.5ex]
+    \draw[gold,line width=2.4pt*#1/0.3] (0,0) circle (1.55);
+    \coordinate (A) at (90:0.82);  \coordinate (B) at (210:0.82); \coordinate (C) at (330:0.82);
+    \draw[white,line width=1.5pt*#1/0.3] (A)--(B)--(C)--cycle (A)--(0,0) (B)--(0,0) (C)--(0,0);
+    \foreach \p in {A,B,C}{\fill[white] (\p) circle (0.24);}
+    \fill[gold] (0,0) circle (0.3);
+  \end{tikzpicture}}
+
+% ── section divider slide, coloured per part ──────────────────────────
+\newcommand{\partslide}[3]{% #1 colour, #2 number, #3 title
+  \partcolor{#1}%
+  \section{#3}%
+  \begin{frame}[plain]
+  \begin{tikzpicture}[remember picture,overlay]
+    \fill[navy] (current page.south west) rectangle (current page.north east);
+    \fill[#1] (current page.south west) rectangle ([xshift=9mm]current page.north west);
+    \node[opacity=0.10] at ([xshift=-32mm,yshift=-4mm]current page.east) {\algologo[2.3]};
+    \node[anchor=west,text=#1,font=\heavy\fontsize{64}{64}\selectfont]
+      at ([xshift=20mm,yshift=10mm]current page.west) {#2};
+    \node[anchor=west,text=white,font=\heavy\fontsize{26}{30}\selectfont,text width=105mm,align=left]
+      at ([xshift=20mm,yshift=-12mm]current page.west) {#3};
+  \end{tikzpicture}
+  \end{frame}%
+}
+
+% ── coloured cards ────────────────────────────────────────────────────
+% \begin{card}{colour}{Title} ... \end{card}
+\newtcolorbox{card}[2]{enhanced,colback=#1!7!white,colframe=#1,boxrule=0pt,leftrule=2.6pt,
+  arc=2pt,left=5pt,right=4pt,top=3pt,bottom=3pt,fontupper=\footnotesize\raggedright,
+  title={\raggedright\bfseries\small #2},coltitle=#1!75!black,colbacktitle=#1!7!white,
+  toptitle=1pt,bottomtitle=-1pt,titlerule=0pt,before skip=2pt,after skip=4pt}
+% big filled tile
+\newtcolorbox{tile}[1]{enhanced,colback=#1,colframe=#1,arc=3pt,boxrule=0pt,
+  left=5pt,right=5pt,top=4pt,bottom=4pt,coltext=white,fontupper=\footnotesize,halign=center,valign=center}
+\newcommand{\pill}[2]{\tikz[baseline=(p.base)]\node[fill=#1,text=white,rounded corners=5pt,
+  inner xsep=5pt,inner ysep=2pt,font=\scriptsize\bfseries](p){#2};}
+\newcommand{\soft}[2]{\tikz[baseline=(p.base)]\node[fill=#1!15,text=#1!70!black,rounded corners=5pt,
+  inner xsep=5pt,inner ysep=2pt,font=\scriptsize\bfseries](p){#2};}
+
+% ── inline helpers ───────────────────────────────────────────────────
+\newcommand{\code}[1]{\texttt{\color{navy2}#1}}
+\newcommand{\kw}[1]{\texttt{\bfseries\color{navy}#1}}
+\newcommand{\algolang}{\textbf{\color{navy}Algo\textcolor{gold}{Lang}}}
+\newcommand{\yes}{\tikz[baseline=-0.6ex]\node[circle,fill=leaf,text=white,inner sep=0.6pt,font=\tiny\bfseries]{\checkmark};}
+\newcommand{\some}{\tikz[baseline=-0.6ex]\node[circle,fill=amber,text=white,inner sep=0.9pt,font=\tiny\bfseries,minimum size=3mm]{$\sim$};}
+\newcommand{\no}{\tikz[baseline=-0.6ex]\node[circle,fill=black!15,text=black!45,inner sep=0.9pt,font=\tiny\bfseries,minimum size=3mm]{--};}
+
+% ── code listings ────────────────────────────────────────────────────
+\lstdefinelanguage{AlgoLang}{
+  morekeywords={agent,flow,model,tool,par,for,in,if,else,emit,true,false},
+  morekeywords=[2]{role,goal,uses,policy},
+  morekeywords=[3]{budget,tokens,retry,timeout,require,human,when,confidence,forbid},
+  morekeywords=[4]{text,score,list,json,bool},
+  sensitive=true, morecomment=[l]{//}, morestring=[b]",
+}
+\lstset{
+  basicstyle=\ttfamily\scriptsize\color{ink},
+  keywordstyle=\bfseries\color{navy},
+  keywordstyle=[2]\bfseries\color{teal!80!black},
+  keywordstyle=[3]\bfseries\color{coral},
+  keywordstyle=[4]\itshape\color{violet},
+  commentstyle=\itshape\color{cmtgrey},
+  stringstyle=\color{strgreen},
+  showstringspaces=false, columns=fullflexible, keepspaces=true,
+  breaklines=true, tabsize=4, upquote=true, aboveskip=0pt, belowskip=0pt,
+}
+\lstdefinestyle{py}{language=Python,morekeywords={self,None,True,False,with,as},
+  keywordstyle=\bfseries\color{navy},stringstyle=\color{strgreen},commentstyle=\itshape\color{cmtgrey}}
+
+\newtcblisting{algo}[1][]{enhanced,listing only,colback=codebg,colframe=accent,boxrule=0pt,
+  leftrule=2.6pt,arc=2pt,left=5pt,right=3pt,top=2pt,bottom=2pt,
+  listing options={language=AlgoLang,basicstyle=\ttfamily\fontsize{7}{8.3}\selectfont\color{ink}},before skip=2pt,after skip=3pt,#1}
+\newtcblisting{pycode}[1][]{enhanced,listing only,colback=codebg,colframe=muted,boxrule=0pt,
+  leftrule=2.6pt,arc=2pt,left=5pt,right=3pt,top=2pt,bottom=2pt,
+  listing options={style=py},before skip=2pt,after skip=3pt,#1}
+\newtcolorbox{termbox}[1][]{enhanced,colback=termbg,colframe=termbg,colupper=termfg,arc=3pt,boxrule=0pt,
+  left=6pt,right=4pt,top=9pt,bottom=3pt,before skip=2pt,after skip=3pt,
+  overlay={\fill[coral] ([xshift=6pt,yshift=-4.5pt]frame.north west) circle (1.5pt);
+           \fill[gold] ([xshift=11pt,yshift=-4.5pt]frame.north west) circle (1.5pt);
+           \fill[leaf] ([xshift=16pt,yshift=-4.5pt]frame.north west) circle (1.5pt);},#1}
+\newenvironment{terminal}
+  {\VerbatimEnvironment\begin{termbox}\begin{Verbatim}[fontsize=\scriptsize,breaklines,breakanywhere]}
+  {\end{Verbatim}\end{termbox}}
+\newenvironment{terminaltiny}
+  {\VerbatimEnvironment\begin{termbox}\begin{Verbatim}[fontsize=\tiny,breaklines,breakanywhere]}
+  {\end{Verbatim}\end{termbox}}
+
+% code straight from a .algo file, so slides always show the real program
+\newcommand{\algofile}[2][]{\tcbinputlisting{enhanced,listing only,colback=codebg,colframe=accent,
+  boxrule=0pt,leftrule=2.6pt,arc=2pt,left=5pt,right=3pt,top=2pt,bottom=2pt,
+  listing options={language=AlgoLang,basicstyle=\ttfamily\fontsize{6.3}{7.25}\selectfont\color{ink}},
+  listing file={#2},before skip=0pt,after skip=0pt,#1}}
+
+% vertical chain of agents for application slides: \chain{A,B,C}
+\newcommand{\chain}[1]{%
+  \begin{tikzpicture}[node distance=2.2mm,
+    a/.style={fill=accent,text=white,rounded corners=2pt,font=\scriptsize\bfseries,
+              minimum width=30mm,minimum height=5.6mm,align=center}]
+    \foreach \n [count=\i] in {#1}{%
+      \ifnum\i=1 \node[a] (c\i) {\n};
+      \else \pgfmathtruncatemacro\j{\i-1}\node[a,below=of c\j] (c\i) {\n};
+        \draw[-{Stealth[length=1.6mm]},navy,line width=0.6pt] (c\j) -- (c\i);\fi}
+  \end{tikzpicture}}
+
+\endinput
+

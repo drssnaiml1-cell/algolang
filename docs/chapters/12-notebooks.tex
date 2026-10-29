@@ -1,0 +1,126 @@
+\chapter{Jupyter and Google Colab}
+\label{ch:notebooks}
+
+The notebook extension \file{algomagic.py} lets you write \algolang\ directly in Jupyter and Google Colab cells. Each run shows live progress, a results table, and optionally a diagram of the flow and the generated Python.
+
+\section{Starting}
+
+\begin{itemize}
+  \item \textbf{Colab:} upload \file{AlgoLang\_Notebook.ipynb} (\emph{File → Upload notebook}) and choose \emph{Runtime → Run all}. The setup cells install the parser and write the toolchain into the Colab machine.
+  \item \textbf{Jupyter:} run \code{algo notebook} in the \algolang\ folder.
+  \item \textbf{Any other notebook:} with the \algolang\ folder on the Python path, run \code{\%load\_ext algomagic}.
+\end{itemize}
+
+\section{The \texttt{\%\%algo} cell magic}
+
+A cell whose first line is \code{\%\%algo} contains \algolang\ source. Options on that first line control what happens:
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}L{4.1cm}Y@{}}
+\toprule
+\thead{First line} & \thead{Effect}\\
+\goldrule
+\code{\%\%algo --arg "topic=AI"} & Compile and run \code{flow main} with that input\\
+\code{\%\%algo --define} & Add the cell's models, tools and agents to the session\\
+\code{\%\%algo --check} & Compile only; report errors or a summary\\
+\code{--graph} & Draw the flow as a diagram before running\\
+\code{--python} & Show the generated Python\\
+\code{--interactive} & Ask for approval of low-confidence results in an input box\\
+\code{--live} & Use real Claude models\\
+\code{--name NAME} & Name the program (used for the audit-log file)\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{algo}[title=a notebook cell]
+%%algo --arg "topic=Neural networks" --graph
+
+flow main(topic: text) {
+    lesson = Explainer(topic)
+    [quiz, quality] = par { QuizMaker(lesson), Checker(lesson) }
+    emit lesson, quiz, quality
+}
+\end{algo}
+
+\section{Building a program cell by cell}
+
+Notebooks are at their best when a program is developed in small steps. Cells marked \code{--define} add declarations to a \emph{session}; every later run cell is compiled together with them.
+
+\begin{algo}[title=cell 1]
+%%algo --define
+model smart = "claude-sonnet-5-5"
+tool  web.search
+\end{algo}
+\begin{algo}[title=cell 2]
+%%algo --define
+agent Researcher(topic: text) -> text {
+    goal  "Find five verified facts about {topic}"
+    uses  web.search
+    model smart
+}
+\end{algo}
+\begin{algo}[title=cell 3]
+%%algo --arg "topic=Graph neural networks"
+flow main(topic: text) {
+    emit Researcher(topic)
+}
+\end{algo}
+
+\begin{itemize}
+  \item Re-running a define cell \emph{replaces} the agents it defined earlier, so you can edit and re-run freely.
+  \item A define cell is checked before it is accepted; a cell with errors leaves the session unchanged.
+  \item Run cells are not stored, so each can contain its own \code{flow main}.
+  \item Errors are reported with line numbers \emph{within the cell}; an error in an earlier define cell is reported as such.
+\end{itemize}
+
+\section{Line magics}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}L{5.4cm}Y@{}}
+\toprule
+\thead{Magic} & \thead{Effect}\\
+\goldrule
+\code{\%algo\_run file.algo --arg "…"} & Run an existing \file{.algo} file (same options as the cell magic)\\
+\code{\%algo\_list} & List the session's define cells and what each defines\\
+\code{\%algo\_reset} & Clear the session\\
+\code{\%algo\_help} & Show help\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Results in Python}
+
+After each run, two variables are available to ordinary Python cells:
+
+\begin{pycode}[title=a Python cell]
+print(algo_result[0])                 # first emitted value
+
+import pandas as pd
+pd.DataFrame(algo_calls)[["agent", "model", "confidence", "status", "tokens"]]
+\end{pycode}
+
+\code{algo\_result} is the list of emitted values. \code{algo\_calls} is a list of dictionaries, one per agent call, with the audit-record fields of Section~\ref{sec:audit} plus the call's \code{output}.
+
+\section{What a run displays}
+
+\begin{enumerate}
+  \item \textbf{Agent graph} (with \code{--graph}): inputs as cream ovals, agents as navy boxes, parallel agents with gold borders, conditions as gold diamonds, branch agents dashed, and the output. When Graphviz is installed (as on Colab) the graph is drawn with arrows; otherwise a column layout lists what feeds each agent.
+  \item \textbf{Progress lines}: one per agent call as it completes.
+  \item \textbf{Results table}: agent, model, confidence, status (human-review cases highlighted), tokens and output, followed by the emitted values and the audit-log path.
+  \item \textbf{Problems}: compile errors as a table with codes and cell line numbers; policy violations and failures as a red panel above the calls that did run.
+\end{enumerate}
+
+\section{Live mode in Colab}
+
+Store your key as a Colab \emph{secret} so that it never appears in the notebook: click the key icon in Colab's left sidebar, add a secret named \code{ANTHROPIC\_API\_KEY}, allow notebook access, then run:
+
+\begin{pycode}
+%pip install -q anthropic
+import os
+from google.colab import userdata
+os.environ["ANTHROPIC_API_KEY"] = userdata.get("ANTHROPIC_API_KEY")
+\end{pycode}
+
+Cells with \code{--live} then call Claude. Without a key, a live cell stops safely with a message and no charge.

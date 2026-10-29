@@ -1,0 +1,18 @@
+name: Bug report
+description: Something in the compiler, runtime, SDK, Studio or Prompt UI does not work
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes: {label: What happened?, description: "What did you expect, and what happened instead?"}
+    validations: {required: true}
+  - type: textarea
+    id: program
+    attributes: {label: Smallest .algo program that shows it, render: algo}
+  - type: input
+    id: command
+    attributes: {label: Command or mode, placeholder: "algo run …  /  Studio  /  Prompt UI  /  SDK"}
+  - type: textarea
+    id: doctor
+    attributes: {label: Output of `algo doctor`, render: text}
+    validations: {required: true}

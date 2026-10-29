@@ -1,0 +1,22 @@
+{
+  "name": "algolang",
+  "displayName": "AlgoLang",
+  "description": "Syntax highlighting for AlgoLang (.algo), the AlgoProfessor agent-native language",
+  "version": "0.1.0",
+  "publisher": "algoprofessor",
+  "engines": { "vscode": "^1.70.0" },
+  "categories": ["Programming Languages"],
+  "contributes": {
+    "languages": [{
+      "id": "algolang",
+      "aliases": ["AlgoLang", "algo"],
+      "extensions": [".algo"],
+      "configuration": "./language-configuration.json"
+    }],
+    "grammars": [{
+      "language": "algolang",
+      "scopeName": "source.algolang",
+      "path": "./syntaxes/algolang.tmLanguage.json"
+    }]
+  }
+}

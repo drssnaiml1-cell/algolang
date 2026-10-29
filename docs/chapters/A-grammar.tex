@@ -1,0 +1,91 @@
+\chapter{Grammar}
+\label{app:grammar}
+
+This appendix reproduces \file{grammar.lark}, the normative grammar of \algolang~0.1, in Lark's EBNF notation. Quoted strings are keywords and punctuation; upper-case names are terminals; \code{?rule} inlines a rule with a single child; \code{-> name} labels an alternative in the parse tree; \code{\%ignore} lists text skipped between tokens.
+
+\begin{plaincode}[title=grammar.lark]
+// ─────────────────────────────────────────────────────────────
+//  AlgoLang v0.1 grammar  —  AlgoProfessor AI R&D Solutions
+//  Core rule: there are no functions. Every unit of work is an
+//  `agent`; a `flow` only orchestrates agents.
+// ─────────────────────────────────────────────────────────────
+
+start: item*
+
+?item: model_decl
+     | tool_decl
+     | agent_decl
+     | flow_decl
+
+// model fast = "claude-haiku-5-5"
+model_decl: "model" NAME "=" STRING
+
+// tool web.search   (declares a tool agents may be granted)
+tool_decl: "tool" DOTTED
+
+// agent Name(p: type, q: type = "x") -> type { ... }
+agent_decl: "agent" NAME "(" [params] ")" "->" NAME "{" agent_clause* "}"
+
+params: param ("," param)*
+param: NAME ":" NAME ["=" literal]
+
+?agent_clause: "role" STRING            -> role
+             | "goal" STRING            -> goal
+             | "uses" DOTTED ("," DOTTED)* -> uses
+             | "model" NAME             -> model_ref
+             | "policy" "{" policy_rule* "}" -> policy
+
+?policy_rule: "budget" "tokens" NUMBER                       -> budget
+            | "retry" NUMBER                                 -> retry
+            | "require" "human" "when" "confidence" "<" NUMBER -> human_gate
+            | "forbid" NAME ("," NAME)*                      -> forbid
+            | "timeout" NUMBER                               -> timeout
+
+// flow main(topic: text) { ... }
+flow_decl: "flow" NAME "(" [params] ")" "{" stmt* "}"
+
+?stmt: target "=" expr                                   -> assign
+     | "if" cond "{" stmt* "}" ["else" "{" stmt* "}"]    -> if_stmt
+     | "emit" expr ("," expr)*                           -> emit
+     | call                                              -> expr_stmt
+
+target: NAME                         -> single_target
+      | "[" NAME ("," NAME)* "]"     -> multi_target
+
+?expr: call
+     | par_block
+     | par_for
+     | NAME                          -> var
+     | literal
+
+call: NAME "(" [args] ")"
+args: arg ("," arg)*
+?arg: kwarg | expr
+kwarg: NAME "=" expr
+
+// [a, b] = par { Writer(x), Critic(x) }
+par_block: "par" "{" call ("," call)* "}"
+
+// results = par for t in tasks { Worker(t) }
+par_for: "par" "for" NAME "in" NAME "{" call "}"
+
+cond: expr COMPARE expr
+COMPARE: "<=" | ">=" | "==" | "!=" | "<" | ">"
+
+?literal: STRING -> string
+        | NUMBER -> number
+        | "true"  -> true
+        | "false" -> false
+
+DOTTED: /[a-zA-Z_][a-zA-Z0-9_]*(\.[a-zA-Z_][a-zA-Z0-9_]*)+/
+NAME: /[a-zA-Z_][a-zA-Z0-9_]*/
+STRING: /"([^"\\]|\\.)*"/
+NUMBER: /\d+(\.\d+)?/
+
+COMMENT: /\/\/[^\n]*/
+%ignore COMMENT
+%import common.WS
+%ignore WS
+SEMI: ";"
+%ignore SEMI
+\end{plaincode}

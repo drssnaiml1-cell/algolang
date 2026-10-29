@@ -1,0 +1,5 @@
+// Shared module: reused by several programs with  use "common/intake.algo" as intake
+agent Normaliser(claim: text) -> text {
+    role  "Claims intake clerk"
+    goal  "Rewrite this claim as date, place, damage and parties: {claim}"
+}

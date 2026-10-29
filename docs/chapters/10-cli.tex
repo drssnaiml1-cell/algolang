@@ -1,0 +1,113 @@
+\chapter{The \texttt{algo} Command}
+\label{ch:cli}
+
+All work with \algolang\ outside notebooks goes through one command, \code{algo}. On Windows it is \file{algo.bat}; on Linux and macOS it is the shell script \file{algo}. Both use the private \file{.venv} created by the installer when it exists.
+
+\begin{terminal}
+$ algo --help
+usage: algo [-h] [--version] command ...
+
+AlgoLang 0.2.0 — every unit of work is an agent
+
+positional arguments:
+  command
+    check     check a program for errors
+    build     compile to Python
+    run       compile and run flow main
+    new       create a starter program
+    doctor    check that the environment is ready
+    notebook  open the AlgoLang notebook in Jupyter (installs Jupyter if needed)
+\end{terminal}
+
+\section{Commands}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}L{5.2cm}Y@{}}
+\toprule
+\thead{Command} & \thead{What it does}\\
+\goldrule
+\code{algo check FILE.algo} & Parses and checks the program; reports all errors; writes nothing\\
+\code{algo build FILE.algo [-o OUT.py]} & Compiles to Python; default output \file{build/FILE.py} next to the source\\
+\code{algo run FILE.algo [options]} & Compiles, then runs \code{flow main}\\
+\code{algo new NAME} & Creates \file{NAME.algo} from a ready-to-run three-agent template\\
+\code{algo doctor} & Checks Python, the parser, live-mode readiness and a compiler self-test\\
+\code{algo notebook} & Opens \file{AlgoLang\_Notebook.ipynb} in Jupyter, installing Jupyter the first time\\
+\code{algo} & Numbered menu of every option\\
+\code{algo shell} & Interactive shell: type declarations one at a time\\
+\code{algo studio [--port N]} & AlgoLang Studio, the graphical IDE in your browser\\
+\code{algo ask "…" [-o F] [--run]} & AI writes a program from a description (compile-and-repair loop)\\
+\code{algo wizard} & Build a program by answering questions, no AI needed\\
+\code{algo --version} & Prints the version\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Options for \texttt{run}}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}L{4.4cm}Y@{}}
+\toprule
+\thead{Option} & \thead{Meaning}\\
+\goldrule
+\code{--arg "name=value"} & Supplies a flow input; repeat for several inputs. Inputs not supplied are asked for interactively\\
+\code{--live} & Runs agents on real Claude models (needs \code{ANTHROPIC\_API\_KEY})\\
+\code{--interactive} & Pauses on low-confidence results for human approval\\
+\code{--audit-dir DIR} & Writes audit logs to \code{DIR} (default \file{runs})\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\begin{terminal}
+$ algo run examples/paper_review.algo \
+      --arg "paper=LG-CEF: lesion-guided ensemble for DR grading" \
+      --interactive --audit-dir audit/2026-10
+\end{terminal}
+
+\section{Exit codes}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}L{1.3cm}Y@{}}
+\toprule
+\thead{Code} & \thead{Meaning}\\
+\goldrule
+0 & Success\\
+1 & Compile errors, a missing file or input, or a malformed option\\
+2 & A policy violation stopped the run\\
+3 & An agent call failed after its retries\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Scripts and continuous-integration jobs can rely on these codes; for example, a CI job can run \code{algo check} on every \file{.algo} file and fail the build on exit code 1.
+
+\section{Environment variables}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}L{4.3cm}Y@{}}
+\toprule
+\thead{Variable} & \thead{Meaning}\\
+\goldrule
+\code{ANTHROPIC\_API\_KEY} & API key for live mode\\
+\code{ALGO\_HOME} & Folder containing the runtime; set automatically by \code{algo}\\
+\code{ALGO\_LIVE=1} & Live mode (set by \code{--live})\\
+\code{ALGO\_INTERACTIVE=1} & Interactive human review (set by \code{--interactive})\\
+\code{ALGO\_AUDIT\_DIR} & Audit-log folder (set by \code{--audit-dir})\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{Running compiled programs directly}
+
+\code{algo build} produces an ordinary Python script that can be run, scheduled or shipped without the compiler:
+
+\begin{terminal}
+$ algo build research_brief.algo
+✓ compiled research_brief.algo → build/research_brief.py
+$ python build/research_brief.py --topic "Federated learning in IoT"
+\end{terminal}
+
+The script needs only \file{algoruntime.py}, found through \code{ALGO\_HOME} or the path recorded at compile time.

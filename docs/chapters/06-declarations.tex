@@ -1,0 +1,95 @@
+\chapter{Models, Tools and Agents}
+\label{ch:declarations}
+
+\section{Models}
+
+\begin{algo}
+model smart = "claude-sonnet-5-5"
+model fast  = "claude-haiku-5-5"
+\end{algo}
+
+A \kw{model} declaration binds a short name to a model identifier. Agents select a model by short name with the \kw{model} clause; an unknown name is error \errcode{E106}. An agent without a \kw{model} clause uses \code{claude-sonnet-5-5}.
+
+\begin{tip}
+Name models by their role in your system---\code{smart}, \code{fast}, \code{cheap}---not by product. When a new model is released you change one line, and every agent that uses that role moves with it.
+\end{tip}
+
+\section{Tools}
+
+\begin{algo}
+tool web.search
+tool file.read
+\end{algo}
+
+A \kw{tool} declaration announces a capability that the program may grant. Declaring a tool gives it to no one: each agent must list the tools it needs in a \kw{uses} clause, and listing a tool that was never declared is error \errcode{E104}.
+
+\begin{ethics}[Least privilege]
+An agent can only be granted capabilities that the program declares openly at the top of the file, and only the agents that list a tool receive it. A reviewer can see every capability of a program, and which agent holds it, without reading any agent's code. This is the security principle of least privilege applied to AI agents.
+\end{ethics}
+
+\begin{caution}
+Tools are \emph{capability declarations} that the compiler enforces. Since version 0.2 they are also executable: the runtime calls the registered Python function (built-ins \code{calc.eval}, \code{file.read}, \code{kb.search}, or your own plugin) and records every call in the audit log (Chapter~\ref{ch:enterprise}). MCP bindings are planned for version 0.3.
+\end{caution}
+
+\section{Agents}
+
+An agent declaration has a name, typed parameters, a return type and a body of clauses:
+
+\begin{algo}[title=agent anatomy]
+agent CriterionReviewer(criterion: text, paper: text, depth: text = "detailed") -> text {
+    role   "Domain reviewer"
+    goal   "Give a {depth} review of {paper} strictly on: {criterion}"
+    uses   file.read, web.search
+    model  fast
+    policy {
+        budget tokens 4000
+        retry 1
+    }
+}
+\end{algo}
+
+\subsection{Parameters}
+
+Each parameter is \code{name: type}, optionally with a default literal: \code{tone: text = "academic"}. A parameter with a default may be omitted by the caller. Parameter names must not appear in the agent's \kw{forbid} list (\errcode{E108}).
+
+\subsection{Clauses}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}L{1.6cm}L{1.8cm}Y@{}}
+\toprule
+\thead{Clause} & \thead{Required} & \thead{Meaning}\\
+\goldrule
+\kw{goal} & \textbf{yes} & The work the agent must do, in plain language. Placeholders \code{\{param\}} are filled when it runs. Missing goal: \errcode{E112}.\\
+\kw{role} & no & The capacity in which the agent acts; becomes its persona (system prompt in live mode).\\
+\kw{uses} & no & Comma-separated tools the agent may use; each must be declared (\errcode{E104}).\\
+\kw{model} & no & Short name of a declared model (\errcode{E106}).\\
+\kw{policy} & no & Governance rules---see Chapter~\ref{ch:policies}.\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Clauses may appear in any order. A clause may be repeated; for \kw{uses} the lists are combined, and for the others the last one wins.
+
+\subsection{What the model receives}
+
+At run time the runtime renders the agent into a prompt with three parts:
+
+\begin{plaincode}[title=rendered prompt]
+ROLE: Domain reviewer
+GOAL: Give a detailed review of LG-CEF … strictly on: Methodology & rigour
+TOOLS: file.read, web.search
+\end{plaincode}
+
+In live mode the role becomes the system persona and the model is asked to reply with a JSON object holding its \code{value} and \code{confidence}, in the shape required by the agent's return type.
+
+\section{Writing good agents}
+
+\begin{enumerate}
+  \item \textbf{One job per agent.} If a goal contains ``and then'', split it into two agents and connect them in a flow.
+  \item \textbf{Write goals as instructions to a capable colleague.} State the output you expect: length, format, audience.
+  \item \textbf{Choose the narrowest return type.} If the flow will branch on it, return a \kw{score} or \kw{bool}, not \kw{text}.
+  \item \textbf{Grant the fewest tools.} An agent that only rewrites text needs no tools at all.
+  \item \textbf{Always set a budget} for agents that will run live.
+  \item \textbf{Gate decisions that affect people} with \kw{require human when confidence < …}.
+\end{enumerate}

@@ -1,0 +1,24 @@
+// Cybersecurity — parallel log triage and incident report
+tool file.read
+agent Splitter(logs: text) -> list {
+    goal "Split {logs} into time windows for analysis"
+    uses file.read
+}
+agent Detector(window: text) -> text {
+    role "SOC analyst"
+    goal "Find anomalies and indicators of compromise in {window}"
+    policy { budget tokens 5000  retry 2 }
+}
+agent Severity(findings: list) -> score {
+    goal "Score overall severity 0 to 1 of {findings}"
+    policy { require human when confidence < 0.80 }
+}
+agent Report(findings: list, sev: score) -> text {
+    goal "Write an incident report (severity {sev}) from {findings}"
+}
+flow main(logs: text) {
+    windows  = Splitter(logs)
+    findings = par for w in windows { Detector(w) }
+    sev      = Severity(findings)
+    emit Report(findings, sev)
+}

@@ -1,0 +1,23 @@
+// Healthcare — clinical note triage with a mandatory human gate
+model smart = "claude-sonnet-5-5"
+agent Summariser(note: text) -> text {
+    goal "Summarise symptoms and history in this note: {note}"
+}
+agent RiskScorer(summary: text) -> score {
+    role "Clinical decision-support assistant"
+    goal "Score urgency 0 to 1 from: {summary}"
+    model smart
+    policy {
+        require human when confidence < 0.95
+        forbid religion, caste
+    }
+}
+agent Referral(summary: text) -> text {
+    goal "Draft a referral note for the doctor from: {summary}"
+}
+flow main(note: text) {
+    summary = Summariser(note)
+    urgency = RiskScorer(summary)
+    if urgency >= 0.7 { emit Referral(summary) }
+    emit summary, urgency
+}
