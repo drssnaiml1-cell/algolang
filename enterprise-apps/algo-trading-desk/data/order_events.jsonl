@@ -1,0 +1,6 @@
+{"order_id": "ORD-1001", "account": "PAPER-01", "order": "SELL 2 lots NIFTY 24500 CE weekly for STR-101, stop-loss 30%", "ts": "2026-11-09T09:15:02+05:30"}
+{"order_id": "ORD-1002", "account": "PAPER-01", "order": "BUY 15 lots BANKNIFTY 52000 CE for STR-102", "ts": "2026-11-09T09:15:04+05:30"}
+{"order_id": "ORD-1003", "account": "PAPER-02", "order": "SELL 4 lots NIFTY 24600 PE weekly for STR-103 iron condor leg", "ts": "2026-11-09T09:15:07+05:30"}
+{"order_id": "ORD-1001", "account": "PAPER-01", "order": "SELL 2 lots NIFTY 24500 CE weekly for STR-101, stop-loss 30%", "ts": "2026-11-09T09:15:02+05:30"}
+{"order_id": "ORD-1004", "account": "PAPER-02", "ts": "2026-11-09T09:15:09+05:30"}
+not json at all

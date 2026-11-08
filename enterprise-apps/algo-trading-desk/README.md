@@ -99,6 +99,19 @@ Agents can call a tool only if the program declares it, the agent lists it under
 | Allowed tools | `kb.search`, `calc.eval`, `backtest.stats`, `market.quote`, `risk.limits`, `book.positions` |
 | Audit | SHA-256 hash-chained log in `runs/`, checked with `algo audit verify` |
 
+## Real-time (Kafka)
+
+`programs/pre_trade_check.algo` ends with a `stream` block: order intents on `orders.intent` → pre-trade risk gate → `orders.decisions` / `orders.review` / `orders.dlq`. Every event runs the flow once under the same governance.
+
+```bash
+algo stream programs/pre_trade_check.algo --input data/order_events.jsonl                 # offline, no Kafka needed
+docker compose -f ../../deploy/kafka/docker-compose.yml up -d  # ZooKeeper + Kafka
+algo stream programs/pre_trade_check.algo --kafka --produce data/order_events.jsonl
+algo stream programs/pre_trade_check.algo --kafka
+```
+
+The sample file includes a malformed event (and, for the trading desk, a re-delivered duplicate) so you can see dead-letter routing and de-duplication at work.
+
 ## Run it
 
 Run these from this folder, so `algo.config.json` and the plugins load.

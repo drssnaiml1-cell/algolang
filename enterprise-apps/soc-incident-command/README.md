@@ -94,6 +94,19 @@ Agents can call a tool only if the program declares it, the agent lists it under
 | Allowed tools | `kb.search`, `cmdb.lookup`, `ioc.check` |
 | Audit | SHA-256 hash-chained log in `runs/`, checked with `algo audit verify` |
 
+## Real-time (Kafka)
+
+`programs/alert_to_incident.algo` ends with a `stream` block: SIEM alerts on `soc.alerts` → incident decision → `soc.incidents` / `soc.dlq`. Every event runs the flow once under the same governance.
+
+```bash
+algo stream programs/alert_to_incident.algo --input data/alert_events.jsonl                 # offline, no Kafka needed
+docker compose -f ../../deploy/kafka/docker-compose.yml up -d  # ZooKeeper + Kafka
+algo stream programs/alert_to_incident.algo --kafka --produce data/alert_events.jsonl
+algo stream programs/alert_to_incident.algo --kafka
+```
+
+The sample file includes a malformed event (and, for the trading desk, a re-delivered duplicate) so you can see dead-letter routing and de-duplication at work.
+
 ## Run it
 
 Run these from this folder, so `algo.config.json` and the plugins load.

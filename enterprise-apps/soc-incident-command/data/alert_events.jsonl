@@ -1,0 +1,4 @@
+{"alert_id": "SIEM-77101", "source": "splunk", "severity": "high", "summary": "auth-api: 4,200 failed logins in 5 minutes from 185.220.101.7; payments-gw latency up 300%"}
+{"alert_id": "SIEM-77102", "source": "splunk", "severity": "low", "summary": "web-frontend: CDN cache hit ratio fell to 20% after a config push"}
+{"alert_id": "SIEM-77103", "source": "edr", "severity": "critical", "summary": "hr-laptop-114: unsigned binary spawned powershell with encoded command, outbound to 45.9.148.3"}
+{"alert_id": "SIEM-77104", "source": "edr", "severity": "medium"}

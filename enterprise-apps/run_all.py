@@ -1,4 +1,4 @@
-"""Run every enterprise application's behaviour tests (and, with --batch, its sample batch job).
+"""Run every enterprise application's behaviour tests (and, with --batch, its sample batch job and event stream).
 
     python enterprise-apps/run_all.py            # tests only
     python enterprise-apps/run_all.py --batch    # tests + batch over data/*.csv + audit verification
@@ -25,6 +25,11 @@ BATCH = {
     "citizen-services-desk": ("grievance_desk.algo", "grievances.csv"),
     "legal-contract-desk": ("nda_triage.algo", "ndas.csv"),
     "algo-trading-desk": ("pre_trade_check.algo", "order_intents.csv"),
+}
+# Real-time `stream` blocks, replayed offline from a JSON Lines file of events (v0.3.1)
+STREAM = {
+    "algo-trading-desk": ("pre_trade_check.algo", "order_events.jsonl"),
+    "soc-incident-command": ("alert_to_incident.algo", "alert_events.jsonl"),
 }
 
 
@@ -59,6 +64,19 @@ def main():
             if not ok:
                 status, bad = "FAIL", bad + 1
                 print(b.stdout[-800:], b.stderr[-800:], v.stdout[-400:])
+        if batch and app.name in STREAM:
+            prog, events = STREAM[app.name]
+            st = run(["stream", f"programs/{prog}", "--input", f"data/{events}", "--out", str(Path(tmp) / "streams"),
+                      "--json"], app, env_app)
+            try:
+                m = json.loads(st.stdout[st.stdout.index("{"):])
+                extra += f", stream {m['received']} events ({m['dead_letter']} dead-letter)"
+                ok = st.returncode == 0 and m["received"] == m["ok"] + m["escalated"] + m["dead_letter"] + m["duplicates"]
+            except (ValueError, KeyError):
+                ok = False
+            if not ok:
+                status, bad = "FAIL", bad + 1
+                print(st.stdout[-800:], st.stderr[-800:])
         failed += bad
         rows.append(f"  {'✓' if status == 'ok' else '✗'} {app.name:<28} {cases - (bad if status != 'ok' else 0)}/{cases} tests{extra}")
         if status != "ok":

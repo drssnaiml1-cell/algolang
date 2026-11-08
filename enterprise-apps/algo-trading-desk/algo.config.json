@@ -1,19 +1,53 @@
 {
   "organisation": "AlgoProfessor QuantOracle desk (example organisation, synthetic data)",
   "policy": {
-    "forbid": ["gender", "caste", "religion", "pan_number", "aadhaar", "client_password"],
+    "forbid": [
+      "gender",
+      "caste",
+      "religion",
+      "pan_number",
+      "aadhaar",
+      "client_password"
+    ],
     "max_budget_tokens": 8000,
     "min_human_below": 0.85,
     "max_budget_cost_usd": 0.06,
-    "allowed_tools": ["kb.search", "calc.eval", "backtest.stats", "market.quote", "risk.limits", "book.positions"]
+    "allowed_tools": [
+      "kb.search",
+      "calc.eval",
+      "backtest.stats",
+      "market.quote",
+      "risk.limits",
+      "book.positions"
+    ]
   },
   "max_concurrency": 16,
   "max_run_tokens": 80000,
   "max_run_cost_usd": 0.5,
   "max_run_energy_wh": 10,
-  "cache": {"enabled": true},
+  "cache": {
+    "enabled": true
+  },
   "audit_dir": "runs",
-  "models": {"smart": "claude-sonnet-5-5", "fast": "claude-haiku-5-5"},
-  "tools": {"kb.search": {"dir": "kb"}, "file.read": {"root": "data"}},
-  "plugins": ["plugins/quant_tools.py"]
+  "models": {
+    "smart": "claude-sonnet-5-5",
+    "fast": "claude-haiku-5-5"
+  },
+  "tools": {
+    "kb.search": {
+      "dir": "kb"
+    },
+    "file.read": {
+      "root": "data"
+    }
+  },
+  "plugins": [
+    "plugins/quant_tools.py"
+  ],
+  "kafka": {
+    "market": {
+      "bootstrap_servers": "localhost:9092",
+      "client_id": "quantoracle-risk-gate"
+    }
+  }
 }

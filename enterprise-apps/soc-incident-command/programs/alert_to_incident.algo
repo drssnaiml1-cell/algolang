@@ -32,3 +32,15 @@ flow main(alerts: text) {
         emit assets, intel, severity, incident
     }
 }
+
+// Real-time: SIEM alerts arrive on Kafka; each one becomes an incident decision within seconds.
+// algo stream programs/alert_to_incident.algo --kafka      (offline: --input data/alert_events.jsonl)
+stream siem_alerts on main {
+    from kafka "soc" topic "soc.alerts" group "soc-incident-command"
+    map alerts = event.summary
+    key event.alert_id
+    to topic "soc.incidents"
+    escalate to topic "soc.incidents"      // the payload marks it escalated; the analyst console filters on status
+    dead letter topic "soc.dlq"
+    max in flight 16
+}

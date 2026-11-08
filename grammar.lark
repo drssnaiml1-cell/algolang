@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────
-//  AlgoLang v0.3 grammar  —  AlgoProfessor AI R&D Solutions
+//  AlgoLang v0.3.1 grammar  —  AlgoProfessor AI R&D Solutions
 //  Core rule: there are no functions. Every unit of work is an
 //  `agent`; a `flow` only orchestrates agents.
 // ─────────────────────────────────────────────────────────────
@@ -13,6 +13,7 @@ start: item*
      | agent_decl
      | flow_decl
      | eval_decl
+     | stream_decl
 
 // use "shared/agents.algo"           import another file's models, tools and agents
 // use pack insurance.claims_triage    import a domain pack from the library
@@ -111,6 +112,23 @@ eval_case: "case" STRING "(" [args] ")" "{" expectation* "}"
             | "expect" "energy" COMPARE NUMBER             -> exp_energy
             | "expect" "escalated" COMPARE NUMBER          -> exp_escalated
             | "expect" "confidence" COMPARE NUMBER         -> exp_confidence
+// Real-time events (v0.3.1): bind a flow to Kafka topics. Every event runs the flow once.
+// stream order_flow on main {
+//     from kafka "market" topic "orders.intent" group "risk-gate"
+//     map order = event.order          key event.order_id
+//     to topic "orders.decisions"      escalate to topic "orders.review"
+//     dead letter topic "orders.dlq"   max in flight 8
+// }
+stream_decl: "stream" NAME ["on" NAME] "{" stream_clause* "}"
+?stream_clause: "from" "kafka" STRING "topic" STRING ["group" STRING] -> st_source
+              | "to" "topic" STRING                                   -> st_sink
+              | "escalate" "to" "topic" STRING                        -> st_escalate
+              | "dead" "letter" "topic" STRING                        -> st_dlq
+              | "map" st_map ("," st_map)*                            -> st_maps
+              | "key" (DOTTED | NAME)                                 -> st_key
+              | "max" "in" "flight" NUMBER                            -> st_inflight
+st_map: NAME "=" (DOTTED | NAME)
+
 COMPARE: "<=" | ">=" | "==" | "!=" | "<" | ">"
 
 ?literal: STRING -> string

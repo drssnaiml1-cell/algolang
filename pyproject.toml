@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "algolang"
-version = "0.3.0"
+version = "0.3.1"
 description = "AlgoLang: an agent-native programming language for governed, enterprise multi-agent AI systems"
 readme = "README.md"
 license = "Apache-2.0"
@@ -26,6 +26,7 @@ dependencies = ["lark>=1.1"]
 
 [project.optional-dependencies]
 live = ["anthropic>=0.40"]
+stream = ["kafka-python>=2.0.2"]
 notebook = ["notebook>=7", "ipython>=8"]
 dev = ["pytest>=7", "pytest-cov>=4", "ruff>=0.5", "build>=1", "nbformat>=5", "nbclient>=0.9", "ipykernel>=6"]
 
@@ -53,6 +54,7 @@ packages = ["algolang"]
 "algoagent.py" = "algolang/_home/algoagent.py"
 "algodev.py" = "algolang/_home/algodev.py"
 "algoeval.py" = "algolang/_home/algoeval.py"
+"algostream.py" = "algolang/_home/algostream.py"
 "algomcp.py" = "algolang/_home/algomcp.py"
 "algolsp.py" = "algolang/_home/algolsp.py"
 "grammar.lark" = "algolang/_home/grammar.lark"

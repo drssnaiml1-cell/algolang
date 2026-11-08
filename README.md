@@ -8,11 +8,15 @@
 [![Website](https://img.shields.io/badge/website-playground%20%C2%B7%20library-0e2140)](https://drssnaiml1-cell.github.io/algolang/)
 
 
+<p align="center">
+  <a href="https://www.algoprofessor.com"><img src="docs/images/algolang-hero.svg" alt="AlgoLang: an order event from Kafka flows through parallel Quote and Limits agents, a deterministic BREACH guard, and an uncertain RiskGate agent with a human gate; every call is written to a hash-chained audit log" width="100%"></a>
+</p>
+
 **The AlgoProfessor agent-native programming language.**
 AlgoProfessor AI R&D Solutions, Hyderabad. Designed by Dr. S. Satyanarayana.
 🌐 **[www.algoprofessor.com](https://www.algoprofessor.com)**
 
-**Current version: 0.3.0** · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md) · [50 Sample Programs (PDF)](docs/AlgoLang_50_Sample_Programs.pdf) · [Language manual (PDF)](docs/AlgoLang_Documentation_v0.3.pdf)
+**Current version: 0.3.1** (real-time Kafka streams) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md) · [50 Sample Programs (PDF)](docs/AlgoLang_50_Sample_Programs.pdf) · [Language manual (PDF)](docs/AlgoLang_Documentation_v0.3.pdf)
 
 AlgoLang has **no functions**. Every unit of work is an `agent` with a role, a goal, explicit tools, a model and a policy. A `flow` is the only other construct, and it can do just four things:
 
@@ -20,6 +24,42 @@ AlgoLang has **no functions**. Every unit of work is an `agent` with a role, a g
 - run them in parallel
 - branch on a score
 - emit results
+
+## AlgoLang at a glance
+
+```mermaid
+flowchart TB
+    subgraph DOORS["① Five ways in — one engine"]
+        direction LR
+        CLI["⌨️ algo CLI"] ~~~ STU["🖥️ Studio"] ~~~ PUI["💬 Prompt UI"] ~~~ SDK["🐍 Python SDK"] ~~~ LSP["🧩 VS Code · LSP"]
+    end
+    subgraph COMPILER["② Compiler · algoc.py — unsafe programs never run"]
+        direction LR
+        SRC[".algo source"] --> PARSE["Lark grammar"] --> AST["AST"] --> CHK{{"Checker · E100–E122"}} --> GEN["Python code"]
+    end
+    subgraph RUNTIME["③ Runtime · algoruntime.py — every call governed"]
+        direction LR
+        POL["policies · budgets<br/>$ ₹ Wh CO₂"] --> CALL(("agent<br/>call")) --> GATE{"confidence<br/>≥ gate?"}
+        GATE -- yes --> OUT["emit"]
+        GATE -- no --> HUM["👤 review queue"]
+        CALL --> AUD[("hash-chained<br/>audit log")]
+    end
+    subgraph WORLD["④ Connected systems"]
+        direction LR
+        LLM["Claude · mock · replay"] ~~~ MCP["MCP tool servers"] ~~~ KAF["Kafka + ZooKeeper<br/>real-time streams"]
+    end
+    DOORS ==> COMPILER ==> RUNTIME <==> WORLD
+
+    classDef navy fill:#0e2140,stroke:#c9a227,color:#f4f1e8;
+    classDef gold fill:#c9a227,stroke:#0e2140,color:#0e2140;
+    class CLI,STU,PUI,SDK,LSP,SRC,PARSE,AST,GEN,POL,OUT,LLM,MCP,KAF,HUM,AUD navy;
+    class CHK,CALL,GATE gold;
+```
+
+| | |
+|---|---|
+| **Write** agents and flows; the compiler rejects unsafe programs before anything runs (22 error codes). | **Govern** every call with budgets, forbidden attributes, allowed tools and a human gate. |
+| **Prove** what happened: hash-chained audit logs, traces you can replay for free, `eval` blocks in CI. | **Scale** to real time: a `stream` block runs a flow for every event on a Kafka topic. |
 
 ## Contents
 
@@ -29,13 +69,14 @@ AlgoLang has **no functions**. Every unit of work is an `agent` with a role, a g
 4. [Get started](#4-get-started)
 5. [Learn by example: 50 sample programs](#5-learn-by-example-50-sample-programs)
 6. [Enterprise applications](#6-enterprise-applications)
-7. [The language](#7-the-language)
-8. [Governance and runtime guarantees](#8-governance-and-runtime-guarantees)
-9. [Python SDK](#9-python-sdk)
-10. [For developers](#10-for-developers)
-11. [Roadmap: v0.4 Trustworthy AI](#11-roadmap-v04-trustworthy-ai)
-12. [Repository layout](#12-repository-layout)
-13. [ProfAlgoLabs™, author and licence](#13-profalgolabs-author-and-licence)
+7. [Real-time events: Kafka and ZooKeeper](#7-real-time-events-kafka-and-zookeeper)
+8. [The language](#8-the-language)
+9. [Governance and runtime guarantees](#9-governance-and-runtime-guarantees)
+10. [Python SDK](#10-python-sdk)
+11. [For developers](#11-for-developers)
+12. [Roadmap: v0.4 Trustworthy AI](#12-roadmap-v04-trustworthy-ai)
+13. [Repository layout](#13-repository-layout)
+14. [ProfAlgoLabs™, author and licence](#14-profalgolabs-author-and-licence)
 
 ## 1. Objective
 
@@ -99,6 +140,8 @@ eval regression on main {                                    // 4. tests next to
 | **`cost` and `energy` budgets** | Every call is priced in USD/INR, Wh and g CO₂. Budgets are checked before each call, and run-level caps live in `algo.config.json`. Reports show money and energy per program. | `budget cost 5 inr` · `budget energy 0.5 wh` · `algo report` |
 | **Deterministic guards** | `if limits contains "BREACH"` checks text, including a tool's full answer, with no model involved. Hard limits cannot be overruled by a model. | `if x not contains "FAILS"` |
 | **Language server** | `algo lsp` gives any editor live errors, hover, completion, go-to-definition (including into domain packs) and an outline. The VS Code extension starts it automatically. | `vscode-algolang/` |
+
+**v0.3.1 adds real-time streams:** a `stream` block runs a flow for every event on a Kafka topic. See [§7](#7-real-time-events-kafka-and-zookeeper).
 
 A runnable tour lives in [`examples/v03/`](examples/v03/): an expense desk that uses an MCP server, an `uncertain<score>` reviewer, budgets and an eval block.
 
@@ -188,7 +231,74 @@ python enterprise-apps/run_all.py --batch      # run every app's tests and sampl
 cd enterprise-apps/claims-ops-center && algo batch programs/claims_intake.algo --input data/claims_batch.csv
 ```
 
-## 7. The language
+## 7. Real-time events: Kafka and ZooKeeper
+
+<p align="center"><img src="docs/images/algolang-realtime.svg" alt="Producers publish to a Kafka topic with three partitions; ZooKeeper holds cluster metadata; an AlgoLang stream runs a governed flow per event and routes results to decision, review and dead-letter topics" width="100%"></p>
+
+A `stream` block turns any flow into a real-time service. Every event on a Kafka topic runs the flow once, with the same policies, budgets, human gate and audit log as any other run. Nothing new to learn: the agents and the flow stay exactly as they are.
+
+```algo
+// enterprise-apps/algo-trading-desk/programs/pre_trade_check.algo
+stream order_flow on main {
+    from kafka "market" topic "orders.intent" group "quantoracle-risk-gate"
+    map order = event.order               // flow input ← field of the JSON event
+    key event.order_id                    // used for partitioning and de-duplication
+    to topic "orders.decisions"           // ok
+    escalate to topic "orders.review"     // a person must decide
+    dead letter topic "orders.dlq"        // unreadable events, blocked or failed runs
+    max in flight 8                       // events processed in parallel
+}
+```
+
+```bash
+docker compose -f deploy/kafka/docker-compose.yml up -d        # ZooKeeper + Kafka + topics
+cd enterprise-apps/algo-trading-desk
+algo stream programs/pre_trade_check.algo --kafka --produce data/order_events.jsonl   # publish sample orders
+algo stream programs/pre_trade_check.algo --kafka                                      # run the risk gate live
+algo stream programs/pre_trade_check.algo --input data/order_events.jsonl               # same, offline, no Kafka
+```
+
+**How one event is handled**
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant P as Order system
+    participant K as Kafka (orders.intent)
+    participant S as algo stream
+    participant F as flow main (agents)
+    participant R as Result topics
+    participant A as Audit log
+    P->>K: JSON event ORD-1001 (SELL 2 lots NIFTY …)
+    K->>S: poll batch (consumer group)
+    S->>S: decode JSON · map inputs · skip duplicate keys
+    S->>F: run flow (policies, budgets, sampling)
+    F->>A: one hash-chained record per agent call
+    F-->>S: outputs · confidence · escalations · cost
+    alt ok
+        S->>R: orders.decisions
+    else escalated (human gate)
+        S->>R: orders.review
+    else invalid, blocked or failed
+        S->>R: orders.dlq
+    end
+    S->>K: commit offsets (only after results are flushed)
+```
+
+| Guarantee | How |
+|---|---|
+| **Checked before it runs** | E122: the flow and its inputs exist, mappings read from `event`, no result topic equals the source topic (no endless loops) |
+| **Nothing is dropped** | Every event ends in exactly one result topic; a route you do not declare falls back to `to topic` |
+| **At-least-once delivery** | Offsets are committed only after results are written and flushed; keys already seen are skipped and the cache makes re-delivery cheap |
+| **Governed like any run** | Each event gets its own run ID, audit chain, budget checks and review-queue entry |
+| **Observable** | Per-stream metrics: events/s, latency p50/p95, ok / escalated / dead-letter counts, tokens, $ and Wh (`runs/streams/<name>/metrics.json`) |
+| **Secure configuration** | Cluster settings live in `algo.config.json` (`"kafka": {"market": {"bootstrap_servers": …}}`); SASL/SSL secrets are read from environment variables (`"sasl_plain_password_env": "KAFKA_PASSWORD"`) |
+
+**ZooKeeper or KRaft?** [`deploy/kafka/docker-compose.yml`](deploy/kafka/docker-compose.yml) runs the classic ZooKeeper + Kafka pair (Confluent Platform 7.6, Apache Kafka 3.6). Apache Kafka 4.0 removed ZooKeeper, so new production clusters should use KRaft: [`docker-compose.kraft.yml`](deploy/kafka/docker-compose.kraft.yml). AlgoLang streams behave the same on both, because clients only talk to the brokers. CI tests every push against a real ZooKeeper + Kafka pair.
+
+Two enterprise applications ship with streams: the **Algo Trading Desk** (order intents → pre-trade risk gate) and the **SOC Incident Command** (SIEM alerts → incidents). Install the client with `pip install -r requirements-stream.txt` (or `pip install "algolang[stream]"`).
+
+## 8. The language
 
 ### The language in one screen
 
@@ -247,10 +357,37 @@ flow main(topic: text) {
 | E119 | `eval` block error: unknown flow, input, agent, tool or status |
 | E120 | `tool … from mcp "server"` names a server missing from `mcp_servers` in `algo.config.json` |
 | E121 | Bad policy value: unknown currency or energy unit, or `samples` outside 1–15 |
+| E122 | `stream` block error: unknown flow or input, mapping not read from `event`, a result topic equal to the source topic, or `max in flight` outside 1–256 |
 
 Errors from imported modules are reported with the file name, and the org config is enforced at compile time: a forbidden attribute or an ungranted tool is an error before anything runs.
 
-## 8. Governance and runtime guarantees
+## 9. Governance and runtime guarantees
+
+**The life of one agent call**
+
+```mermaid
+flowchart LR
+    A(["call Agent(x)"]) --> B{"forbidden<br/>attribute?"}
+    B -- yes --> X1["⛔ blocked<br/>(policy violation)"]
+    B -- no --> C{"tool allowed<br/>and granted?"}
+    C -- no --> X1
+    C -- yes --> D{"tokens · $ · Wh<br/>within budget?"}
+    D -- no --> X1
+    D -- yes --> E{"cached?"}
+    E -- yes --> H
+    E -- no --> F["model call<br/>(samples N for uncertain types)"]
+    F --> G["confidence =<br/>model × agreement"]
+    G --> H{"confidence<br/>≥ human gate?"}
+    H -- yes --> I(["✅ value + provenance"])
+    H -- no --> J(["👤 review queue"])
+    X1 --> L[("audit log<br/>prev → hash")]
+    I --> L
+    J --> L
+    classDef ok fill:#0e2140,stroke:#6cc28a,color:#f4f1e8;
+    classDef bad fill:#3a1414,stroke:#e0705c,color:#f4f1e8;
+    classDef gate fill:#c9a227,stroke:#0e2140,color:#0e2140;
+    class I ok; class X1 bad; class B,C,D,E,H gate;
+```
 
 - **Policy enforcement:** token budget, retries, timeout, forbidden-attribute blocking, and a human-in-the-loop gate on low confidence.
 - **Concurrency:** `par` and `par for` run on a thread pool.
@@ -266,7 +403,7 @@ Errors from imported modules are reported with the file name, and the org config
   - `live` calls Claude via the `anthropic` SDK.
   - `replay` answers from a recorded trace (v0.3).
 
-## 9. Python SDK
+## 10. Python SDK
 
 ```python
 import algolang as al
@@ -287,7 +424,7 @@ al.review.pending(); al.review.approve(item_id, reviewer="Dr. S")    # human in 
 al.audit.verify("runs/claims_triage.audit.jsonl")                    # tamper check
 ```
 
-## 10. For developers
+## 11. For developers
 
 [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) has three tracks:
 
@@ -303,7 +440,7 @@ pip install -e ".[dev]"
 make check        # ruff + pytest + lint of every .algo file
 ```
 
-## 11. Roadmap: v0.4 Trustworthy AI
+## 12. Roadmap: v0.4 Trustworthy AI
 
 The next release puts **trustworthy AI** at the centre. Its aim is that every AlgoLang system can show, with evidence produced by the compiler and runtime, that it is lawful, fair, robust, transparent, private, secure and under human control. The full plan, with syntax sketches and how each item maps to the NIST AI Risk Management Framework, the EU AI Act and ISO/IEC 42001, is in **[ROADMAP.md](ROADMAP.md)**.
 
@@ -321,7 +458,7 @@ The next release puts **trustworthy AI** at the centre. Its aim is that every Al
 
 Already shipped toward this goal: hash-chained audit logs, human review queues, forbidden attributes (E108), `uncertain<T>` with confidence guards (E117), deterministic `contains` guards, replayable traces, and cost/energy budgets.
 
-**After v0.4:** v0.5 adds agents as MCP servers, argument type checking and streaming. v1.0 adds a native runtime, typed agent-to-agent messaging, a package registry and SSO/RBAC for Studio.
+**After v0.4:** v0.5 adds agents as MCP servers, argument type checking and token-by-token output streaming. v1.0 adds a native runtime, typed agent-to-agent messaging, a package registry and SSO/RBAC for Studio.
 
 | Version | Theme | Status |
 |---|---|---|
@@ -331,7 +468,7 @@ Already shipped toward this goal: hash-chained audit logs, human review queues, 
 | v0.4 | Trustworthy AI | Next |
 | v1.0 | Native runtime and ecosystem | Planned |
 
-## 12. Repository layout
+## 13. Repository layout
 
 ```
 RUN_GUIDE.md                  how to install and execute, step by step
@@ -353,7 +490,7 @@ algostudio.py, .html          AlgoLang Studio graphical IDE (algo studio): Domai
 algoagent.py                  AI program writer and wizard (algo ask, algo wizard)
 install.bat / install.sh      one-time installers (Windows / Linux, macOS)
 algo.bat / algo               the `algo` command
-requirements*.txt             Python dependencies (lark; anthropic for --live)
+requirements*.txt             Python dependencies (lark; anthropic for --live; kafka-python for streams)
 Dockerfile                    container environment
 grammar.lark                  formal grammar (Lark EBNF)
 algoc.py                      compiler: parse → AST → checks → Python codegen
@@ -361,6 +498,9 @@ algoruntime.py                runtime engine
 algoeval.py                   eval blocks, traces and replay (algo eval, algo replay)        — v0.3
 algomcp.py                    MCP client and tool bindings (algo mcp)                         — v0.3
 algolsp.py                    language server (algo lsp)                                      — v0.3
+algostream.py                 real-time streams on Kafka (algo stream)                        — v0.3.1
+deploy/kafka/                 Docker Compose: ZooKeeper + Kafka (and a KRaft variant)
+docs/images/                  README diagrams (animated SVG) and Studio screenshots
 examples/v03/                 tour of v0.3: MCP demo server, uncertain<T>, budgets, eval
 examples/50-programs/          the 50 programs from "AlgoLang: 50 Sample Programs" + inputs.json
 docs/                         language manual (LaTeX + PDF) and AlgoLang_50_Sample_Programs.pdf
@@ -372,7 +512,7 @@ vscode-algolang/              VS Code extension: highlighting + the language ser
 .vscode/tasks.json            Ctrl+Shift+B to run the open .algo file
 ```
 
-## 13. ProfAlgoLabs™, author and licence
+## 14. ProfAlgoLabs™, author and licence
 
 AlgoLang is designed by **Dr. S. Satyanarayana, Ph.D., PDF (AI)**, Founder, CEO & Chief Agentic AI Scientist of **AlgoProfessor AI R&D Solutions**, Hyderabad. It is the flagship research of ProfAlgoLabs™, AlgoProfessor's research lab.
 

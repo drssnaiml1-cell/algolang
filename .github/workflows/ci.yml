@@ -32,7 +32,7 @@ jobs:
         run: python algoc.py dev lint examples packs enterprise-apps
       - name: Behaviour specs (tests/specs/*.algotest.json, offline and deterministic)
         run: python algoc.py dev test tests/specs
-      - name: Enterprise applications (8 apps · tests + batch + audit verification)
+      - name: Enterprise applications (9 apps · tests + batch + streams + audit verification)
         run: python enterprise-apps/run_all.py --batch
 
   test:
@@ -56,6 +56,46 @@ jobs:
         with: {python-version: "${{ matrix.python }}", cache: pip}
       - run: pip install -e ".[dev]"
       - run: python -m pytest
+
+  kafka:
+    name: Real-time streams · ZooKeeper + Kafka
+    needs: lint
+    runs-on: ubuntu-latest
+    services:
+      zookeeper:
+        image: confluentinc/cp-zookeeper:7.6.1
+        env:
+          ZOOKEEPER_CLIENT_PORT: 2181
+          ZOOKEEPER_TICK_TIME: 2000
+      kafka:
+        image: confluentinc/cp-kafka:7.6.1
+        ports: ["9092:9092"]
+        env:
+          KAFKA_BROKER_ID: 1
+          KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+          KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
+          KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+          KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+          KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+          KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+          KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+          KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+        options: >-
+          --health-cmd "kafka-broker-api-versions --bootstrap-server localhost:9092"
+          --health-interval 10s --health-timeout 10s --health-retries 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with: {python-version: "3.12", cache: pip}
+      - run: pip install -e ".[dev,stream]"
+      - name: Round trip through a real broker (produce → stream → consume)
+        env: {ALGO_KAFKA_TEST: "1", ALGO_KAFKA_BOOTSTRAP: "localhost:9092"}
+        run: python -m pytest tests/test_stream.py -v
+      - name: Trading desk order flow on Kafka
+        working-directory: enterprise-apps/algo-trading-desk
+        run: |
+          python ../../algoc.py stream programs/pre_trade_check.algo --kafka --produce data/order_events.jsonl
+          python ../../algoc.py stream programs/pre_trade_check.algo --kafka --max 6 --idle 60
 
   package:
     name: Wheel builds and installs cleanly

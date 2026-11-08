@@ -208,6 +208,39 @@ algo report                                 # tokens, money (USD and ₹), energ
 
 `pricing` is USD per million input and output tokens. The defaults are placeholders, so set your contracted prices. `{python}` means the Python that runs AlgoLang.
 
+## Step 4d. Real-time events with Kafka (v0.3.1)
+
+A `stream` block runs a flow for every event on a Kafka topic. Try it offline first, with no Kafka needed:
+
+```bash
+cd enterprise-apps/algo-trading-desk
+algo stream programs/pre_trade_check.algo --input data/order_events.jsonl
+```
+
+You will see each order routed to `orders.decisions`, `orders.review` (a person decides) or `orders.dlq` (unreadable event, blocked or failed run), plus latency and cost. Results are saved in `runs/streams/order_flow/`.
+
+**With a real ZooKeeper + Kafka** (needs Docker):
+
+```bash
+pip install -r requirements-stream.txt                       # the Kafka client
+docker compose -f deploy/kafka/docker-compose.yml up -d      # ZooKeeper, Kafka and the topics
+cd enterprise-apps/algo-trading-desk
+algo stream programs/pre_trade_check.algo --kafka --produce data/order_events.jsonl
+algo stream programs/pre_trade_check.algo --kafka            # Ctrl+C to stop
+docker compose -f ../../deploy/kafka/docker-compose.yml down # when you are done
+```
+
+| Option | What it does |
+| --- | --- |
+| `--input FILE` | Offline: read events from a JSON Lines file |
+| `--kafka` | Use the cluster named in the stream block (address in `algo.config.json` → `kafka`) |
+| `--produce FILE` | With `--kafka`: publish a JSON Lines file to the source topic, then exit |
+| `--max N` · `--idle S` | Stop after N events, or after S seconds with no events |
+| `--live` | Use real Claude models (default: the offline mock) |
+| `--name S` | Choose a stream when a program has several |
+
+Prefer Kafka without ZooKeeper? Use `deploy/kafka/docker-compose.kraft.yml` (KRaft mode, the default from Kafka 4.0). The commands are the same.
+
 ## Step 5. Live mode with real Claude (optional)
 
 By default agents are offline test agents, which give the same answer for the same input. To call real Claude models:

@@ -76,6 +76,7 @@ class Program:
     mcp_tools: dict = field(default_factory=dict) # tool name → MCP server name (`tool x from mcp "server"`)
     evals: list = field(default_factory=list)     # eval blocks: Eval objects
     tool_lines: dict = field(default_factory=dict)
+    streams: list = field(default_factory=list)   # stream blocks: Stream objects (v0.3.1)
 
 
 @dataclass
@@ -83,6 +84,23 @@ class EvalCase:
     name: str
     inputs: dict
     expects: list                    # (kind, op, value)
+    line: int = 0
+
+
+@dataclass
+class Stream:
+    """`stream name on flow { … }`: run a flow once for every event on a Kafka topic."""
+    name: str
+    flow: str
+    cluster: str | None = None
+    source: str | None = None
+    group: str | None = None
+    sink: str | None = None
+    escalate: str | None = None
+    dead_letter: str | None = None
+    mapping: dict = field(default_factory=dict)   # flow input → event path ("event.order")
+    key: str | None = None
+    max_in_flight: int = 8
     line: int = 0
 
 
@@ -256,6 +274,28 @@ def to_ast(tree: Tree) -> tuple[Program, list[Diag]]:
                         expects.append((kind, None, str(e.children[0])))
                 ev.cases.append(EvalCase(_s(cname), inputs, expects, _line(c)))
             prog.evals.append(ev)
+        elif item.data == "stream_decl":
+            sname, flow, *clauses = item.children
+            st = Stream(str(sname), str(flow) if flow is not None else "main", line=_line(item))
+            for c in clauses:
+                k = c.data
+                if k == "st_source":
+                    st.cluster, st.source = _s(c.children[0]), _s(c.children[1])
+                    st.group = _s(c.children[2]) if c.children[2] is not None else None
+                elif k == "st_sink":
+                    st.sink = _s(c.children[0])
+                elif k == "st_escalate":
+                    st.escalate = _s(c.children[0])
+                elif k == "st_dlq":
+                    st.dead_letter = _s(c.children[0])
+                elif k == "st_maps":
+                    for m in c.children:
+                        st.mapping[str(m.children[0])] = str(m.children[1])
+                elif k == "st_key":
+                    st.key = str(c.children[0])
+                elif k == "st_inflight":
+                    st.max_in_flight = int(float(str(c.children[0])))
+            prog.streams.append(st)
         elif item.data == "agent_decl":
             name, params, ret, *clauses = item.children
             a = Agent(str(name), build_params(params), type_str(ret), line=name.line)
@@ -313,7 +353,39 @@ class Checker:
             self.check_block(f.body, env)
         for ev in self.p.evals:
             self.check_eval(ev)
+        seen = set()
+        for st in self.p.streams:
+            if st.name in seen:
+                self.err("E122", st.line, f"stream {st.name} is defined twice")
+            seen.add(st.name)
+            self.check_stream(st)
         return self.diags
+
+    def check_stream(self, st):
+        """Stream blocks: a real flow, a source topic, inputs that exist, and no topic loops."""
+        f = self.p.flows.get(st.flow)
+        if f is None:
+            self.err("E122", st.line, f"stream {st.name} runs flow '{st.flow}', which does not exist")
+            return
+        if not st.source:
+            self.err("E122", st.line, f"stream {st.name} needs a source: from kafka \"cluster\" topic \"name\"")
+        names = {p.name for p in f.params}
+        for inp, path in st.mapping.items():
+            if inp not in names:
+                self.err("E122", st.line, f"stream {st.name} maps '{inp}', which is not an input of flow "
+                                          f"{st.flow} (inputs: {', '.join(sorted(names)) or 'none'})")
+            if path != "event" and not path.startswith("event."):
+                self.err("E122", st.line, f"stream {st.name}: map {inp} = {path} must read from the event, "
+                                          f"for example {inp} = event.{inp}")
+        if st.key and st.key != "event" and not st.key.startswith("event."):
+            self.err("E122", st.line, f"stream {st.name}: key must read from the event, for example key event.id")
+        outs = {"to topic": st.sink, "escalate to topic": st.escalate, "dead letter topic": st.dead_letter}
+        for label, topic in outs.items():
+            if topic and topic == st.source:
+                self.err("E122", st.line, f"stream {st.name}: '{label} \"{topic}\"' is the source topic, so every "
+                                          f"result would be read again as a new event (an endless loop)")
+        if not 1 <= st.max_in_flight <= 256:
+            self.err("E122", st.line, f"stream {st.name}: max in flight must be between 1 and 256")
 
     def check_mcp(self):
         """`tool x from mcp "server"` needs that server in algo.config.json (mcp_servers)."""
@@ -912,7 +984,7 @@ def compile_source(src: str, name: str, base_dir: Path | str | None = None):
     return CodeGen(prog, name).gen(), prog
 
 
-VERSION = "0.3.0"
+VERSION = "0.3.1"
 
 TEMPLATE = '''// {name}.algo — created by `algo new`
 // Run it:  algo run {name}.algo --arg "topic=Your topic here"
@@ -1180,6 +1252,17 @@ def main(argv=None):
     s.add_argument("tool", nargs="?")
     s.add_argument("arguments", nargs="?", default="{}", help="JSON arguments for `call`")
     sub.add_parser("lsp", help="language server for editors (VS Code, Neovim …) over stdio")
+    s = sub.add_parser("stream", help="real-time: run a flow for every event on a Kafka topic (or a file, offline)")
+    s.add_argument("file")
+    s.add_argument("--name", default=None, help="which stream block to run (if the program has several)")
+    s.add_argument("--input", default=None, help="offline: read events from a JSON Lines file")
+    s.add_argument("--kafka", action="store_true", help="use the live Kafka cluster named in the stream block")
+    s.add_argument("--produce", default=None, metavar="EVENTS", help="with --kafka: publish a JSON Lines file to the source topic and exit")
+    s.add_argument("--max", type=int, default=None, help="stop after this many events")
+    s.add_argument("--idle", type=float, default=None, help="with --kafka: stop after this many seconds without events")
+    s.add_argument("--live", action="store_true", help="call real Claude models (default: offline mock backend)")
+    s.add_argument("--out", default=None, help="offline: folder for result topics (default runs/streams/<name>)")
+    s.add_argument("--json", action="store_true")
     import algodev
     algodev.add_parser(sub)
     a = ap.parse_args(argv)
@@ -1194,6 +1277,10 @@ def main(argv=None):
     if a.cmd == "mcp":
         import algomcp
         return algomcp.cli(a.action, a.server, a.tool, a.arguments)
+    if a.cmd == "stream":
+        import algostream
+        return algostream.cli(a.file, name=a.name, input_path=a.input, kafka=a.kafka, produce=a.produce,
+                              max_events=a.max, idle=a.idle, live=a.live, as_json=a.json, out_dir=a.out)
     if a.cmd == "lsp":
         import algolsp
         return algolsp.main()

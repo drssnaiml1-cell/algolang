@@ -1,6 +1,6 @@
 # AlgoLang roadmap
 
-**Current release: v0.3.0** · **Next: v0.4 — Trustworthy AI**
+**Current release: v0.3.1** (real-time Kafka streams) · **Next: v0.4 — Trustworthy AI**
 
 AlgoProfessor AI R&D Solutions, Hyderabad. Designed by Dr. S. Satyanarayana. [www.algoprofessor.com](https://www.algoprofessor.com)
 
