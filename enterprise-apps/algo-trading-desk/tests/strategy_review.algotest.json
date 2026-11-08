@@ -1,0 +1,50 @@
+{
+  "program": "../programs/strategy_review.algo",
+  "cases": [
+    {
+      "name": "Approved straddle: passing backtest, board review, robustness score",
+      "inputs": {
+        "strategy": "STR-101 weekly NIFTY short straddle, 30% stop-loss per leg, exit 15:15"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "Backtest",
+          "DeskPolicy",
+          "board.Reviewers",
+          "Robustness"
+        ],
+        "tools_used": [
+          "backtest.stats",
+          "kb.search"
+        ],
+        "output_contains": "PASSES desk thresholds",
+        "emits": 4,
+        "max_tokens": 2700
+      }
+    },
+    {
+      "name": "Martingale strategy fails the desk thresholds",
+      "inputs": {
+        "strategy": "STR-104 martingale: double the position after every loss on NIFTY futures"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "Backtest",
+          "Revisions"
+        ],
+        "agents_not_called": [
+          "Robustness",
+          "PaperApproval"
+        ],
+        "tools_used": [
+          "backtest.stats"
+        ],
+        "output_contains": "FAILS desk thresholds",
+        "emits": 3,
+        "max_tokens": 1300
+      }
+    }
+  ]
+}

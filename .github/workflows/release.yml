@@ -41,7 +41,7 @@ jobs:
         run: git archive --format=zip --prefix=algolang/ -o "dist/AlgoLang_v${VER}.zip" HEAD
       - name: Collect manuals and notebook
         run: |
-          cp docs/AlgoLang_Documentation_v*.pdf slides/AlgoLang_Presentation.pdf AlgoLang_Notebook.ipynb dist/
+          cp docs/AlgoLang_Documentation_v*.pdf docs/AlgoLang_50_Sample_Programs.pdf slides/AlgoLang_Presentation.pdf AlgoLang_Notebook.ipynb dist/
           (cd dist && sha256sum * > SHA256SUMS.txt)
       - name: Release notes from CHANGELOG.md
         run: |

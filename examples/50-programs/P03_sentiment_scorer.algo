@@ -1,0 +1,14 @@
+// Sentiment Scorer: one agent, one flow.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+agent SentimentScorer(review: text) -> score {
+    role "Review analyst"
+    goal "Rate the sentiment of {review} from 0 (negative) to 1 (positive)"
+    model fast
+}
+
+flow main(review: text) {
+    answer = SentimentScorer(review)
+    emit answer
+}

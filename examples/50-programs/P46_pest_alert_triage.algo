@@ -1,0 +1,40 @@
+// Pest Alert Triage: a router that branches on a score.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+agent OutbreakScorer(observation: text) -> score {
+    role "Plant protection officer"
+    goal "Score the outbreak risk of {observation} from 0 to 1"
+    model fast
+}
+
+agent OfficerAlert(observation: text) -> text {
+    role "Extension officer"
+    goal "Write an alert to the district officer for {observation}"
+    model smart
+}
+
+agent FarmerTip(observation: text) -> text {
+    role "Extension officer"
+    goal "Write a simple scouting tip for farmers about {observation}"
+    model fast
+}
+
+flow main(observation: text) {
+    outbreak = OutbreakScorer(observation)
+
+
+
+
+
+
+
+
+      if outbreak >= 0.6 {
+         officer_alert = OfficerAlert(observation)
+         emit outbreak, officer_alert
+      } else {
+         tip = FarmerTip(observation)
+         emit outbreak, tip
+      }
+}

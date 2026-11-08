@@ -1,0 +1,28 @@
+// Crop Advisory: a pipeline of 3 agents.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+agent SoilReader(field_report: text) -> text {
+    role "Agronomist"
+    goal "Describe likely soil and water issues in {field_report}"
+    model smart
+}
+
+agent CropPlanner(soil_view: text) -> text {
+    role "Agronomist"
+    goal "Suggest fertiliser and irrigation steps for {soil_view}"
+    model smart
+}
+
+agent FarmerAdvisory(steps: text) -> text {
+    role "Extension officer"
+    goal "Rewrite {steps} as a short advisory in very simple language"
+    model fast
+}
+
+flow main(field_report: text) {
+    soil_view = SoilReader(field_report)
+    steps = CropPlanner(soil_view)
+    advisory = FarmerAdvisory(steps)
+    emit advisory
+}

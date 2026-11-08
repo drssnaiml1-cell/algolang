@@ -28,7 +28,7 @@ An agent can only be granted capabilities that the program declares openly at th
 \end{ethics}
 
 \begin{caution}
-Tools are \emph{capability declarations} that the compiler enforces. Since version 0.2 they are also executable: the runtime calls the registered Python function (built-ins \code{calc.eval}, \code{file.read}, \code{kb.search}, or your own plugin) and records every call in the audit log (Chapter~\ref{ch:enterprise}). MCP bindings are planned for version 0.3.
+Tools are \emph{capability declarations} that the compiler enforces. Since version 0.2 they are also executable: the runtime calls the registered Python function (built-ins \code{calc.eval}, \code{file.read}, \code{kb.search}, or your own plugin) and records every call in the audit log (Chapter~\ref{ch:enterprise}). Since version 0.3 a tool can also come from any MCP server: \code{tool kb.search\_policies from mcp "company-kb"} (Chapter~\ref{ch:v03}).
 \end{caution}
 
 \section{Agents}

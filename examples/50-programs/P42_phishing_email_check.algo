@@ -1,0 +1,33 @@
+// Phishing Email Check: a router that branches on a score.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+agent PhishScorer(email: text) -> score {
+    role "Email security analyst"
+    goal "Score the phishing likelihood of {email} from 0 to 1"
+    model fast
+}
+
+agent QuarantineNotice(email: text) -> text {
+    role "Security analyst"
+    goal "Write a quarantine notice and user guidance for {email}"
+    model smart
+}
+
+agent DeliverNote(email: text) -> text {
+    role "Security analyst"
+    goal "Write a short note that {email} looks safe with a caution"
+    model fast
+}
+
+flow main(email: text) {
+    phish = PhishScorer(email)
+
+       if phish >= 0.7 {
+          quarantine = QuarantineNotice(email)
+          emit phish, quarantine
+       } else {
+          deliver = DeliverNote(email)
+          emit phish, deliver
+       }
+}

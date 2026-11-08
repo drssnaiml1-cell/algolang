@@ -1,0 +1,43 @@
+// Welfare Pre-check: a pipeline of 3 agents.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+policy {
+    budget tokens 4000
+    retry 1
+    forbid caste, religion
+    require human when confidence < 0.8
+}
+
+agent EligibilityRules(household: text) -> text {
+    role "Scheme officer"
+    goal "Check {household} against the income and household rules of the scheme"
+    model smart
+}
+
+agent DocumentChecklist(rules_result: text) -> text {
+    role "Scheme officer"
+
+
+
+
+
+
+
+
+     goal "List documents still needed given {rules_result}"
+     model fast
+}
+
+agent CitizenLetter(checklist: text) -> text {
+    role "Citizen services writer"
+    goal "Write a polite letter explaining {checklist} in simple language"
+    model fast
+}
+
+flow main(household: text) {
+    rules_result = EligibilityRules(household)
+    checklist = DocumentChecklist(rules_result)
+    letter = CitizenLetter(checklist)
+    emit letter
+}

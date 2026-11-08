@@ -1,0 +1,44 @@
+// Credit Committee: a scoring committee and a chair.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+policy {
+    budget tokens 4000
+    retry 1
+    forbid gender, caste, religion
+    require human when confidence < 0.8
+}
+
+agent BureauAnalyst(application: text) -> score {
+    role "Credit bureau analyst"
+    goal "Score the repayment history in {application} from 0 to 1"
+    model smart
+}
+
+agent DebtAnalyst(application: text) -> score {
+    role "Debt-to-income analyst"
+    goal "Score the debt-to-income position in {application} from 0 to 1"
+    model smart
+}
+
+agent CollateralAnalyst(application: text) -> score {
+    role "Collateral valuer"
+    goal "Score the collateral strength in {application} from 0 to 1"
+    model smart
+}
+
+agent CreditChair(application: text, bureau: score, dti: score, collateral: score) -> text {
+    role "Credit committee chair"
+    goal "Recommend approve, refer or decline for {application} based on the panel scores"
+    model smart
+}
+
+flow main(application: text) {
+    [bureau, dti, collateral] = par {
+       BureauAnalyst(application),
+       DebtAnalyst(application),
+       CollateralAnalyst(application)
+    }
+    decision = CreditChair(application, bureau, dti, collateral)
+    emit decision, bureau, dti, collateral
+}

@@ -1,0 +1,21 @@
+// CO-PO Mapper: par for fans one agent out over a list.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+agent OutcomeMapper(item: text) -> text {
+    role "OBE coordinator"
+    goal "Map the course outcome {item} to programme outcomes with a strength from 1 to 3"
+    model fast
+}
+
+agent MatrixBuilder(results: list) -> text {
+    role "OBE coordinator"
+    goal "Build a CO-PO matrix from {results}"
+    model smart
+}
+
+flow main(outcomes: list) {
+    results = par for it in outcomes { OutcomeMapper(it) }
+    report = MatrixBuilder(results)
+    emit report, results
+}

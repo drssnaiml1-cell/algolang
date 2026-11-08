@@ -1,0 +1,33 @@
+// Grievance Router: a router that branches on a score.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+agent UrgencyScorer(grievance: text) -> score {
+    role "Grievance officer"
+    goal "Score the urgency of {grievance} from 0 to 1"
+    model fast
+}
+
+agent PriorityDesk(grievance: text) -> text {
+    role "Department officer"
+    goal "Write a priority action note with a 24-hour target for {grievance}"
+    model smart
+}
+
+agent StandardDesk(grievance: text) -> text {
+    role "Department officer"
+    goal "Write a standard acknowledgement and a 7-day target for {grievance}"
+    model fast
+}
+
+flow main(grievance: text) {
+    urgency = UrgencyScorer(grievance)
+
+      if urgency >= 0.7 {
+         priority = PriorityDesk(grievance)
+         emit urgency, priority
+      } else {
+         standard = StandardDesk(grievance)
+         emit urgency, standard
+      }
+}

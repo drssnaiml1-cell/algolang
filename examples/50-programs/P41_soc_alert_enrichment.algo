@@ -1,0 +1,38 @@
+// SOC Alert Enrichment: a pipeline of 3 agents.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+tool web.search
+
+agent Enricher(alert: text) -> text {
+    role "SOC analyst"
+    goal "Look up context and threat intelligence for the alert: {alert}"
+    uses web.search
+    model smart
+}
+
+agent SeverityRater(context: text) -> text {
+    role "SOC lead"
+    goal "Rate the severity and likely attack stage from {context}"
+    model smart
+}
+
+agent ResponsePlan(severity: text) -> text {
+    role "Incident responder"
+    goal "Write a containment and response plan for {severity}"
+    model smart
+
+
+
+
+
+
+
+
+}
+
+flow main(alert: text) {
+    context = Enricher(alert)
+    severity = SeverityRater(context)
+    plan = ResponsePlan(severity)
+    emit plan
+}

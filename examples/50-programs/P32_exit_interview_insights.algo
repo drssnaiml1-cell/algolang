@@ -1,0 +1,37 @@
+// Exit Interview Insights: workers run in parallel, one agent merges.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+agent ThemeFinder(transcript: text) -> text {
+    role "People analyst"
+    goal "List the main themes in {transcript}"
+    model smart
+}
+
+agent SentimentReader(transcript: text) -> text {
+    role "People analyst"
+    goal "Describe the emotional tone of {transcript}"
+    model fast
+}
+
+agent ActionIdeas(transcript: text) -> text {
+    role "HR business partner"
+    goal "Suggest retention actions based on {transcript}"
+    model smart
+}
+
+agent HRBrief(themes: text, tone: text, actions: text) -> text {
+    role "HR lead"
+    goal "Write a short brief from {themes}, {tone} and {actions}"
+    model smart
+}
+
+flow main(transcript: text) {
+    [themes, tone, actions] = par {
+       ThemeFinder(transcript),
+       SentimentReader(transcript),
+       ActionIdeas(transcript)
+    }
+    brief = HRBrief(themes, tone, actions)
+    emit brief
+}

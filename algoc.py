@@ -54,6 +54,7 @@ class Agent:
     policy: dict = field(default_factory=dict)
     line: int = 0
     origin: str | None = None        # set for agents imported with `use`
+    src: str | None = None           # absolute path of the file that defines it (for the language server)
 
 
 @dataclass
@@ -72,6 +73,25 @@ class Program:
     flows: dict = field(default_factory=dict)
     uses: list = field(default_factory=list)      # (kind, target, alias, line)
     imports: list = field(default_factory=list)   # resolved files, for reports
+    mcp_tools: dict = field(default_factory=dict) # tool name → MCP server name (`tool x from mcp "server"`)
+    evals: list = field(default_factory=list)     # eval blocks: Eval objects
+    tool_lines: dict = field(default_factory=dict)
+
+
+@dataclass
+class EvalCase:
+    name: str
+    inputs: dict
+    expects: list                    # (kind, op, value)
+    line: int = 0
+
+
+@dataclass
+class Eval:
+    name: str
+    flow: str
+    cases: list
+    line: int = 0
 
 
 @dataclass
@@ -116,6 +136,17 @@ def literal_value(t):
     raise ValueError(t)
 
 
+def type_str(node) -> str:
+    """`text` → "text";  `uncertain<score>` → "uncertain<score>"."""
+    if isinstance(node, Tree) and node.data == "uncertain_type":
+        return f"uncertain<{node.children[0]}>"
+    return str(node)
+
+
+def base_type(t: str) -> str:
+    return t[10:-1] if t.startswith("uncertain<") else t
+
+
 def build_params(node) -> list[Param]:
     if node is None:
         return []
@@ -123,7 +154,7 @@ def build_params(node) -> list[Param]:
     for p in node.children:
         name, typ, *rest = p.children
         default = literal_value(rest[0]) if rest and rest[0] is not None else None
-        out.append(Param(str(name), str(typ), default, name.line))
+        out.append(Param(str(name), type_str(typ), default, name.line))
     return out
 
 
@@ -142,6 +173,20 @@ def parse_policy(rules) -> dict:
             pol.setdefault("forbid", []).extend(str(t) for t in r.children)
         elif r.data == "cache":
             pol["cache"] = True
+        elif r.data == "samples":
+            pol["samples"] = int(str(r.children[0]))
+        elif r.data == "budget_cost":
+            amount, cur = float(str(r.children[0])), str(r.children[1] or "usd").lower()
+            if cur in ("usd", "inr"):
+                pol[f"budget_cost_{cur}"] = amount
+            else:
+                pol.setdefault("_errors", []).append(f"unknown currency '{cur}' in `budget cost` (use usd or inr)")
+        elif r.data == "budget_energy":
+            amount, unit = float(str(r.children[0])), str(r.children[1]).lower()
+            if unit in ("wh", "kwh"):
+                pol["budget_energy_wh"] = amount * (1000 if unit == "kwh" else 1)
+            else:
+                pol.setdefault("_errors", []).append(f"unknown energy unit '{unit}' in `budget energy` (use wh or kwh)")
     return pol
 
 
@@ -151,8 +196,10 @@ def merge_policy(base: dict, own: dict) -> dict:
     for k, v in own.items():
         if k not in out:
             out[k] = v
-        elif k in ("budget_tokens", "timeout_s"):
+        elif k in ("budget_tokens", "timeout_s", "budget_cost_usd", "budget_cost_inr", "budget_energy_wh"):
             out[k] = min(out[k], v)
+        elif k == "_errors":
+            out[k] = out[k] + [e for e in v if e not in out[k]]
         elif k == "human_below":
             out[k] = max(out[k], v)
         elif k == "forbid":
@@ -178,10 +225,40 @@ def to_ast(tree: Tree) -> tuple[Program, list[Diag]]:
             name, s = item.children
             prog.models[str(name)] = _s(s)
         elif item.data == "tool_decl":
-            prog.tools.add(str(item.children[0]))
+            tname, server = item.children
+            prog.tools.add(str(tname))
+            prog.tool_lines[str(tname)] = _line(item)
+            if server is not None:
+                prog.mcp_tools[str(tname)] = _s(server)
+        elif item.data == "eval_decl":
+            ename, flow, *cases = item.children
+            ev = Eval(str(ename), str(flow) if flow is not None else "main", [], _line(item))
+            for c in cases:
+                cname, args, *exps = c.children
+                inputs = {}
+                for a in (args.children if args is not None else []):
+                    if isinstance(a, Tree) and a.data == "kwarg" and a.children[1].data in ("string", "number", "true", "false"):
+                        inputs[str(a.children[0])] = literal_value(a.children[1])
+                    else:
+                        diags.append(Diag("E119", _line(c), f"eval {ev.name}: case inputs must be written "
+                                                             f"name = \"value\""))
+                expects = []
+                for e in exps:
+                    kind = e.data[4:]
+                    if kind in ("tokens", "cost", "energy", "escalated", "confidence"):
+                        op, num = e.children
+                        expects.append((kind, str(op), float(str(num))))
+                    elif kind == "contains":
+                        expects.append((kind, None, _s(e.children[0])))
+                    elif kind == "emits":
+                        expects.append((kind, "==", int(str(e.children[0]))))
+                    else:
+                        expects.append((kind, None, str(e.children[0])))
+                ev.cases.append(EvalCase(_s(cname), inputs, expects, _line(c)))
+            prog.evals.append(ev)
         elif item.data == "agent_decl":
             name, params, ret, *clauses = item.children
-            a = Agent(str(name), build_params(params), str(ret), line=name.line)
+            a = Agent(str(name), build_params(params), type_str(ret), line=name.line)
             for c in clauses:
                 if c.data == "role":
                     a.role = _s(c.children[0])
@@ -224,15 +301,59 @@ class Checker:
             if a.origin is None:             # imported agents were checked in their own file
                 self.check_agent(a)
         self.check_org()
+        self.check_mcp()
         if "main" not in self.p.flows and not library:
             self.err("E111", 1, "program has no `flow main(...)` entry point")
         for f in self.p.flows.values():
             env = {}
+            self.inputs = {prm.name for prm in f.params}
             for prm in f.params:
                 self.check_type(prm.type, prm.line)
                 env[prm.name] = prm.type
             self.check_block(f.body, env)
+        for ev in self.p.evals:
+            self.check_eval(ev)
         return self.diags
+
+    def check_mcp(self):
+        """`tool x from mcp "server"` needs that server in algo.config.json (mcp_servers)."""
+        if not self.p.mcp_tools:
+            return
+        try:
+            import algoruntime
+            if algoruntime.config_path() is None:      # no algo.config.json here: checked when the program runs
+                return
+            cfg = algoruntime.load_config()
+        except Exception:  # noqa
+            return
+        servers = cfg.get("mcp_servers") or {}
+        for t, srv in self.p.mcp_tools.items():
+            if srv not in servers:
+                known = ", ".join(sorted(servers)) or "none configured"
+                self.err("E120", self.p.tool_lines.get(t, 1), f"tool {t} comes from MCP server '{srv}', which is not in "
+                                                               f"mcp_servers in algo.config.json (known: {known})")
+
+    def check_eval(self, ev):
+        """Eval blocks must name a real flow, its inputs, real agents and real tools."""
+        f = self.p.flows.get(ev.flow)
+        if f is None:
+            self.err("E119", ev.line, f"eval {ev.name} runs flow '{ev.flow}', which does not exist")
+            return
+        params = [p.name for p in f.params]
+        for c in ev.cases:
+            for k in c.inputs:
+                if k not in params:
+                    self.err("E119", c.line, f"eval {ev.name}, case \"{c.name}\": flow {ev.flow} has no input '{k}'")
+            for k in params:
+                if k not in c.inputs:
+                    self.err("E119", c.line, f"eval {ev.name}, case \"{c.name}\": missing input '{k}'")
+            for kind, _op, val in c.expects:
+                if kind in ("called", "not_called") and val not in self.p.agents:
+                    self.err("E119", c.line, f"eval {ev.name}, case \"{c.name}\": '{val}' is not an agent in this program")
+                elif kind == "tool" and val not in self.p.tools:
+                    self.err("E119", c.line, f"eval {ev.name}, case \"{c.name}\": tool '{val}' is not declared")
+                elif kind == "status" and val not in ("ok", "blocked", "failed"):
+                    self.err("E119", c.line, f"eval {ev.name}, case \"{c.name}\": status must be ok, blocked or failed")
 
     def check_org(self):
         """Organisation policy (algo.config.json) is enforced before anything runs."""
@@ -255,8 +376,8 @@ class Checker:
                                                  f"policy does not allow (allowed_tools in algo.config.json)")
 
     def check_type(self, t, line):
-        if t not in TYPES:
-            self.err("E105", line, f"unknown type '{t}' (use: {', '.join(sorted(TYPES))})")
+        if base_type(t) not in TYPES:
+            self.err("E105", line, f"unknown type '{t}' (use: {', '.join(sorted(TYPES))}, or uncertain<T>)")
 
     def check_agent(self, a: Agent):
         self.check_type(a.returns, a.line)
@@ -277,6 +398,10 @@ class Checker:
         for attr in a.policy.get("forbid", []):
             if attr in names:
                 self.err("E108", a.line, f"agent {a.name} takes forbidden attribute '{attr}' as an input")
+        for msg in a.policy.get("_errors", []):
+            self.err("E121", a.line, f"agent {a.name}: {msg}")
+        if a.policy.get("samples") is not None and not 1 <= a.policy["samples"] <= 15:
+            self.err("E121", a.line, f"agent {a.name}: samples must be between 1 and 15")
 
     # statements ---------------------------------------------------
     def check_block(self, stmts, env):
@@ -304,7 +429,7 @@ class Checker:
                 env[names[0]] = t
         elif s.data == "if_stmt":
             cond, *rest = s.children
-            self.check_cond(cond, env)
+            self.check_condition(cond, env)
             # body / else are lists of stmts mixed; lark gives flat children with None for missing else
             for child in rest:
                 if child is None:
@@ -317,13 +442,40 @@ class Checker:
         elif s.data == "expr_stmt":
             self.expr_type(s.children[0], env)
 
-    def check_cond(self, cond, env):
+    def check_condition(self, cond, env):
+        """Check an if-condition. An uncertain<T> value may only be compared together with a check of its
+        confidence somewhere in the same condition (E117): `if risk > 0.8 and risk.confidence >= 0.7`."""
+        guarded = {str(a.children[0]).split(".")[0] for a in cond.iter_subtrees() if a.data == "attr"}
+        for c in cond.iter_subtrees():
+            if c.data == "cond":
+                self.check_cond(c, env, guarded)
+            elif c.data in ("contains_cond", "not_contains_cond"):
+                self.expr_type(c.children[0], env)          # E103 if undefined; any type can be searched
+
+    def check_cond(self, cond, env, guarded=()):
         left, op, right = cond.children
         for side in (left, right):
+            if isinstance(side, Tree) and side.data == "attr":
+                var, _, attr = str(side.children[0]).partition(".")
+                if attr != "confidence":
+                    self.err("E118", _line(cond), f"'{side.children[0]}': only `<result>.confidence` can be read "
+                                                  f"in a condition")
+                elif var not in env:
+                    self.err("E103", _line(cond), f"undefined variable '{var}'")
+                elif var in getattr(self, "inputs", set()):
+                    self.err("E118", _line(cond), f"'{var}' is a flow input, not an agent result — it has no confidence")
+                continue
             t = self.expr_type(side, env)
-            if t not in ("score", "number", "bool", "any"):
+            if base_type(t) not in ("score", "number", "bool", "any"):
                 name = side.children[0] if side.data == "var" else "expression"
                 self.err("E110", _line(cond), f"'{name}' is {t}, not a score — only scores/numbers can be compared")
+            elif t.startswith("uncertain<"):
+                name = str(side.children[0]) if side.data == "var" else None
+                if name is None or name not in guarded:
+                    shown = name or "this uncertain value"
+                    self.err("E117", _line(cond), f"'{shown}' is {t}: compare it together with its confidence, "
+                                                  f"e.g. `if {shown} > 0.8 and {shown}.confidence >= 0.7` "
+                                                  f"(assign the agent call to a variable first)")
 
     def expr_type(self, e, env):
         if isinstance(e, Token):
@@ -410,7 +562,7 @@ class CodeGen:
 
     def gen(self) -> str:
         p = self.p
-        self.w(f"# Generated by algoc v0.2 from {self.src} — do not edit; edit the .algo source.")
+        self.w(f"# Generated by algoc v{VERSION} from {self.src} — do not edit; edit the .algo source.")
         self.w("import os, sys")
         self.w(f"sys.path.insert(0, os.environ.get('ALGO_HOME') or {str(HERE)!r})")
         self.w("from algoruntime import Runtime, AgentSpec")
@@ -419,7 +571,10 @@ class CodeGen:
         for n, m in p.models.items():
             self.w(f"rt.model({n!r}, {m!r})")
         for t in sorted(p.tools):
-            self.w(f"rt.tool({t!r})")
+            if t in p.mcp_tools:
+                self.w(f"rt.mcp_tool({t!r}, {p.mcp_tools[t]!r})")
+            else:
+                self.w(f"rt.tool({t!r})")
         self.w()
         for a in p.agents.values():
             params = [(x.name, x.type, x.default) for x in a.params]
@@ -471,8 +626,20 @@ class CodeGen:
             self.w(self.expr(s.children[0]), ind)
 
     def cond(self, c):
+        if c.data == "or_cond":
+            return f"({self.cond(c.children[0])}) or ({self.cond(c.children[1])})"
+        if c.data == "and_cond":
+            return f"({self.cond(c.children[0])}) and ({self.cond(c.children[1])})"
+        if c.data in ("contains_cond", "not_contains_cond"):
+            neg = "not " if c.data == "not_contains_cond" else ""
+            return f"{neg}rt.contains({self.expr(c.children[0])}, {_s(c.children[1])!r})"
         l, op, r = c.children
-        return f"rt.value({self.expr(l)}) {op} rt.value({self.expr(r)})"
+        return f"{self.operand(l)} {op} {self.operand(r)}"
+
+    def operand(self, e):
+        if isinstance(e, Tree) and e.data == "attr":
+            return f"rt.conf({str(e.children[0]).split('.')[0]})"
+        return f"rt.value({self.expr(e)})"
 
     def expr(self, e):
         if e.data == "call":
@@ -567,7 +734,20 @@ def flow_graph(prog: Program, flow: str = "main"):
                 if (s, nid, dashed) not in edges:
                     edges.append((s, nid, dashed))
 
+    def cond_text(c):
+        if c.data == "or_cond":
+            return f"{cond_text(c.children[0])} or {cond_text(c.children[1])}"
+        if c.data == "and_cond":
+            return f"{cond_text(c.children[0])} and {cond_text(c.children[1])}"
+        if c.data in ("contains_cond", "not_contains_cond"):
+            neg = "not " if c.data == "not_contains_cond" else ""
+            return f'{text(c.children[0])} {neg}contains "{_s(c.children[1])}"'
+        l, op, r = c.children
+        return f"{text(l)} {op} {text(r)}"
+
     def text(e):
+        if e.data == "attr":
+            return str(e.children[0])
         if e.data == "var":
             return str(e.children[0])
         if e.data == "number":
@@ -617,14 +797,14 @@ def flow_graph(prog: Program, flow: str = "main"):
                     bind(names[0], list(src.get(str(expr.children[0]), [])))
             elif s.data == "if_stmt":
                 cond = s.children[0]
-                l, op, r = cond.children
-                cid = new(f"if {text(l)} {op} {text(r)}", "cond", "decision")
+                cid = new(f"if {cond_text(cond)}", "cond", "decision")
                 for c in cond.iter_subtrees():
                     if c.data == "call":
                         nid = new(str(c.children[0]), kind, "in condition")
                         link(vars_in(c), nid)
                         edges.append((nid, cid, False))
-                link([v for v in vars_in(cond)], cid)
+                link([v for v in vars_in(cond)] + [str(a.children[0]).split(".")[0] for a in cond.iter_subtrees()
+                                                    if a.data == "attr"], cid)
                 then_b, else_b = s._split
                 walk(then_b, "branch", cid, merge=True)
                 walk(else_b, "branch", cid, merge=True)
@@ -675,6 +855,9 @@ def load_program(src, name, base_dir: Path, stack=(), file_label=None, library=F
     """Parse a file and everything it `use`s. Returns (Program, diagnostics)."""
     tree = _parse(src, name, file_label)
     prog, diags = to_ast(tree)
+    me = str((Path(base_dir) / name).resolve())
+    for a in prog.agents.values():
+        a.src = a.src or me
     for d in diags:
         d.file = file_label
     for kind, target, alias, line in prog.uses:
@@ -702,6 +885,8 @@ def load_program(src, name, base_dir: Path, stack=(), file_label=None, library=F
                 diags.append(Diag("E107", line, f"model '{m}' is defined differently in {shown}", file_label))
             prog.models.setdefault(m, mid)
         prog.tools |= sub.tools
+        for t, srv in sub.mcp_tools.items():
+            prog.mcp_tools.setdefault(t, srv)
         for a in sub.agents.values():
             new_name = f"{alias}.{a.name}" if alias else a.name
             if new_name in prog.agents:
@@ -727,7 +912,7 @@ def compile_source(src: str, name: str, base_dir: Path | str | None = None):
     return CodeGen(prog, name).gen(), prog
 
 
-VERSION = "0.2.0"
+VERSION = "0.3.0"
 
 TEMPLATE = '''// {name}.algo — created by `algo new`
 // Run it:  algo run {name}.algo --arg "topic=Your topic here"
@@ -928,6 +1113,8 @@ def main(argv=None):
             s.add_argument("--live", action="store_true", help="call real Claude models (needs ANTHROPIC_API_KEY)")
             s.add_argument("--interactive", action="store_true", help="ask a human to approve low-confidence results")
             s.add_argument("--audit-dir", default=None, help="where audit logs go (default: runs/ or algo.config.json)")
+            s.add_argument("--trace", nargs="?", const="1", default=None,
+                           help="record a trace for `algo replay` (optionally give the file path)")
     s = sub.add_parser("new", help="create a starter program")
     s.add_argument("name")
     sub.add_parser("doctor", help="check that the environment is ready")
@@ -973,12 +1160,43 @@ def main(argv=None):
     s.add_argument("-o", "--out", help="file to write (default: from the request)")
     s.add_argument("--run", action="store_true", help="run the program after writing it")
     sub.add_parser("wizard", help="build a program by answering questions (no AI needed)")
+    # v0.3
+    s = sub.add_parser("eval", help="run the eval blocks in a program (offline, live, or replayed from traces)")
+    s.add_argument("file")
+    s.add_argument("--live", action="store_true", help="use real Claude models")
+    s.add_argument("--replay", nargs="?", const="", default=None, metavar="DIR",
+                   help="answer from traces recorded by an earlier eval run (no model calls)")
+    s.add_argument("--record", default=None, metavar="DIR", help="where to save traces (default runs/traces/eval)")
+    s.add_argument("--only", default=None, help="run only the eval block with this name")
+    s.add_argument("--json", action="store_true")
+    s = sub.add_parser("replay", help="re-run a recorded trace with no model calls and show what changed")
+    s.add_argument("trace")
+    s.add_argument("--program", default=None, help="the .algo file to replay (default: the one in the trace)")
+    s.add_argument("--lenient", action="store_true", help="answer changed calls offline instead of stopping")
+    s.add_argument("--json", action="store_true")
+    s = sub.add_parser("mcp", help="MCP servers: list their tools or call one")
+    s.add_argument("action", choices=["servers", "list", "call"])
+    s.add_argument("server", nargs="?")
+    s.add_argument("tool", nargs="?")
+    s.add_argument("arguments", nargs="?", default="{}", help="JSON arguments for `call`")
+    sub.add_parser("lsp", help="language server for editors (VS Code, Neovim …) over stdio")
     import algodev
     algodev.add_parser(sub)
     a = ap.parse_args(argv)
 
     if a.cmd is None:
         return menu()
+    if a.cmd in ("eval", "replay"):
+        import algoeval
+        if a.cmd == "eval":
+            return algoeval.cli_eval(a.file, live=a.live, replay=a.replay, record=a.record, only=a.only, as_json=a.json)
+        return algoeval.cli_replay(a.trace, program=a.program, strict=not a.lenient, as_json=a.json)
+    if a.cmd == "mcp":
+        import algomcp
+        return algomcp.cli(a.action, a.server, a.tool, a.arguments)
+    if a.cmd == "lsp":
+        import algolsp
+        return algolsp.main()
     if a.cmd == "dev":
         return algodev.dispatch(a)
     if a.cmd == "shell":
@@ -1088,6 +1306,9 @@ def main(argv=None):
         env["ALGO_LIVE"] = "1"
     if a.interactive:
         env["ALGO_INTERACTIVE"] = "1"
+    if a.trace:
+        env["ALGO_TRACE"] = a.trace if a.trace == "1" else str(Path(a.trace).resolve())
+        env["ALGO_SOURCE"] = str(path.resolve())
     for kv in a.arg:
         if "=" not in kv:
             print(f'✗ --arg needs name=value, e.g. --arg "topic=AI"; got: {kv}', file=sys.stderr)

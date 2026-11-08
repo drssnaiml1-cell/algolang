@@ -74,6 +74,10 @@ jobs:
           /tmp/v/bin/algo domains "triage insurance claims"
           /tmp/v/bin/algo run pack:insurance.claims_triage --arg "claim=Rear-end collision, bumper damage"
           /tmp/v/bin/algo audit verify runs
+          # v0.3: eval blocks, an MCP server and cost/energy budgets, from the installed wheel
+          cp -r "$(/tmp/v/bin/python -c 'import algolang; print(algolang.HOME)')/examples/v03" v03 && cd v03
+          /tmp/v/bin/algo eval expense_desk.algo
+          /tmp/v/bin/algo eval expense_desk.algo --replay
       - uses: actions/upload-artifact@v4
         with: {name: dist, path: dist/}
 

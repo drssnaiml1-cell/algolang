@@ -1,0 +1,43 @@
+// Drug Interaction Check: workers run in parallel, one agent merges.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+policy {
+    budget tokens 5000
+    retry 1
+    require human when confidence < 0.8
+}
+
+agent InteractionChecker(regimen: text) -> text {
+    role "Pharmacology reviewer"
+    goal "Flag possible interactions in {regimen}"
+    model smart
+}
+
+agent ContraindicationChecker(regimen: text) -> text {
+    role "Pharmacology reviewer"
+    goal "Flag possible contraindications in {regimen}"
+    model smart
+}
+
+agent DoseChecker(regimen: text) -> text {
+    role "Pharmacology reviewer"
+    goal "Check {regimen} against typical dose ranges"
+    model fast
+}
+
+agent PharmacistBrief(interactions: text, contra: text, doses: text) -> text {
+    role "Senior pharmacist"
+    goal "Write a brief for a pharmacist from {interactions}, {contra} and {doses}; decision support only"
+    model smart
+}
+
+flow main(regimen: text) {
+    [interactions, contra, doses] = par {
+       InteractionChecker(regimen),
+       ContraindicationChecker(regimen),
+       DoseChecker(regimen)
+    }
+    brief = PharmacistBrief(interactions, contra, doses)
+    emit brief
+}

@@ -1,0 +1,28 @@
+// Listing Writer: a pipeline of 3 agents.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+agent FeatureExtractor(property_details: text) -> text {
+    role "Property consultant"
+    goal "List the top selling features in {property_details}"
+    model fast
+}
+
+agent ListingCopywriter(features: text) -> text {
+    role "Real estate copywriter"
+    goal "Write an engaging 80-word listing from {features}"
+    model smart
+}
+
+agent FairHousingCheck(copy: text) -> text {
+    role "Compliance reviewer"
+    goal "Check {copy} for discriminatory language and fix it"
+    model smart
+}
+
+flow main(property_details: text) {
+    features = FeatureExtractor(property_details)
+    copy = ListingCopywriter(features)
+    final_copy = FairHousingCheck(copy)
+    emit final_copy
+}

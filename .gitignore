@@ -35,3 +35,4 @@ Thumbs.db
 .idea/
 *.swp
 site/
+node_modules/

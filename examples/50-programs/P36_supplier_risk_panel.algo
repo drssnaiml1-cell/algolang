@@ -1,0 +1,45 @@
+// Supplier Risk Panel: a scoring committee and a chair.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+agent FinancialRisk(supplier: text) -> score {
+    role "Supply risk analyst"
+    goal "Score the financial health risk of {supplier} from 0 to 1"
+    model smart
+}
+
+agent DeliveryRisk(supplier: text) -> score {
+    role "Supply risk analyst"
+    goal "Score the delivery risk of {supplier} from 0 to 1"
+    model smart
+}
+
+agent ComplianceRisk(supplier: text) -> score {
+    role "Supply risk analyst"
+    goal "Score the compliance risk of {supplier} from 0 to 1"
+    model smart
+}
+
+agent RiskChair(supplier: text, financial: score, delivery: score, compliance: score) -> text {
+    role "Procurement head"
+    goal "Recommend keep, monitor or replace for {supplier} based on the panel scores"
+    model smart
+
+
+
+
+
+
+
+
+}
+
+flow main(supplier: text) {
+    [financial, delivery, compliance] = par {
+       FinancialRisk(supplier),
+       DeliveryRisk(supplier),
+       ComplianceRisk(supplier)
+    }
+    decision = RiskChair(supplier, financial, delivery, compliance)
+    emit decision, financial, delivery, compliance
+}

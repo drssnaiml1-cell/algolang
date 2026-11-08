@@ -1,0 +1,14 @@
+// Hello Greeter: one agent, one flow.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+agent Greeter(name: text) -> text {
+    role "Friendly assistant"
+    goal "Write a warm one-line greeting for {name}"
+    model fast
+}
+
+flow main(name: text) {
+    answer = Greeter(name)
+    emit answer
+}

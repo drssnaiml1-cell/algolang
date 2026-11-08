@@ -1,0 +1,34 @@
+// Renewal Advisor: a pipeline of 3 agents.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+policy {
+    budget tokens 5000
+    retry 1
+    require human when confidence < 0.8
+}
+
+agent RiskReview(holder_profile: text) -> text {
+    role "Underwriter"
+    goal "Summarise the risk profile in {holder_profile}"
+    model smart
+}
+
+agent PremiumReview(risk_view: text) -> text {
+    role "Pricing analyst"
+    goal "Suggest a renewal premium range and discounts from {risk_view}"
+    model smart
+}
+
+agent RenewalLetter(premium_view: text) -> text {
+    role "Customer writer"
+    goal "Write a clear renewal letter based on {premium_view}"
+    model fast
+}
+
+flow main(holder_profile: text) {
+    risk_view = RiskReview(holder_profile)
+    premium_view = PremiumReview(risk_view)
+    letter = RenewalLetter(premium_view)
+    emit letter
+}

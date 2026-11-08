@@ -1,0 +1,37 @@
+// Headline Variants: workers run in parallel, one agent merges.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+agent StraightHeadline(story: text) -> text {
+    role "News editor"
+    goal "Write a straight news headline for {story}"
+    model fast
+}
+
+agent CuriosityHeadline(story: text) -> text {
+    role "Digital editor"
+    goal "Write a curiosity-driven headline for {story}"
+    model fast
+}
+
+agent SocialHeadline(story: text) -> text {
+    role "Social editor"
+    goal "Write a social-media headline for {story}"
+    model fast
+}
+
+agent EditorPick(straight: text, curious: text, social: text) -> text {
+    role "Chief editor"
+    goal "Pick the best of {straight}, {curious} and {social} and explain why"
+    model smart
+}
+
+flow main(story: text) {
+    [straight, curious, social] = par {
+       StraightHeadline(story),
+       CuriosityHeadline(story),
+       SocialHeadline(story)
+    }
+    pick = EditorPick(straight, curious, social)
+    emit pick
+}

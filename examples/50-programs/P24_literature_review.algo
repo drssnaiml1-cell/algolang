@@ -1,0 +1,23 @@
+// Literature Review: par for fans one agent out over a list.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+tool web.search
+
+agent PaperReader(item: text) -> text {
+    role "Research assistant"
+    goal "Summarise the method and finding of the paper: {item}"
+    uses web.search
+    model fast
+}
+
+agent ReviewWriter(results: list) -> text {
+    role "Research lead"
+    goal "Write a short literature review from {results}"
+    model smart
+}
+
+flow main(papers: list) {
+    results = par for it in papers { PaperReader(it) }
+    report = ReviewWriter(results)
+    emit report, results
+}

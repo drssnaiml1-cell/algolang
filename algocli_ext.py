@@ -286,11 +286,15 @@ def cmd_report(directory="runs", as_json=False):
     t = rep["totals"]
     print(f"  AlgoLang usage & governance report — {directory}\n")
     print(f"  {t['calls']} agent calls · ~{t['tokens']} tokens · {t['escalated']} escalated · "
-          f"{t['blocked']} blocked · {t['failed']} failed · {t['cached']} from cache · {t['tool_calls']} tool calls\n")
+          f"{t['blocked']} blocked · {t['failed']} failed · {t['cached']} from cache · {t['tool_calls']} tool calls")
+    inr = t["cost_usd"] * float(al.configure().get("usd_to_inr") or 84)
+    print(f"  cost ${t['cost_usd']:.4f} (₹{inr:.2f}) · energy {t['energy_wh']:.3f} Wh · {t['co2_g']:.2f} g CO₂ "
+          f"(offline runs show the estimated live cost)\n")
     if rep["programs"]:
-        _table([(k, v["calls"], v["tokens"], v["escalated"], v["blocked"], v["avg_confidence"])
+        _table([(k, v["calls"], v["tokens"], f"${v['cost_usd']:.4f}", f"{v['energy_wh']:.3f}", v["escalated"],
+                 v["blocked"], v["avg_confidence"])
                 for k, v in sorted(rep["programs"].items(), key=lambda kv: -kv[1]["tokens"])],
-               ["program", "calls", "tokens", "escalated", "blocked", "avg conf"])
+               ["program", "calls", "tokens", "cost", "Wh", "escalated", "blocked", "avg conf"])
         print()
         _table([(k, v["calls"], v["tokens"], v["escalated"], v["avg_confidence"])
                 for k, v in sorted(rep["agents"].items(), key=lambda kv: -kv[1]["tokens"])[:12]],

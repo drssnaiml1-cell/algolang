@@ -1,0 +1,39 @@
+// Fraud Alert Router: a router that branches on a score.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+policy {
+    budget tokens 5000
+    retry 1
+    require human when confidence < 0.8
+}
+
+agent FraudScorer(transaction: text) -> score {
+    role "Fraud analyst"
+    goal "Score the fraud likelihood of {transaction} from 0 to 1"
+    model fast
+}
+
+agent HoldAndReview(transaction: text) -> text {
+    role "Fraud operations lead"
+    goal "Write a hold notice and review steps for {transaction}"
+    model smart
+}
+
+agent ApproveWithNote(transaction: text) -> text {
+    role "Fraud operations lead"
+    goal "Write an approval note for {transaction}"
+    model fast
+}
+
+flow main(transaction: text) {
+    fraud = FraudScorer(transaction)
+
+      if fraud >= 0.8 {
+         hold = HoldAndReview(transaction)
+         emit fraud, hold
+      } else {
+         approval = ApproveWithNote(transaction)
+         emit fraud, approval
+      }
+}

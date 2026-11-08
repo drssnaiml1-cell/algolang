@@ -47,7 +47,7 @@ From there you can try an alternative, *Open in Studio*, or *Customise with AI*.
 
 ## Step 2. Unzip AlgoLang
 
-Unzip `AlgoLang_v0.2.zip` anywhere, for example `D:\algolang` on Windows or `~/algolang` on Linux/macOS.
+Unzip `AlgoLang_v0.3.zip` anywhere, for example `D:\algolang` on Windows or `~/algolang` on Linux/macOS.
 
 ## Step 3. Run the installer (once)
 
@@ -59,7 +59,7 @@ Unzip `AlgoLang_v0.2.zip` anywhere, for example `D:\algolang` on Windows or `~/a
 The installer creates `.venv`, installs the parser, and finishes with `algo doctor`. You should see:
 
 ```
-AlgoLang 0.2.0 environment check
+AlgoLang 0.3.0 environment check
   ✓ Python                 3.12.x
   ✓ lark (parser)          1.3.1
   • anthropic (live mode)  not installed — optional
@@ -167,6 +167,47 @@ The full example is `examples/enterprise/claims_pipeline.algo`.
 
 **Python SDK:** see `README.md`, or section 10 of the notebook.
 
+## Step 4c. New in v0.3: uncertainty, evals, MCP, budgets, editor support
+
+Try everything in the tour folder:
+
+```bash
+cd examples/v03
+algo run expense_desk.algo --arg "claim=Conference fee USD 300, refunds policy question"
+algo eval expense_desk.algo                 # run the eval block (offline) and record traces
+algo eval expense_desk.algo --replay        # re-check from the traces: no model calls, zero cost
+algo mcp list company-kb                    # the MCP server's tools
+algo report                                 # tokens, money (USD and ₹), energy (Wh) and CO₂
+```
+
+| Command | What it does |
+| --- | --- |
+| `algo run FILE --trace` | Also save a trace of the run in `runs/traces/` |
+| `algo replay TRACE` | Re-run a trace with no model calls; shows agents whose inputs changed (`--lenient` to continue past them) |
+| `algo eval FILE [--live] [--replay [DIR]] [--record DIR] [--only NAME]` | Run the program's `eval` blocks |
+| `algo mcp servers` · `algo mcp list SERVER` · `algo mcp call SERVER TOOL '{"arg": "x"}'` | Inspect and test MCP servers from `algo.config.json` |
+| `algo lsp` | Language server for editors (started by the VS Code extension) |
+
+**In programs:**
+
+- `agent A(x: text) -> uncertain<score> { … policy { samples 5 } }` samples the agent five times. Use the result as `if a > 0.8 and a.confidence >= 0.7`.
+- `policy { budget cost 0.05 usd  budget energy 2 wh }` sets per-agent budgets (`inr` and `kwh` also work).
+- `tool kb.search_policies from mcp "company-kb"` binds a tool on an MCP server.
+- `eval name on main { case "label" (x = "…") { expect called A  expect cost < 0.05 } }` adds behaviour tests next to the code.
+
+**In `algo.config.json`:**
+
+```json
+"pricing": {"default": [3.0, 15.0]},
+"usd_to_inr": 84.0,
+"energy": {"wh_per_1k_tokens": {"default": 0.3}, "grid_kg_co2_per_kwh": 0.71},
+"max_run_cost_usd": 0.50,
+"max_run_energy_wh": 10,
+"mcp_servers": {"company-kb": {"command": "{python}", "args": ["mcp_demo_server.py"]}}
+```
+
+`pricing` is USD per million input and output tokens. The defaults are placeholders, so set your contracted prices. `{python}` means the Python that runs AlgoLang.
+
 ## Step 5. Live mode with real Claude (optional)
 
 By default agents are offline test agents, which give the same answer for the same input. To call real Claude models:
@@ -214,6 +255,8 @@ Live calls cost API credits. Keep each agent's `budget tokens` policy set.
 After each run, `algo_result` and `algo_calls` hold the results for normal Python cells.
 
 ## Option: VS Code
+
+- **Language server (v0.3):** `vscode-algolang/` is a full extension that gives you live errors, hover, completion, go to definition and an outline through `algo lsp`. Build it with `cd vscode-algolang && npm install && npx @vscode/vsce package`, then install the `.vsix` file (see `vscode-algolang/README.md`).
 
 - **Syntax colours:** copy the `vscode-algolang` folder into your VS Code extensions folder, then restart VS Code.
   - Windows: `%USERPROFILE%\.vscode\extensions\`

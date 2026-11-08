@@ -85,6 +85,24 @@ The source of \kw{par for} must be a \kw{list}, such as the output of a planning
 \errhead{E115}{Tool not allowed by organisation policy}
 An agent \kw{uses} a tool that is missing from \code{allowed\_tools} in \file{algo.config.json} (Chapter~\ref{ch:enterprise}). Ask your administrator to approve the tool, or remove it. Org-forbidden attributes are reported as \errcode{E108}, before anything runs.
 
+\errhead{E116}{Circular import}
+A file imports itself, directly or through other files, with \kw{use}. Move the shared agents into a separate module.
+
+\errhead{E117}{Uncertain value compared without its confidence}
+An \code{uncertain<T>} result is compared in an \kw{if} without also checking its confidence in the same condition. Write \code{if risk > 0.8 and risk.confidence >= 0.7}. The rule stops a decision from being taken on a score the samples disagree about.
+
+\errhead{E118}{Bad confidence read}
+Only \code{<result>.confidence} can be read in a condition, and only on an agent result (not on a flow input).
+
+\errhead{E119}{Eval block error}
+An \kw{eval} block names a flow, an input, an agent, a tool or a status that does not exist, or a case is missing one of the flow's inputs.
+
+\errhead{E120}{Unknown MCP server}
+\code{tool x from mcp "server"} names a server that is not listed under \code{mcp\_servers} in \file{algo.config.json}.
+
+\errhead{E121}{Bad policy value}
+An unknown currency in \code{budget cost} (use \code{usd} or \code{inr}), an unknown unit in \code{budget energy} (use \code{wh} or \code{kwh}), or \code{samples} outside 1--15.
+
 \section{Run-time outcomes}
 
 Some problems can only be detected while the program runs. They are not compile errors; each stops the run with a clear message and an exit code (Chapter~\ref{ch:cli}).

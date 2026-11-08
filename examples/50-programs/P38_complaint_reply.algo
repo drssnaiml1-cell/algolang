@@ -1,0 +1,33 @@
+// Complaint Reply: a router that branches on a score.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+agent AngerScorer(complaint: text) -> score {
+    role "Customer care lead"
+    goal "Score how upset the customer is in {complaint} from 0 to 1"
+    model fast
+}
+
+agent ApologyManager(complaint: text) -> text {
+    role "Senior care manager"
+    goal "Write an empathetic apology with a concrete remedy for {complaint}"
+    model smart
+}
+
+agent StandardReply(complaint: text) -> text {
+    role "Care agent"
+    goal "Write a friendly standard reply to {complaint}"
+    model fast
+}
+
+flow main(complaint: text) {
+    anger = AngerScorer(complaint)
+
+       if anger >= 0.7 {
+          apology = ApologyManager(complaint)
+          emit anger, apology
+       } else {
+          reply = StandardReply(complaint)
+          emit anger, reply
+       }
+}

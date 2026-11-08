@@ -1,0 +1,39 @@
+// ER Triage Router: a router that branches on a score.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+policy {
+    budget tokens 5000
+    retry 1
+    require human when confidence < 0.8
+}
+
+agent UrgencyScorer(complaint: text) -> score {
+    role "Triage nurse assistant"
+    goal "Score the urgency of {complaint} from 0 to 1 (decision support only)"
+    model fast
+}
+
+agent EmergencyPath(complaint: text) -> text {
+    role "Triage assistant"
+    goal "Draft an immediate-attention handoff for {complaint} for the clinician to confirm"
+    model smart
+}
+
+agent RoutineQueue(complaint: text) -> text {
+    role "Triage assistant"
+    goal "Draft a routine queue note for {complaint} with advice on warning signs"
+    model fast
+}
+
+flow main(complaint: text) {
+    urgency = UrgencyScorer(complaint)
+
+       if urgency >= 0.7 {
+          handoff = EmergencyPath(complaint)
+          emit urgency, handoff
+       } else {
+          note = RoutineQueue(complaint)
+          emit urgency, note
+       }
+}

@@ -1,0 +1,49 @@
+{
+  "program": "../programs/pre_trade_check.algo",
+  "cases": [
+    {
+      "name": "Order within limits gets a quote and a risk gate",
+      "inputs": {
+        "order": "SELL 2 lots NIFTY 24500 CE weekly for STR-101, stop-loss 30%"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "Quote",
+          "Limits",
+          "RiskGate"
+        ],
+        "tools_used": [
+          "market.quote",
+          "risk.limits"
+        ],
+        "output_contains": "WITHIN LIMITS",
+        "emits": 4,
+        "max_tokens": 1900
+      }
+    },
+    {
+      "name": "Oversized order on an unapproved strategy is a breach",
+      "inputs": {
+        "order": "BUY 15 lots BANKNIFTY 52000 CE for STR-102"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "Limits",
+          "Reject"
+        ],
+        "agents_not_called": [
+          "RiskGate",
+          "Ticket"
+        ],
+        "tools_used": [
+          "risk.limits"
+        ],
+        "output_contains": "BREACH: 15 lots > per-order limit 10",
+        "emits": 3,
+        "max_tokens": 600
+      }
+    }
+  ]
+}

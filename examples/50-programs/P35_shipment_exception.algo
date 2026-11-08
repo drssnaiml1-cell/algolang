@@ -1,0 +1,28 @@
+// Shipment Exception: a pipeline of 3 agents.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+agent Diagnoser(exception: text) -> text {
+    role "Logistics analyst"
+    goal "Diagnose the cause and impact of {exception}"
+    model smart
+}
+
+agent RecoveryOptions(diagnosis: text) -> text {
+    role "Supply planner"
+    goal "List recovery options with cost and time for {diagnosis}"
+    model smart
+}
+
+agent CustomerNotice(options: text) -> text {
+    role "Customer success lead"
+    goal "Write a short, honest customer notice using {options}"
+    model fast
+}
+
+flow main(exception: text) {
+    diagnosis = Diagnoser(exception)
+    options = RecoveryOptions(diagnosis)
+    notice = CustomerNotice(options)
+    emit notice
+}

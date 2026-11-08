@@ -1,0 +1,76 @@
+// QuantOracle pre-trade risk gate — every order intent is checked before a ticket is prepared.
+// quote ∥ limits → hard-limit guard (deterministic) → risk gate (uncertain, sampled 5×)
+// → paper order ticket for a HUMAN to approve, or rejection.
+// Agents never send orders: a person approves every ticket (require human when confidence < 0.99).
+tool market.quote
+tool risk.limits
+
+model fast = "claude-haiku-5-5"
+
+agent Quote(order: text) -> text {
+    role  "Market data assistant"
+    goal  "Get the live quote, IV and lot size for the option in {order}"
+    uses  market.quote
+    model fast
+    policy { budget cost 0.005 usd  budget energy 0.5 wh }
+}
+
+agent Limits(order: text) -> text {
+    role  "Risk limits engine"
+    goal  "Check {order} against the desk's per-order, open-position and daily-loss limits"
+    uses  risk.limits
+    model fast
+    policy { budget cost 0.005 usd }
+}
+
+agent RiskGate(order: text, quote: text, limits: text) -> uncertain<score> {
+    role  "Pre-trade risk officer"
+    goal  "Score 0 to 1 how safe it is to place {order}, given {quote} and {limits}"
+    policy { samples 5  budget cost 0.04 usd }
+}
+
+agent Ticket(order: text, quote: text) -> text {
+    role "Order preparation assistant"
+    goal "Prepare a PAPER order ticket for {order} at {quote}, with stop-loss and the strategy tag, for human approval"
+    policy { require human when confidence < 0.99 }
+}
+
+agent Reject(order: text, limits: text) -> text {
+    role "Pre-trade risk officer"
+    goal "Explain to the trader why {order} is rejected, citing {limits}"
+}
+
+flow main(order: text) {
+    [quote, limits] = par { Quote(order), Limits(order) }
+    // Hard limits are deterministic: a BREACH from the limits engine rejects the order, and no model can overrule it.
+    if limits contains "BREACH" {
+        emit quote, limits, Reject(order, limits)
+    } else {
+        gate = RiskGate(order, quote, limits)
+        if gate > 0.75 and gate.confidence >= 0.8 {
+            emit quote, limits, gate, Ticket(order, quote)
+        } else {
+            emit quote, limits, gate, Reject(order, limits)
+        }
+    }
+}
+
+eval risk_gate on main {
+    case "small order on an approved strategy is within limits" (order = "SELL 2 lots NIFTY 24500 CE weekly for STR-101, stop-loss 30%") {
+        expect status ok
+        expect output contains "WITHIN LIMITS"
+        expect output contains "LTP 121.0"
+        expect called RiskGate
+        expect not called Reject
+        expect cost < 0.06
+        expect energy < 2
+    }
+    case "oversized order on an unapproved strategy is a breach" (order = "BUY 15 lots BANKNIFTY 52000 CE for STR-102") {
+        expect status ok
+        expect output contains "BREACH"
+        expect tool risk.limits
+        expect called Reject
+        expect not called RiskGate
+        expect not called Ticket
+    }
+}

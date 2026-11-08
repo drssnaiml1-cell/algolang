@@ -1,0 +1,27 @@
+// Clause Reviewer: par for fans one agent out over a list.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+policy {
+    budget tokens 5000
+    retry 1
+    require human when confidence < 0.8
+}
+
+agent ClauseChecker(item: text) -> text {
+    role "Contracts counsel"
+    goal "Review the clause {item} for risk and suggest safer wording"
+    model fast
+}
+
+agent ContractSummary(results: list) -> text {
+    role "Senior counsel"
+    goal "Summarise the clause reviews in {results} into a risk list"
+    model smart
+}
+
+flow main(clauses: list) {
+    results = par for it in clauses { ClauseChecker(it) }
+    report = ContractSummary(results)
+    emit report, results
+}

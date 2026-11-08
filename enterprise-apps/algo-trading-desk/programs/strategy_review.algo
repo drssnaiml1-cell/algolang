@@ -1,0 +1,81 @@
+// QuantOracle strategy review board — can a strategy go to paper trading?
+// backtest facts → quant, risk and compliance reviewers in parallel → robustness (uncertain, sampled)
+// → a FAILING backtest is sent back deterministically; otherwise approve for PAPER trading only when the
+//   robustness score is high AND its samples agree.
+use pack markets.research_review as board
+tool backtest.stats
+tool kb.search
+
+model smart = "claude-sonnet-5-5"
+
+policy {
+    budget tokens 6000
+    budget cost 0.05 usd
+    retry 1
+}
+
+agent Backtest(strategy: text) -> text {
+    role  "Backtesting analyst, QuantOracle desk"
+    goal  "Pull the backtest statistics for {strategy}"
+    uses  backtest.stats
+}
+
+agent DeskPolicy(strategy: text) -> text {
+    role  "Risk and conduct officer"
+    goal  "Find the desk rules that apply to {strategy}"
+    uses  kb.search
+}
+
+agent Robustness(strategy: text, stats: text, rules: text) -> uncertain<score> {
+    role  "Senior quant reviewer"
+    goal  "Score 0 to 1 how robust {strategy} is, given {stats} and {rules}: overfitting, drawdown, tail risk"
+    model smart
+    policy { samples 5 }
+}
+
+agent PaperApproval(strategy: text, stats: text) -> text {
+    role "Head of trading"
+    goal "Approve {strategy} for PAPER trading only, with position limits, given {stats}"
+    policy { require human when confidence < 0.95 }
+}
+
+agent Revisions(strategy: text, stats: text, rules: text) -> text {
+    role "Head of trading"
+    goal "Send {strategy} back with the specific changes needed under {rules}, given {stats}"
+}
+
+flow main(strategy: text) {
+    [stats, rules] = par { Backtest(strategy), DeskPolicy(strategy) }
+    views  = par { board.Analyst(strategy), board.Compliance(strategy), board.Editor(strategy) }
+    panel  = board.Reviewers(views)
+    // A backtest that FAILS the desk thresholds is sent back without asking any model to judge robustness.
+    if stats contains "FAILS desk thresholds" {
+        emit stats, panel, Revisions(strategy, stats, rules)
+    } else {
+        robust = Robustness(strategy, stats, rules)
+        if robust > 0.7 and robust.confidence >= 0.75 {
+            emit stats, panel, robust, PaperApproval(strategy, stats)
+        } else {
+            emit stats, panel, robust, Revisions(strategy, stats, rules)
+        }
+    }
+}
+
+eval board_regression on main {
+    case "approved straddle has passing statistics" (strategy = "STR-101 weekly NIFTY short straddle, 30% stop-loss per leg") {
+        expect status ok
+        expect called Backtest
+        expect called Robustness
+        expect tool backtest.stats
+        expect output contains "PASSES desk thresholds"
+        expect cost < 0.1
+    }
+    case "martingale fails the desk thresholds" (strategy = "STR-104 martingale: double the position after every loss") {
+        expect status ok
+        expect output contains "FAILS desk thresholds"
+        expect tool kb.search
+        expect called Revisions
+        expect not called Robustness
+        expect not called PaperApproval
+    }
+}

@@ -1,0 +1,15 @@
+{
+  "organisation": "AlgoLang v0.3 examples",
+  "policy": {
+    "forbid": ["gender", "caste", "religion"],
+    "min_human_below": 0.6,
+    "max_budget_cost_usd": 0.05,
+    "allowed_tools": ["kb.search_policies", "fx.convert_to_inr", "kb.search"]
+  },
+  "max_run_cost_usd": 0.25,
+  "max_run_energy_wh": 5,
+  "audit_dir": "runs",
+  "mcp_servers": {
+    "company-kb": {"command": "{python}", "args": ["mcp_demo_server.py"]}
+  }
+}

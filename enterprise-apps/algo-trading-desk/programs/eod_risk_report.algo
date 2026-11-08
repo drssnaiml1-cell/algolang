@@ -1,0 +1,31 @@
+// QuantOracle end-of-day report — book, stress test, risk level and trade surveillance in one run.
+use pack markets.portfolio_risk as pr
+use pack markets.trade_surveillance as ts
+tool book.positions
+
+agent Book(desk: text) -> text {
+    role "Middle-office analyst"
+    goal "Get today's open positions and P&L for {desk}"
+    uses book.positions
+}
+
+flow main(desk: text) {
+    book     = Book(desk)
+    stress   = pr.Stress(book)
+    level    = pr.RiskLevel(stress)
+    brief    = pr.Brief(stress, level)
+    parts    = ts.Splitter(book)
+    findings = par for p in parts { ts.Investigator(p, book) }
+    concern  = ts.Concern(findings)
+    report   = ts.Report(findings, concern)
+    emit book, level, brief, concern, report
+}
+
+eval eod on main {
+    case "end-of-day report covers the book" (desk = "QuantOracle NIFTY options desk") {
+        expect status ok
+        expect called pr.Stress
+        expect called ts.Report
+        expect output contains "day P&L INR 5,500"
+    }
+}

@@ -1,0 +1,37 @@
+// Product Copy Studio: workers run in parallel, one agent merges.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+agent WebCopy(product: text) -> text {
+    role "E-commerce copywriter"
+    goal "Write a 50-word web description for {product}"
+    model smart
+}
+
+agent SocialPost(product: text) -> text {
+    role "Social media manager"
+    goal "Write a short social post for {product}"
+    model fast
+}
+
+agent EmailBlurb(product: text) -> text {
+    role "CRM marketer"
+    goal "Write a two-line email promo for {product}"
+    model fast
+}
+
+agent BrandChecker(web: text, social: text, email: text) -> text {
+    role "Brand manager"
+    goal "Check {web}, {social} and {email} for consistent tone and fix any claims"
+    model smart
+}
+
+flow main(product: text) {
+    [web, social, email] = par {
+       WebCopy(product),
+       SocialPost(product),
+       EmailBlurb(product)
+    }
+    approved = BrandChecker(web, social, email)
+    emit approved
+}

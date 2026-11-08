@@ -1,0 +1,14 @@
+// Translator: one agent, one flow.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+agent Translator(passage: text, language: text) -> text {
+    role "Professional translator"
+    goal "Translate {passage} into {language}, keeping the tone and meaning"
+    model fast
+}
+
+flow main(passage: text, language: text) {
+    answer = Translator(passage, language)
+    emit answer
+}

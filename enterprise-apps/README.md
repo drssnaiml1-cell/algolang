@@ -1,6 +1,6 @@
 # AlgoLang enterprise applications
 
-Eight complete, governed multi-agent applications, one per industry. Each is a real AlgoLang project with:
+Nine complete, governed multi-agent applications, one per industry. Each is a real AlgoLang project with:
 - organisation policy;
 - company tools over its own data;
 - a knowledge base;
@@ -19,14 +19,15 @@ They all run offline as they are, and with real Claude models when you add `--li
 | [SOC Incident Command](soc-incident-command/) | Cybersecurity & IT operations | 2 | `cmdb.lookup`, `ioc.check` | 3 |
 | [Supply Chain Control Tower](supply-chain-control-tower/) | Logistics & retail | 1 | `shipment.track`, `inventory.levels` | 1 |
 | [Citizen Services Desk](citizen-services-desk/) | Government & public services | 2 | `ward.directory` | 2 |
+| [Algo Trading Desk (QuantOracle™)](algo-trading-desk/) | Capital markets | 3 | `backtest.stats`, `market.quote`, `risk.limits`, `book.positions` | 5 |
 | [Legal Contract Desk](legal-contract-desk/) | Legal & compliance | 2 | `clause.library` | 2 |
 
-**8 applications · 15 programs · 20 behaviour tests**, all run in CI on every push.
+**9 applications · 18 programs · 25 behaviour tests**, all run in CI on every push.
 
 ## Run every application
 
 ```bash
-python enterprise-apps/run_all.py            # behaviour tests for all eight apps
+python enterprise-apps/run_all.py            # behaviour tests for all nine apps
 python enterprise-apps/run_all.py --batch    # also batch-process each app's sample CSV and verify the audit chain
 ```
 
@@ -48,6 +49,7 @@ python enterprise-apps/run_all.py --batch    # also batch-process each app's sam
 - **Modules and domain packs:** `use pack insurance.fraud_screening as fraud`, then `fraud.FraudPanel(views)`.
 - **Parallel agents:** `par { … }` committees and `par for` fan-out over lists.
 - **Branching on confidence:** `if risk > 0.85 { … } else { … }`.
+- **v0.3 trust features (Algo Trading Desk):** `uncertain<score>` gates sampled 5 times, deterministic `contains` guards for hard limits, cost and energy budgets, and `eval` blocks inside the programs.
 - **Company tools:** an agent gets a tool only if it declares it and the org allows it (`E115` otherwise).
 - **Fairness:** protected attributes are forbidden inputs (`E108` at compile time, blocked at run time).
 - **Human-in-the-loop, a hash-chained audit log, batch processing and caching**, all switched on by `algo.config.json`.

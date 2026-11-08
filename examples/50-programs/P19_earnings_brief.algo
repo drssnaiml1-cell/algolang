@@ -1,0 +1,37 @@
+// Earnings Brief: workers run in parallel, one agent merges.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+agent BullCase(transcript: text) -> text {
+    role "Equity analyst"
+    goal "Give the strongest positive reading of {transcript}"
+    model smart
+}
+
+agent BearCase(transcript: text) -> text {
+    role "Equity analyst"
+    goal "Give the strongest negative reading of {transcript}"
+    model smart
+}
+
+agent RiskFlags(transcript: text) -> text {
+    role "Risk analyst"
+    goal "List risk flags in {transcript}"
+    model fast
+}
+
+agent MemoWriter(bull: text, bear: text, risks: text) -> text {
+    role "Research editor"
+    goal "Write a balanced memo from {bull}, {bear} and {risks}; information only, not investment advice"
+    model smart
+}
+
+flow main(transcript: text) {
+    [bull, bear, risks] = par {
+       BullCase(transcript),
+       BearCase(transcript),
+       RiskFlags(transcript)
+    }
+    memo = MemoWriter(bull, bear, risks)
+    emit memo
+}

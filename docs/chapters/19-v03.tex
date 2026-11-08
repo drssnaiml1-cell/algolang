@@ -1,0 +1,166 @@
+\chapter{Version 0.3: Uncertainty, Evidence and Interoperability}
+\label{ch:v03}
+
+Version 0.3 adds six features. Each one answers a question that people ask about agent systems in production:
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}L{3.6cm}Y@{}}
+\toprule
+\thead{Question} & \thead{v0.3 answer}\\
+\goldrule
+How sure is the agent? & \code{uncertain<T>} types: sampled answers, measured agreement, and a compile-time rule that decisions must check confidence (\errcode{E117})\\
+Can a model overrule a hard limit? & Deterministic guards: \code{if limits contains "BREACH"} is decided in code, never by a model\\
+Did my change break anything? & \kw{eval} blocks in the program, traces of every run, and replay with no model calls\\
+Can agents use our existing tools? & MCP tool bindings: \code{tool x from mcp "server"}\\
+What does it cost, and what does it use? & Cost (USD/INR) and energy (Wh, CO\textsubscript{2}) budgets, priced before every call\\
+Can my editor help me? & A language server: \code{algo lsp}\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{\texorpdfstring{\code{uncertain<T>}}{uncertain<T>} types}
+
+A model's confidence in its own answer is not proof that the answer is right. A better signal is \emph{agreement}: ask several times and see whether the answers agree. Declaring the return type \code{uncertain<score>} (or \code{uncertain<text>}, and so on) asks the runtime to do that.
+
+\begin{algo}[title=Sampling and the confidence rule]
+agent RiskJudge(claim: text) -> uncertain<score> {
+    role   "Fraud risk judge"
+    goal   "Score 0 to 1 the fraud risk of {claim}"
+    policy { samples 5 }
+}
+
+flow main(claim: text) {
+    risk = RiskJudge(claim)
+    if risk > 0.8 and risk.confidence >= 0.7 {      // E117 without the confidence check
+        emit Refer(claim)
+    } else {
+        emit Settle(claim)
+    }
+}
+\end{algo}
+
+\begin{itemize}
+\item The agent is called \code{samples} times (default 3, at most 15).
+\item Scores are averaged; other types are decided by majority vote.
+\item Confidence is half the model's own confidence and half the agreement between samples. For scores, agreement is $1-\sigma/0.25$; for other types, it is the share of samples that match the winner.
+\item Conditions can combine comparisons with \kw{and} and \kw{or}, and can read \code{x.confidence}.
+\item Every audit record of an uncertain call stores the number of samples and their spread.
+\end{itemize}
+
+\section{Deterministic guards}
+
+Some rules must never depend on a model: a breached risk limit, a failed backtest threshold, a sanctions match. A guard checks text, including the \emph{full} answer of the agent's tools, and is decided in code:
+
+\begin{algo}[title=enterprise-apps/algo-trading-desk/programs/pre\_trade\_check.algo (excerpt)]
+[quote, limits] = par { Quote(order), Limits(order) }
+if limits contains "BREACH" {
+    emit quote, limits, Reject(order, limits)        // no model is asked
+} else {
+    gate = RiskGate(order, quote, limits)            // uncertain<score>, 5 samples
+    if gate > 0.75 and gate.confidence >= 0.8 { emit Ticket(order, quote) }
+    else { emit Reject(order, limits) }
+}
+\end{algo}
+
+\code{contains} and \code{not contains} are case-insensitive. Because the breach is detected before any model is called, the rejected order above costs about a quarter of the tokens of an accepted one.
+
+\section{Eval blocks, traces and replay}
+
+Tests live next to the code they test:
+
+\begin{algo}[title=An eval block]
+eval regression on main {
+    case "settles a small claim" (claim = "NS-10571: scratch, estimate INR 6,500") {
+        expect status ok
+        expect called PayoutEstimator
+        expect not called fraud.Referral
+        expect output contains "estimated payout"
+        expect tokens < 2000
+        expect cost < 0.05
+        expect energy < 1
+    }
+}
+\end{algo}
+
+Expectations cover \code{status}, \code{called}, \code{not called}, \code{tool}, \code{output contains}, \code{emits}, and comparisons on \code{tokens}, \code{cost}, \code{energy}, \code{escalated} and \code{confidence} (the lowest confidence of any call).
+
+\begin{terminal}
+$ algo eval claims.algo                # offline; records a trace per case
+$ algo eval claims.algo --live         # real models; records traces
+$ algo eval claims.algo --replay       # re-check from traces: zero tokens, zero cost
+$ algo run claims.algo --arg "claim=…" --trace
+$ algo replay runs/traces/claims-1a2b3c4d.trace.json
+  replayed 7/8 recorded calls · saved ~1,180 tokens ($0.0098)
+  ✗ Settle now receives different inputs: Settle … within 7 days
+\end{terminal}
+
+A trace stores the inputs, every agent call (with a hash of its prompt), each sample, the tool results and the outputs. Replay answers each call from the recording. When the program has changed so that an agent receives different inputs, replay reports a \emph{replay miss} for that agent: the exact place where behaviour may have changed. Record traces once with real models, then re-check them in CI at no cost.
+
+\section{MCP tool bindings}
+
+The Model Context Protocol (MCP) is an open standard for connecting AI systems to tools. AlgoLang can use any MCP server's tools under the same governance as built-in tools:
+
+\begin{algo}[title=examples/v03/expense\_desk.algo (excerpt)]
+tool kb.search_policies from mcp "company-kb"
+tool fx.convert_to_inr  from mcp "company-kb"
+\end{algo}
+
+\begin{pycode}[title=algo.config.json (excerpt)]
+"mcp_servers": {
+    "company-kb": {"command": "{python}", "args": ["mcp_demo_server.py"]},
+    "remote":     {"url": "https://example.com/mcp", "headers": {"Authorization": "Bearer …"}}
+}
+\end{pycode}
+
+The MCP tool name is the part after the first dot. Stdio servers are started on first use and reused, and HTTP servers use the streamable-HTTP transport. In live mode the model receives the server's own input schema. The program must still declare the tool, the agent must list it under \kw{uses}, and \code{allowed\_tools} must include it. An unknown server is error \errcode{E120}. \code{algo mcp list SERVER} shows a server's tools.
+
+\section{Cost and energy budgets}
+
+\begin{algo}[title=Budgets]
+agent Compliance(claim: text, rules: text) -> uncertain<score> {
+    goal   "Score how well {claim} complies with {rules}"
+    policy { samples 5  budget cost 0.05 usd  budget energy 2 wh }
+}
+\end{algo}
+
+Every call is priced from two tables in \file{algo.config.json}:
+\begin{itemize}
+\item \code{pricing}: US dollars per million input and output tokens per model, converted to rupees with \code{usd\_to\_inr};
+\item \code{energy}: watt-hours per thousand tokens per model, and the grid's CO\textsubscript{2} intensity (India $\approx$ 0.71 kg per kWh).
+\end{itemize}
+
+Before a call, the runtime estimates its cost from the prompt length, the expected output and the number of samples. A call that would exceed the agent's budget, the organisation's per-call cap (\code{max\_budget\_cost\_usd}, \code{max\_budget\_energy\_wh}) or the run cap (\code{max\_run\_cost\_usd}, \code{max\_run\_energy\_wh}) is blocked before it runs. After the call, the actual cost is recorded in the audit log, and \code{algo report} totals money, energy and CO\textsubscript{2} per program.
+
+\begin{ethics}
+The default prices and energy factors are placeholders, not published figures. Set your organisation's contracted prices and the energy estimates you trust. Offline runs show the \emph{estimated} live cost so you can budget before going live.
+\end{ethics}
+
+\section{The language server}
+
+\code{algo lsp} speaks the Language Server Protocol over standard input and output. It is built on the real compiler, so editors see exactly the errors \code{algo check} would report, including organisation-policy errors. Features:
+\begin{itemize}
+\item diagnostics as you type;
+\item hover (an agent's signature, role, goal, tools and policy);
+\item completion (keywords, agents, tools, models, domain packs after \code{use pack}, and snippets);
+\item go to definition, including into imported files and domain packs;
+\item an outline.
+\end{itemize}
+The VS Code extension in \file{vscode-algolang/} starts it automatically, and Neovim, Helix or Sublime can run the same command.
+
+\section{Towards v0.4: trustworthy AI}
+
+Version 0.4 is dedicated to trustworthy AI. Its objective is to make trustworthiness something a program can \emph{prove}. The compiler will check that each safeguard a system needs is present, and the runtime and \kw{eval} blocks will produce evidence that it worked. Planned work packages:
+\begin{itemize}
+\item counterfactual fairness tests (\code{expect fair across gender [\dots]});
+\item robustness tests;
+\item generated AI system cards (\code{algo card});
+\item \code{explain with evidence};
+\item \code{redact pii};
+\item untrusted-tool mode against prompt injection;
+\item four-eyes human approval;
+\item signed audit chains and evidence packs;
+\item \code{risk high} program headers with compile-time requirements (\errcode{E122}--\errcode{E125});
+\item an \code{algo trust report} mapped to the NIST AI Risk Management Framework, the EU AI Act and ISO/IEC~42001.
+\end{itemize}
+The plan is in \file{ROADMAP.md}. Using AlgoLang produces evidence for these frameworks; it does not by itself make a system compliant.

@@ -1,0 +1,43 @@
+// Blog Post Pipeline: a pipeline of 4 agents.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+agent Outliner(topic: text) -> text {
+    role "Content strategist"
+    goal "Create a five-section outline for a post about {topic}"
+    model smart
+}
+
+agent Drafter(outline: text) -> text {
+    role "Writer"
+    goal "Write a first draft that follows {outline}"
+    model smart
+}
+
+agent Editor(draft: text) -> text {
+    role "Copy editor"
+    goal "Tighten {draft} and fix grammar"
+    model fast
+}
+
+agent Headliner(edited: text) -> text {
+    role "Headline writer"
+    goal "Write one strong headline for {edited}"
+
+
+
+
+
+
+
+
+     model fast
+}
+
+flow main(topic: text) {
+    outline = Outliner(topic)
+    draft = Drafter(outline)
+    edited = Editor(draft)
+    headline = Headliner(edited)
+    emit headline
+}

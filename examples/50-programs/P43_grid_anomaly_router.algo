@@ -1,0 +1,33 @@
+// Grid Anomaly Router: a router that branches on a score.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+agent AnomalyScorer(readings: text) -> score {
+    role "Grid analyst"
+    goal "Score how abnormal {readings} are from 0 to 1"
+    model fast
+}
+
+agent OperatorAlert(readings: text) -> text {
+    role "Control room lead"
+    goal "Write an operator alert with checks for {readings}"
+    model smart
+}
+
+agent LogOnly(readings: text) -> text {
+    role "Control room lead"
+    goal "Write a log entry for {readings}"
+    model fast
+}
+
+flow main(readings: text) {
+    anomaly = AnomalyScorer(readings)
+
+      if anomaly >= 0.7 {
+         alert = OperatorAlert(readings)
+         emit anomaly, alert
+      } else {
+         log = LogOnly(readings)
+         emit anomaly, log
+      }
+}

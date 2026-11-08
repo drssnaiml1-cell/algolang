@@ -1,0 +1,41 @@
+// Maintenance Planner: a router that branches on a score.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+agent FailureRiskScorer(sensor_log: text) -> score {
+    role "Reliability engineer"
+    goal "Score the failure risk in {sensor_log} from 0 to 1"
+    model fast
+}
+
+agent UrgentWorkOrder(sensor_log: text) -> text {
+    role "Maintenance planner"
+    goal "Write an urgent work order for the issue in {sensor_log}"
+    model smart
+}
+
+agent RoutineSchedule(sensor_log: text) -> text {
+    role "Maintenance planner"
+    goal "Add the issue in {sensor_log} to the routine schedule with a check date"
+    model fast
+}
+
+flow main(sensor_log: text) {
+
+
+
+
+
+
+
+
+     failure_risk = FailureRiskScorer(sensor_log)
+
+     if failure_risk >= 0.7 {
+        urgent = UrgentWorkOrder(sensor_log)
+        emit failure_risk, urgent
+     } else {
+        routine = RoutineSchedule(sensor_log)
+        emit failure_risk, routine
+     }
+}

@@ -1,0 +1,41 @@
+// Hotel Review Responder: a router that branches on a score.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+agent ReviewSentiment(guest_review: text) -> score {
+    role "Guest relations manager"
+    goal "Score the overall satisfaction in {guest_review} from 0 to 1"
+    model fast
+}
+
+agent ThankYouReply(guest_review: text) -> text {
+    role "Guest relations manager"
+    goal "Write a warm thank-you reply to {guest_review}"
+    model smart
+}
+
+agent ServiceRecovery(guest_review: text) -> text {
+    role "Guest relations manager"
+    goal "Write an apology and service-recovery reply to {guest_review}"
+    model fast
+}
+
+flow main(guest_review: text) {
+    satisfaction = ReviewSentiment(guest_review)
+
+
+
+
+
+
+
+
+
+      if satisfaction >= 0.5 {
+         thanks = ThankYouReply(guest_review)
+         emit satisfaction, thanks
+      } else {
+         recovery = ServiceRecovery(guest_review)
+         emit satisfaction, recovery
+      }
+}

@@ -1,0 +1,52 @@
+// Admissions Panel: a scoring committee and a chair.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+policy {
+    budget tokens 4000
+    retry 1
+    forbid gender, caste, religion
+    require human when confidence < 0.8
+}
+
+agent AcademicReviewer(applicant: text) -> score {
+    role "Admissions reader"
+    goal "Score the academic record in {applicant} from 0 to 1"
+    model smart
+}
+
+agent ActivityReviewer(applicant: text) -> score {
+    role "Admissions reader"
+    goal "Score the activities in {applicant} from 0 to 1"
+    model smart
+}
+
+
+
+
+
+
+
+
+
+agent EssayReviewer(applicant: text) -> score {
+    role "Admissions reader"
+    goal "Score the essay quality in {applicant} from 0 to 1"
+    model smart
+}
+
+agent AdmissionsChair(applicant: text, academic: score, activity: score, essay: score) -> text {
+    role "Admissions chair"
+    goal "Recommend admit, waitlist or decline for {applicant} based on the panel scores"
+    model smart
+}
+
+flow main(applicant: text) {
+    [academic, activity, essay] = par {
+       AcademicReviewer(applicant),
+       ActivityReviewer(applicant),
+       EssayReviewer(applicant)
+    }
+    decision = AdmissionsChair(applicant, academic, activity, essay)
+    emit decision, academic, activity, essay
+}

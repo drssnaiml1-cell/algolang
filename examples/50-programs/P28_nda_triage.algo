@@ -1,0 +1,39 @@
+// NDA Triage: a router that branches on a score.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+policy {
+    budget tokens 5000
+    retry 1
+    require human when confidence < 0.8
+}
+
+agent NDARiskScorer(nda: text) -> score {
+    role "Contracts counsel"
+    goal "Score the risk of {nda} against a standard playbook from 0 to 1"
+    model fast
+}
+
+agent LawyerReview(nda: text) -> text {
+    role "Contracts counsel"
+    goal "List the clauses in {nda} that need a lawyer and why"
+    model smart
+}
+
+agent StandardApproval(nda: text) -> text {
+    role "Contracts counsel"
+    goal "Write approval notes for {nda}, with any minor edits"
+    model fast
+}
+
+flow main(nda: text) {
+    risk = NDARiskScorer(nda)
+
+       if risk >= 0.5 {
+          review = LawyerReview(nda)
+          emit risk, review
+       } else {
+          approval = StandardApproval(nda)
+          emit risk, approval
+       }
+}

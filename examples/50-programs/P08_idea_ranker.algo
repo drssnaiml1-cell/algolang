@@ -1,0 +1,21 @@
+// Idea Ranker: par for fans one agent out over a list.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+agent Evaluator(item: text) -> text {
+    role "Product manager"
+    goal "Rate the value and effort of the idea: {item}"
+    model fast
+}
+
+agent Ranker(results: list) -> text {
+    role "Portfolio lead"
+    goal "Rank these evaluations from best to worst: {results}"
+    model smart
+}
+
+flow main(ideas: list) {
+    results = par for it in ideas { Evaluator(it) }
+    report = Ranker(results)
+    emit report, results
+}

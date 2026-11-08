@@ -1,0 +1,30 @@
+// Pros and Cons Judge: workers run in parallel, one agent merges.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+agent ProsAnalyst(decision: text) -> text {
+    role "Optimist analyst"
+    goal "List the strongest benefits of {decision}"
+    model smart
+}
+
+agent ConsAnalyst(decision: text) -> text {
+    role "Sceptical analyst"
+    goal "List the strongest risks of {decision}"
+    model smart
+}
+
+agent Judge(pros: text, cons: text) -> text {
+    role "Neutral chair"
+    goal "Weigh {pros} against {cons} and give a balanced recommendation"
+    model smart
+}
+
+flow main(decision: text) {
+    [pros, cons] = par {
+       ProsAnalyst(decision),
+       ConsAnalyst(decision)
+    }
+    verdict = Judge(pros, cons)
+    emit verdict
+}

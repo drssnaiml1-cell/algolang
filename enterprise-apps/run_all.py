@@ -24,6 +24,7 @@ BATCH = {
     "supply-chain-control-tower": ("exception_desk.algo", "exceptions.csv"),
     "citizen-services-desk": ("grievance_desk.algo", "grievances.csv"),
     "legal-contract-desk": ("nda_triage.algo", "ndas.csv"),
+    "algo-trading-desk": ("pre_trade_check.algo", "order_intents.csv"),
 }
 
 

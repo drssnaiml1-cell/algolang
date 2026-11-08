@@ -1,0 +1,60 @@
+// AlgoLang v0.3 tour: MCP tools, uncertain<T>, cost and energy budgets, eval blocks.
+// Run from this folder:  algo run expense_desk.algo --arg "claim=…"   ·   algo eval expense_desk.algo
+tool kb.search_policies from mcp "company-kb"      // tools served by an MCP server (see algo.config.json)
+tool fx.convert_to_inr from mcp "company-kb"
+
+model fast = "claude-haiku-5-5"
+
+agent PolicyFinder(claim: text) -> text {
+    role "Finance policy officer"
+    goal "Find the company policies that apply to this expense claim: {claim}"
+    uses kb.search_policies
+    model fast
+    policy { budget cost 0.01 usd  budget energy 0.5 wh }
+}
+
+agent Currency(claim: text) -> text {
+    role "Treasury analyst"
+    goal "Convert the claim amount to INR if it is in another currency: {claim}"
+    uses fx.convert_to_inr
+    model fast
+}
+
+// uncertain<score>: sampled 5 times; the result carries how much the samples agree
+agent Compliance(claim: text, rules: text) -> uncertain<score> {
+    role "Expense compliance reviewer"
+    goal "Score 0 to 1 how well {claim} complies with {rules}"
+    policy { samples 5  budget cost 0.05 usd }
+}
+
+agent Approve(claim: text) -> text { role "Finance desk" goal "Approve and schedule payment for {claim}" }
+agent Query(claim: text, rules: text) -> text { role "Finance desk" goal "Ask the employee to fix {claim} under {rules}" }
+
+flow main(claim: text) {
+    [rules, inr] = par { PolicyFinder(claim), Currency(claim) }
+    ok = Compliance(claim, rules)
+    // E117 would reject `if ok > 0.75` alone: an uncertain value must be read with its confidence
+    if ok > 0.6 and ok.confidence >= 0.7 {
+        emit rules, inr, ok, Approve(claim)
+    } else {
+        emit rules, inr, ok, Query(claim, rules)
+    }
+}
+
+eval expense_regression on main {
+    case "hotel within policy" (claim = "Hotel in Mumbai, 2 nights at INR 7,500 per night, travel policy") {
+        expect status ok
+        expect called PolicyFinder
+        expect called Compliance
+        expect tool kb.search_policies
+        expect output contains "Travel"
+        expect cost < 0.05
+        expect energy < 2
+    }
+    case "foreign currency claim" (claim = "Conference fee USD 300, refunds policy question") {
+        expect status ok
+        expect tool fx.convert_to_inr
+        expect output contains "INR 25,200.00"
+        expect tokens < 4000
+    }
+}

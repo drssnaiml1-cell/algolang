@@ -19,7 +19,7 @@ The compiler \file{algoc.py} is about 600 lines of Python. It is deliberately sm
   \node[st,right=5mm of a] (c) {Check\\{\tiny types, effects,}\\{\tiny policies}};
   \node[st,right=5mm of c] (g) {Generate\\{\tiny Python}};
   \node[art,right=5mm of g] (py) {.py};
-  \node[art,below=6mm of c] (d) {diagnostics\\E100–E115};
+  \node[art,below=6mm of c] (d) {diagnostics\\E100–E121};
   \foreach \x/\y in {src/p,p/a,a/c,c/g,g/py} \draw[ar] (\x) -- (\y);
   \draw[ar,cautionred] (c) -- (d);
 \end{tikzpicture}

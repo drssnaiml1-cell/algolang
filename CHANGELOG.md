@@ -4,7 +4,32 @@ All notable changes to AlgoLang are documented here. The format follows [Keep a 
 
 ## [Unreleased]
 
+## [0.3.0] — 2026-10-29
+
 ### Added
+- **`uncertain<T>` types.** An agent can return `uncertain<score>` (or any type). The runtime samples it `samples N` times (default 3, at most 15). Scores are averaged and other types decided by majority vote. Confidence blends the model's own confidence with how much the samples agree. Conditions can read `x.confidence` and combine comparisons with `and` / `or`.
+- **`eval` blocks.** `eval name on main { case "label" (input = "…") { expect … } }` with `expect status`, `called`, `not called`, `tool`, `output contains`, `emits`, `tokens`, `cost`, `energy`, `escalated` and `confidence`. Run them with `algo eval file.algo`.
+- **Traces and replay.** `algo run --trace`, `Program.run(trace=True)` and every eval case record a trace: inputs, each call's prompt hash, outputs and samples. `algo replay trace.json` and `algo eval --replay` answer every agent from the recording with zero tokens and zero cost, and report which agents now receive different inputs ("replay misses") after a change. New `ReplayBackend` and `Program.replay()`.
+- **MCP tool bindings.** `tool kb.search_policies from mcp "company-kb"` binds a tool on a Model Context Protocol server (stdio or streamable HTTP) configured under `mcp_servers` in `algo.config.json`. Live mode passes the server's own input schema to the model. New `algo mcp servers | list | call`. A demo server ships in `examples/v03/`. No extra dependencies.
+- **Cost and energy budgets.** `budget cost 0.05 usd` (or `inr`) and `budget energy 2 wh` (or `kwh`) per agent; org caps `max_budget_cost_usd` / `max_budget_energy_wh` and run caps `max_run_cost_usd` / `max_run_energy_wh`. Calls are priced before they run and blocked when over budget. Every audit record carries `cost_usd` and `energy_wh`; run stats add `co2_g`; `algo report` shows money (USD and ₹) and energy per program. Prices and energy factors live in the `pricing` and `energy` tables in the config; the defaults are placeholders.
+- **Language server.** `algo lsp` (stdio) provides diagnostics, hover, completion (including packs after `use pack` and snippets), go to definition (including into imported files and domain packs) and document symbols. The VS Code extension (v0.3.0) starts it automatically; other editors can run the same command.
+- New compile errors: **E117** (uncertain value compared without its confidence), **E118** (bad `.confidence` read), **E119** (eval block errors), **E120** (unknown MCP server), **E121** (bad policy value).
+- `examples/v03/`: an expense desk touring every v0.3 feature, with an MCP demo server and an eval block.
+- **Deterministic guards.** `if x contains "TEXT"` and `if x not contains "TEXT"` check an agent's result and its tools' full answers with no model involved, so hard rules (risk limits, failed thresholds) cannot be overruled by a model.
+- **Algo Trading Desk (QuantOracle™)** enterprise application: strategy review board, pre-trade risk gate with hard limits and human approval of every paper order ticket, and an end-of-day risk and surveillance report. It uses `uncertain<score>`, `contains` guards, cost and energy budgets and `eval` blocks, and is for research and paper trading only.
+- **AlgoLang: 50 Sample Programs** (`docs/AlgoLang_50_Sample_Programs.pdf`, 106 pages) with the runnable source of all 50 programs in `examples/50-programs/`, run in CI on every push. The PDF is published with each release and on the website.
+- `ROADMAP.md`: v0.4 is dedicated to trustworthy AI (fairness and robustness tests, system cards, explainability, PII redaction, untrusted-tool security, four-eyes oversight, signed audit, risk levels, trust reports).
+
+### Changed
+- README restructured around the language's objective, design principles and a numbered table of contents.
+- Live backends report input and output tokens separately, so they are priced correctly.
+- Run summaries show the estimated live cost, energy and CO₂, labelled as estimates for offline runs.
+- The language manual is now `docs/AlgoLang_Documentation_v0.3.pdf` (91 pages) with a new chapter on v0.3; the v0.2 PDF is removed.
+
+### Fixed
+- Cached agent calls now keep their tool results, so `contains` guards and traces see tool output on a cache hit. Cache keys are versioned, so older entries without tool results are not reused.
+
+### Also in this release
 - **Eight enterprise applications** (`enterprise-apps/`): claims operations, hospital care coordination, bank credit & KYC onboarding, university admissions & OBE, SOC incident command, supply chain control tower, citizen services and legal contract review. Each ships with org policy, company tools over its own data, a knowledge base, 14 programs in total, sample batch data and 20 behaviour tests, all run in CI with `enterprise-apps/run_all.py --batch`.
 - **ProfAlgoLabs™ website** (`lab-website/`): a 3D branded site for www.profagentlabs.algoprofessor.com with 10 services, a lab console, a visitor counter, a hardened contact form, CSP/HSTS security headers and full SEO (schema.org, sitemap, Open Graph).
 - The project homepage is now www.profagentlabs.algoprofessor.com (README badge and package metadata).

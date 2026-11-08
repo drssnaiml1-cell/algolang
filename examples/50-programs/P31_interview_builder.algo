@@ -1,0 +1,28 @@
+// Interview Builder: a pipeline of 3 agents.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+agent CompetencyMap(job_title: text) -> text {
+    role "HR business partner"
+    goal "List the five core competencies for a {job_title}"
+    model smart
+}
+
+agent QuestionWriter(competencies: text) -> text {
+    role "Interviewer"
+    goal "Write one behavioural question for each of {competencies}"
+    model smart
+}
+
+agent RubricBuilder(questions: text) -> text {
+    role "Interviewer"
+    goal "Write a 1-to-5 scoring rubric for {questions}"
+    model fast
+}
+
+flow main(job_title: text) {
+    competencies = CompetencyMap(job_title)
+    questions = QuestionWriter(competencies)
+    rubric = RubricBuilder(questions)
+    emit rubric
+}

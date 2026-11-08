@@ -1,0 +1,35 @@
+// Incident Triage: a pipeline of 3 agents.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+agent Classifier(incident: text) -> text {
+    role "On-call engineer"
+    goal "Classify the type and severity of {incident}"
+    model fast
+}
+
+agent ImpactAssessor(classification: text) -> text {
+    role "Incident commander"
+    goal "Estimate the user and business impact given {classification}"
+    model smart
+}
+
+agent RunbookSelector(impact: text) -> text {
+    role "SRE"
+    goal "Pick the runbook and first three actions for {impact}"
+    model smart
+}
+
+
+
+
+
+
+
+
+flow main(incident: text) {
+    classification = Classifier(incident)
+    impact = ImpactAssessor(classification)
+    actions = RunbookSelector(impact)
+    emit actions
+}

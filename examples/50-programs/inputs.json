@@ -1,0 +1,155 @@
+{
+ "P01_hello_greeter.algo": {
+  "name": "Satya"
+ },
+ "P02_article_summariser.algo": {
+  "article": "AlgoLang replaces functions with governed agents. Each agent has a role, goal, tools and a policy."
+ },
+ "P03_sentiment_scorer.algo": {
+  "review": "The delivery was late but the support team fixed everything quickly."
+ },
+ "P04_translator.algo": {
+  "passage": "Welcome to our workshop on agent-native programming.",
+  "language": "Hindi"
+ },
+ "P05_study_planner.algo": {
+  "topic": "Machine learning",
+  "days": "14"
+ },
+ "P06_blog_post_pipeline.algo": {
+  "topic": "Why agents beat functions for enterprise AI"
+ },
+ "P07_pros_and_cons_judge.algo": {
+  "decision": "Move our reporting to a cloud data warehouse"
+ },
+ "P08_idea_ranker.algo": {
+  "ideas": "AI tutor, smart inventory alerts, voice invoicing"
+ },
+ "P09_er_triage_router.algo": {
+  "complaint": "58 year old with chest pain spreading to the left arm, sweating for 20 minutes"
+ },
+ "P10_discharge_summary.algo": {
+  "notes": "Admitted with pneumonia, treated with IV antibiotics for 4 days, now afebrile."
+ },
+ "P11_care_team_review.algo": {
+  "case": "72 year old, diabetes, new swelling in both ankles, on three medications"
+ },
+ "P12_drug_interaction_check.algo": {
+  "regimen": "Warfarin 5 mg daily, ibuprofen 400 mg as needed, omeprazole 20 mg"
+ },
+ "P13_adverse_event_router.algo": {
+  "report": "Patient developed severe rash and fever two days after starting the new antibiotic"
+ },
+ "P14_credit_committee.algo": {
+  "application": "Salaried, income 85000 per month, existing EMI 12000, requests 15 lakh home loan"
+ },
+ "P15_kyc_onboarding.algo": {
+  "customer": "Ravi Kumar, software engineer, Pune, salary account, Aadhaar and PAN provided"
+ },
+ "P16_fraud_alert_router.algo": {
+  "transaction": "Card used in two countries within 10 minutes, 2400 USD electronics purchase"
+ },
+ "P17_claims_triage.algo": {
+  "claim": "Rear-end collision, bumper damage, no injuries, claim 45000 filed same day"
+ },
+ "P18_renewal_advisor.algo": {
+  "holder_profile": "Two-wheeler, 4 years no claim, city commuter, policy expires next month"
+ },
+ "P19_earnings_brief.algo": {
+  "transcript": "Revenue up 12 percent, margin pressure from input costs, guidance raised for next quarter"
+ },
+ "P20_trade_compliance_check.algo": {
+  "trade": "Employee buys 5000 shares of a client company two days before an announcement"
+ },
+ "P21_quiz_generator.algo": {
+  "lesson": "Photosynthesis: plants convert light, water and carbon dioxide into glucose and oxygen."
+ },
+ "P22_admissions_panel.algo": {
+  "applicant": "Rank 340 in entrance exam, 87 percent in class 12, led a robotics club, strong essay"
+ },
+ "P23_co_po_mapper.algo": {
+  "outcomes": "Design circuits, Analyse signals, Work in teams"
+ },
+ "P24_literature_review.algo": {
+  "papers": "Attention is all you need, ReAct, Toolformer"
+ },
+ "P25_hypothesis_critic.algo": {
+  "hypothesis": "Daily 20 minute walks reduce exam stress in first-year students"
+ },
+ "P26_grievance_router.algo": {
+  "grievance": "No water supply in our ward for six days, elderly residents are suffering"
+ },
+ "P27_welfare_pre_check.algo": {
+  "household": "Family of five, monthly income 9000, owns no land, two school-age children"
+ },
+ "P28_nda_triage.algo": {
+  "nda": "Mutual NDA, 5 year term, unlimited liability, governed by foreign law"
+ },
+ "P29_clause_reviewer.algo": {
+  "clauses": "Indemnity, Termination, Limitation of liability"
+ },
+ "P30_fair_cv_screening.algo": {
+  "cv": "5 years Python and SQL, built churn model, MSc statistics",
+  "role_title": "Data Analyst"
+ },
+ "P31_interview_builder.algo": {
+  "job_title": "Backend Engineer"
+ },
+ "P32_exit_interview_insights.algo": {
+  "transcript": "Left for a better role; liked the team but saw no clear growth path and long hours"
+ },
+ "P33_defect_root_cause.algo": {
+  "defect_report": "Scratches on 3 percent of aluminium panels from line 2 since the tool change"
+ },
+ "P34_maintenance_planner.algo": {
+  "sensor_log": "Pump P-7 vibration rising 18 percent in 5 days, bearing temperature 82 C"
+ },
+ "P35_shipment_exception.algo": {
+  "exception": "Container stuck at port for 5 days, customs hold, delivery due in 3 days"
+ },
+ "P36_supplier_risk_panel.algo": {
+  "supplier": "Single-source resin supplier, 3 late deliveries last quarter, ISO certified"
+ },
+ "P37_product_copy_studio.algo": {
+  "product": "Stainless steel insulated bottle, 750 ml, keeps drinks cold 24 hours"
+ },
+ "P38_complaint_reply.algo": {
+  "complaint": "Third time my order arrived damaged. I want a refund and an explanation today!"
+ },
+ "P39_incident_triage.algo": {
+  "incident": "Login API returning 500 for all users since 09:40, database connections maxed out"
+ },
+ "P40_postmortem_writer.algo": {
+  "timeline": "09:40 alerts fire; 09:55 rollback; 10:10 recovery; cause: connection pool misconfiguration"
+ },
+ "P41_soc_alert_enrichment.algo": {
+  "alert": "Impossible travel login for the finance admin account, then a new mailbox rule"
+ },
+ "P42_phishing_email_check.algo": {
+  "email": "Urgent: your payroll account is locked. Click http://secure-payroll-login.example to verify"
+ },
+ "P43_grid_anomaly_router.algo": {
+  "readings": "Feeder 14 voltage drops 9 percent at 18:00 for 12 minutes, three nights this week"
+ },
+ "P44_solar_site_assessment.algo": {
+  "site": "10 acre barren plot near Nashik, 3 km from a 33 kV substation"
+ },
+ "P45_crop_advisory.algo": {
+  "field_report": "Black soil, 2 acres, onion nursery, leaves yellowing, last rain 10 days ago"
+ },
+ "P46_pest_alert_triage.algo": {
+  "observation": "Armyworm larvae found on 20 percent of maize plants across three neighbouring farms"
+ },
+ "P47_claim_fact_check.algo": {
+  "claims": "City built 50 new schools in 2025, Rainfall was highest in 30 years"
+ },
+ "P48_headline_variants.algo": {
+  "story": "City council approves new metro line connecting airport to the old town by 2029"
+ },
+ "P49_listing_writer.algo": {
+  "property_details": "3 BHK, 1450 sq ft, 9th floor, east facing, near metro, covered parking, 1.2 crore"
+ },
+ "P50_hotel_review_responder.algo": {
+  "guest_review": "Lovely staff and view, but the room was not cleaned on day two and breakfast was cold."
+ }
+}

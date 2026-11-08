@@ -154,10 +154,13 @@ Without `make`, run `ruff check . && pytest && python algoc.py dev lint examples
             └──────────────┬───────────────────────┘
                      SDK  algolang/__init__.py   Program · RunResult · domains · compose · audit · review
                            │
-   source ─► grammar.lark ─► Lark Earley parser ─► AST (algoc.to_ast) ─► Checker (E100–E115)
+   source ─► grammar.lark ─► Lark Earley parser ─► AST (algoc.to_ast) ─► Checker (E100–E121)
              ─► use/imports (load_program) ─► CodeGen ─► Python module ─► algoruntime.Runtime
                                                                             │
-          policies · org config · tools · Mock/Claude backends · cache · hash-chained audit · review queue
+          policies · org config · tools · Mock/Claude/Replay backends · cache · hash-chained audit · review queue
+          uncertain<T> sampling · cost & energy pricing · traces (v0.3)
+
+   algoeval.py  eval blocks + replay      algomcp.py  MCP client/bindings      algolsp.py  language server
 ```
 
 | File | Responsibility |
@@ -172,6 +175,9 @@ Without `make`, run `ruff check . && pytest && python algoc.py dev lint examples
 | `algoprompt.html` | Prompt UI page (uses `/api/compose`, `/api/run`) |
 | `algoagent.py` | `algo ask` (AI writes and repairs programs) and the wizard |
 | `algomagic.py` | `%%algo` Jupyter magic |
+| `algoeval.py` | `algo eval` (eval blocks), traces, `algo replay` (v0.3) |
+| `algomcp.py` | MCP client over stdio/HTTP, `tool x from mcp "server"` bindings, `algo mcp` (v0.3) |
+| `algolsp.py` | Language server (`algo lsp`): diagnostics, hover, completion, definition, symbols (v0.3) |
 | `tools/make_packs.py` | Generator for the 120 domain packs and `packs/catalog.json` |
 
 **Design rules:**
@@ -181,6 +187,7 @@ Without `make`, run `ruff check . && pytest && python algoc.py dev lint examples
 - **Org policy can only tighten.** `merge_policy` and `Runtime.effective_policy` must never relax a rule.
 - **The offline backend stays deterministic.** Tests and lessons depend on it.
 - **SDK first.** CLI, Studio and Prompt UI are thin layers over `algolang`.
+- **No new runtime dependencies.** MCP and LSP are implemented on the standard library, so the browser playground and minimal containers keep working.
 
 ### 2.3 Recipes
 

@@ -1,0 +1,4 @@
+strategy
+"STR-101 weekly NIFTY short straddle, 30% stop-loss per leg, exit 15:15"
+"STR-102 BANKNIFTY 15-minute opening-range breakout, 1:2 reward-risk"
+"STR-104 martingale: double the position after every loss on NIFTY futures"

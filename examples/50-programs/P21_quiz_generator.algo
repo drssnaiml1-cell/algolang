@@ -1,0 +1,28 @@
+// Quiz Generator: a pipeline of 3 agents.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+agent QuestionWriter(lesson: text) -> text {
+    role "Teacher"
+    goal "Write five multiple-choice questions from {lesson}"
+    model smart
+}
+
+agent DistractorBuilder(questions: text) -> text {
+    role "Assessment designer"
+    goal "Add plausible wrong options to {questions}"
+    model smart
+}
+
+agent AnswerKey(options: text) -> text {
+    role "Teacher"
+    goal "Produce an answer key with a one-line reason for {options}"
+    model fast
+}
+
+flow main(lesson: text) {
+    questions = QuestionWriter(lesson)
+    options = DistractorBuilder(questions)
+    key = AnswerKey(options)
+    emit key
+}

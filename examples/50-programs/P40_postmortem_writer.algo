@@ -1,0 +1,28 @@
+// Postmortem Writer: a pipeline of 3 agents.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+agent TimelineCleaner(timeline: text) -> text {
+    role "SRE"
+    goal "Turn {timeline} into a clean, timestamped timeline"
+    model fast
+}
+
+agent RootCauseWriter(clean_timeline: text) -> text {
+    role "SRE"
+    goal "Explain the root cause and contributing factors from {clean_timeline}"
+    model smart
+}
+
+agent PostmortemWriter(analysis: text) -> text {
+    role "Engineering manager"
+    goal "Write a blameless postmortem with action items from {analysis}"
+    model smart
+}
+
+flow main(timeline: text) {
+    clean_timeline = TimelineCleaner(timeline)
+    analysis = RootCauseWriter(clean_timeline)
+    postmortem = PostmortemWriter(analysis)
+    emit postmortem
+}

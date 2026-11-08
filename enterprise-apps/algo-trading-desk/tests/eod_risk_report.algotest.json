@@ -1,0 +1,27 @@
+{
+  "program": "../programs/eod_risk_report.algo",
+  "cases": [
+    {
+      "name": "End-of-day book, stress, risk level and surveillance",
+      "inputs": {
+        "desk": "QuantOracle NIFTY options desk"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "Book",
+          "pr.Stress",
+          "pr.RiskLevel",
+          "ts.Concern",
+          "ts.Report"
+        ],
+        "tools_used": [
+          "book.positions"
+        ],
+        "output_contains": "day P&L INR 5,500",
+        "emits": 5,
+        "max_tokens": 1800
+      }
+    }
+  ]
+}

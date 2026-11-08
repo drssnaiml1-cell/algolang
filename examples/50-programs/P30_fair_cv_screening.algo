@@ -1,0 +1,51 @@
+// Fair CV Screening: a scoring committee and a chair.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+policy {
+    budget tokens 4000
+    retry 1
+    forbid gender, caste, religion
+    require human when confidence < 0.8
+}
+
+agent SkillsScorer(cv: text, role_title: text) -> score {
+    role "Technical recruiter"
+    goal "Score the skills in {cv} against {role_title} from 0 to 1"
+    model smart
+}
+
+agent ExperienceScorer(cv: text, role_title: text) -> score {
+    role "Technical recruiter"
+    goal "Score the experience in {cv} for {role_title} from 0 to 1"
+    model smart
+}
+
+agent ProjectScorer(cv: text, role_title: text) -> score {
+    role "Technical recruiter"
+    goal "Score the projects in {cv} for {role_title} from 0 to 1"
+    model smart
+
+
+
+
+
+
+
+}
+
+agent HiringChair(cv: text, role_title: text, skills: score, experience: score, projects: score) -> text {
+    role "Hiring manager"
+    goal "Recommend shortlist, hold or reject for {cv} and {role_title} using only job-related evidence"
+    model smart
+}
+
+flow main(cv: text, role_title: text) {
+    [skills, experience, projects] = par {
+       SkillsScorer(cv, role_title),
+       ExperienceScorer(cv, role_title),
+       ProjectScorer(cv, role_title)
+    }
+    recommendation = HiringChair(cv, role_title, skills, experience, projects)
+    emit recommendation, skills, experience, projects
+}

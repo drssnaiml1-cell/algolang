@@ -1,0 +1,44 @@
+// Hypothesis Critic: workers run in parallel, one agent merges.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+agent MethodCritic(hypothesis: text) -> text {
+    role "Methodologist"
+    goal "Critique how {hypothesis} could be tested"
+    model smart
+}
+
+agent StatsCritic(hypothesis: text) -> text {
+    role "Statistician"
+    goal "List sample size and bias issues for {hypothesis}"
+    model smart
+}
+
+agent EthicsCritic(hypothesis: text) -> text {
+    role "Ethics reviewer"
+    goal "List ethical concerns for studying {hypothesis}"
+    model fast
+}
+
+agent EditorialSummary(method: text, stats: text, ethics: text) -> text {
+    role "Journal editor"
+    goal "Combine {method}, {stats} and {ethics} into one review"
+    model smart
+}
+
+flow main(hypothesis: text) {
+    [method, stats, ethics] = par {
+       MethodCritic(hypothesis),
+       StatsCritic(hypothesis),
+       EthicsCritic(hypothesis)
+    }
+    review = EditorialSummary(method, stats, ethics)
+
+
+
+
+
+
+
+     emit review
+}

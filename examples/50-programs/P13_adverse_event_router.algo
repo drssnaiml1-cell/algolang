@@ -1,0 +1,39 @@
+// Adverse Event Router: a router that branches on a score.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+policy {
+    budget tokens 5000
+    retry 1
+    require human when confidence < 0.8
+}
+
+agent SeverityScorer(report: text) -> score {
+    role "Pharmacovigilance officer"
+    goal "Score the seriousness of the event in {report} from 0 to 1"
+    model fast
+}
+
+agent ExpeditedReport(report: text) -> text {
+    role "Safety writer"
+    goal "Draft an expedited safety report for {report}"
+    model smart
+}
+
+agent RoutineLog(report: text) -> text {
+    role "Safety writer"
+    goal "Write a routine log entry for {report}"
+    model fast
+}
+
+flow main(report: text) {
+    severity = SeverityScorer(report)
+
+      if severity >= 0.7 {
+         expedited = ExpeditedReport(report)
+         emit severity, expedited
+      } else {
+         entry = RoutineLog(report)
+         emit severity, entry
+      }
+}

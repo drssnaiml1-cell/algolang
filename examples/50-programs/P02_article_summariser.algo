@@ -1,0 +1,14 @@
+// Article Summariser: one agent, one flow.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+agent Summariser(article: text) -> text {
+    role "Editor"
+    goal "Summarise {article} in three short bullet points"
+    model fast
+}
+
+flow main(article: text) {
+    answer = Summariser(article)
+    emit answer
+}

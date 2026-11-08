@@ -1,0 +1,28 @@
+// Defect Root Cause: a pipeline of 3 agents.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+agent SymptomParser(defect_report: text) -> text {
+    role "Quality engineer"
+    goal "Extract the symptoms, timing and location from {defect_report}"
+    model fast
+}
+
+agent CauseRanker(symptoms: text) -> text {
+    role "Process engineer"
+    goal "Rank likely root causes for {symptoms} using the 5-why method"
+    model smart
+}
+
+agent CorrectiveAction(causes: text) -> text {
+    role "Quality manager"
+    goal "Propose corrective and preventive actions for {causes}"
+    model smart
+}
+
+flow main(defect_report: text) {
+    symptoms = SymptomParser(defect_report)
+    causes = CauseRanker(symptoms)
+    actions = CorrectiveAction(causes)
+    emit actions
+}

@@ -202,7 +202,7 @@ def graph(file, fmt="mermaid"):
         shape = {"input": ("([", "])"), "emit": ("([", "])"), "cond": ("{", "}")}
         for nid, label, kind, _sub in nodes:
             o, c = shape.get(kind, ("[", "]"))
-            out.append(f'    {nid}{o}"{label}"{c}')
+            out.append(f'    {nid}{o}"{label.replace(chr(34), "#quot;")}"{c}')
         for a, b, dashed in edges:
             out.append(f"    {a} {'-.->' if dashed else '-->'} {b}")
         out.append("    classDef agent fill:#0b1f3a,color:#fff,stroke:#0b1f3a")

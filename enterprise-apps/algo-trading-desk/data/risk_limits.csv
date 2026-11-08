@@ -1,0 +1,4 @@
+limit,value
+max_lots_per_order,10
+max_open_lots,40
+max_daily_loss_inr,150000

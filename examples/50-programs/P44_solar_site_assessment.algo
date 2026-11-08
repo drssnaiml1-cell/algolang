@@ -1,0 +1,37 @@
+// Solar Site Assessment: workers run in parallel, one agent merges.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+agent IrradianceAnalyst(site: text) -> text {
+    role "Solar engineer"
+    goal "Estimate the sunlight potential and shading risks for {site}"
+    model smart
+}
+
+agent GridAnalyst(site: text) -> text {
+    role "Grid engineer"
+    goal "Assess grid connection options for {site}"
+    model smart
+}
+
+agent CostAnalyst(site: text) -> text {
+    role "Project finance analyst"
+    goal "Estimate capital cost and payback range for {site}"
+    model fast
+}
+
+agent FeasibilityBrief(sun: text, grid: text, cost: text) -> text {
+    role "Project lead"
+    goal "Write a feasibility brief from {sun}, {grid} and {cost}"
+    model smart
+}
+
+flow main(site: text) {
+    [sun, grid, cost] = par {
+       IrradianceAnalyst(site),
+       GridAnalyst(site),
+       CostAnalyst(site)
+    }
+    brief = FeasibilityBrief(sun, grid, cost)
+    emit brief
+}

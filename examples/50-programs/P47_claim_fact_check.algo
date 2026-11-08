@@ -1,0 +1,23 @@
+// Claim Fact-Check: par for fans one agent out over a list.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+tool web.search
+
+agent FactChecker(item: text) -> text {
+    role "Fact-checker"
+    goal "Check the claim {item} against reliable sources and give a verdict with evidence"
+    uses web.search
+    model fast
+}
+
+agent VerdictReport(results: list) -> text {
+    role "Standards editor"
+    goal "Write a verdict report from {results}"
+    model smart
+}
+
+flow main(claims: list) {
+    results = par for it in claims { FactChecker(it) }
+    report = VerdictReport(results)
+    emit report, results
+}

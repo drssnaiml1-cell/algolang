@@ -1,0 +1,5 @@
+strategy,name,underlying,period,trades,win_rate,profit_factor,max_drawdown_pct,sharpe,worst_day,status
+STR-101,Weekly short straddle with 30% stop-loss,NIFTY,Jan 2023–Sep 2026,186,64,1.42,11.8,1.31,-48200,paper-approved
+STR-102,ORB breakout 15-minute,BANKNIFTY,Jan 2024–Sep 2026,412,41,1.18,22.5,0.74,-61500,research
+STR-103,Iron condor 1-SD wings,NIFTY,Jan 2023–Sep 2026,171,71,1.55,8.9,1.62,-29400,paper-approved
+STR-104,Martingale averaging on losers,NIFTY,Jun 2025–Sep 2026,95,78,0.92,41.0,0.21,-212000,rejected

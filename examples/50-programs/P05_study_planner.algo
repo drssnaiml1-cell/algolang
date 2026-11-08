@@ -1,0 +1,28 @@
+// Study Planner: a pipeline of 3 agents.
+model fast = "claude-haiku-5-5"
+model smart = "claude-sonnet-5-5"
+
+agent Syllabus(topic: text, days: text) -> text {
+    role "Curriculum designer"
+    goal "Break {topic} into key subtopics for a {days}-day plan"
+    model smart
+}
+
+agent Scheduler(syllabus: text) -> text {
+    role "Study coach"
+    goal "Spread {syllabus} across the days with a clear goal per day"
+    model smart
+}
+
+agent Reviser(schedule: text) -> text {
+    role "Study coach"
+    goal "Check {schedule} for overload and add revision days"
+    model fast
+}
+
+flow main(topic: text, days: text) {
+    syllabus = Syllabus(topic, days)
+    schedule = Scheduler(syllabus)
+    plan = Reviser(schedule)
+    emit plan
+}

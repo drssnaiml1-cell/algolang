@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────
-//  AlgoLang v0.2 grammar  —  AlgoProfessor AI R&D Solutions
+//  AlgoLang v0.3 grammar  —  AlgoProfessor AI R&D Solutions
 //  Core rule: there are no functions. Every unit of work is an
 //  `agent`; a `flow` only orchestrates agents.
 // ─────────────────────────────────────────────────────────────
@@ -12,6 +12,7 @@ start: item*
      | policy_decl
      | agent_decl
      | flow_decl
+     | eval_decl
 
 // use "shared/agents.algo"           import another file's models, tools and agents
 // use pack insurance.claims_triage    import a domain pack from the library
@@ -25,14 +26,19 @@ policy_decl: "policy" "{" policy_rule* "}"
 // model fast = "claude-haiku-5-5"
 model_decl: "model" NAME "=" STRING
 
-// tool web.search   (declares a tool agents may be granted)
-tool_decl: "tool" DOTTED
+// tool web.search                              (declares a tool agents may be granted)
+// tool kb.search_policies from mcp "company-kb"  (binds it to a tool on an MCP server)
+tool_decl: "tool" DOTTED ["from" "mcp" STRING]
 
 // agent Name(p: type, q: type = "x") -> type { ... }
-agent_decl: "agent" NAME "(" [params] ")" "->" NAME "{" agent_clause* "}"
+agent_decl: "agent" NAME "(" [params] ")" "->" type "{" agent_clause* "}"
 
 params: param ("," param)*
-param: NAME ":" NAME ["=" literal]
+param: NAME ":" type ["=" literal]
+
+// text | score | list | json | bool   — or uncertain<score>: sampled several times, carries its confidence
+?type: NAME
+     | "uncertain" "<" NAME ">"          -> uncertain_type
 
 ?agent_clause: "role" STRING            -> role
              | "goal" STRING            -> goal
@@ -41,6 +47,9 @@ param: NAME ":" NAME ["=" literal]
              | "policy" "{" policy_rule* "}" -> policy
 
 ?policy_rule: "budget" "tokens" NUMBER                       -> budget
+            | "budget" "cost" NUMBER [NAME]                  -> budget_cost     // usd (default) or inr
+            | "budget" "energy" NUMBER NAME                  -> budget_energy   // wh or kwh
+            | "samples" NUMBER                               -> samples         // for uncertain<T> agents
             | "retry" NUMBER                                 -> retry
             | "require" "human" "when" "confidence" "<" NUMBER -> human_gate
             | "forbid" NAME ("," NAME)*                      -> forbid
@@ -51,7 +60,7 @@ param: NAME ":" NAME ["=" literal]
 flow_decl: "flow" NAME "(" [params] ")" "{" stmt* "}"
 
 ?stmt: target "=" expr                                   -> assign
-     | "if" cond "{" stmt* "}" ["else" "{" stmt* "}"]    -> if_stmt
+     | "if" condition "{" stmt* "}" ["else" "{" stmt* "}"]    -> if_stmt
      | "emit" expr ("," expr)*                           -> emit
      | call                                              -> expr_stmt
 
@@ -75,7 +84,33 @@ par_block: "par" "{" call ("," call)* "}"
 // results = par for t in tasks { Worker(t) }
 par_for: "par" "for" NAME "in" NAME "{" call "}"
 
-cond: expr COMPARE expr
+// if risk > 0.8 and risk.confidence >= 0.7 { ... }
+?condition: cond_and
+          | condition "or" cond_and        -> or_cond
+?cond_and: cond
+         | cond_and "and" cond             -> and_cond
+cond: operand COMPARE operand
+    | operand "contains" STRING            -> contains_cond     // deterministic text guard (no model involved)
+    | operand "not" "contains" STRING      -> not_contains_cond
+?operand: expr
+        | DOTTED                           -> attr
+
+// eval regression on main {
+//     case "small claim" (claim = "…") { expect called Routing  expect tokens < 2000 }
+// }
+eval_decl: "eval" NAME ["on" NAME] "{" eval_case* "}"
+eval_case: "case" STRING "(" [args] ")" "{" expectation* "}"
+?expectation: "expect" "status" NAME                       -> exp_status
+            | "expect" "called" (NAME | DOTTED)            -> exp_called
+            | "expect" "not" "called" (NAME | DOTTED)      -> exp_not_called
+            | "expect" "tool" DOTTED                       -> exp_tool
+            | "expect" "output" "contains" STRING          -> exp_contains
+            | "expect" "emits" NUMBER                      -> exp_emits
+            | "expect" "tokens" COMPARE NUMBER             -> exp_tokens
+            | "expect" "cost" COMPARE NUMBER               -> exp_cost
+            | "expect" "energy" COMPARE NUMBER             -> exp_energy
+            | "expect" "escalated" COMPARE NUMBER          -> exp_escalated
+            | "expect" "confidence" COMPARE NUMBER         -> exp_confidence
 COMPARE: "<=" | ">=" | "==" | "!=" | "<" | ">"
 
 ?literal: STRING -> string
