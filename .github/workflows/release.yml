@@ -2,13 +2,15 @@ name: Release
 
 # Push a tag like v0.2.1 and this publishes a GitHub Release with the wheel, sdist,
 # the full source zip and the PDF manuals. See DEVELOPER_GUIDE.md §3.2.
+# No tag yet? Actions → Release → Run workflow → type the version (e.g. v0.3.1):
+# the tag is created on the selected branch and the release is published.
 on:
   push:
     tags: ["v*"]
   workflow_dispatch:
     inputs:
       tag:
-        description: "Existing tag to (re)publish, e.g. v0.2.0"
+        description: "Version to publish, e.g. v0.3.1 (created on the selected branch if the tag does not exist yet)"
         required: true
 
 permissions:
@@ -23,7 +25,15 @@ jobs:
     steps:
       - uses: actions/checkout@v5
         with:
-          ref: ${{ github.event.inputs.tag || github.ref }}
+          fetch-depth: 0
+      - name: Use the existing tag, if there is one
+        if: github.event_name == 'workflow_dispatch'
+        run: |
+          if git rev-parse -q --verify "refs/tags/${{ github.event.inputs.tag }}" >/dev/null; then
+            git checkout "${{ github.event.inputs.tag }}"
+          else
+            echo "Tag ${{ github.event.inputs.tag }} does not exist yet; it will be created at $(git rev-parse --short HEAD)"
+          fi
       - uses: actions/setup-python@v6
         with: {python-version: "3.12"}
       - name: Version in the tag must match the code
@@ -59,6 +69,7 @@ jobs:
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.TAG }}
+          target_commitish: ${{ github.sha }}
           name: AlgoLang ${{ env.TAG }}
           body_path: RELEASE_NOTES.md
           files: dist/*
