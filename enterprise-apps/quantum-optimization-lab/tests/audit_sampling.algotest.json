@@ -1,0 +1,23 @@
+{
+  "program": "../programs/audit_sampling.algo",
+  "cases": [
+    {
+      "name": "Eight of 240 vouchers are drawn from qubits for the audit",
+      "inputs": {
+        "period": "October 2026 travel vouchers"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "Sampler",
+          "AuditPlan"
+        ],
+        "tools_used": [
+          "quantum.random"
+        ],
+        "output_contains": "SAMPLE",
+        "emits": 2
+      }
+    }
+  ]
+}

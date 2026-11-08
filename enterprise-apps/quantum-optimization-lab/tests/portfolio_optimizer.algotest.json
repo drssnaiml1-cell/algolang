@@ -1,0 +1,40 @@
+{
+  "program": "../programs/portfolio_optimizer.algo",
+  "cases": [
+    {
+      "name": "Balanced growth portfolio is optimised on 10 qubits and verified",
+      "inputs": {
+        "request": "Choose 4 of the large-cap assets for a balanced growth mandate, risk aversion 0.5"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "Universe",
+          "QuantumOptimizer",
+          "RiskReview"
+        ],
+        "tools_used": [
+          "market.universe",
+          "quantum.portfolio"
+        ],
+        "output_contains": "VERIFIED"
+      }
+    },
+    {
+      "name": "Mid-cap universe needs 16 qubits and is blocked by the 12-qubit policy",
+      "inputs": {
+        "request": "Choose 5 assets including mid-caps for an aggressive growth mandate, risk aversion 0.2"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "Universe",
+          "QuantumOptimizer",
+          "ClassicalFallback"
+        ],
+        "output_contains": "BLOCKED",
+        "emits": 2
+      }
+    }
+  ]
+}

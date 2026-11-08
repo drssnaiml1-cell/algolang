@@ -1,0 +1,6 @@
+-r requirements.txt
+# Quantum tools (quantum.run, quantum.qubo, quantum.maxcut, quantum.grover, quantum.random)
+numpy>=1.22
+# Optional: run quantum.run circuits on Qiskit Aer ("quantum": {"backend": "qiskit-aer"})
+# qiskit>=1.0
+# qiskit-aer>=0.14

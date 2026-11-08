@@ -1,0 +1,25 @@
+{
+  "program": "../programs/shift_scheduler.algo",
+  "cases": [
+    {
+      "name": "Clashing jobs are split across two shifts by verified max-cut",
+      "inputs": {
+        "site": "Visakhapatnam assembly plant, Monday"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "Clashes",
+          "ShiftSplitter",
+          "ShiftPlan"
+        ],
+        "tools_used": [
+          "ops.clashes",
+          "quantum.maxcut"
+        ],
+        "output_contains": "VERIFIED",
+        "emits": 2
+      }
+    }
+  ]
+}

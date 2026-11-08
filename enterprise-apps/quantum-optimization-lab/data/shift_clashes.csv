@@ -1,0 +1,9 @@
+job_a,job_b,clash_weight,reason
+J1,J2,4,same crane
+J1,J3,2,shared loading bay
+J2,J4,3,same crew
+J3,J4,1,shared forklift
+J3,J5,3,same crane
+J4,J6,2,power draw limit
+J5,J6,4,same crew
+J2,J5,1,shared loading bay

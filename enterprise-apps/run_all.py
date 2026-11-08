@@ -25,6 +25,7 @@ BATCH = {
     "citizen-services-desk": ("grievance_desk.algo", "grievances.csv"),
     "legal-contract-desk": ("nda_triage.algo", "ndas.csv"),
     "algo-trading-desk": ("pre_trade_check.algo", "order_intents.csv"),
+    "quantum-optimization-lab": ("portfolio_optimizer.algo", "portfolio_requests.csv"),
 }
 # Real-time `stream` blocks, replayed offline from a JSON Lines file of events (v0.3.1)
 STREAM = {

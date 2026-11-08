@@ -43,6 +43,11 @@ KEYWORDS = {
     "stream": "**stream** — real-time events: `stream name on main { from kafka \"cluster\" topic \"in\"  map x = event.x  "
               "to topic \"out\"  escalate to topic \"review\"  dead letter topic \"dlq\" }`. Every event runs the flow "
               "once. Run with `algo stream file.algo --kafka` (or `--input events.jsonl` offline).",
+    "shots": "**shots N**: measurements per quantum circuit for this agent's `quantum.*` tools (1–100000).",
+    "qubits": "**max qubits N**: the largest circuit this agent's `quantum.*` tools may run; the stricter of this and "
+              "`quantum.max_qubits` in algo.config.json applies. Bigger circuits are BLOCKED.",
+    "quantum": "**quantum.*** tools: `quantum.run` (OpenQASM 2.0), `quantum.qubo` and `quantum.maxcut` (QAOA, VERIFIED "
+               "against the exact optimum), `quantum.grover`, `quantum.random`. Guard on `contains \"VERIFIED\"`.",
     "kafka": "**kafka** — `from kafka \"cluster\" topic \"name\" group \"consumer-group\"`. The cluster address is in "
              "algo.config.json: `\"kafka\": {\"cluster\": {\"bootstrap_servers\": \"localhost:9092\"}}`.",
     "case": "**case** — one eval case: `case \"label\" (input = \"value\") { expect … }`.",

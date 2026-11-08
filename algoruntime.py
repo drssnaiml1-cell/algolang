@@ -41,7 +41,7 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from pathlib import Path
 
-VERSION = "0.3.1"
+VERSION = "0.3.2"
 # WebAssembly builds of Python (Pyodide, used by the web playground) cannot start threads:
 # `par` then runs its branches one after another, with identical results.
 CAN_THREAD = sys.platform not in ("emscripten", "wasi")
@@ -137,6 +137,9 @@ DEFAULT_CONFIG = {
     #   {"company-kb": {"command": "{python}", "args": ["mcp_demo_server.py"]},
     #    "remote":     {"url": "https://example.com/mcp", "headers": {"Authorization": "Bearer …"}}}
     "mcp_servers": {},
+    # quantum.* tools (v0.3.2): backend "simulator" (built in) or "qiskit-aer"; the stricter of max_qubits and an
+    # agent's `max qubits` applies; seed makes every quantum answer reproducible for audit and replay
+    "quantum": {"backend": "simulator", "max_qubits": 20, "shots": 1024, "seed": 7, "qaoa_layers": 2},
 }
 
 _CONFIG = None
@@ -307,6 +310,13 @@ def _kb_search(query: str) -> str:
     if not scored:
         return "no matching passages"
     return "\n".join(f"[{name}] {para[:400]}" for _, name, para in scored[:3])
+
+
+try:                                     # quantum.* tools (v0.3.2); NumPy is only needed when one is used
+    import algoquantum as _algoquantum
+    _algoquantum.register(register_tool)
+except ImportError:  # noqa
+    _algoquantum = None
 
 
 def run_tool(name, query):
@@ -878,9 +888,14 @@ class Runtime:
         for attempt in range(1, tries + 1):
             try:
                 t0 = time.time()
-                with _semaphore():
-                    out = self.backend.complete(spec, model_id, prompt, goal, sample=i) if k > 1 or i else \
-                        self.backend.complete(spec, model_id, prompt, goal)
+                qtok = _algoquantum.POLICY.set(pol) if _algoquantum else None    # shots / max qubits for quantum tools
+                try:
+                    with _semaphore():
+                        out = self.backend.complete(spec, model_id, prompt, goal, sample=i) if k > 1 or i else \
+                            self.backend.complete(spec, model_id, prompt, goal)
+                finally:
+                    if qtok is not None:
+                        _algoquantum.POLICY.reset(qtok)
                 val, conf, tokens, tool_calls = out
                 dt = time.time() - t0
                 if pol.get("timeout_s") and dt > pol["timeout_s"]:

@@ -1,0 +1,55 @@
+// Quantum shift scheduler — split clashing plant jobs across two shifts with QAOA max-cut.
+// clashes (scheduling system) → max-cut on the clash graph (quantum.maxcut) → VERIFIED?
+//   yes → shift plan for the supervisor to confirm · no → manual planning request
+tool ops.clashes
+tool quantum.maxcut
+tool kb.search
+
+model fast = "claude-haiku-5-5"
+
+agent Clashes(site: text) -> text {
+    role  "Plant scheduler"
+    goal  "List the jobs at {site} that clash, as weighted edges"
+    uses  ops.clashes
+    model fast
+}
+
+agent ShiftSplitter(clashes: text) -> text {
+    role   "Quantum optimisation engineer"
+    goal   "Split the jobs into two shifts so the heaviest clashes are separated. Clash graph: {clashes}"
+    uses   quantum.maxcut
+    policy { shots 1024  max qubits 10 }
+}
+
+agent ShiftPlan(site: text, split: text) -> text {
+    role   "Operations planner"
+    goal   "Write the two-shift plan for {site} from {split}, for the shift supervisor to confirm"
+    uses   kb.search
+    policy { require human when confidence < 0.9 }
+}
+
+agent ManualPlanning(site: text, split: text) -> text {
+    role "Operations planner"
+    goal "Ask the supervisor to plan {site} by hand, explaining what {split} reported"
+}
+
+flow main(site: text) {
+    clashes = Clashes(site)
+    split   = ShiftSplitter(clashes)
+    if split contains "VERIFIED" {
+        emit split, ShiftPlan(site, split)
+    } else {
+        emit split, ManualPlanning(site, split)
+    }
+}
+
+eval shifts on main {
+    case "six jobs, eight clashes" (site = "Visakhapatnam assembly plant, Monday") {
+        expect status ok
+        expect tool ops.clashes
+        expect tool quantum.maxcut
+        expect output contains "VERIFIED"
+        expect called ShiftPlan
+        expect not called ManualPlanning
+    }
+}

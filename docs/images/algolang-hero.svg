@@ -87,7 +87,7 @@
     <rect class="chip" x="56" y="384" width="160" height="30" rx="15"/><text class="chiptxt" x="136" y="404" text-anchor="middle">agents, not functions</text>
     <rect class="chip" x="226" y="384" width="140" height="30" rx="15"/><text class="chiptxt" x="296" y="404" text-anchor="middle">policies in code</text>
     <rect class="chip" x="376" y="384" width="118" height="30" rx="15"/><text class="chiptxt" x="435" y="404" text-anchor="middle">human gate</text>
-    <rect class="chip" x="504" y="384" width="112" height="30" rx="15"/><text class="chiptxt" x="560" y="404" text-anchor="middle">Kafka streams</text>
+    <rect class="chip" x="504" y="384" width="112" height="30" rx="15"/><text class="chiptxt" x="560" y="404" text-anchor="middle">Kafka · quantum</text>
     <text x="56" y="446" fill="#9aa6c2" font-size="13">Designed by <tspan fill="#f4f1e8" font-weight="600">Dr. S. Satyanarayana</tspan>  ·  <tspan fill="#e9c75a">www.algoprofessor.com</tspan>  ·  Apache 2.0</text>
   </g>
 
@@ -154,10 +154,10 @@
 
     <!-- facts -->
     <g font-size="13">
-      <text x="690" y="396" fill="#f4f1e8"><tspan fill="#e9c75a" font-weight="700">E100–E122</tspan>  compile-time safety checks</text>
+      <text x="690" y="396" fill="#f4f1e8"><tspan fill="#e9c75a" font-weight="700">E100–E123</tspan>  compile-time safety checks</text>
       <text x="690" y="420" fill="#f4f1e8"><tspan fill="#e9c75a" font-weight="700">$ · ₹ · Wh · CO₂</tspan>  priced before every call</text>
-      <text x="970" y="396" fill="#f4f1e8"><tspan fill="#e9c75a" font-weight="700">120</tspan> domain packs · <tspan fill="#e9c75a" font-weight="700">9</tspan> enterprise apps</text>
-      <text x="970" y="420" fill="#f4f1e8"><tspan fill="#e9c75a" font-weight="700">eval</tspan> + replay · <tspan fill="#e9c75a" font-weight="700">MCP</tspan> tools · <tspan fill="#e9c75a" font-weight="700">LSP</tspan></text>
+      <text x="970" y="396" fill="#f4f1e8"><tspan fill="#e9c75a" font-weight="700">120</tspan> domain packs · <tspan fill="#e9c75a" font-weight="700">10</tspan> enterprise apps</text>
+      <text x="970" y="420" fill="#f4f1e8"><tspan fill="#e9c75a" font-weight="700">Kafka</tspan> · <tspan fill="#e9c75a" font-weight="700">quantum</tspan> · <tspan fill="#e9c75a" font-weight="700">MCP</tspan> · <tspan fill="#e9c75a" font-weight="700">eval</tspan> · <tspan fill="#e9c75a" font-weight="700">LSP</tspan></text>
       <text x="690" y="446" fill="#9aa6c2">CLI · Studio · Prompt UI · Python SDK · VS Code</text>
     </g>
   </g>

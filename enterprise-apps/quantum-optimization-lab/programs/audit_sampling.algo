@@ -1,0 +1,34 @@
+// Unpredictable audit sampling — vouchers to check are drawn from measured qubits, and the draw is audited.
+tool quantum.random
+tool kb.search
+
+agent Sampler(period: text) -> text {
+    role   "Internal audit sampler"
+    goal   "pick 8 of 240 vouchers for the audit of {period}"
+    uses   quantum.random
+    policy { max qubits 8 }
+}
+
+agent AuditPlan(period: text, sample: text) -> text {
+    role "Internal auditor"
+    goal "Write the audit plan for {period}: which vouchers to check, from {sample}, and how the sample was drawn"
+    uses kb.search
+}
+
+flow main(period: text) {
+    sample = Sampler(period)
+    if sample contains "SAMPLE" {
+        emit sample, AuditPlan(period, sample)
+    } else {
+        emit sample
+    }
+}
+
+eval sampling on main {
+    case "October vouchers" (period = "October 2026 travel vouchers") {
+        expect status ok
+        expect tool quantum.random
+        expect output contains "SAMPLE"
+        expect called AuditPlan
+    }
+}

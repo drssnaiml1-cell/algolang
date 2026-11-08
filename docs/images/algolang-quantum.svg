@@ -1,0 +1,166 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 430" width="1280" height="430" role="img" aria-labelledby="t d">
+  <title id="t">AlgoLang quantum tools: from a business problem to a verified, human-approved decision</title>
+  <desc id="d">A portfolio problem becomes a QUBO matrix, runs as a QAOA circuit on one qubit per asset, produces a histogram of measured bitstrings, and is checked against the exact classical optimum. Only a VERIFIED answer reaches the risk review and the human approver. Policies limit qubits and shots.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#081428"/><stop offset="1" stop-color="#0f2547"/>
+    </linearGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse">
+      <path d="M32 0H0V32" fill="none" stroke="#8fd3ff" stroke-opacity="0.05"/>
+    </pattern>
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <path id="a1" d="M200 210 L 236 210"/>
+    <path id="a2" d="M392 210 L 428 210"/>
+    <path id="a3" d="M726 210 L 762 210"/>
+    <path id="a4" d="M918 210 L 954 210"/>
+    <path id="a5" d="M1098 210 L 1124 210"/>
+  </defs>
+  <style>
+    .sans { font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif; }
+    .mono { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; }
+    .card { fill: #0f2547; stroke: #c9a227; stroke-opacity: .8; stroke-width: 1.4; }
+    .qcard { fill: #0b1d3b; stroke: #8fd3ff; stroke-opacity: .85; stroke-width: 1.6; }
+    .h { fill: #f4f1e8; font-size: 15px; font-weight: 700; }
+    .s { fill: #c9b98a; font-size: 12px; }
+    .qs { fill: #9cc6e0; font-size: 12px; }
+    .cap { fill: #c9a227; font-size: 12px; letter-spacing: 2.4px; font-weight: 700; }
+    .num { fill: #8fd3ff; font-size: 11px; font-weight: 700; letter-spacing: 1px; }
+    .wire { fill: none; stroke: #c9a227; stroke-width: 2; stroke-dasharray: 5 5; animation: dash 1s linear infinite; }
+    .qline { stroke: #8fd3ff; stroke-opacity: .45; stroke-width: 1.4; }
+    .gate { fill: #13305c; stroke: #8fd3ff; stroke-width: 1.2; }
+    .gt { fill: #e6f6ff; font-size: 10.5px; font-weight: 700; }
+    .pulse { fill: #bfe6ff; }
+    .bar { fill: #8fd3ff; transform-box: fill-box; transform-origin: bottom; animation: grow 3s ease-in-out infinite; }
+    .best { fill: #e9c75a; }
+    .b2 { animation-delay: .2s; } .b3 { animation-delay: .4s; } .b4 { animation-delay: .6s; } .b5 { animation-delay: .8s; } .b6 { animation-delay: 1s; }
+    .ok { animation: okpulse 2.4s ease-in-out infinite; }
+    .cell { animation: shimmer 3.6s ease-in-out infinite; }
+    @keyframes dash { to { stroke-dashoffset: -20; } }
+    @keyframes grow { 0%, 100% { transform: scaleY(.35); } 50% { transform: scaleY(1); } }
+    @keyframes okpulse { 0%, 100% { opacity: .75; } 50% { opacity: 1; } }
+    @keyframes shimmer { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  </style>
+
+  <rect width="1280" height="430" fill="url(#bg)"/>
+  <rect width="1280" height="430" fill="url(#grid)"/>
+  <rect width="1280" height="4" fill="#8fd3ff"/>
+
+  <g class="sans">
+    <text x="40" y="44" class="cap">QUANTUM TOOLS · VERIFIED BEFORE ANY AGENT ACTS</text>
+    <text x="1240" y="44" fill="#9aa6c2" font-size="12.5" text-anchor="end">uses quantum.portfolio · policy { shots 2048  max qubits 12 }</text>
+
+    <!-- 1 problem -->
+    <rect x="40" y="110" width="160" height="200" rx="12" class="card"/>
+    <text x="58" y="136" class="num">1 · PROBLEM</text>
+    <text x="58" y="162" class="h">Choose 4 of 10</text>
+    <text x="58" y="182" class="h">assets</text>
+    <text x="58" y="208" class="s">max return</text>
+    <text x="58" y="226" class="s">min risk</text>
+    <text x="58" y="244" class="s">exactly 4 chosen</text>
+    <text x="58" y="282" class="s" fill-opacity=".85">also: shifts, routes,</text>
+    <text x="58" y="298" class="s" fill-opacity=".85">audit samples</text>
+
+    <use href="#a1" class="wire"/>
+
+    <!-- 2 QUBO -->
+    <rect x="236" y="110" width="156" height="200" rx="12" class="card"/>
+    <text x="254" y="136" class="num">2 · QUBO</text>
+    <text x="254" y="160" class="h">min xᵀQx</text>
+    <g transform="translate(258,174)">
+      <rect class="cell" x="0" y="0" width="22" height="22" fill="#e9c75a"/><rect class="cell" x="24" y="0" width="22" height="22" fill="#2b4c80" style="animation-delay:.3s"/><rect class="cell" x="48" y="0" width="22" height="22" fill="#4a6fa8" style="animation-delay:.6s"/><rect class="cell" x="72" y="0" width="22" height="22" fill="#2b4c80" style="animation-delay:.9s"/><rect class="cell" x="96" y="0" width="22" height="22" fill="#4a6fa8" style="animation-delay:1.2s"/>
+      <rect class="cell" x="0" y="24" width="22" height="22" fill="#2b4c80" style="animation-delay:.3s"/><rect class="cell" x="24" y="24" width="22" height="22" fill="#c9a227"/><rect class="cell" x="48" y="24" width="22" height="22" fill="#2b4c80" style="animation-delay:.9s"/><rect class="cell" x="72" y="24" width="22" height="22" fill="#4a6fa8" style="animation-delay:1.2s"/><rect class="cell" x="96" y="24" width="22" height="22" fill="#2b4c80" style="animation-delay:1.5s"/>
+      <rect class="cell" x="0" y="48" width="22" height="22" fill="#4a6fa8" style="animation-delay:.6s"/><rect class="cell" x="24" y="48" width="22" height="22" fill="#2b4c80" style="animation-delay:.9s"/><rect class="cell" x="48" y="48" width="22" height="22" fill="#e9c75a"/><rect class="cell" x="72" y="48" width="22" height="22" fill="#2b4c80" style="animation-delay:1.5s"/><rect class="cell" x="96" y="48" width="22" height="22" fill="#4a6fa8" style="animation-delay:1.8s"/>
+      <rect class="cell" x="0" y="72" width="22" height="22" fill="#2b4c80" style="animation-delay:.9s"/><rect class="cell" x="24" y="72" width="22" height="22" fill="#4a6fa8" style="animation-delay:1.2s"/><rect class="cell" x="48" y="72" width="22" height="22" fill="#2b4c80" style="animation-delay:1.5s"/><rect class="cell" x="72" y="72" width="22" height="22" fill="#c9a227"/><rect class="cell" x="96" y="72" width="22" height="22" fill="#2b4c80" style="animation-delay:2.1s"/>
+    </g>
+    <text x="254" y="292" class="s">risk − return + penalty</text>
+
+    <use href="#a2" class="wire"/>
+
+    <!-- 3 QAOA circuit -->
+    <rect x="428" y="110" width="298" height="200" rx="12" class="qcard"/>
+    <text x="446" y="136" class="num">3 · QAOA CIRCUIT · 1 QUBIT PER ASSET</text>
+    <g>
+      <line class="qline" x1="470" y1="166" x2="706" y2="166"/><line class="qline" x1="470" y1="196" x2="706" y2="196"/>
+      <line class="qline" x1="470" y1="226" x2="706" y2="226"/><line class="qline" x1="470" y1="256" x2="706" y2="256"/>
+      <text x="446" y="170" class="qs mono">q0</text><text x="446" y="200" class="qs mono">q1</text><text x="446" y="230" class="qs mono">q2</text><text x="446" y="260" class="qs mono">q…</text>
+      <rect class="gate" x="478" y="156" width="20" height="20" rx="3"/><text class="gt" x="488" y="170" text-anchor="middle">H</text>
+      <rect class="gate" x="478" y="186" width="20" height="20" rx="3"/><text class="gt" x="488" y="200" text-anchor="middle">H</text>
+      <rect class="gate" x="478" y="216" width="20" height="20" rx="3"/><text class="gt" x="488" y="230" text-anchor="middle">H</text>
+      <rect class="gate" x="478" y="246" width="20" height="20" rx="3"/><text class="gt" x="488" y="260" text-anchor="middle">H</text>
+      <rect class="gate" x="518" y="156" width="54" height="110" rx="5" fill="#1b3f73"/><text class="gt" x="545" y="208" text-anchor="middle">e^-iγC</text><text class="gt" x="545" y="222" text-anchor="middle" fill-opacity=".7">cost</text>
+      <rect class="gate" x="584" y="156" width="28" height="20" rx="3"/><text class="gt" x="598" y="170" text-anchor="middle">Rx</text>
+      <rect class="gate" x="584" y="186" width="28" height="20" rx="3"/><text class="gt" x="598" y="200" text-anchor="middle">Rx</text>
+      <rect class="gate" x="584" y="216" width="28" height="20" rx="3"/><text class="gt" x="598" y="230" text-anchor="middle">Rx</text>
+      <rect class="gate" x="584" y="246" width="28" height="20" rx="3"/><text class="gt" x="598" y="260" text-anchor="middle">Rx</text>
+      <text x="628" y="214" class="qs" font-size="13" font-weight="700">× p</text>
+      <g fill="#13305c" stroke="#8fd3ff" stroke-width="1.2">
+        <rect x="664" y="156" width="26" height="20" rx="3"/><rect x="664" y="186" width="26" height="20" rx="3"/>
+        <rect x="664" y="216" width="26" height="20" rx="3"/><rect x="664" y="246" width="26" height="20" rx="3"/>
+      </g>
+      <g stroke="#e6f6ff" stroke-width="1.3" fill="none">
+        <path d="M669 172 a8 8 0 0 1 16 0"/><path d="M677 172 l5 -8"/><path d="M669 202 a8 8 0 0 1 16 0"/><path d="M677 202 l5 -8"/>
+        <path d="M669 232 a8 8 0 0 1 16 0"/><path d="M677 232 l5 -8"/><path d="M669 262 a8 8 0 0 1 16 0"/><path d="M677 262 l5 -8"/>
+      </g>
+      <g filter="url(#soft)">
+        <circle r="3.5" class="pulse"><animate attributeName="cx" from="470" to="706" dur="2.2s" repeatCount="indefinite"/><set attributeName="cy" to="166"/></circle>
+        <circle r="3.5" class="pulse"><animate attributeName="cx" from="470" to="706" dur="2.2s" begin=".4s" repeatCount="indefinite"/><set attributeName="cy" to="196"/></circle>
+        <circle r="3.5" class="pulse"><animate attributeName="cx" from="470" to="706" dur="2.2s" begin=".8s" repeatCount="indefinite"/><set attributeName="cy" to="226"/></circle>
+        <circle r="3.5" class="pulse"><animate attributeName="cx" from="470" to="706" dur="2.2s" begin="1.2s" repeatCount="indefinite"/><set attributeName="cy" to="256"/></circle>
+      </g>
+    </g>
+    <text x="446" y="292" class="qs">simulator (exact) · Qiskit Aer · hardware in v0.5</text>
+
+    <use href="#a3" class="wire" style="stroke:#8fd3ff"/>
+
+    <!-- 4 measurements -->
+    <rect x="762" y="110" width="156" height="200" rx="12" class="qcard"/>
+    <text x="780" y="136" class="num">4 · 2,048 SHOTS</text>
+    <g>
+      <rect class="bar" x="782" y="190" width="14" height="80"/>
+      <rect class="bar b2" x="802" y="210" width="14" height="60"/>
+      <rect class="bar best b3" x="822" y="170" width="14" height="100"/>
+      <rect class="bar b4" x="842" y="222" width="14" height="48"/>
+      <rect class="bar b5" x="862" y="232" width="14" height="38"/>
+      <rect class="bar b6" x="882" y="244" width="14" height="26"/>
+      <line x1="778" y1="271" x2="902" y2="271" stroke="#8fd3ff" stroke-opacity=".5"/>
+    </g>
+    <text x="780" y="292" class="qs">best measured bitstring</text>
+
+    <use href="#a4" class="wire"/>
+
+    <!-- 5 exact check -->
+    <rect x="954" y="110" width="144" height="200" rx="12" class="card"/>
+    <text x="972" y="136" class="num" fill="#e9c75a">5 · EXACT CHECK</text>
+    <g class="ok">
+      <rect x="970" y="152" width="112" height="44" rx="8" fill="#123d2a" stroke="#6cc28a"/>
+      <text x="1026" y="172" fill="#bff0cd" font-size="13" font-weight="800" text-anchor="middle">✓ VERIFIED</text>
+      <text x="1026" y="188" fill="#9fd9b2" font-size="10.5" text-anchor="middle">= classical optimum</text>
+    </g>
+    <rect x="970" y="206" width="112" height="44" rx="8" fill="#3a1414" stroke="#e0705c" stroke-opacity=".8"/>
+    <text x="1026" y="226" fill="#ffc2b6" font-size="13" font-weight="800" text-anchor="middle">✗ GAP / BLOCKED</text>
+    <text x="1026" y="242" fill="#e8a99c" font-size="10.5" text-anchor="middle">→ classical answer</text>
+    <text x="972" y="282" class="s">deterministic guard,</text>
+    <text x="972" y="298" class="s">no model vote</text>
+
+    <use href="#a5" class="wire" style="stroke:#6cc28a"/>
+
+    <!-- 6 governed decision -->
+    <rect x="1124" y="110" width="116" height="200" rx="12" class="card"/>
+    <text x="1138" y="136" class="num" fill="#e9c75a">6 · DECIDE</text>
+    <text x="1138" y="162" class="h" font-size="13.5">RiskReview</text>
+    <text x="1138" y="178" class="s" font-size="11">uncertain ×5</text>
+    <text x="1138" y="210" class="h" font-size="13.5">Proposal</text>
+    <text x="1138" y="226" class="s" font-size="11">PAPER only</text>
+    <rect x="1136" y="246" width="92" height="24" rx="12" fill="#c9a227"/>
+    <text x="1182" y="263" fill="#0b1a33" font-size="11.5" font-weight="800" text-anchor="middle">👤 approves</text>
+    <text x="1138" y="298" class="s" font-size="11">audit-chained</text>
+
+    <!-- policy band -->
+    <rect x="40" y="334" width="1200" height="44" rx="10" fill="#c9a227" fill-opacity=".08" stroke="#c9a227" stroke-opacity=".45"/>
+    <text x="60" y="361" fill="#f1dc94" font-size="13.5"><tspan font-weight="800">Policy, checked at compile time (E123) and enforced at run time:</tspan>  max qubits · shots · allowed tools · seeded, replayable runs · every call in the hash-chained audit log</text>
+    <text x="40" y="406" fill="#9aa6c2" font-size="12.5">Built-in tools: quantum.run (OpenQASM 2.0) · quantum.qubo · quantum.maxcut · quantum.grover · quantum.random. The simulator computes the ideal result exactly: correct, not faster.</text>
+  </g>
+</svg>

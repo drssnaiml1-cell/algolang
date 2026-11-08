@@ -32,7 +32,7 @@ jobs:
         run: python algoc.py dev lint examples packs enterprise-apps
       - name: Behaviour specs (tests/specs/*.algotest.json, offline and deterministic)
         run: python algoc.py dev test tests/specs
-      - name: Enterprise applications (9 apps · tests + batch + streams + audit verification)
+      - name: Enterprise applications (10 apps · tests + batch + streams + audit verification)
         run: python enterprise-apps/run_all.py --batch
 
   test:
@@ -96,6 +96,35 @@ jobs:
         run: |
           python ../../algoc.py stream programs/pre_trade_check.algo --kafka --produce data/order_events.jsonl
           python ../../algoc.py stream programs/pre_trade_check.algo --kafka --max 6 --idle 60
+
+  quantum:
+    name: Quantum tools · cross-checked against Qiskit
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with: {python-version: "3.12", cache: pip}
+      - run: pip install -e ".[dev,quantum]" qiskit qiskit-aer
+      - name: Simulator, QAOA verification, Grover and policies (with the Qiskit cross-check enabled)
+        run: python -m pytest tests/test_quantum.py -v
+      - name: Quantum Optimization Lab evals
+        working-directory: enterprise-apps/quantum-optimization-lab
+        run: |
+          python ../../algoc.py eval programs/portfolio_optimizer.algo
+          python ../../algoc.py eval programs/shift_scheduler.algo
+          python ../../algoc.py eval programs/audit_sampling.algo
+      - name: Same Bell circuit on the built-in simulator and on Qiskit Aer
+        run: |
+          python - <<'PY'
+          import algoruntime as rt, algoquantum as aq
+          bell = 'OPENQASM 2.0; include "qelib1.inc"; qreg q[2]; creg c[2]; h q[0]; cx q[0],q[1]; measure q -> c;'
+          a = aq.run_qasm(bell)["counts"]
+          rt.load_config()["quantum"]["backend"] = "qiskit-aer"
+          b = aq.run_qasm(bell)["counts"]
+          print("simulator", a, "| qiskit-aer", b)
+          assert set(a) == set(b) == {"00", "11"}
+          PY
 
   package:
     name: Wheel builds and installs cleanly

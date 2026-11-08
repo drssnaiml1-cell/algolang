@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────
-//  AlgoLang v0.3.1 grammar  —  AlgoProfessor AI R&D Solutions
+//  AlgoLang v0.3.2 grammar  —  AlgoProfessor AI R&D Solutions
 //  Core rule: there are no functions. Every unit of work is an
 //  `agent`; a `flow` only orchestrates agents.
 // ─────────────────────────────────────────────────────────────
@@ -51,6 +51,8 @@ param: NAME ":" type ["=" literal]
             | "budget" "cost" NUMBER [NAME]                  -> budget_cost     // usd (default) or inr
             | "budget" "energy" NUMBER NAME                  -> budget_energy   // wh or kwh
             | "samples" NUMBER                               -> samples         // for uncertain<T> agents
+            | "shots" NUMBER                                 -> shots           // quantum.* tools: measurements per circuit
+            | "max" "qubits" NUMBER                          -> max_qubits      // quantum.* tools: largest circuit allowed
             | "retry" NUMBER                                 -> retry
             | "require" "human" "when" "confidence" "<" NUMBER -> human_gate
             | "forbid" NAME ("," NAME)*                      -> forbid

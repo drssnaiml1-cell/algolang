@@ -1,0 +1,76 @@
+// Quantum portfolio optimiser — choose k assets with QAOA, then govern the answer like any other decision.
+// universe → QAOA (quantum.portfolio, one qubit per asset) → VERIFIED against the exact optimum?
+//   yes → risk review (uncertain, sampled 5×) → PAPER proposal for a human to approve
+//   no  → the classical optimum is explained instead. An unverified quantum answer is never used.
+// Research and paper portfolios only. Not investment advice. All data is synthetic.
+tool market.universe
+tool quantum.portfolio
+tool kb.search
+
+model fast = "claude-haiku-5-5"
+
+agent Universe(request: text) -> text {
+    role  "Market data analyst"
+    goal  "List the eligible assets, with expected return and volatility, for {request}"
+    uses  market.universe
+    model fast
+    policy { budget cost 0.005 usd }
+}
+
+agent QuantumOptimizer(request: text, universe: text) -> text {
+    role   "Quantum optimisation engineer"
+    goal   "Choose the portfolio for {request} with QAOA, from {universe}"
+    uses   quantum.portfolio
+    model  fast
+    policy { shots 2048  max qubits 12  budget cost 0.01 usd }
+}
+
+agent RiskReview(request: text, portfolio: text) -> uncertain<score> {
+    role   "Chief risk officer"
+    goal   "Score 0 to 1 how well {portfolio} fits the investment mandate for {request}"
+    uses   kb.search
+    policy { samples 5  budget cost 0.04 usd }
+}
+
+agent Proposal(request: text, portfolio: text) -> text {
+    role   "Portfolio manager"
+    goal   "Write a PAPER allocation proposal for {portfolio}, for human approval, citing the mandate in {request}"
+    policy { require human when confidence < 0.99 }
+}
+
+agent ClassicalFallback(request: text, portfolio: text) -> text {
+    role "Quant analyst"
+    goal "Explain why the quantum run in {portfolio} cannot be used and give the exact classical choice for {request}"
+}
+
+flow main(request: text) {
+    universe  = Universe(request)
+    portfolio = QuantumOptimizer(request, universe)
+    if portfolio contains "VERIFIED" {
+        fit = RiskReview(request, portfolio)
+        if fit > 0.7 and fit.confidence >= 0.75 {
+            emit portfolio, fit, Proposal(request, portfolio)
+        } else {
+            emit portfolio, fit, ClassicalFallback(request, portfolio)
+        }
+    } else {
+        emit portfolio, ClassicalFallback(request, portfolio)
+    }
+}
+
+eval quantum_portfolio on main {
+    case "balanced growth: 4 large caps on 10 qubits, verified" (request = "Choose 4 of the large-cap assets for a balanced growth mandate, risk aversion 0.5") {
+        expect status ok
+        expect tool quantum.portfolio
+        expect output contains "VERIFIED"
+        expect called RiskReview
+        expect cost < 0.06
+    }
+    case "mid-caps need 16 qubits: blocked by the 12-qubit policy" (request = "Choose 5 assets including mid-caps for an aggressive growth mandate, risk aversion 0.2") {
+        expect status ok
+        expect output contains "BLOCKED"
+        expect called ClassicalFallback
+        expect not called RiskReview
+        expect not called Proposal
+    }
+}

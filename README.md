@@ -16,7 +16,7 @@
 AlgoProfessor AI R&D Solutions, Hyderabad. Designed by Dr. S. Satyanarayana.
 🌐 **[www.algoprofessor.com](https://www.algoprofessor.com)**
 
-**Current version: 0.3.1** (real-time Kafka streams) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md) · [50 Sample Programs (PDF)](docs/AlgoLang_50_Sample_Programs.pdf) · [Language manual (PDF)](docs/AlgoLang_Documentation_v0.3.pdf)
+**Current version: 0.3.2** (quantum tools preview · real-time Kafka streams) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md) · [50 Sample Programs (PDF)](docs/AlgoLang_50_Sample_Programs.pdf) · [Language manual (PDF)](docs/AlgoLang_Documentation_v0.3.pdf)
 
 AlgoLang has **no functions**. Every unit of work is an `agent` with a role, a goal, explicit tools, a model and a policy. A `flow` is the only other construct, and it can do just four things:
 
@@ -35,7 +35,7 @@ flowchart TB
     end
     subgraph COMPILER["② Compiler · algoc.py — unsafe programs never run"]
         direction LR
-        SRC[".algo source"] --> PARSE["Lark grammar"] --> AST["AST"] --> CHK{{"Checker · E100–E122"}} --> GEN["Python code"]
+        SRC[".algo source"] --> PARSE["Lark grammar"] --> AST["AST"] --> CHK{{"Checker · E100–E123"}} --> GEN["Python code"]
     end
     subgraph RUNTIME["③ Runtime · algoruntime.py — every call governed"]
         direction LR
@@ -46,20 +46,21 @@ flowchart TB
     end
     subgraph WORLD["④ Connected systems"]
         direction LR
-        LLM["Claude · mock · replay"] ~~~ MCP["MCP tool servers"] ~~~ KAF["Kafka + ZooKeeper<br/>real-time streams"]
+        LLM["Claude · mock · replay"] ~~~ MCP["MCP tool servers"] ~~~ KAF["Kafka + ZooKeeper<br/>real-time streams"] ~~~ QPU["⚛️ Quantum tools<br/>simulator · Qiskit"]
     end
     DOORS ==> COMPILER ==> RUNTIME <==> WORLD
 
     classDef navy fill:#0e2140,stroke:#c9a227,color:#f4f1e8;
     classDef gold fill:#c9a227,stroke:#0e2140,color:#0e2140;
-    class CLI,STU,PUI,SDK,LSP,SRC,PARSE,AST,GEN,POL,OUT,LLM,MCP,KAF,HUM,AUD navy;
+    class CLI,STU,PUI,SDK,LSP,SRC,PARSE,AST,GEN,POL,OUT,LLM,MCP,KAF,QPU,HUM,AUD navy;
     class CHK,CALL,GATE gold;
 ```
 
 | | |
 |---|---|
-| **Write** agents and flows; the compiler rejects unsafe programs before anything runs (22 error codes). | **Govern** every call with budgets, forbidden attributes, allowed tools and a human gate. |
+| **Write** agents and flows; the compiler rejects unsafe programs before anything runs (24 error codes). | **Govern** every call with budgets, forbidden attributes, allowed tools and a human gate. |
 | **Prove** what happened: hash-chained audit logs, traces you can replay for free, `eval` blocks in CI. | **Scale** to real time: a `stream` block runs a flow for every event on a Kafka topic. |
+| **Optimise** with quantum tools: every QAOA answer is VERIFIED against the exact optimum before an agent acts on it. | **Connect** to Claude, MCP tool servers, Kafka and quantum backends, from the CLI, Studio, SDK or your editor. |
 
 ## Contents
 
@@ -70,13 +71,14 @@ flowchart TB
 5. [Learn by example: 50 sample programs](#5-learn-by-example-50-sample-programs)
 6. [Enterprise applications](#6-enterprise-applications)
 7. [Real-time events: Kafka and ZooKeeper](#7-real-time-events-kafka-and-zookeeper)
-8. [The language](#8-the-language)
-9. [Governance and runtime guarantees](#9-governance-and-runtime-guarantees)
-10. [Python SDK](#10-python-sdk)
-11. [For developers](#11-for-developers)
-12. [Roadmap: v0.4 Trustworthy AI](#12-roadmap-v04-trustworthy-ai)
-13. [Repository layout](#13-repository-layout)
-14. [ProfAlgoLabs™, author and licence](#14-profalgolabs-author-and-licence)
+8. [Quantum applications (preview)](#8-quantum-applications-preview)
+9. [The language](#9-the-language)
+10. [Governance and runtime guarantees](#10-governance-and-runtime-guarantees)
+11. [Python SDK](#11-python-sdk)
+12. [For developers](#12-for-developers)
+13. [Roadmap: v0.4 Trustworthy AI, v0.5 Quantum AI](#13-roadmap-v04-trustworthy-ai-v05-quantum-ai)
+14. [Repository layout](#14-repository-layout)
+15. [ProfAlgoLabs™, author and licence](#15-profalgolabs-author-and-licence)
 
 ## 1. Objective
 
@@ -95,7 +97,7 @@ flowchart TB
 | 5 | Accountability | Every agent call returns a value with its confidence and provenance, and is written to a hash-chained audit log that can be verified. Traces can be replayed. |
 | 6 | Honest uncertainty | `uncertain<T>` agents are sampled several times. Their confidence reflects how much the samples agree, and decisions must check it. |
 | 7 | Cost, speed and sustainability | Cheap models for easy steps, strong models where needed, caching, parallelism, and every call priced in money, watt-hours and CO₂. |
-| 8 | Reuse at scale | 120 domain packs in 20 sectors, modules, MCP tools, nine enterprise applications, and batch processing of thousands of records. |
+| 8 | Reuse at scale | 120 domain packs in 20 sectors, modules, MCP tools, Kafka streams, quantum tools, ten enterprise applications, and batch processing of thousands of records. |
 | 9 | Access for everyone | Command line, graphical Studio, a plain-English Prompt UI, a Python SDK and editor support through a language server. |
 | 10 | Teachable and testable | An offline backend runs without an API key. `eval` blocks and behaviour tests run in CI; live mode uses real Claude models. |
 
@@ -140,6 +142,8 @@ eval regression on main {                                    // 4. tests next to
 | **`cost` and `energy` budgets** | Every call is priced in USD/INR, Wh and g CO₂. Budgets are checked before each call, and run-level caps live in `algo.config.json`. Reports show money and energy per program. | `budget cost 5 inr` · `budget energy 0.5 wh` · `algo report` |
 | **Deterministic guards** | `if limits contains "BREACH"` checks text, including a tool's full answer, with no model involved. Hard limits cannot be overruled by a model. | `if x not contains "FAILS"` |
 | **Language server** | `algo lsp` gives any editor live errors, hover, completion, go-to-definition (including into domain packs) and an outline. The VS Code extension starts it automatically. | `vscode-algolang/` |
+
+**v0.3.2 adds quantum tools (preview):** QAOA optimisation verified against the exact optimum, OpenQASM circuits, Grover search and `shots` / `max qubits` policies. See [§8](#8-quantum-applications-preview).
 
 **v0.3.1 adds real-time streams:** a `stream` block runs a flow for every event on a Kafka topic. See [§7](#7-real-time-events-kafka-and-zookeeper).
 
@@ -212,7 +216,7 @@ The runnable source of every program is in [`examples/50-programs/`](examples/50
 
 ## 6. Enterprise applications
 
-[`enterprise-apps/`](enterprise-apps/) holds nine complete, governed multi-agent applications. Each has its own org policy, company tools over its own data, a knowledge base, programs, batch data and behaviour tests:
+[`enterprise-apps/`](enterprise-apps/) holds ten complete, governed multi-agent applications. Each has its own org policy, company tools over its own data, a knowledge base, programs, batch data and behaviour tests:
 
 | Application | Sector | What it automates |
 |---|---|---|
@@ -220,11 +224,12 @@ The runnable source of every program is in [`examples/50-programs/`](examples/50
 | [Hospital Care Coordination](enterprise-apps/hospital-care-coordination/) | Healthcare | ER triage with the bed board, and discharge summaries (decision support) |
 | [Bank Credit & Onboarding](enterprise-apps/bank-credit-onboarding/) | Banking | Bureau + DTI + credit committee; KYC with sanctions screening |
 | [University Admissions & OBE](enterprise-apps/university-admissions-obe/) | Education | Fair admissions panel; NBA/NAAC CO-PO matrix and question papers |
-| [SOC Incident Command](enterprise-apps/soc-incident-command/) | Cybersecurity | Alert enrichment (CMDB, threat intel) → severity → incident → runbook |
+| [SOC Incident Command](enterprise-apps/soc-incident-command/) | Cybersecurity | Alert enrichment (CMDB, threat intel) → severity → incident → runbook; real-time SIEM alerts on Kafka |
 | [Supply Chain Control Tower](enterprise-apps/supply-chain-control-tower/) | Logistics | Shipment exceptions → tracking + stock cover → recovery plan |
 | [Citizen Services Desk](enterprise-apps/citizen-services-desk/) | Government | Grievance routing with service-level targets; welfare pre-checks |
 | [Legal Contract Desk](enterprise-apps/legal-contract-desk/) | Legal | NDA triage against the playbook; clause-by-clause contract review |
 | [Algo Trading Desk (QuantOracle™)](enterprise-apps/algo-trading-desk/) | Capital markets | Strategy review board → pre-trade risk gate with hard limits → end-of-day risk and surveillance (paper trading, human approval of every order) |
+| [Quantum Optimization Lab](enterprise-apps/quantum-optimization-lab/) | Quantum computing | QAOA portfolio selection and max-cut shift planning, each VERIFIED against the exact optimum, then risk review and human approval; quantum-random audit sampling |
 
 ```bash
 python enterprise-apps/run_all.py --batch      # run every app's tests and sample batch job
@@ -298,7 +303,53 @@ sequenceDiagram
 
 Two enterprise applications ship with streams: the **Algo Trading Desk** (order intents → pre-trade risk gate) and the **SOC Incident Command** (SIEM alerts → incidents). Install the client with `pip install -r requirements-stream.txt` (or `pip install "algolang[stream]"`).
 
-## 8. The language
+## 8. Quantum applications (preview)
+
+<p align="center"><img src="docs/images/algolang-quantum.svg" alt="A portfolio problem becomes a QUBO, runs as a QAOA circuit with one qubit per asset, is measured 2,048 times and checked against the exact classical optimum; only a VERIFIED answer reaches the risk review and the human approver" width="100%"></p>
+
+Quantum computers are suited to hard combinatorial choices: which assets to hold, which jobs share a shift, which route a van takes. Their answers are probabilistic and today's devices are noisy, so a quantum result should never drive a decision unchecked. AlgoLang treats a quantum computer like any other system: agents reach it only through **declared, granted, audited tools**, under **limits written in the policy**, and every optimisation result is **checked against the exact classical optimum** before an agent may act on it.
+
+```algo
+tool quantum.portfolio                         // a company tool built on algoquantum.solve_qubo
+
+agent QuantumOptimizer(request: text, universe: text) -> text {
+    role   "Quantum optimisation engineer"
+    goal   "Choose the portfolio for {request} with QAOA, from {universe}"
+    uses   quantum.portfolio
+    policy { shots 2048  max qubits 12 }       // a 16-asset universe is BLOCKED before it runs (E123 checks the limits)
+}
+
+flow main(request: text) {
+    universe  = Universe(request)
+    portfolio = QuantumOptimizer(request, universe)
+    if portfolio contains "VERIFIED" {         // deterministic guard: an unverified quantum answer is never used
+        fit = RiskReview(request, portfolio)   // uncertain<score>, sampled 5×
+        if fit > 0.7 and fit.confidence >= 0.75 { emit portfolio, fit, Proposal(request, portfolio) }   // 👤 approves
+        else { emit portfolio, fit, ClassicalFallback(request, portfolio) }
+    } else {
+        emit portfolio, ClassicalFallback(request, portfolio)
+    }
+}
+```
+
+| Built-in tool | What it does | Typical use |
+|---|---|---|
+| `quantum.run` | Runs an OpenQASM 2.0 circuit and returns measurement counts (built-in simulator or Qiskit Aer) | Teaching, circuit experiments, Qiskit interoperability |
+| `quantum.qubo` | Solves a QUBO with QAOA; the answer is `VERIFIED` or reported with its `GAP` to the exact optimum | Portfolio selection, feature selection, facility location |
+| `quantum.maxcut` | Splits a weighted graph (`"A-B:3, B-C:1"`) into two groups with QAOA max-cut, verified | Shift and crew scheduling, network partitioning, load balancing |
+| `quantum.grover` | Grover search for marked items among 2ⁿ, with the classical query count for comparison | Search and constraint-satisfaction teaching |
+| `quantum.random` | Random bits, or "pick k of n" sampling, from measured qubits | Unpredictable audit sampling, randomised controls |
+
+**What makes it trustworthy**
+
+- **Exact verification.** The simulator holds every amplitude, so the true optimum is known up to the qubit limit. The tool reports `VERIFIED`, or `GAP: … % worse`, plus P(optimal) and the approximation ratio.
+- **Limits in the policy.** `shots N` and `max qubits N` per agent, `"quantum": {"max_qubits": …}` for the whole organisation; the stricter limit wins. Bigger circuits are `BLOCKED`.
+- **Reproducible.** Runs are seeded, so the same request gives the same answer, as audit and `algo replay` require.
+- **Honest about the hardware.** Every answer names its backend. The built-in simulator is checked against Qiskit on every CI run (fidelity error below 10⁻¹²). It computes what an ideal quantum computer would return, on a classical computer, so it is correct but not faster. Real quantum hardware arrives in v0.5.
+
+The [**Quantum Optimization Lab**](enterprise-apps/quantum-optimization-lab/) puts this to work in three governed programs: a QAOA portfolio optimiser with risk review and human approval, a max-cut shift scheduler for a plant, and quantum-random audit sampling. Install with `pip install "algolang[quantum]"` (NumPy). For Qiskit Aer, also `pip install qiskit qiskit-aer` and set `"backend": "qiskit-aer"`.
+
+## 9. The language
 
 ### The language in one screen
 
@@ -358,10 +409,11 @@ flow main(topic: text) {
 | E120 | `tool … from mcp "server"` names a server missing from `mcp_servers` in `algo.config.json` |
 | E121 | Bad policy value: unknown currency or energy unit, or `samples` outside 1–15 |
 | E122 | `stream` block error: unknown flow or input, mapping not read from `event`, a result topic equal to the source topic, or `max in flight` outside 1–256 |
+| E123 | Quantum policy or tool error: `shots` outside 1–100000, or `max qubits` outside 1–24 |
 
 Errors from imported modules are reported with the file name, and the org config is enforced at compile time: a forbidden attribute or an ungranted tool is an error before anything runs.
 
-## 9. Governance and runtime guarantees
+## 10. Governance and runtime guarantees
 
 **The life of one agent call**
 
@@ -403,7 +455,7 @@ flowchart LR
   - `live` calls Claude via the `anthropic` SDK.
   - `replay` answers from a recorded trace (v0.3).
 
-## 10. Python SDK
+## 11. Python SDK
 
 ```python
 import algolang as al
@@ -424,7 +476,7 @@ al.review.pending(); al.review.approve(item_id, reviewer="Dr. S")    # human in 
 al.audit.verify("runs/claims_triage.audit.jsonl")                    # tamper check
 ```
 
-## 11. For developers
+## 12. For developers
 
 [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) has three tracks:
 
@@ -440,7 +492,7 @@ pip install -e ".[dev]"
 make check        # ruff + pytest + lint of every .algo file
 ```
 
-## 12. Roadmap: v0.4 Trustworthy AI
+## 13. Roadmap: v0.4 Trustworthy AI, v0.5 Quantum AI
 
 The next release puts **trustworthy AI** at the centre. Its aim is that every AlgoLang system can show, with evidence produced by the compiler and runtime, that it is lawful, fair, robust, transparent, private, secure and under human control. The full plan, with syntax sketches and how each item maps to the NIST AI Risk Management Framework, the EU AI Act and ISO/IEC 42001, is in **[ROADMAP.md](ROADMAP.md)**.
 
@@ -453,22 +505,28 @@ The next release puts **trustworthy AI** at the centre. Its aim is that every Al
 | Security | Untrusted-tool mode: tool and MCP outputs are fenced and screened for prompt injection; deny-by-default network for tools |
 | Human oversight | `require human for <agent>` (always), four-eyes approval, and logged overrides |
 | Accountability | Signed audit chains (Ed25519), reviewer identity, exportable evidence packs |
-| Risk-based governance | `risk high` program header: the compiler demands human oversight, eval coverage and fairness tests for high-risk systems (new E122–E125) |
+| Risk-based governance | `risk high` program header: the compiler demands human oversight, eval coverage and fairness tests for high-risk systems (new E124–E127) |
 | Assurance reporting | `algo trust report`: a scorecard against NIST AI RMF functions and EU AI Act duties, as evidence for auditors (not a certification) |
 
 Already shipped toward this goal: hash-chained audit logs, human review queues, forbidden attributes (E108), `uncertain<T>` with confidence guards (E117), deterministic `contains` guards, replayable traces, and cost/energy budgets.
 
-**After v0.4:** v0.5 adds agents as MCP servers, argument type checking and token-by-token output streaming. v1.0 adds a native runtime, typed agent-to-agent messaging, a package registry and SSO/RBAC for Studio.
+**v0.5 — Quantum AI.** The v0.3.2 preview becomes a full release. Planned: real quantum hardware (IBM Quantum, Amazon Braket, Azure Quantum) with QPU-time and cost budgets; noise models and error mitigation; quantum results as `uncertain<T>` values whose confidence comes from shot statistics; VQE for chemistry and materials, quantum kernels for classification, amplitude estimation for financial risk; verified bounds beyond the simulator's reach; and post-quantum signatures for the audit chain. Details in [ROADMAP.md](ROADMAP.md#5-v05-quantum-ai).
+
+**Later:** v0.6 adds agents as MCP servers, argument type checking and token-by-token output streaming. v1.0 adds a native runtime, typed agent-to-agent messaging, a package registry and SSO/RBAC for Studio.
 
 | Version | Theme | Status |
 |---|---|---|
 | v0.1 | The language: agents, flows, policies, compiler, runtime | Released |
 | v0.2 | Enterprise: modules, org policy, 120 domain packs, audit, review queue, SDK, three modes | Released |
-| v0.3 | Uncertainty, evals and replay, MCP, cost and energy budgets, language server, deterministic guards | **Current** |
+| v0.3 | Uncertainty, evals and replay, MCP, cost and energy budgets, language server, deterministic guards | Released |
+| v0.3.1 | Real-time `stream` blocks on Kafka and ZooKeeper | Released |
+| v0.3.2 | Quantum tools preview: QAOA verified exactly, OpenQASM, Grover, quantum policies | **Current** |
 | v0.4 | Trustworthy AI | Next |
+| v0.5 | Quantum AI: hardware backends, noise, uncertain quantum results, chemistry and risk algorithms | Planned |
+| v0.6 | Interoperability: agents as MCP servers, argument types, output streaming | Planned |
 | v1.0 | Native runtime and ecosystem | Planned |
 
-## 13. Repository layout
+## 14. Repository layout
 
 ```
 RUN_GUIDE.md                  how to install and execute, step by step
@@ -490,7 +548,7 @@ algostudio.py, .html          AlgoLang Studio graphical IDE (algo studio): Domai
 algoagent.py                  AI program writer and wizard (algo ask, algo wizard)
 install.bat / install.sh      one-time installers (Windows / Linux, macOS)
 algo.bat / algo               the `algo` command
-requirements*.txt             Python dependencies (lark; anthropic for --live; kafka-python for streams)
+requirements*.txt             Python dependencies (lark; anthropic for --live; kafka-python for streams; numpy for quantum tools)
 Dockerfile                    container environment
 grammar.lark                  formal grammar (Lark EBNF)
 algoc.py                      compiler: parse → AST → checks → Python codegen
@@ -499,20 +557,21 @@ algoeval.py                   eval blocks, traces and replay (algo eval, algo re
 algomcp.py                    MCP client and tool bindings (algo mcp)                         — v0.3
 algolsp.py                    language server (algo lsp)                                      — v0.3
 algostream.py                 real-time streams on Kafka (algo stream)                        — v0.3.1
+algoquantum.py                quantum tools: simulator, OpenQASM, QAOA + exact check, Grover — v0.3.2
 deploy/kafka/                 Docker Compose: ZooKeeper + Kafka (and a KRaft variant)
 docs/images/                  README diagrams (animated SVG) and Studio screenshots
 examples/v03/                 tour of v0.3: MCP demo server, uncertain<T>, budgets, eval
 examples/50-programs/          the 50 programs from "AlgoLang: 50 Sample Programs" + inputs.json
 docs/                         language manual (LaTeX + PDF) and AlgoLang_50_Sample_Programs.pdf
-enterprise-apps/              nine governed enterprise applications (incl. the Algo Trading Desk)
+enterprise-apps/              ten governed enterprise applications (incl. Algo Trading Desk, Quantum Optimization Lab)
 lab-website/                  ProfAlgoLabs™ website (cPanel-ready)
-ROADMAP.md                    v0.4 Trustworthy AI plan and later releases
+ROADMAP.md                    v0.4 Trustworthy AI and v0.5 Quantum AI plans, later releases
 examples/*.algo               source programs (bad_example.algo shows every error)
 vscode-algolang/              VS Code extension: highlighting + the language server
 .vscode/tasks.json            Ctrl+Shift+B to run the open .algo file
 ```
 
-## 14. ProfAlgoLabs™, author and licence
+## 15. ProfAlgoLabs™, author and licence
 
 AlgoLang is designed by **Dr. S. Satyanarayana, Ph.D., PDF (AI)**, Founder, CEO & Chief Agentic AI Scientist of **AlgoProfessor AI R&D Solutions**, Hyderabad. It is the flagship research of ProfAlgoLabs™, AlgoProfessor's research lab.
 

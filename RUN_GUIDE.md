@@ -241,6 +241,32 @@ docker compose -f ../../deploy/kafka/docker-compose.yml down # when you are done
 
 Prefer Kafka without ZooKeeper? Use `deploy/kafka/docker-compose.kraft.yml` (KRaft mode, the default from Kafka 4.0). The commands are the same.
 
+## Step 4e. Quantum tools (v0.3.2 preview)
+
+Quantum tools need NumPy: `pip install -r requirements-quantum.txt` (or `pip install "algolang[quantum]"`).
+
+```bash
+cd enterprise-apps/quantum-optimization-lab
+algo run programs/portfolio_optimizer.algo --arg "request=Choose 4 of the large-cap assets for a balanced growth mandate, risk aversion 0.5"
+algo run programs/shift_scheduler.algo --arg "site=Visakhapatnam assembly plant, Monday"
+algo eval programs/portfolio_optimizer.algo
+```
+
+The optimiser's answer starts with `VERIFIED` (it equals the exact classical optimum) or `GAP` (it does not, so the flow uses the classical answer). A request that needs more qubits than the policy allows comes back `BLOCKED`.
+
+Use them in your own program:
+
+```algo
+tool quantum.maxcut
+agent Split(graph: text) -> text {
+    goal   "Split these jobs into two shifts: {graph}"
+    uses   quantum.maxcut
+    policy { shots 1024  max qubits 10 }
+}
+```
+
+Organisation-wide limits go in `algo.config.json`: `"quantum": {"backend": "simulator", "max_qubits": 16, "shots": 2048, "seed": 11}`. To run `quantum.run` circuits on Qiskit Aer, `pip install qiskit qiskit-aer` and set `"backend": "qiskit-aer"`.
+
 ## Step 5. Live mode with real Claude (optional)
 
 By default agents are offline test agents, which give the same answer for the same input. To call real Claude models:

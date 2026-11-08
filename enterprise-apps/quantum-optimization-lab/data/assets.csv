@@ -1,0 +1,17 @@
+symbol,name,sector,tier,expected_return_pct,volatility_pct
+AQB,Aquila Bank,banking,large,13.5,21.0
+BRF,Bharat Refiners,energy,large,11.0,24.5
+CTS,Cobalt Tech Services,it,large,15.5,19.0
+DLP,Deccan Logistics Park,infrastructure,large,12.0,23.0
+EVG,Everglade FMCG,consumer,large,10.5,14.0
+FNP,Falcon Pharma,healthcare,large,14.0,18.5
+GRP,Godavari Power,utilities,large,9.5,13.0
+HSF,Hyderabad Steel Forge,metals,large,16.5,31.0
+IRT,Indus Rail Tech,infrastructure,large,13.0,22.0
+JNI,Jaipur Insurance,financials,large,12.5,17.5
+KMV,Kaveri Motors EV,auto,mid,22.0,38.0
+LNS,Lotus Nano Semis,it,mid,24.5,42.0
+MGR,Malabar Green Hydrogen,energy,mid,21.0,40.0
+NBF,Narmada Bio Foods,consumer,mid,17.0,29.0
+OCD,Orchid Clinical Diagnostics,healthcare,mid,18.5,27.5
+PXL,Pixel Learning,education,mid,19.5,35.0

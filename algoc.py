@@ -193,6 +193,10 @@ def parse_policy(rules) -> dict:
             pol["cache"] = True
         elif r.data == "samples":
             pol["samples"] = int(str(r.children[0]))
+        elif r.data == "shots":
+            pol["shots"] = int(float(str(r.children[0])))
+        elif r.data == "max_qubits":
+            pol["max_qubits"] = int(float(str(r.children[0])))
         elif r.data == "budget_cost":
             amount, cur = float(str(r.children[0])), str(r.children[1] or "usd").lower()
             if cur in ("usd", "inr"):
@@ -214,7 +218,8 @@ def merge_policy(base: dict, own: dict) -> dict:
     for k, v in own.items():
         if k not in out:
             out[k] = v
-        elif k in ("budget_tokens", "timeout_s", "budget_cost_usd", "budget_cost_inr", "budget_energy_wh"):
+        elif k in ("budget_tokens", "timeout_s", "budget_cost_usd", "budget_cost_inr", "budget_energy_wh",
+                   "max_qubits"):
             out[k] = min(out[k], v)
         elif k == "_errors":
             out[k] = out[k] + [e for e in v if e not in out[k]]
@@ -474,6 +479,19 @@ class Checker:
             self.err("E121", a.line, f"agent {a.name}: {msg}")
         if a.policy.get("samples") is not None and not 1 <= a.policy["samples"] <= 15:
             self.err("E121", a.line, f"agent {a.name}: samples must be between 1 and 15")
+        self.check_quantum(a)
+
+    def check_quantum(self, a):
+        """quantum.* tools (v0.3.2): sane shot counts and qubit limits."""
+        try:
+            from algoquantum import SIM_LIMIT
+        except ImportError:                       # e.g. a minimal embedding without the quantum module
+            SIM_LIMIT = 24
+        shots, maxq = a.policy.get("shots"), a.policy.get("max_qubits")
+        if shots is not None and not 1 <= shots <= 100_000:
+            self.err("E123", a.line, f"agent {a.name}: shots must be between 1 and 100000")
+        if maxq is not None and not 1 <= maxq <= SIM_LIMIT:
+            self.err("E123", a.line, f"agent {a.name}: max qubits must be between 1 and {SIM_LIMIT}")
 
     # statements ---------------------------------------------------
     def check_block(self, stmts, env):
@@ -984,7 +1002,7 @@ def compile_source(src: str, name: str, base_dir: Path | str | None = None):
     return CodeGen(prog, name).gen(), prog
 
 
-VERSION = "0.3.1"
+VERSION = "0.3.2"
 
 TEMPLATE = '''// {name}.algo — created by `algo new`
 // Run it:  algo run {name}.algo --arg "topic=Your topic here"

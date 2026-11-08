@@ -1,6 +1,6 @@
 # AlgoLang enterprise applications
 
-Nine complete, governed multi-agent applications, one per industry. Each is a real AlgoLang project with:
+Ten complete, governed multi-agent applications, one per industry. Each is a real AlgoLang project with:
 - organisation policy;
 - company tools over its own data;
 - a knowledge base;
@@ -21,13 +21,14 @@ They all run offline as they are, and with real Claude models when you add `--li
 | [Citizen Services Desk](citizen-services-desk/) | Government & public services | 2 | `ward.directory` | 2 |
 | [Algo Trading Desk (QuantOracle™)](algo-trading-desk/) | Capital markets | 3 | `backtest.stats`, `market.quote`, `risk.limits`, `book.positions` | 5 |
 | [Legal Contract Desk](legal-contract-desk/) | Legal & compliance | 2 | `clause.library` | 2 |
+| [Quantum Optimization Lab](quantum-optimization-lab/) | Quantum computing · finance & operations | 3 | `market.universe`, `quantum.portfolio`, `ops.clashes` + built-in `quantum.maxcut`, `quantum.random` | 4 |
 
-**9 applications · 18 programs · 25 behaviour tests**, all run in CI on every push.
+**10 applications · 21 programs · 29 behaviour tests**, all run in CI on every push.
 
 ## Run every application
 
 ```bash
-python enterprise-apps/run_all.py            # behaviour tests for all nine apps
+python enterprise-apps/run_all.py            # behaviour tests for all ten apps
 python enterprise-apps/run_all.py --batch    # also batch-process each app's sample CSV and verify the audit chain
 ```
 
@@ -50,6 +51,8 @@ python enterprise-apps/run_all.py --batch    # also batch-process each app's sam
 - **Parallel agents:** `par { … }` committees and `par for` fan-out over lists.
 - **Branching on confidence:** `if risk > 0.85 { … } else { … }`.
 - **v0.3 trust features (Algo Trading Desk):** `uncertain<score>` gates sampled 5 times, deterministic `contains` guards for hard limits, cost and energy budgets, and `eval` blocks inside the programs.
+- **Real-time streams (v0.3.1, Algo Trading Desk and SOC Incident Command):** a `stream` block runs the flow for every event on a Kafka topic.
+- **Quantum tools (v0.3.2, Quantum Optimization Lab):** QAOA portfolio selection and max-cut shift planning, each VERIFIED against the exact classical optimum before any agent acts on it; `shots` and `max qubits` policies.
 - **Company tools:** an agent gets a tool only if it declares it and the org allows it (`E115` otherwise).
 - **Fairness:** protected attributes are forbidden inputs (`E108` at compile time, blocked at run time).
 - **Human-in-the-loop, a hash-chained audit log, batch processing and caching**, all switched on by `algo.config.json`.

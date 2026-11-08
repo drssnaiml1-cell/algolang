@@ -1,6 +1,6 @@
 # AlgoLang roadmap
 
-**Current release: v0.3.1** (real-time Kafka streams) · **Next: v0.4 — Trustworthy AI**
+**Current release: v0.3.2** (quantum tools preview) · **Next: v0.4 — Trustworthy AI** · **Then: v0.5 — Quantum AI**
 
 AlgoProfessor AI R&D Solutions, Hyderabad. Designed by Dr. S. Satyanarayana. [www.algoprofessor.com](https://www.algoprofessor.com)
 
@@ -139,7 +139,7 @@ risk high "Credit decisions about individuals"     // program header
 | `limited` | a system card and a disclosure that users are talking to AI |
 | `high` | everything above, plus human oversight on every decision, `explain`, `redact pii`, fairness and robustness evals, signed audit logs |
 
-- New errors: **E122** (high-risk program without human oversight), **E123** (without fairness evals), **E124** (without explain), **E125** (forbidden attribute reachable through a tool).
+- New errors: **E124** (high-risk program without human oversight), **E125** (without fairness evals), **E126** (without explain), **E127** (forbidden attribute reachable through a tool). E122 and E123 are now used by streams and quantum tools.
 - **Done when:** all nine enterprise applications declare a risk level and compile under it.
 
 ### WP10 · Assurance reporting
@@ -154,7 +154,7 @@ algo trust report enterprise-apps/bank-credit-onboarding
 
 ---
 
-## 4. Already in place (v0.1 – v0.3)
+## 4. Already in place (v0.1 – v0.3.2)
 
 | Trustworthy-AI property | Shipped |
 |---|---|
@@ -166,18 +166,65 @@ algo trust report enterprise-apps/bank-credit-onboarding
 | Reproducibility | Traces, `algo replay`, `eval --replay` (v0.3) |
 | Tool governance | declared tools, `uses` grants, `allowed_tools`, MCP bindings under the same rules (v0.2–v0.3) |
 | Sustainability and cost control | cost and energy budgets, CO₂ reporting (v0.3) |
+| Oversight in real time | `stream` blocks: every event governed, routed to review or dead-letter topics, nothing dropped (v0.3.1) |
+| Verified quantum results | `quantum.*` tools check every optimisation against the exact optimum; `shots` / `max qubits` policies, **E123** (v0.3.2) |
 
 ---
 
-## 5. Later releases
+## 5. v0.5 Quantum AI
+
+**Objective: let agents use real quantum computers for real business problems, with results that are verified, bounded and accountable.**
+
+The v0.3.2 preview already gives agents five quantum tools (`quantum.run`, `quantum.qubo`, `quantum.maxcut`, `quantum.grover`, `quantum.random`) on an exact simulator. Every optimisation is VERIFIED against the exact optimum, `shots` and `max qubits` live in the policy, and the Quantum Optimization Lab enterprise application uses them in governed flows. v0.5 takes this to quantum hardware without giving up any of those guarantees.
+
+### Specific objectives
+
+| No. | Objective | Measured by |
+|---|---|---|
+| 1 | **Hardware access:** run the same program on a simulator or a real quantum processor (QPU) by changing one config line | Backends for IBM Quantum (Qiskit Runtime), Amazon Braket and Azure Quantum pass the same eval blocks |
+| 2 | **Budgets for QPU time:** quantum hardware is scarce and expensive | `budget qpu 30 seconds` and `budget cost 2 usd` checked before a job is submitted; QPU cost in `algo report` |
+| 3 | **Honest uncertainty:** a quantum answer is a distribution, not a fact | Quantum tools can return `uncertain<T>`; confidence comes from shot statistics and P(optimal); **E117** applies |
+| 4 | **Noise awareness:** results from noisy devices are labelled and mitigated | Noise models in the simulator; readout-error mitigation and zero-noise extrapolation; `expect fidelity > x` in evals |
+| 5 | **Verification beyond the simulator:** what if the problem is too big to check exactly? | Classical solvers give bounds: answers are `VERIFIED`, `BOUNDED` (within x% of a proven bound) or `UNCHECKED`, and guards can require the first two |
+| 6 | **More algorithms:** cover the main families of near-term applications | VQE (molecular energies), quantum kernels (classification), amplitude estimation (risk), QAOA for routing and scheduling |
+| 7 | **Provenance:** an auditor can see exactly what ran where | Device name, calibration snapshot, transpiled depth, shots and job ID in every audit record |
+| 8 | **Quantum-safe accountability:** audit evidence that outlives today's cryptography | Post-quantum signatures (ML-DSA, FIPS 204) for audit chains and evidence packs |
+
+### Target applications
+
+| Sector | Problem | Quantum method |
+|---|---|---|
+| Finance | Portfolio selection, index tracking, Value-at-Risk | QAOA on QUBOs; amplitude estimation |
+| Pharma and materials | Ground-state energies of small molecules, binding screens | VQE |
+| Logistics and manufacturing | Vehicle routing, job-shop and shift scheduling | QAOA, max-cut, constrained QUBOs |
+| Energy and utilities | Unit commitment, grid partitioning | QUBO formulations with verified bounds |
+| Telecom | Frequency and channel assignment | Graph colouring as a QUBO |
+| Cybersecurity | Inventory and migration to post-quantum cryptography | Agents that scan, plan and verify the migration (classical) |
+
+### Work packages
+
+- **Q1 · Hardware backends.** `"quantum": {"backend": "ibm:<device>" | "braket:<device>" | "azure:<target>"}` with credentials from environment variables, job submission, queue handling and timeouts.
+- **Q2 · QPU budgets and pricing.** A per-backend price table, pre-flight estimates, and run caps, as for model tokens in v0.3.
+- **Q3 · `uncertain<T>` quantum results.** Shot counts become samples; the runtime's existing aggregation and confidence guards apply.
+- **Q4 · Noise and mitigation.** Simulator noise models, readout mitigation, zero-noise extrapolation and fidelity expectations in evals.
+- **Q5 · Bounded verification.** Classical bounds (LP relaxations, heuristics) for problems past the exact-check limit; new guard words `BOUNDED` and `UNCHECKED`.
+- **Q6 · Algorithm library.** `quantum.vqe`, `quantum.kernel`, `quantum.amplitude`, plus QUBO builders for routing, colouring and knapsack.
+- **Q7 · Provenance and replay.** Hardware job metadata in audit records; replay answers from recorded counts with no QPU time.
+- **Q8 · Post-quantum audit signatures.** ML-DSA signing of audit chains; verification in `algo audit verify`.
+
+As in the rest of AlgoLang, the guarantees come from the language and runtime, not from a promise of quantum speed-up. A quantum result is used only when it has been checked, and a person stays accountable for the decision.
+
+---
+
+## 6. Later releases
 
 | Version | Theme | Highlights |
 |---|---|---|
-| **v0.5** | Interoperability | Publish a flow as an MCP server; argument type checking; streaming outputs; cost and energy dashboards in Studio |
+| **v0.6** | Interoperability | Publish a flow as an MCP server; argument type checking; token-by-token output streaming; cost and energy dashboards in Studio |
 | **v1.0** | Platform | Native runtime; typed agent-to-agent messaging; package registry for domain packs; SSO and role-based access for Studio |
 
 ---
 
-## 6. How to contribute
+## 7. How to contribute
 
-Pick a work package, open an issue titled `v0.4 WPn: …`, and read the [developer guide](DEVELOPER_GUIDE.md). Each package needs grammar changes (if any), compiler checks with error codes, runtime enforcement, tests, documentation, and an example in an enterprise application. Domain experts in law, finance, health and education are especially welcome to review the fairness and risk rules.
+Pick a work package, open an issue titled `v0.4 WPn: …` (or `v0.5 Qn: …` for quantum), and read the [developer guide](DEVELOPER_GUIDE.md). Each package needs grammar changes (if any), compiler checks with error codes, runtime enforcement, tests, documentation, and an example in an enterprise application. Domain experts in law, finance, health and education are especially welcome to review the fairness and risk rules.

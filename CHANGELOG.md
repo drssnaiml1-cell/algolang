@@ -4,6 +4,21 @@ All notable changes to AlgoLang are documented here. The format follows [Keep a 
 
 ## [Unreleased]
 
+## [0.3.2] — 2026-11-08
+
+### Added
+- **Quantum tools (preview).** Five built-in tools that agents can declare and use like any other: `quantum.run` (OpenQASM 2.0 circuits → measurement counts), `quantum.qubo` (QAOA on a QUBO), `quantum.maxcut` (QAOA max-cut on a weighted graph), `quantum.grover` (Grover search) and `quantum.random` (random bits or "pick k of n" sampling).
+- **Exact verification of every optimisation.** QAOA answers are compared with the exact classical optimum. The first line of the result says `VERIFIED` or `GAP: … % worse`, so a deterministic guard (`if r contains "VERIFIED"`) decides whether an agent may use it. Results also report P(optimal), the approximation ratio, the most frequent bitstrings and the backend.
+- **Quantum policies.** `shots N` and `max qubits N` in agent policies, and a `"quantum"` section in `algo.config.json` (`backend`, `max_qubits`, `shots`, `seed`, `qaoa_layers`). The stricter qubit limit wins, and bigger circuits are `BLOCKED` before they run. Runs are seeded, so audits and replays reproduce.
+- **E123**: `shots` outside 1–100000, or `max qubits` outside 1–24.
+- **`algoquantum.py`**: a NumPy state-vector simulator (Qiskit bit order, checked against Qiskit to a fidelity error below 10⁻¹²), an OpenQASM 2.0 reader, QAOA with layer-by-layer warm starts, QUBO builders for portfolios (with a cardinality penalty) and max-cut, Grover search, and an optional Qiskit Aer backend for `quantum.run`.
+- **Quantum Optimization Lab** enterprise application: a QAOA portfolio optimiser with risk review and human approval, a max-cut shift scheduler and quantum-random audit sampling, with eval blocks, behaviour tests and batch data.
+- **CI**: a quantum job runs the quantum tests with the Qiskit cross-check and the lab's evals, and compares a Bell circuit on the simulator and on Qiskit Aer. The `algolang[quantum]` extra and `requirements-quantum.txt` install NumPy.
+- **README**: an animated quantum pipeline diagram and a Quantum applications section. **ROADMAP**: the v0.5 Quantum AI plan, covering hardware backends, QPU budgets, noise mitigation, uncertain quantum results, bounded verification, an algorithm library, provenance and post-quantum audit signatures.
+
+### Changed
+- The planned v0.4 risk-governance errors move to E124–E127, because E122 and E123 are now in use. Interoperability moves from v0.5 to v0.6.
+
 ## [0.3.1] — 2026-11-08
 
 ### Added

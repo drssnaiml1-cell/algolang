@@ -154,14 +154,14 @@ Without `make`, run `ruff check . && pytest && python algoc.py dev lint examples
             └──────────────┬───────────────────────┘
                      SDK  algolang/__init__.py   Program · RunResult · domains · compose · audit · review
                            │
-   source ─► grammar.lark ─► Lark Earley parser ─► AST (algoc.to_ast) ─► Checker (E100–E122)
+   source ─► grammar.lark ─► Lark Earley parser ─► AST (algoc.to_ast) ─► Checker (E100–E123)
              ─► use/imports (load_program) ─► CodeGen ─► Python module ─► algoruntime.Runtime
                                                                             │
           policies · org config · tools · Mock/Claude/Replay backends · cache · hash-chained audit · review queue
           uncertain<T> sampling · cost & energy pricing · traces (v0.3)
 
    algoeval.py  eval blocks + replay      algomcp.py  MCP client/bindings      algolsp.py  language server
-   algostream.py  stream blocks on Kafka (v0.3.1)
+   algostream.py  stream blocks on Kafka (v0.3.1)    algoquantum.py  quantum tools (v0.3.2)
 ```
 
 | File | Responsibility |
@@ -180,6 +180,7 @@ Without `make`, run `ruff check . && pytest && python algoc.py dev lint examples
 | `algomcp.py` | MCP client over stdio/HTTP, `tool x from mcp "server"` bindings, `algo mcp` (v0.3) |
 | `algolsp.py` | Language server (`algo lsp`): diagnostics, hover, completion, definition, symbols (v0.3) |
 | `algostream.py` | `stream` blocks on Kafka (`algo stream`): MemoryBroker for tests, KafkaBroker, routing, at-least-once commits, metrics (v0.3.1) |
+| `algoquantum.py` | Quantum tools (v0.3.2): state-vector simulator, OpenQASM 2.0 reader, QAOA with exact verification, QUBO builders, Grover, random; registered by `algoruntime` at import |
 | `deploy/kafka/` | Docker Compose: ZooKeeper + Kafka with topics, and a KRaft variant |
 | `tools/make_packs.py` | Generator for the 120 domain packs and `packs/catalog.json` |
 

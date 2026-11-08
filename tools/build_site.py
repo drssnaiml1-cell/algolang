@@ -422,7 +422,8 @@ def build_playground_bundle(dst):
     for f in lark_dir.rglob("*"):
         if f.is_file() and "__pycache__" not in f.parts and f.suffix in (".py", ".lark", ".typed"):
             z.write(f, "lark/" + f.relative_to(lark_dir).as_posix())
-    for name in ("algoc.py", "algoruntime.py", "grammar.lark", "algolang/__init__.py", "algoagent.py"):
+    for name in ("algoc.py", "algoruntime.py", "grammar.lark", "algolang/__init__.py", "algoagent.py",
+                 "algoquantum.py"):
         z.write(ROOT / name, name)
     for f in (ROOT / "packs").rglob("*"):
         if f.is_file():
