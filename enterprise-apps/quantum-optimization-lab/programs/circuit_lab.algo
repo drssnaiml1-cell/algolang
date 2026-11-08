@@ -1,0 +1,74 @@
+// Circuit lab — quantum circuits written in AlgoLang itself, checked by the compiler, run as governed tools.
+// Each `circuit` becomes the tool circuit.Name; `algo quantum export circuit_lab.algo` prints the OpenQASM 2.0.
+circuit Bell {
+    qubits 2
+    h q0
+    cx q0, q1
+    measure
+}
+
+circuit GHZ {
+    qubits 3
+    h q0
+    cx q0, q1
+    cx q1, q2
+    measure
+}
+
+// Grover search over 4 items for item 3 (|11⟩): one iteration finds it with certainty on an ideal device
+circuit Grover2 {
+    qubits 2
+    h q0, q1
+    cz q0, q1
+    h q0, q1
+    x q0, q1
+    cz q0, q1
+    x q0, q1
+    h q0, q1
+    measure
+}
+
+agent Entanglement(question: text) -> text {
+    role   "Quantum physicist"
+    goal   "Run the Bell and GHZ circuits and explain what the counts say about {question}"
+    uses   circuit.Bell, circuit.GHZ
+    policy { shots 2000  max qubits 4 }
+}
+
+agent Search(question: text) -> text {
+    role   "Quantum algorithms engineer"
+    goal   "Run Grover's search and report which item was found, for {question}"
+    uses   circuit.Grover2
+    policy { shots 1000  max qubits 4 }
+}
+
+agent Verified(found: text) -> text {
+    role "Quantum algorithms engineer"
+    goal "Confirm that Grover's search found item 3 (|11⟩) in every shot, from {found}"
+}
+
+agent Investigate(found: text) -> text {
+    role "Quantum algorithms engineer"
+    goal "Explain why the Grover circuit did not return |11⟩ every time, from {found}"
+}
+
+flow main(question: text) {
+    [ent, found] = par { Entanglement(question), Search(question) }
+    // a deterministic check of the quantum result: on an ideal device every shot must be |11⟩
+    if found contains "11: 1000 (100%)" {
+        emit ent, found, Verified(found)
+    } else {
+        emit ent, found, Investigate(found)
+    }
+}
+
+eval circuits on main {
+    case "entangled states and Grover search" (question = "are these qubits entangled") {
+        expect status ok
+        expect tool circuit.Bell
+        expect tool circuit.Grover2
+        expect output contains "COUNTS for circuit.Bell"
+        expect called Verified
+        expect not called Investigate
+    }
+}

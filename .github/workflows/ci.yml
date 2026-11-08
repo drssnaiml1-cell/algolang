@@ -107,13 +107,36 @@ jobs:
         with: {python-version: "3.12", cache: pip}
       - run: pip install -e ".[dev,quantum]" qiskit qiskit-aer
       - name: Simulator, QAOA verification, Grover and policies (with the Qiskit cross-check enabled)
-        run: python -m pytest tests/test_quantum.py -v
+        run: python -m pytest tests/test_quantum.py tests/test_quantum_apps.py -v
       - name: Quantum Optimization Lab evals
         working-directory: enterprise-apps/quantum-optimization-lab
         run: |
           python ../../algoc.py eval programs/portfolio_optimizer.algo
           python ../../algoc.py eval programs/shift_scheduler.algo
           python ../../algoc.py eval programs/audit_sampling.algo
+          python ../../algoc.py eval programs/circuit_lab.algo
+          python ../../algoc.py quantum export programs/circuit_lab.algo --out "$RUNNER_TEMP/qasm"
+      - name: The other quantum applications (v0.3.3)
+        run: |
+          (cd enterprise-apps/soc-incident-command && python ../../algoc.py eval programs/pqc_readiness.algo)
+          (cd enterprise-apps/algo-trading-desk && python ../../algoc.py eval programs/risk_scenarios.algo)
+          (cd enterprise-apps/supply-chain-control-tower && python ../../algoc.py eval programs/route_optimizer.algo)
+      - name: Exported circuits run unchanged on Qiskit Aer
+        run: |
+          python - <<'PY'
+          import glob, os
+          from qiskit import QuantumCircuit, transpile
+          from qiskit_aer import AerSimulator
+          sim = AerSimulator(seed_simulator=1)
+          for f in sorted(glob.glob(os.path.join(os.environ["RUNNER_TEMP"], "qasm", "*.qasm"))):
+              qc = QuantumCircuit.from_qasm_file(f)
+              counts = sim.run(transpile(qc, sim), shots=1000).result().get_counts()
+              print(os.path.basename(f), counts)
+              if f.endswith("Grover2.qasm"):
+                  assert counts == {"11": 1000}
+              if f.endswith("Bell.qasm"):
+                  assert set(counts) == {"00", "11"}
+          PY
       - name: Same Bell circuit on the built-in simulator and on Qiskit Aer
         run: |
           python - <<'PY'

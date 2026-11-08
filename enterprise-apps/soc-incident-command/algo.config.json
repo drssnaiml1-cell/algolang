@@ -11,7 +11,8 @@
     "allowed_tools": [
       "kb.search",
       "cmdb.lookup",
-      "ioc.check"
+      "ioc.check",
+      "pqc.scan"
     ]
   },
   "max_concurrency": 16,
@@ -40,5 +41,9 @@
       "bootstrap_servers": "localhost:9092",
       "client_id": "soc-incident-command"
     }
+  },
+  "pqc": {
+    "quantum_threat_years": 10,
+    "migration_years": 3
   }
 }

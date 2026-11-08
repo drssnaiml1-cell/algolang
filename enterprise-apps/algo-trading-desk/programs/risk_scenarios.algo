@@ -1,0 +1,49 @@
+// Quantum Monte Carlo risk — end-of-day value at risk with a quantum amplitude estimation (QAE) check.
+// book → quantum.scenarios (one-factor Monte Carlo, VaR / expected shortfall, QAE estimate of the tail probability)
+//   → deterministic guard: a VaR above the desk limit goes to the risk committee (a person decides)
+// Research and paper trading only. Not investment advice. All data is synthetic.
+tool quantum.scenarios
+tool kb.search
+
+model fast = "claude-haiku-5-5"
+
+agent Scenarios(book: text) -> text {
+    role   "Quantitative risk analyst"
+    goal   "Run the Monte Carlo risk scenarios for {book}"
+    uses   quantum.scenarios
+    model  fast
+    policy { shots 4096  max qubits 16  budget cost 0.01 usd }
+}
+
+agent RiskCommittee(book: text, risk: text) -> text {
+    role   "Risk committee secretary"
+    goal   "Prepare the limit-breach decision for {book}: hedges or position cuts that bring {risk} back within the limit"
+    policy { require human when confidence < 0.99 }
+}
+
+agent RiskNote(risk: text) -> text {
+    role "Risk reporter"
+    goal "Write the end-of-day risk note from {risk}, explaining VaR, expected shortfall and the QAE check in plain words"
+}
+
+flow main(book: text) {
+    risk = Scenarios(book)
+    if risk contains "BREACH" {
+        emit risk, RiskCommittee(book, risk)
+    } else {
+        emit risk, RiskNote(risk)
+    }
+}
+
+eval var_limits on main {
+    case "book within a generous limit" (book = "data/risk_book.csv with correlation rho 0.35, limit 9000000") {
+        expect status ok
+        expect output contains "WITHIN LIMIT"
+        expect called RiskNote
+        expect not called RiskCommittee
+    }
+    case "tight limit is breached and goes to the committee" (book = "data/risk_book.csv with correlation rho 0.35, limit 500000") {
+        expect output contains "BREACH"
+        expect called RiskCommittee
+    }
+}

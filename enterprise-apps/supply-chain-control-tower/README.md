@@ -65,6 +65,7 @@ flowchart TD
 | Program | Input | Flow |
 |---|---|---|
 | `programs/exception_desk.algo` | `exception` | Track ∥ stock → critical? → impact, options, cost, plan; or carrier note |
+| `programs/route_optimizer.algo` *(quantum, v0.3.3)* | `request` | `quantum.routes` (QAOA on a one-hot routing QUBO, lane-clash costs) → VERIFIED and FEASIBLE? → dispatch plan (human gate) : classical fallback. Try `algo run programs/route_optimizer.algo --arg "request=data/route_options.csv, clash cost 60000 for shared lanes"` |
 
 ## Company tools (`plugins/`)
 

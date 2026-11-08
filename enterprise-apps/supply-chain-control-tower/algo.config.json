@@ -11,7 +11,8 @@
     "allowed_tools": [
       "kb.search",
       "inventory.levels",
-      "shipment.track"
+      "shipment.track",
+      "quantum.routes"
     ]
   },
   "max_concurrency": 16,
@@ -34,5 +35,12 @@
   },
   "plugins": [
     "plugins/konark_tools.py"
-  ]
+  ],
+  "quantum": {
+    "backend": "simulator",
+    "max_qubits": 12,
+    "shots": 2048,
+    "seed": 5,
+    "qaoa_layers": 2
+  }
 }

@@ -16,14 +16,14 @@ They all run offline as they are, and with real Claude models when you add `--li
 | [Hospital Care Coordination](hospital-care-coordination/) | Healthcare | 2 | `beds.availability` | 3 |
 | [Bank Credit & Onboarding](bank-credit-onboarding/) | Banking | 2 | `bureau.score`, `dti.calc`, `sanctions.screen` | 4 |
 | [University Admissions & OBE](university-admissions-obe/) | Higher education | 2 | `seats.lookup` | 2 |
-| [SOC Incident Command](soc-incident-command/) | Cybersecurity & IT operations | 2 | `cmdb.lookup`, `ioc.check` | 3 |
-| [Supply Chain Control Tower](supply-chain-control-tower/) | Logistics & retail | 1 | `shipment.track`, `inventory.levels` | 1 |
+| [SOC Incident Command](soc-incident-command/) | Cybersecurity & IT operations | 3 | `cmdb.lookup`, `ioc.check` + built-in `pqc.scan` | 4 |
+| [Supply Chain Control Tower](supply-chain-control-tower/) | Logistics & retail | 2 | `shipment.track`, `inventory.levels` + built-in `quantum.routes` | 2 |
 | [Citizen Services Desk](citizen-services-desk/) | Government & public services | 2 | `ward.directory` | 2 |
-| [Algo Trading Desk (QuantOracle™)](algo-trading-desk/) | Capital markets | 3 | `backtest.stats`, `market.quote`, `risk.limits`, `book.positions` | 5 |
+| [Algo Trading Desk (QuantOracle™)](algo-trading-desk/) | Capital markets | 4 | `backtest.stats`, `market.quote`, `risk.limits`, `book.positions` + built-in `quantum.scenarios` | 7 |
 | [Legal Contract Desk](legal-contract-desk/) | Legal & compliance | 2 | `clause.library` | 2 |
-| [Quantum Optimization Lab](quantum-optimization-lab/) | Quantum computing · finance & operations | 3 | `market.universe`, `quantum.portfolio`, `ops.clashes` + built-in `quantum.maxcut`, `quantum.random` | 4 |
+| [Quantum Optimization Lab](quantum-optimization-lab/) | Quantum computing · finance & operations | 4 | `market.universe`, `quantum.portfolio`, `ops.clashes` + built-in `quantum.maxcut`, `quantum.random`, `circuit` blocks | 5 |
 
-**10 applications · 21 programs · 29 behaviour tests**, all run in CI on every push.
+**10 applications · 25 programs · 34 behaviour tests**, all run in CI on every push.
 
 ## Run every application
 
@@ -51,6 +51,7 @@ python enterprise-apps/run_all.py --batch    # also batch-process each app's sam
 - **Parallel agents:** `par { … }` committees and `par for` fan-out over lists.
 - **Branching on confidence:** `if risk > 0.85 { … } else { … }`.
 - **v0.3 trust features (Algo Trading Desk):** `uncertain<score>` gates sampled 5 times, deterministic `contains` guards for hard limits, cost and energy budgets, and `eval` blocks inside the programs.
+- **Quantum applications (v0.3.3):** circuit blocks in the Quantum Optimization Lab, quantum-safe readiness in SOC Incident Command, Monte Carlo risk with amplitude estimation in the Algo Trading Desk, and QAOA logistics routing in the Supply Chain Control Tower.
 - **Real-time streams (v0.3.1, Algo Trading Desk and SOC Incident Command):** a `stream` block runs the flow for every event on a Kafka topic.
 - **Quantum tools (v0.3.2, Quantum Optimization Lab):** QAOA portfolio selection and max-cut shift planning, each VERIFIED against the exact classical optimum before any agent acts on it; `shots` and `max qubits` policies.
 - **Company tools:** an agent gets a tool only if it declares it and the org allows it (`E115` otherwise).

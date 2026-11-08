@@ -1,0 +1,16 @@
+{
+  "program": "../programs/risk_scenarios.algo",
+  "cases": [
+    {
+      "name": "VaR within the limit gets a risk note",
+      "inputs": {"book": "data/risk_book.csv with correlation rho 0.35, limit 9000000"},
+      "expect": {"status": "ok", "agents_called": ["Scenarios", "RiskNote"], "tools_used": ["quantum.scenarios"],
+                 "output_contains": "WITHIN LIMIT", "emits": 2}
+    },
+    {
+      "name": "VaR above the limit goes to the risk committee",
+      "inputs": {"book": "data/risk_book.csv with correlation rho 0.35, limit 500000"},
+      "expect": {"status": "ok", "agents_called": ["Scenarios", "RiskCommittee"], "output_contains": "BREACH", "emits": 2}
+    }
+  ]
+}

@@ -73,7 +73,7 @@
         },
         {
           "name": "keyword.other.algolang",
-          "match": "\\b(tool|role|goal|uses|model|policy|use|pack|as|from|mcp|eval|on|case|expect|called|contains|status|output|emits|escalated|stream|kafka|topic|group|map|key|to|escalate|dead|letter|max|flight|event)\\b"
+          "match": "\\b(tool|role|goal|uses|model|policy|use|pack|as|from|mcp|eval|on|case|expect|called|contains|status|output|emits|escalated|stream|kafka|topic|group|map|key|to|escalate|dead|letter|max|flight|event|circuit|qubits|measure)\\b"
         },
         {
           "name": "constant.language.algolang",

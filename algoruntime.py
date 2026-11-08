@@ -41,7 +41,7 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from pathlib import Path
 
-VERSION = "0.3.2"
+VERSION = "0.3.3"
 # WebAssembly builds of Python (Pyodide, used by the web playground) cannot start threads:
 # `par` then runs its branches one after another, with identical results.
 CAN_THREAD = sys.platform not in ("emscripten", "wasi")
@@ -676,6 +676,13 @@ class Runtime:
 
     def tool(self, name):
         self.tools.add(name)
+
+    def circuit_tool(self, name, qasm):
+        """`circuit Name { … }`: the tool circuit.Name runs the compiled OpenQASM (shots / max qubits from the policy)."""
+        self.tools.add(name)
+        if _algoquantum is None:
+            raise PolicyViolation(f"{name}: the quantum module (algoquantum.py) is not available")
+        TOOLS[name] = Tool(name, _algoquantum.circuit_tool(name, qasm), f"Run quantum circuit {name[8:]}")
 
     def mcp_tool(self, name, server):
         """`tool name from mcp "server"`: register a tool that calls the MCP server (started on first use)."""

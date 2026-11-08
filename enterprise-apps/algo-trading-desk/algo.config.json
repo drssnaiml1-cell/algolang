@@ -18,7 +18,8 @@
       "backtest.stats",
       "market.quote",
       "risk.limits",
-      "book.positions"
+      "book.positions",
+      "quantum.scenarios"
     ]
   },
   "max_concurrency": 16,
@@ -49,5 +50,12 @@
       "bootstrap_servers": "localhost:9092",
       "client_id": "quantoracle-risk-gate"
     }
+  },
+  "quantum": {
+    "backend": "simulator",
+    "max_qubits": 16,
+    "shots": 4096,
+    "seed": 3,
+    "qae_bits": 9
   }
 }

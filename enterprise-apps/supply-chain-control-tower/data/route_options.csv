@@ -1,0 +1,11 @@
+shipment,route,cost,lane
+SHP-101,NH44 via Nagpur,182000,NH44
+SHP-101,Rail to Raipur + truck,164000,RAIL-E
+SHP-101,Coastal via Vizag port,201000,SEA-E
+SHP-102,NH44 via Nagpur,96000,NH44
+SHP-102,NH65 via Pune,104000,NH65
+SHP-102,Rail to Raipur + truck,88000,RAIL-E
+SHP-103,NH65 via Pune,71000,NH65
+SHP-103,Coastal via Vizag port,79000,SEA-E
+SHP-104,NH44 via Nagpur,124000,NH44
+SHP-104,NH48 via Surat,131000,NH48

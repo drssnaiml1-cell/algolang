@@ -1,0 +1,6 @@
+name,value,mu,sigma
+NIFTY index futures,42000000,0.0004,0.011
+BANKNIFTY options (delta-adjusted),18000000,0.0003,0.019
+Large-cap equity basket,26000000,0.0005,0.013
+Gold ETF hedge,-8000000,0.0001,0.009
+USDINR futures,12000000,0.0000,0.004

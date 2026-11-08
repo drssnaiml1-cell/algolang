@@ -1,0 +1,57 @@
+// Quantum-safe readiness — which cryptography a large quantum computer could break, and what to move to.
+// inventory scan (pqc.scan: Shor / Grover rules, Mosca's harvest-now-decrypt-later test)
+//   → deterministic guards: BROKEN-NOW opens an incident at once; URGENT systems need the CISO's sign-off
+//   → phased migration plan to NIST FIPS 203 / 204 / 205 (ML-KEM, ML-DSA, SLH-DSA)
+tool pqc.scan
+tool kb.search
+
+model fast = "claude-haiku-5-5"
+
+agent QuantumScan(scope: text) -> text {
+    role  "Cryptography engineer"
+    goal  "Scan the cryptography inventory in {scope} for quantum risk"
+    uses  pqc.scan
+    model fast
+    policy { budget cost 0.005 usd }
+}
+
+agent Incident(scan: text) -> text {
+    role "SOC lead"
+    goal "Open an incident to replace the algorithms that are already broken today, listed in {scan}"
+}
+
+agent MigrationPlan(scope: text, scan: text) -> text {
+    role "Post-quantum migration lead"
+    goal "Write a phased post-quantum migration plan for {scope}: urgent systems first, hybrid key exchange, then signatures, from {scan}"
+    uses kb.search
+}
+
+agent CisoApproval(plan: text) -> text {
+    role   "Chief information security officer"
+    goal   "Approve, change or reject the migration plan {plan}"
+    policy { require human when confidence < 0.99 }
+}
+
+flow main(scope: text) {
+    scan = QuantumScan(scope)
+    if scan contains "BROKEN-NOW" {
+        Incident(scan)
+    }
+    plan = MigrationPlan(scope, scan)
+    if scan contains "URGENT" {
+        emit scan, plan, CisoApproval(plan)
+    } else {
+        emit scan, plan
+    }
+}
+
+eval quantum_safety on main {
+    case "bank inventory has urgent quantum-broken systems" (scope = "data/crypto_inventory.csv for the bank") {
+        expect status ok
+        expect tool pqc.scan
+        expect output contains "URGENT"
+        expect output contains "quantum-broken"
+        expect called Incident
+        expect called CisoApproval
+    }
+}

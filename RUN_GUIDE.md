@@ -267,6 +267,30 @@ agent Split(graph: text) -> text {
 
 Organisation-wide limits go in `algo.config.json`: `"quantum": {"backend": "simulator", "max_qubits": 16, "shots": 2048, "seed": 11}`. To run `quantum.run` circuits on Qiskit Aer, `pip install qiskit qiskit-aer` and set `"backend": "qiskit-aer"`.
 
+## Step 4f. Quantum circuits and applications (v0.3.3)
+
+Write a circuit in AlgoLang, then run or export it:
+
+```bash
+cd enterprise-apps/quantum-optimization-lab
+algo quantum run programs/circuit_lab.algo Bell          # about half 00, half 11: entanglement
+algo quantum export programs/circuit_lab.algo --out qasm # OpenQASM 2.0 files for Qiskit or IBM Quantum
+algo eval programs/circuit_lab.algo
+```
+
+The other three quantum applications:
+
+```bash
+cd ../soc-incident-command
+algo run programs/pqc_readiness.algo --arg "scope=data/crypto_inventory.csv for the bank"
+cd ../algo-trading-desk
+algo run programs/risk_scenarios.algo --arg "book=data/risk_book.csv with correlation rho 0.35, limit 9000000"
+cd ../supply-chain-control-tower
+algo run programs/route_optimizer.algo --arg "request=data/route_options.csv, clash cost 60000 for shared lanes"
+```
+
+Settings in `algo.config.json`: `"quantum": {"qae_bits": 9}` (evaluation qubits for amplitude estimation) and `"pqc": {"quantum_threat_years": 10, "migration_years": 3}`. The years until a quantum computer can break today's public-key cryptography are an assumption: set your organisation's own.
+
 ## Step 5. Live mode with real Claude (optional)
 
 By default agents are offline test agents, which give the same answer for the same input. To call real Claude models:

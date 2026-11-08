@@ -1,21 +1,56 @@
 {
   "organisation": "AlgoProfessor Quantum Optimization Lab (example organisation, synthetic data)",
   "policy": {
-    "forbid": ["gender", "caste", "religion", "pan_number", "aadhaar"],
+    "forbid": [
+      "gender",
+      "caste",
+      "religion",
+      "pan_number",
+      "aadhaar"
+    ],
     "max_budget_tokens": 8000,
     "min_human_below": 0.8,
     "max_budget_cost_usd": 0.06,
-    "allowed_tools": ["market.universe", "quantum.portfolio", "quantum.maxcut", "quantum.random", "quantum.qubo",
-                      "quantum.grover", "quantum.run", "ops.clashes", "kb.search"]
+    "allowed_tools": [
+      "market.universe",
+      "quantum.portfolio",
+      "quantum.maxcut",
+      "quantum.random",
+      "quantum.qubo",
+      "quantum.grover",
+      "quantum.run",
+      "ops.clashes",
+      "kb.search",
+      "circuit.Bell",
+      "circuit.GHZ",
+      "circuit.Grover2"
+    ]
   },
-  "quantum": {"backend": "simulator", "max_qubits": 16, "shots": 2048, "seed": 11, "qaoa_layers": 2},
+  "quantum": {
+    "backend": "simulator",
+    "max_qubits": 16,
+    "shots": 2048,
+    "seed": 11,
+    "qaoa_layers": 2
+  },
   "max_concurrency": 8,
   "max_run_tokens": 60000,
   "max_run_cost_usd": 0.5,
   "max_run_energy_wh": 10,
-  "cache": {"enabled": true},
+  "cache": {
+    "enabled": true
+  },
   "audit_dir": "runs",
-  "models": {"smart": "claude-sonnet-5-5", "fast": "claude-haiku-5-5"},
-  "tools": {"kb.search": {"dir": "kb"}},
-  "plugins": ["plugins/quantum_lab_tools.py"]
+  "models": {
+    "smart": "claude-sonnet-5-5",
+    "fast": "claude-haiku-5-5"
+  },
+  "tools": {
+    "kb.search": {
+      "dir": "kb"
+    }
+  },
+  "plugins": [
+    "plugins/quantum_lab_tools.py"
+  ]
 }

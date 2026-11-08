@@ -16,7 +16,7 @@
 AlgoProfessor AI R&D Solutions, Hyderabad. Designed by Dr. S. Satyanarayana.
 🌐 **[www.algoprofessor.com](https://www.algoprofessor.com)**
 
-**Current version: 0.3.2** (quantum tools preview · real-time Kafka streams) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md) · [50 Sample Programs (PDF)](docs/AlgoLang_50_Sample_Programs.pdf) · [Language manual (PDF)](docs/AlgoLang_Documentation_v0.3.pdf)
+**Current version: 0.3.3** (quantum circuits and four quantum applications · real-time Kafka streams) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md) · [50 Sample Programs (PDF)](docs/AlgoLang_50_Sample_Programs.pdf) · [Language manual (PDF)](docs/AlgoLang_Documentation_v0.3.pdf)
 
 AlgoLang has **no functions**. Every unit of work is an `agent` with a role, a goal, explicit tools, a model and a policy. A `flow` is the only other construct, and it can do just four things:
 
@@ -35,7 +35,7 @@ flowchart TB
     end
     subgraph COMPILER["② Compiler · algoc.py — unsafe programs never run"]
         direction LR
-        SRC[".algo source"] --> PARSE["Lark grammar"] --> AST["AST"] --> CHK{{"Checker · E100–E123"}} --> GEN["Python code"]
+        SRC[".algo source"] --> PARSE["Lark grammar"] --> AST["AST"] --> CHK{{"Checker · E100–E124"}} --> GEN["Python code"]
     end
     subgraph RUNTIME["③ Runtime · algoruntime.py — every call governed"]
         direction LR
@@ -58,7 +58,7 @@ flowchart TB
 
 | | |
 |---|---|
-| **Write** agents and flows; the compiler rejects unsafe programs before anything runs (24 error codes). | **Govern** every call with budgets, forbidden attributes, allowed tools and a human gate. |
+| **Write** agents and flows; the compiler rejects unsafe programs before anything runs (25 error codes). | **Govern** every call with budgets, forbidden attributes, allowed tools and a human gate. |
 | **Prove** what happened: hash-chained audit logs, traces you can replay for free, `eval` blocks in CI. | **Scale** to real time: a `stream` block runs a flow for every event on a Kafka topic. |
 | **Optimise** with quantum tools: every QAOA answer is VERIFIED against the exact optimum before an agent acts on it. | **Connect** to Claude, MCP tool servers, Kafka and quantum backends, from the CLI, Studio, SDK or your editor. |
 
@@ -71,7 +71,7 @@ flowchart TB
 5. [Learn by example: 50 sample programs](#5-learn-by-example-50-sample-programs)
 6. [Enterprise applications](#6-enterprise-applications)
 7. [Real-time events: Kafka and ZooKeeper](#7-real-time-events-kafka-and-zookeeper)
-8. [Quantum applications (preview)](#8-quantum-applications-preview)
+8. [Quantum applications](#8-quantum-applications)
 9. [The language](#9-the-language)
 10. [Governance and runtime guarantees](#10-governance-and-runtime-guarantees)
 11. [Python SDK](#11-python-sdk)
@@ -143,7 +143,9 @@ eval regression on main {                                    // 4. tests next to
 | **Deterministic guards** | `if limits contains "BREACH"` checks text, including a tool's full answer, with no model involved. Hard limits cannot be overruled by a model. | `if x not contains "FAILS"` |
 | **Language server** | `algo lsp` gives any editor live errors, hover, completion, go-to-definition (including into domain packs) and an outline. The VS Code extension starts it automatically. | `vscode-algolang/` |
 
-**v0.3.2 adds quantum tools (preview):** QAOA optimisation verified against the exact optimum, OpenQASM circuits, Grover search and `shots` / `max qubits` policies. See [§8](#8-quantum-applications-preview).
+**v0.3.2 adds quantum tools (preview):** QAOA optimisation verified against the exact optimum, OpenQASM circuits, Grover search and `shots` / `max qubits` policies. See [§8](#8-quantum-applications).
+
+**v0.3.3 adds quantum circuits to the language** (`circuit Bell { qubits 2  h q0  cx q0, q1  measure }`) and four quantum applications: portfolio optimisation, quantum-safe security, Monte Carlo risk with amplitude estimation, and logistics routing.
 
 **v0.3.1 adds real-time streams:** a `stream` block runs a flow for every event on a Kafka topic. See [§7](#7-real-time-events-kafka-and-zookeeper).
 
@@ -303,7 +305,7 @@ sequenceDiagram
 
 Two enterprise applications ship with streams: the **Algo Trading Desk** (order intents → pre-trade risk gate) and the **SOC Incident Command** (SIEM alerts → incidents). Install the client with `pip install -r requirements-stream.txt` (or `pip install "algolang[stream]"`).
 
-## 8. Quantum applications (preview)
+## 8. Quantum applications
 
 <p align="center"><img src="docs/images/algolang-quantum.svg" alt="A portfolio problem becomes a QUBO, runs as a QAOA circuit with one qubit per asset, is measured 2,048 times and checked against the exact classical optimum; only a VERIFIED answer reaches the risk review and the human approver" width="100%"></p>
 
@@ -339,15 +341,77 @@ flow main(request: text) {
 | `quantum.maxcut` | Splits a weighted graph (`"A-B:3, B-C:1"`) into two groups with QAOA max-cut, verified | Shift and crew scheduling, network partitioning, load balancing |
 | `quantum.grover` | Grover search for marked items among 2ⁿ, with the classical query count for comparison | Search and constraint-satisfaction teaching |
 | `quantum.random` | Random bits, or "pick k of n" sampling, from measured qubits | Unpredictable audit sampling, randomised controls |
+| `quantum.routes` *(v0.3.3)* | One route per shipment at the lowest total cost, with shared-lane clash costs; a QUBO solved by QAOA, `VERIFIED` and checked `FEASIBLE` | Logistics, fleet and crew assignment |
+| `quantum.scenarios` *(v0.3.3)* | Monte Carlo value at risk and expected shortfall, plus a quantum amplitude estimation (QAE) of the tail probability with its error bound and oracle-call count | Market and credit risk, limit monitoring |
+| `pqc.scan` *(v0.3.3)* | Reads a cryptography inventory and flags what Shor's and Grover's algorithms would break or weaken, with Mosca's harvest-now-decrypt-later test and the NIST FIPS 203/204/205 replacement | Quantum-safe migration planning |
+| `circuit.Name` *(v0.3.3)* | Every `circuit` block in the program | Your own algorithms, teaching, OpenQASM export |
+
+### Write circuits in AlgoLang (v0.3.3)
+
+```algo
+// Grover search over 4 items for item 3 (|11⟩)
+circuit Grover2 {
+    qubits 2
+    h q0, q1                     // one-qubit gates can list several qubits
+    cz q0, q1                    // oracle
+    h q0, q1   x q0, q1   cz q0, q1   x q0, q1   h q0, q1     // diffusion
+    measure
+}
+
+agent Search(question: text) -> text {
+    goal   "Run Grover's search and report which item was found, for {question}"
+    uses   circuit.Grover2          // the circuit is a tool: declared, granted, audited
+    policy { shots 1000  max qubits 4 }
+}
+
+flow main(question: text) {
+    found = Search(question)
+    if found contains "11: 1000 (100%)" { emit found, Verified(found) }    // check the quantum result exactly
+    else { emit found, Investigate(found) }
+}
+```
+
+The compiler checks every circuit (**E124**): known gates (`h x y z s t rx ry rz p u1 u2 u3 cx cy cz ch crz cp swap ccx …`), the right number of qubits and angles, qubits that exist, and angles such as `pi/4`. Then:
+
+```bash
+algo quantum list   circuit_lab.algo           # circuits and their sizes
+algo quantum run    circuit_lab.algo Grover2   # counts as a histogram
+algo quantum export circuit_lab.algo --out qasm/   # OpenQASM 2.0 for Qiskit, IBM Quantum, Braket …
+```
+
+### Four quantum applications
+
+```mermaid
+flowchart LR
+    P["Business problem"] --> M["Quantum model<br/>QUBO · circuit · amplitude estimation"]
+    M --> Q["Quantum tool<br/>shots · max qubits"]
+    Q --> V{{"Classical check<br/>exact optimum · feasibility · error bound"}}
+    V -- "VERIFIED" --> R["Agent review<br/>uncertain&lt;score&gt;"] --> H(["👤 human approves"])
+    V -- "GAP · INFEASIBLE · BREACH" --> F["Classical fallback<br/>or escalation"]
+    Q --> A[("audit log")]
+    classDef navy fill:#0e2140,stroke:#c9a227,color:#f4f1e8;
+    classDef gold fill:#c9a227,stroke:#0e2140,color:#0e2140;
+    class P,M,Q,R,F navy; class V gold;
+```
+
+| Application | Program | Quantum method | The governed decision |
+|---|---|---|---|
+| **Portfolio optimisation** | [`quantum-optimization-lab/programs/portfolio_optimizer.algo`](enterprise-apps/quantum-optimization-lab/programs/portfolio_optimizer.algo) | QAOA on a portfolio QUBO, one qubit per asset | VERIFIED portfolio → risk review (sampled 5×) → paper proposal for a person to approve |
+| **Quantum-safe security** | [`soc-incident-command/programs/pqc_readiness.algo`](enterprise-apps/soc-incident-command/programs/pqc_readiness.algo) | Shor/Grover threat model, Mosca's rule | broken-today crypto opens an incident; URGENT systems need the CISO's sign-off on a migration plan to ML-KEM / ML-DSA / SLH-DSA |
+| **Monte Carlo risk** | [`algo-trading-desk/programs/risk_scenarios.algo`](enterprise-apps/algo-trading-desk/programs/risk_scenarios.algo) | One-factor Monte Carlo from qubit draws, plus quantum amplitude estimation of the tail probability | VaR above the desk limit goes to the risk committee (a person decides); otherwise a risk note |
+| **Logistics routing** | [`supply-chain-control-tower/programs/route_optimizer.algo`](enterprise-apps/supply-chain-control-tower/programs/route_optimizer.algo) | QAOA on a one-hot routing QUBO with lane-clash costs | VERIFIED and FEASIBLE plan → dispatch (human gate); otherwise the classical optimum |
+| Circuit lab | [`quantum-optimization-lab/programs/circuit_lab.algo`](enterprise-apps/quantum-optimization-lab/programs/circuit_lab.algo) | Bell, GHZ and Grover circuits written in AlgoLang | the Grover result is checked exactly before it is reported |
+
+Each program has an `eval` block and behaviour tests that run in CI.
 
 **What makes it trustworthy**
 
 - **Exact verification.** The simulator holds every amplitude, so the true optimum is known up to the qubit limit. The tool reports `VERIFIED`, or `GAP: … % worse`, plus P(optimal) and the approximation ratio.
 - **Limits in the policy.** `shots N` and `max qubits N` per agent, `"quantum": {"max_qubits": …}` for the whole organisation; the stricter limit wins. Bigger circuits are `BLOCKED`.
 - **Reproducible.** Runs are seeded, so the same request gives the same answer, as audit and `algo replay` require.
-- **Honest about the hardware.** Every answer names its backend. The built-in simulator is checked against Qiskit on every CI run (fidelity error below 10⁻¹²). It computes what an ideal quantum computer would return, on a classical computer, so it is correct but not faster. Real quantum hardware arrives in v0.5.
+- **Honest about the hardware.** Every answer names its backend. The built-in simulator is checked against Qiskit on every CI run (fidelity error below 10⁻¹²). It computes what an ideal quantum computer would return, on a classical computer, so it is correct but not faster. Amplitude estimation is simulated exactly from its phase-estimation statistics; its quadratic speed-up over Monte Carlo needs fault-tolerant hardware. `pqc.scan` applies published rules (it is not a penetration test), and its time-to-quantum-threat is an assumption you set. Real quantum hardware arrives in v0.5.
 
-The [**Quantum Optimization Lab**](enterprise-apps/quantum-optimization-lab/) puts this to work in three governed programs: a QAOA portfolio optimiser with risk review and human approval, a max-cut shift scheduler for a plant, and quantum-random audit sampling. Install with `pip install "algolang[quantum]"` (NumPy). For Qiskit Aer, also `pip install qiskit qiskit-aer` and set `"backend": "qiskit-aer"`.
+The [**Quantum Optimization Lab**](enterprise-apps/quantum-optimization-lab/) also has a max-cut shift scheduler and quantum-random audit sampling. Install with `pip install "algolang[quantum]"` (NumPy). For Qiskit Aer, also `pip install qiskit qiskit-aer` and set `"backend": "qiskit-aer"`.
 
 ## 9. The language
 
@@ -410,6 +474,7 @@ flow main(topic: text) {
 | E121 | Bad policy value: unknown currency or energy unit, or `samples` outside 1–15 |
 | E122 | `stream` block error: unknown flow or input, mapping not read from `event`, a result topic equal to the source topic, or `max in flight` outside 1–256 |
 | E123 | Quantum policy or tool error: `shots` outside 1–100000, or `max qubits` outside 1–24 |
+| E124 | `circuit` block error: no or too many qubits, unknown gate, wrong number of qubits or angles, a qubit that does not exist, a bad angle, or a duplicate circuit |
 
 Errors from imported modules are reported with the file name, and the org config is enforced at compile time: a forbidden attribute or an ungranted tool is an error before anything runs.
 
@@ -510,7 +575,7 @@ The next release puts **trustworthy AI** at the centre. Its aim is that every Al
 
 Already shipped toward this goal: hash-chained audit logs, human review queues, forbidden attributes (E108), `uncertain<T>` with confidence guards (E117), deterministic `contains` guards, replayable traces, and cost/energy budgets.
 
-**v0.5 — Quantum AI.** The v0.3.2 preview becomes a full release. Planned: real quantum hardware (IBM Quantum, Amazon Braket, Azure Quantum) with QPU-time and cost budgets; noise models and error mitigation; quantum results as `uncertain<T>` values whose confidence comes from shot statistics; VQE for chemistry and materials, quantum kernels for classification, amplitude estimation for financial risk; verified bounds beyond the simulator's reach; and post-quantum signatures for the audit chain. Details in [ROADMAP.md](ROADMAP.md#5-v05-quantum-ai).
+**v0.5 — Quantum AI.** The v0.3.2 preview becomes a full release. Planned: real quantum hardware (IBM Quantum, Amazon Braket, Azure Quantum) with QPU-time and cost budgets; noise models and error mitigation; quantum results as `uncertain<T>` values whose confidence comes from shot statistics; VQE for chemistry and materials, quantum kernels for classification, amplitude estimation for financial risk on hardware; verified bounds beyond the simulator's reach; and post-quantum signatures for the audit chain. Details in [ROADMAP.md](ROADMAP.md#5-v05-quantum-ai).
 
 **Later:** v0.6 adds agents as MCP servers, argument type checking and token-by-token output streaming. v1.0 adds a native runtime, typed agent-to-agent messaging, a package registry and SSO/RBAC for Studio.
 
@@ -520,7 +585,8 @@ Already shipped toward this goal: hash-chained audit logs, human review queues, 
 | v0.2 | Enterprise: modules, org policy, 120 domain packs, audit, review queue, SDK, three modes | Released |
 | v0.3 | Uncertainty, evals and replay, MCP, cost and energy budgets, language server, deterministic guards | Released |
 | v0.3.1 | Real-time `stream` blocks on Kafka and ZooKeeper | Released |
-| v0.3.2 | Quantum tools preview: QAOA verified exactly, OpenQASM, Grover, quantum policies | **Current** |
+| v0.3.2 | Quantum tools preview: QAOA verified exactly, OpenQASM, Grover, quantum policies | Released |
+| v0.3.3 | Quantum circuits in the language; quantum-safe security, Monte Carlo with amplitude estimation, logistics routing | **Current** |
 | v0.4 | Trustworthy AI | Next |
 | v0.5 | Quantum AI: hardware backends, noise, uncertain quantum results, chemistry and risk algorithms | Planned |
 | v0.6 | Interoperability: agents as MCP servers, argument types, output streaming | Planned |
@@ -557,7 +623,8 @@ algoeval.py                   eval blocks, traces and replay (algo eval, algo re
 algomcp.py                    MCP client and tool bindings (algo mcp)                         — v0.3
 algolsp.py                    language server (algo lsp)                                      — v0.3
 algostream.py                 real-time streams on Kafka (algo stream)                        — v0.3.1
-algoquantum.py                quantum tools: simulator, OpenQASM, QAOA + exact check, Grover — v0.3.2
+algoquantum.py                quantum tools: simulator, OpenQASM, QAOA + exact check, Grover — v0.3.2;
+                              circuit blocks, routing, Monte Carlo + QAE, PQC readiness — v0.3.3
 deploy/kafka/                 Docker Compose: ZooKeeper + Kafka (and a KRaft variant)
 docs/images/                  README diagrams (animated SVG) and Studio screenshots
 examples/v03/                 tour of v0.3: MCP demo server, uncertain<T>, budgets, eval

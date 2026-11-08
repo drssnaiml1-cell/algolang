@@ -1,4 +1,4 @@
-"""algoquantum — quantum computing tools for AlgoLang agents (v0.3.2, preview).
+"""algoquantum — quantum computing tools for AlgoLang agents (v0.3.2, extended in v0.3.3).
 
 Agents reach quantum computers the same way they reach any other system: through declared, granted,
 audited tools. Five tools are built in:
@@ -8,6 +8,10 @@ audited tools. Five tools are built in:
     quantum.maxcut   split a weighted graph into two groups with the heaviest cut (QAOA, verified)
     quantum.grover   Grover search for marked items among 2^n
     quantum.random   random bits from measuring qubits in superposition
+    quantum.routes     logistics: one route per shipment at the lowest total cost, as a QUBO solved by QAOA (v0.3.3)
+    quantum.scenarios  Monte Carlo risk (VaR, expected shortfall) with a quantum amplitude estimation check (v0.3.3)
+    pqc.scan           quantum-safe readiness: which cryptography a quantum computer could break, and what to move to (v0.3.3)
+    circuit.Name       every `circuit Name { … }` block in a program (v0.3.3)
 
     tool quantum.qubo
     agent Optimizer(problem: text) -> text {
@@ -172,6 +176,9 @@ def gate_matrix(name, params, np):
 GATES = {"h": 1, "x": 1, "y": 1, "z": 1, "s": 1, "sdg": 1, "t": 1, "tdg": 1, "id": 1, "rx": 1, "ry": 1, "rz": 1,
          "p": 1, "u1": 1, "u2": 1, "u3": 1, "u": 1, "cx": 2, "cz": 2, "cy": 2, "ch": 2, "crz": 2, "cp": 2, "cu1": 2,
          "swap": 2, "ccx": 3}
+
+
+PARAMS = {"rx": 1, "ry": 1, "rz": 1, "p": 1, "u1": 1, "crz": 1, "cp": 1, "cu1": 1, "u2": 2, "u3": 3, "u": 3}
 
 
 def _num(expr):
@@ -538,6 +545,281 @@ def tool_random(query: str) -> str:
     return f"BITS: {bits} ({nbits} bits from qubits in superposition) · backend: simulator (pseudo-random)"
 
 
+# ═══════════════════════════════ circuit blocks (v0.3.3) ═══════════════════════════════
+def circuit_tool(name, qasm):
+    """The tool behind `circuit Name { … }`: run its compiled OpenQASM with the caller's shot and qubit limits."""
+    def run(query: str) -> str:
+        s = settings()
+        r = run_qasm(qasm, seed=_seed(s, name))
+        total = sum(r["counts"].values()) or 1
+        top = ", ".join(f"{k}: {v} ({v / total:.0%})" for k, v in list(r["counts"].items())[:8])
+        return (f"COUNTS for {name} from {r['shots']} shots on {r['qubits']} qubits ({r['depth']} gates, backend: "
+                f"{r['backend']}): {top}\nbitstrings are written with the highest qubit first (q{r['qubits'] - 1} … q0)")
+    return _guard(run)
+
+
+# ═══════════════════════════════ files the tools may read ═══════════════════════════════
+def _data_file(query, tool):
+    """A .csv/.json file named in the request, inside the tool's root (default: file.read's root, else data/)."""
+    import algoruntime
+    tools = algoruntime.load_config().get("tools") or {}
+    root = (tools.get(tool) or {}).get("root") or (tools.get("file.read") or {}).get("root") or "data"
+    base = algoruntime.config_path().parent if algoruntime.config_path() else __import__("pathlib").Path.cwd()
+    root = (base / root).resolve()
+    m = re.search(r"[\w\-./]+\.(?:csv|json)", query)
+    if not m:
+        return None
+    name = m.group(0)
+    for cand in ((root / name), (root / name.split("/", 1)[-1]) if name.startswith("data/") else None):
+        if cand is not None:
+            cand = cand.resolve()
+            if not str(cand).startswith(str(root)):
+                raise ValueError(f"refused: {name} is outside the permitted folder")
+            if cand.exists():
+                return cand
+    raise ValueError(f"file not found: {name}")
+
+
+def _csv_rows(path):
+    import csv
+    with open(path, newline="", encoding="utf-8") as fh:
+        return [{k.strip().lower(): (v or "").strip() for k, v in row.items()} for row in csv.DictReader(fh)]
+
+
+# ═══════════════════════════════ logistics routing (v0.3.3) ═══════════════════════════════
+def routes_qubo(options, clashes, penalty=None):
+    """options: [(shipment, route, cost)]; clashes: [(i, j, extra cost)] between option indices.
+    Exactly one route per shipment (penalty A(Σx − 1)² per shipment), plus route costs and clash costs."""
+    np = _np()
+    n = len(options)
+    Q = np.zeros((n, n))
+    A = penalty if penalty is not None else 1.0 + sum(abs(c) for *_, c in options) + sum(abs(w) for *_, w in clashes)
+    offset = 0.0
+    for i, (_, _, cost) in enumerate(options):
+        Q[i, i] += cost
+    for ship in sorted({o[0] for o in options}):
+        idx = [i for i, o in enumerate(options) if o[0] == ship]
+        offset += A
+        for i in idx:
+            Q[i, i] -= A
+        for a in idx:
+            for b in idx:
+                if a != b:
+                    Q[a, b] += A
+    for i, j, w in clashes:
+        Q[i, j] += w / 2
+        Q[j, i] += w / 2
+    return Q, offset
+
+
+def tool_routes(query: str) -> str:
+    """Input: "S1: R1=120, R2=95; S2: R1=80, R2=110; clash S1.R2+S2.R1=60", or a CSV named in the request with
+    columns shipment, route, cost[, lane]: options of different shipments on the same lane clash."""
+    options, clashes = [], []
+    path = _data_file(query, "quantum.routes")
+    if path:
+        rows = _csv_rows(path)
+        options = [(r["shipment"], r["route"], float(r.get("cost") or r.get("cost_inr") or 0)) for r in rows]
+        lanes = [r.get("lane", "") for r in rows]
+        clash_cost = float(re.search(r"clash(?:\s+cost)?\s*=?\s*(\d+(?:\.\d+)?)", query).group(1)) \
+            if re.search(r"clash(?:\s+cost)?\s*=?\s*\d", query) else max(c for *_, c in options) / 2
+        for i in range(len(rows)):
+            for j in range(i + 1, len(rows)):
+                if lanes[i] and lanes[i] == lanes[j] and options[i][0] != options[j][0]:
+                    clashes.append((i, j, clash_cost))
+    else:
+        text = re.split(r"\bclash", query, maxsplit=1)
+        for ship, body in re.findall(r"([A-Za-z][\w-]*)\s*:\s*([^;]+)", text[0]):
+            for route, cost in re.findall(r"([A-Za-z][\w-]*)\s*=\s*(\d+(?:\.\d+)?)", body):
+                options.append((ship, route, float(cost)))
+        pos = {(sh, r): i for i, (sh, r, _) in enumerate(options)}
+        for a1, a2, b1, b2, w in re.findall(r"([\w-]+)\.([\w-]+)\s*\+\s*([\w-]+)\.([\w-]+)\s*=\s*(\d+(?:\.\d+)?)",
+                                            text[1] if len(text) > 1 else ""):
+            if (a1, a2) in pos and (b1, b2) in pos:
+                clashes.append((pos[(a1, a2)], pos[(b1, b2)], float(w)))
+    if len({o[0] for o in options}) < 1 or len(options) < 2:
+        return 'no route options found: write "S1: R1=120, R2=95; S2: R1=80, R2=110" or name a CSV file'
+    Q, offset = routes_qubo(options, clashes)
+    labels = [f"{sh}→{r}" for sh, r, _ in options]
+    res = solve_qubo(Q, offset, labels)
+    chosen = {lab.split("→")[0]: lab.split("→")[1] for lab in res["selection"]}
+    feasible = sorted(chosen) == sorted({o[0] for o in options}) and len(res["selection"]) == len(chosen)
+    base = sum(c for sh, r, c in options if chosen.get(sh) == r)
+    pos = {f"{sh}→{r}": i for i, (sh, r, _) in enumerate(options)}
+    hit = [w for i, j, w in clashes if labels[i] in res["selection"] and labels[j] in res["selection"]]
+    lines = [format_solution(res, "routes"),
+             ("FEASIBLE: every shipment has exactly one route" if feasible else
+              "INFEASIBLE: a shipment has no route or two routes — use the classical optimum above"),
+             "plan: " + "; ".join(f"{sh} via {chosen[sh]}" for sh in sorted(chosen)) +
+             f" · route cost {base:g}" + (f" · {len(hit)} lane clash(es) adding {sum(hit):g}" if hit else " · no lane clashes")]
+    del pos
+    return "\n".join(lines)
+
+
+# ═══════════════════════════════ Monte Carlo risk + amplitude estimation (v0.3.3) ═══════════════════════════════
+def qae_estimate(p, m, shots, seed):
+    """Canonical quantum amplitude estimation of a probability p with m evaluation qubits, on an ideal device.
+    The Grover operator has eigenphases ±2θ (sin²θ = p); phase estimation measures y with the exact probability
+    ½[F(θ/π − y/M) + F(−θ/π − y/M)], F(δ) = sin²(πMδ) / (M² sin²(πδ)). Returns (estimate, oracle calls, error bound)."""
+    np = _np()
+    M = 2 ** m
+    theta = math.asin(math.sqrt(min(max(p, 0.0), 1.0)))
+    y = np.arange(M)
+
+    def F(d):
+        d = (d + 0.5) % 1.0 - 0.5                      # distance to the nearest integer
+        out = np.ones_like(d)
+        nz = np.abs(d) > 1e-12
+        out[nz] = (np.sin(math.pi * M * d[nz]) ** 2) / (M ** 2 * np.sin(math.pi * d[nz]) ** 2)
+        return out
+
+    probs = 0.5 * (F(theta / math.pi - y / M) + F(-theta / math.pi - y / M))
+    rng = np.random.default_rng(seed)
+    draws = rng.choice(M, size=shots, p=probs / probs.sum())
+    y_star = int(np.bincount(draws, minlength=M).argmax())
+    est = math.sin(math.pi * y_star / M) ** 2
+    bound = 2 * math.pi * math.sqrt(p * (1 - p)) / M + math.pi ** 2 / M ** 2
+    return est, M - 1, bound
+
+
+def tool_scenarios(query: str) -> str:
+    """Input: a CSV named in the request (name, value, mu, sigma — daily, as fractions) or JSON
+    {"positions": [{"name", "value", "mu", "sigma"}], "rho": 0.3, "scenarios": 4096, "confidence": 0.99}."""
+    from statistics import NormalDist
+    np = _np()
+    s = settings()
+    data = _json_in(query) or {}
+    path = _data_file(query, "quantum.scenarios")
+    if path:
+        rows = _csv_rows(path)
+        positions = [dict(name=r.get("name") or r.get("instrument"), value=float(r["value"]),
+                          mu=float(r.get("mu") or 0), sigma=float(r["sigma"])) for r in rows]
+    else:
+        positions = data.get("positions") or []
+    if not positions:
+        return 'no positions found: name a CSV (name, value, mu, sigma) or give JSON {"positions": [...]}'
+    q = query.lower()
+    def num(key, default):
+        m = re.search(key + r"\s*[=:]?\s*(\d+(?:\.\d+)?)", q)
+        return float(m.group(1)) if m else float(data.get(key, default))
+    rho = num("rho", 0.3)
+    conf = num("confidence", 0.99)
+    conf = conf / 100 if conf > 1 else conf
+    n_scen = int(min(max(num("scenarios", 4096), 256), 200_000))
+    horizon = num("horizon", 1)
+    k = len(positions)
+    rng = np.random.default_rng(_seed(s, query))
+    # uniform draws from measuring 16 qubits in uniform superposition (pseudo-random on the simulator)
+    u = (rng.integers(0, 2 ** 16, size=(n_scen, k + 1)) + 0.5) / 2 ** 16
+    z = np.vectorize(NormalDist().inv_cdf)(u)
+    shocks = math.sqrt(rho) * z[:, :1] + math.sqrt(1 - rho) * z[:, 1:]          # one-factor correlation
+    val = np.array([p["value"] for p in positions], float)
+    mu = np.array([p.get("mu", 0.0) for p in positions], float)
+    sig = np.array([p["sigma"] for p in positions], float)
+    pnl = (val * (mu * horizon + sig * math.sqrt(horizon) * shocks)).sum(axis=1)
+    var = float(-np.quantile(pnl, 1 - conf))
+    tail = pnl <= -var
+    es = float(-pnl[tail].mean()) if tail.any() else var
+    p_tail = float((pnl < -var).mean()) or (1 - conf)
+    m = int((__import__("algoruntime").load_config().get("quantum") or {}).get("qae_bits", 9))
+    est, calls, bound = qae_estimate(p_tail, m, s["shots"], _seed(s, query + "qae"))
+    classical_n = int(p_tail * (1 - p_tail) / bound ** 2) if bound else 0
+    gross = float(np.abs(val).sum())
+    limit = re.search(r"limit\s*[=:]?\s*(\d+(?:\.\d+)?)", q)
+    breach = limit and var > float(limit.group(1))
+    head = (f"BREACH: {conf:.0%} VaR {var:,.0f} is above the limit {float(limit.group(1)):,.0f}" if breach else
+            f"WITHIN LIMIT: {conf:.0%} VaR {var:,.0f} is within the limit {float(limit.group(1)):,.0f}" if limit else
+            f"RISK: {conf:.0%} VaR {var:,.0f}")
+    return "\n".join([
+        head,
+        f"{conf:.0%} 1-day value at risk {var:,.0f} · expected shortfall {es:,.0f} · worst scenario {-pnl.min():,.0f} · "
+        f"gross exposure {gross:,.0f} · {k} positions · {n_scen} scenarios · correlation {rho}",
+        f"QAE check: P(loss > VaR) = {est:.4f} by quantum amplitude estimation with {m} evaluation qubits "
+        f"({calls} oracle calls, error ≤ {bound:.4f}); the scenarios give {p_tail:.4f}. Plain Monte Carlo needs about "
+        f"{classical_n:,} samples for the same error",
+        "backend: simulator — scenario draws are pseudo-random here; the QAE statistics are exact for an ideal device, "
+        "and its quadratic speed-up needs fault-tolerant hardware"])
+
+
+# ═══════════════════════════════ quantum-safe readiness (v0.3.3) ═══════════════════════════════
+_SHOR = ("rsa", "ecdsa", "ecdh", "ecdhe", "ecc", "dsa", "dh", "dhe", "ed25519", "ed448", "x25519", "x448",
+         "elgamal", "p-256", "p-384", "secp256k1", "brainpool")
+_PQC = ("ml-kem", "mlkem", "kyber", "ml-dsa", "mldsa", "dilithium", "slh-dsa", "sphincs", "falcon", "fn-dsa",
+        "xmss", "lms", "hqc", "frodo", "mceliece")
+
+
+def classify_crypto(algorithm, key_bits=None, purpose=""):
+    """(status, reason, recommendation) for one algorithm, against a large fault-tolerant quantum computer."""
+    a = algorithm.lower().replace("_", "-")
+    words = set(re.findall(r"[a-z0-9]+(?:-[a-z0-9]+)*", a))
+    purpose = purpose.lower()
+    signing = any(w in purpose for w in ("sign", "certificate", "code", "firmware", "jwt", "pki", "root", "identity"))
+    if any(x in a for x in _PQC):
+        hybrid = any(x in a for x in ("x25519", "p256", "p-256", "ecdh", "hybrid"))
+        return ("QUANTUM-SAFE", "post-quantum algorithm" + (" in a hybrid with a classical one" if hybrid else ""),
+                "keep; track NIST guidance")
+    if "sha1" in a.replace("-", "") or "md5" in a or "rc4" in a or a.startswith("des") or "single-des" in a:
+        return ("BROKEN-NOW", "already broken by classical attacks", "replace now with SHA-256/SHA-3 or AES-256")
+    if any(w in words or a.startswith(w) for w in _SHOR):
+        if signing or any(x in a for x in ("dsa", "ed25519", "ed448")):
+            rec = "move to ML-DSA-65 (FIPS 204); SLH-DSA (FIPS 205) for long-lived roots and firmware"
+        else:
+            rec = "move to ML-KEM-768 (FIPS 203); hybrid X25519MLKEM768 for TLS 1.3"
+        return ("QUANTUM-BROKEN", "Shor's algorithm breaks it on a large fault-tolerant quantum computer", rec)
+    if "3des" in a or "tdes" in a or "triple" in a:
+        return ("QUANTUM-WEAKENED", "legacy cipher; Grover's search lowers its ~112-bit security further",
+                "move to AES-256")
+    if "aes" in a or "chacha" in a or "camellia" in a:
+        bits = key_bits or (int(re.search(r"(128|192|256)", a).group(1)) if re.search(r"(128|192|256)", a) else 256)
+        if bits < 256 and "chacha" not in a:
+            return ("QUANTUM-WEAKENED", f"Grover's search halves {bits}-bit keys to about {bits // 2}-bit security",
+                    "move to AES-256")
+        return ("QUANTUM-SAFE", "256-bit symmetric key keeps about 128-bit security against Grover", "keep")
+    if "sha" in a or "hmac" in a or "blake" in a:
+        return ("QUANTUM-SAFE", "hash with 256 bits or more; Grover only weakens it modestly", "keep (SHA-256 or larger)")
+    return ("UNKNOWN", "algorithm not recognised", "review by hand")
+
+
+def tool_pqc(query: str) -> str:
+    """Input: a CSV named in the request (system, purpose, algorithm, key_bits, data_shelf_life_years) or lines
+    "system: algorithm". Reports what a quantum computer could break and what to migrate to, most urgent first."""
+    import algoruntime
+    cfg = (algoruntime.load_config().get("pqc") or {})
+    horizon = float(cfg.get("quantum_threat_years", 10))      # assumed years until a cryptographically relevant QC
+    migrate = float(cfg.get("migration_years", 3))
+    path = _data_file(query, "pqc.scan")
+    if path:
+        rows = _csv_rows(path)
+    else:
+        rows = [dict(system=a.strip(), algorithm=b.strip()) for a, b in re.findall(r"([\w .-]+?)\s*:\s*([\w-]+(?:\s*\d+)?)", query)]
+    if not rows:
+        return 'no inventory found: name a CSV (system, purpose, algorithm, key_bits, data_shelf_life_years) or write "VPN: RSA-2048"'
+    rank = {"BROKEN-NOW": 0, "QUANTUM-BROKEN": 1, "QUANTUM-WEAKENED": 2, "UNKNOWN": 3, "QUANTUM-SAFE": 4}
+    out = []
+    for r in rows:
+        bits = int(r["key_bits"]) if str(r.get("key_bits", "")).isdigit() else None
+        status, why, rec = classify_crypto(r.get("algorithm", ""), bits, r.get("purpose", ""))
+        shelf = float(r.get("data_shelf_life_years") or 0)
+        urgent = status in ("QUANTUM-BROKEN", "BROKEN-NOW") and (status == "BROKEN-NOW" or shelf + migrate >= horizon)
+        out.append(dict(r, status=status, why=why, rec=rec, shelf=shelf, urgent=urgent))
+    out.sort(key=lambda x: (not x["urgent"], rank[x["status"]], -x["shelf"]))
+    n = {k: sum(o["status"] == k for o in out) for k in rank}
+    urgent = sum(o["urgent"] for o in out)
+    head = (f"{'URGENT' if urgent else 'PLAN'}: {len(out)} systems · {n['QUANTUM-BROKEN']} quantum-broken · "
+            f"{n['BROKEN-NOW']} broken now · {n['QUANTUM-WEAKENED']} weakened · {n['QUANTUM-SAFE']} quantum-safe · "
+            f"{urgent} urgent (harvest now, decrypt later)")
+    lines = [head]
+    for o in out:
+        flag = "URGENT " if o["urgent"] else ""
+        lines.append(f"- {flag}{o.get('system', '?')} ({o.get('purpose', '') or 'purpose not given'}): "
+                     f"{o.get('algorithm', '?')} → {o['status']}: {o['why']}. Action: {o['rec']}"
+                     + (f" · data must stay secret {o['shelf']:g} years" if o["shelf"] else ""))
+    lines.append(f"assumptions: urgent when data shelf life + {migrate:g} years of migration ≥ {horizon:g} years until a "
+                 f"cryptographically relevant quantum computer (Mosca's rule; set pqc.quantum_threat_years and "
+                 f"pqc.migration_years in algo.config.json). Standards: NIST FIPS 203 (ML-KEM), 204 (ML-DSA), 205 (SLH-DSA)")
+    return "\n".join(lines)
+
+
 def _guard(fn):
     def run(query):
         try:
@@ -557,3 +839,6 @@ def register(register_tool):
     register_tool("quantum.maxcut", "Split a weighted graph (\"A-B:3, B-C:1\") into two groups with QAOA max-cut")(_guard(tool_maxcut))
     register_tool("quantum.grover", "Grover search: \"search 16 items for 11\"")(_guard(tool_grover))
     register_tool("quantum.random", "Random bits (\"64 bits\") or a random sample (\"pick 5 of 120\") from qubits")(_guard(tool_random))
+    register_tool("quantum.routes", "Logistics: one route per shipment at the lowest cost (QAOA, verified)")(_guard(tool_routes))
+    register_tool("quantum.scenarios", "Monte Carlo VaR / expected shortfall with a quantum amplitude estimation check")(_guard(tool_scenarios))
+    register_tool("pqc.scan", "Quantum-safe readiness of a cryptography inventory, most urgent first")(_guard(tool_pqc))

@@ -1,0 +1,9 @@
+system,purpose,algorithm,key_bits,data_shelf_life_years,owner
+Core banking VPN,key exchange,RSA-2048,2048,12,Network team
+Customer portal TLS,key exchange,ECDHE-P256,256,2,Web team
+Payments HSM,code signing,ECDSA-P256,256,15,Payments
+Health records archive,encryption at rest,AES-128-GCM,128,25,Data platform
+Backup tapes,encryption at rest,AES-256-GCM,256,30,Infrastructure
+Legacy SFTP,file integrity,SHA-1,160,5,Operations
+Mobile app API,key exchange,X25519MLKEM768,768,3,Mobile team
+Employee SSO,token signing,RSA-3072,3072,1,Identity

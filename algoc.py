@@ -77,6 +77,7 @@ class Program:
     evals: list = field(default_factory=list)     # eval blocks: Eval objects
     tool_lines: dict = field(default_factory=dict)
     streams: list = field(default_factory=list)   # stream blocks: Stream objects (v0.3.1)
+    circuits: dict = field(default_factory=dict)  # circuit blocks: name → Circuit (v0.3.3)
 
 
 @dataclass
@@ -85,6 +86,30 @@ class EvalCase:
     inputs: dict
     expects: list                    # (kind, op, value)
     line: int = 0
+
+
+@dataclass
+class Circuit:
+    """`circuit Name { qubits n  gate qi, qj  measure }`: a quantum circuit, exposed as the tool circuit.Name."""
+    name: str
+    qubits: int = 0
+    ops: list = field(default_factory=list)       # (gate, [qubit indices], [angle expressions], line)
+    measure: bool = False
+    line: int = 0
+
+    @property
+    def tool(self):
+        return f"circuit.{self.name}"
+
+    def qasm(self):
+        """OpenQASM 2.0 text (qubit i is q[i]; every qubit is measured into c[i])."""
+        out = ['OPENQASM 2.0;', 'include "qelib1.inc";', f"// circuit {self.name} — compiled by algoc v{VERSION}",
+               f"qreg q[{self.qubits}];", f"creg c[{self.qubits}];"]
+        for g, qs, angles, _ in self.ops:
+            ps = f"({', '.join(angles)})" if angles else ""
+            out.append(f"{g}{ps} {', '.join(f'q[{i}]' for i in qs)};")
+        out.append("measure q -> c;")
+        return "\n".join(out) + "\n"
 
 
 @dataclass
@@ -279,6 +304,24 @@ def to_ast(tree: Tree) -> tuple[Program, list[Diag]]:
                         expects.append((kind, None, str(e.children[0])))
                 ev.cases.append(EvalCase(_s(cname), inputs, expects, _line(c)))
             prog.evals.append(ev)
+        elif item.data == "circuit_decl":
+            cname, *stmts = item.children
+            c = Circuit(str(cname), line=_line(item))
+            for st in stmts:
+                if st.data == "c_qubits":
+                    c.qubits = int(float(str(st.children[0])))
+                elif st.data == "c_measure":
+                    c.measure = True
+                else:
+                    gate, *rest = st.children
+                    angles = [str(x).strip() for x in rest if x is not None and x.type == "ANGLE"]
+                    qubits = [int(str(x)[1:]) for x in rest if x is not None and x.type == "QUBIT"]
+                    c.ops.append((str(gate).lower(), qubits, angles, _line(st)))
+            if c.name in prog.circuits:
+                diags.append(Diag("E124", c.line, f"circuit {c.name} is defined twice"))
+            prog.circuits[c.name] = c
+            prog.tools.add(c.tool)                   # circuit.Name is declared by the circuit itself
+            prog.tool_lines[c.tool] = c.line
         elif item.data == "stream_decl":
             sname, flow, *clauses = item.children
             st = Stream(str(sname), str(flow) if flow is not None else "main", line=_line(item))
@@ -358,6 +401,8 @@ class Checker:
             self.check_block(f.body, env)
         for ev in self.p.evals:
             self.check_eval(ev)
+        for c in self.p.circuits.values():
+            self.check_circuit(c)
         seen = set()
         for st in self.p.streams:
             if st.name in seen:
@@ -365,6 +410,43 @@ class Checker:
             seen.add(st.name)
             self.check_stream(st)
         return self.diags
+
+    def check_circuit(self, c):
+        """Circuit blocks: a qubit count within the simulator limit, known gates, right arity and angles."""
+        try:
+            from algoquantum import GATES, PARAMS, SIM_LIMIT, _num
+        except ImportError:                       # minimal embedding without the quantum module
+            return
+        if not 1 <= c.qubits <= SIM_LIMIT:
+            self.err("E124", c.line, f"circuit {c.name}: say how many qubits it has (qubits 1 to {SIM_LIMIT})")
+            return
+        if not c.ops:
+            self.err("E124", c.line, f"circuit {c.name} has no gates")
+        expanded = []
+        for g, qs, angles, line in c.ops:
+            if g not in GATES:
+                self.err("E124", line, f"circuit {c.name}: unknown gate '{g}' (known: {', '.join(sorted(GATES))})")
+                continue
+            want = PARAMS.get(g, 0)
+            if len(angles) != want:
+                self.err("E124", line, f"circuit {c.name}: gate {g} takes {want} angle(s), got {len(angles)}")
+            for a in angles:
+                try:
+                    _num(a)
+                except ValueError:
+                    self.err("E124", line, f"circuit {c.name}: bad angle '{a}'")
+            for q in qs:
+                if q >= c.qubits:
+                    self.err("E124", line, f"circuit {c.name}: q{q} does not exist (qubits are q0 to q{c.qubits - 1})")
+            if GATES[g] == 1:
+                expanded += [(g, [q], angles, line) for q in qs]          # h q0, q1, q2 → one H on each
+            elif len(qs) != GATES[g]:
+                self.err("E124", line, f"circuit {c.name}: gate {g} acts on {GATES[g]} qubits, got {len(qs)}")
+            elif len(set(qs)) != len(qs):
+                self.err("E124", line, f"circuit {c.name}: gate {g} uses the same qubit twice")
+            else:
+                expanded.append((g, qs, angles, line))
+        c.ops = expanded
 
     def check_stream(self, st):
         """Stream blocks: a real flow, a source topic, inputs that exist, and no topic loops."""
@@ -660,8 +742,11 @@ class CodeGen:
         self.w(f"rt = Runtime(program={Path(self.src).stem!r}, **globals().get('__algo_runtime__', {{}}))")
         for n, m in p.models.items():
             self.w(f"rt.model({n!r}, {m!r})")
+        circuits = {c.tool: c for c in p.circuits.values()}
         for t in sorted(p.tools):
-            if t in p.mcp_tools:
+            if t in circuits:
+                self.w(f"rt.circuit_tool({t!r}, {circuits[t].qasm()!r})")
+            elif t in p.mcp_tools:
                 self.w(f"rt.mcp_tool({t!r}, {p.mcp_tools[t]!r})")
             else:
                 self.w(f"rt.tool({t!r})")
@@ -1002,7 +1087,7 @@ def compile_source(src: str, name: str, base_dir: Path | str | None = None):
     return CodeGen(prog, name).gen(), prog
 
 
-VERSION = "0.3.2"
+VERSION = "0.3.3"
 
 TEMPLATE = '''// {name}.algo — created by `algo new`
 // Run it:  algo run {name}.algo --arg "topic=Your topic here"
@@ -1187,6 +1272,46 @@ def menu():
         input("\n  Press Enter to return to the menu… ")
 
 
+def quantum_cli(a):
+    """algo quantum list|export|run FILE [NAME]: the program's `circuit` blocks (v0.3.3)."""
+    try:
+        path = Path(a.file)
+        _, prog = compile_source(path.read_text(encoding="utf-8"), path.name, path.parent)
+    except CompileError as e:
+        for d in e.diags:
+            print(f"  {d}", file=sys.stderr)
+        return 1
+    circuits = prog.circuits
+    if not circuits:
+        print(f"{a.file} has no circuit blocks. Example:\n  circuit Bell {{ qubits 2  h q0  cx q0, q1  measure }}")
+        return 1
+    if a.name and a.name not in circuits:
+        print(f"no circuit named '{a.name}' (circuits: {', '.join(circuits)})", file=sys.stderr)
+        return 1
+    chosen = [circuits[a.name]] if a.name else list(circuits.values())
+    if a.action == "list":
+        for c in chosen:
+            print(f"  {c.tool:<24} {c.qubits} qubits · {len(c.ops)} gates")
+        return 0
+    if a.action == "export":
+        for c in chosen:
+            if a.out:
+                Path(a.out).mkdir(parents=True, exist_ok=True)
+                (Path(a.out) / f"{c.name}.qasm").write_text(c.qasm(), encoding="utf-8")
+                print(f"  wrote {Path(a.out) / (c.name + '.qasm')}")
+            else:
+                print(c.qasm())
+        return 0
+    import algoquantum
+    for c in chosen:
+        r = algoquantum.run_qasm(c.qasm(), shots=a.shots)
+        total = sum(r["counts"].values()) or 1
+        print(f"{c.tool}: {r['shots']} shots on {r['qubits']} qubits · backend: {r['backend']}")
+        for k, v in list(r["counts"].items())[:16]:
+            print(f"  {k}  {v:>6}  {'█' * max(1, round(40 * v / total))} {v / total:.1%}")
+    return 0
+
+
 def main(argv=None):
     _utf8_console()
     ap = argparse.ArgumentParser(prog="algo", description=f"AlgoLang {VERSION} — every unit of work is an agent")
@@ -1270,6 +1395,12 @@ def main(argv=None):
     s.add_argument("tool", nargs="?")
     s.add_argument("arguments", nargs="?", default="{}", help="JSON arguments for `call`")
     sub.add_parser("lsp", help="language server for editors (VS Code, Neovim …) over stdio")
+    s = sub.add_parser("quantum", help="quantum circuits in a program: list, export to OpenQASM, or run one")
+    s.add_argument("action", choices=["list", "export", "run"])
+    s.add_argument("file")
+    s.add_argument("name", nargs="?", help="circuit name (export: all circuits when omitted)")
+    s.add_argument("--shots", type=int, default=None)
+    s.add_argument("--out", default=None, help="export: folder for the .qasm files (default: print them)")
     s = sub.add_parser("stream", help="real-time: run a flow for every event on a Kafka topic (or a file, offline)")
     s.add_argument("file")
     s.add_argument("--name", default=None, help="which stream block to run (if the program has several)")
@@ -1295,6 +1426,8 @@ def main(argv=None):
     if a.cmd == "mcp":
         import algomcp
         return algomcp.cli(a.action, a.server, a.tool, a.arguments)
+    if a.cmd == "quantum":
+        return quantum_cli(a)
     if a.cmd == "stream":
         import algostream
         return algostream.cli(a.file, name=a.name, input_path=a.input, kafka=a.kafka, produce=a.produce,

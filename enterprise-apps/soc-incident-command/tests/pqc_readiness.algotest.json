@@ -1,0 +1,16 @@
+{
+  "program": "../programs/pqc_readiness.algo",
+  "cases": [
+    {
+      "name": "Inventory with long-lived RSA/ECC data is urgent and goes to the CISO",
+      "inputs": {"scope": "data/crypto_inventory.csv for the bank"},
+      "expect": {
+        "status": "ok",
+        "agents_called": ["QuantumScan", "Incident", "MigrationPlan", "CisoApproval"],
+        "tools_used": ["pqc.scan"],
+        "output_contains": "URGENT",
+        "emits": 3
+      }
+    }
+  ]
+}

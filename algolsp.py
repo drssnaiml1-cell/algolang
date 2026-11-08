@@ -46,8 +46,13 @@ KEYWORDS = {
     "shots": "**shots N**: measurements per quantum circuit for this agent's `quantum.*` tools (1–100000).",
     "qubits": "**max qubits N**: the largest circuit this agent's `quantum.*` tools may run; the stricter of this and "
               "`quantum.max_qubits` in algo.config.json applies. Bigger circuits are BLOCKED.",
-    "quantum": "**quantum.*** tools: `quantum.run` (OpenQASM 2.0), `quantum.qubo` and `quantum.maxcut` (QAOA, VERIFIED "
-               "against the exact optimum), `quantum.grover`, `quantum.random`. Guard on `contains \"VERIFIED\"`.",
+    "quantum": "**quantum.*** tools: `quantum.run` (OpenQASM 2.0), `quantum.qubo`, `quantum.maxcut` and `quantum.routes` "
+               "(QAOA, VERIFIED against the exact optimum), `quantum.scenarios` (Monte Carlo VaR with a QAE check), "
+               "`quantum.grover`, `quantum.random`; `pqc.scan` for quantum-safe readiness. Guard on `contains \"VERIFIED\"`.",
+    "circuit": "**circuit** — a quantum circuit written gate by gate: `circuit Bell { qubits 2  h q0  cx q0, q1  measure }`. "
+               "It becomes the tool `circuit.Bell`; agents run it with `uses circuit.Bell` under their `shots` policy. "
+               "`algo quantum export file.algo` prints the OpenQASM 2.0.",
+    "measure": "**measure** — measure every qubit at the end of a circuit (the default when omitted).",
     "kafka": "**kafka** — `from kafka \"cluster\" topic \"name\" group \"consumer-group\"`. The cluster address is in "
              "algo.config.json: `\"kafka\": {\"cluster\": {\"bootstrap_servers\": \"localhost:9092\"}}`.",
     "case": "**case** — one eval case: `case \"label\" (input = \"value\") { expect … }`.",
@@ -79,6 +84,7 @@ SNIPPETS = [
     ("agent", "agent ${1:Name}(${2:input}: text) -> ${3:text} {\n    role \"${4:role}\"\n    goal \"${5:do something with} {${2:input}}\"\n}"),
     ("flow main", "flow main(${1:input}: text) {\n    ${2:result} = ${3:Agent}(${1:input})\n    emit ${2:result}\n}"),
     ("eval", "eval ${1:regression} on main {\n    case \"${2:first case}\" (${3:input} = \"${4:value}\") {\n        expect status ok\n    }\n}"),
+    ("circuit", "circuit ${1:Bell} {\n    qubits ${2:2}\n    h q0\n    cx q0, q1\n    measure\n}"),
     ("stream", "stream ${1:events} on main {\n    from kafka \"${2:local}\" topic \"${3:events.in}\" group \"${4:algolang}\"\n    map ${5:input} = event.${5:input}\n    key event.${6:id}\n    to topic \"${7:events.out}\"\n    escalate to topic \"${8:events.review}\"\n    dead letter topic \"${9:events.dlq}\"\n}"),
     ("policy", "policy {\n    budget tokens ${1:4000}\n    budget cost ${2:0.05} usd\n    require human when confidence < ${3:0.8}\n}"),
 ]

@@ -1,0 +1,47 @@
+// Quantum route optimiser — one route per shipment at the lowest total cost, avoiding shared-lane clashes.
+// options → QUBO (one qubit per shipment-route option) solved by QAOA → VERIFIED against the exact optimum
+//   and FEASIBLE (exactly one route per shipment)? → dispatch plan for the logistics manager to approve
+//   otherwise → the classical optimum is used and the gap is explained. An unchecked quantum answer is never used.
+tool quantum.routes
+tool shipment.track
+
+model fast = "claude-haiku-5-5"
+
+agent Router(request: text) -> text {
+    role   "Logistics optimisation engineer"
+    goal   "Choose one route per shipment for {request}"
+    uses   quantum.routes
+    model  fast
+    policy { shots 2048  max qubits 12  budget cost 0.01 usd }
+}
+
+agent Dispatch(request: text, plan: text) -> text {
+    role   "Dispatch planner"
+    goal   "Write the dispatch plan for {request} from {plan}: carrier bookings, lanes and pick-up times"
+    uses   shipment.track
+    policy { require human when confidence < 0.9 }
+}
+
+agent Fallback(request: text, plan: text) -> text {
+    role "Logistics analyst"
+    goal "Explain why the quantum plan in {plan} was not used for {request}, and dispatch on the classical optimum"
+}
+
+flow main(request: text) {
+    plan = Router(request)
+    if plan contains "VERIFIED" and plan not contains "INFEASIBLE" {
+        emit plan, Dispatch(request, plan)
+    } else {
+        emit plan, Fallback(request, plan)
+    }
+}
+
+eval routing on main {
+    case "four shipments on shared lanes" (request = "data/route_options.csv, clash cost 60000 for shared lanes") {
+        expect status ok
+        expect tool quantum.routes
+        expect output contains "VERIFIED"
+        expect called Dispatch
+        expect not called Fallback
+    }
+}

@@ -4,6 +4,18 @@ All notable changes to AlgoLang are documented here. The format follows [Keep a 
 
 ## [Unreleased]
 
+## [0.3.3] — 2026-11-08
+
+### Added
+- **Quantum circuits in the language.** `circuit Name { qubits n  gate qi, qj  measure }` with the standard gates (`h x y z s sdg t tdg id rx ry rz p u1 u2 u3 cx cy cz ch crz cp cu1 swap ccx`) and angles such as `pi/4`. One-qubit gates can list several qubits. Each circuit compiles to OpenQASM 2.0 and becomes the tool `circuit.Name`, which agents use under their `shots` and `max qubits` policy. The compiler checks every circuit (**E124**).
+- **`algo quantum list | export | run FILE [NAME]`**: list a program's circuits, export them as `.qasm` files for Qiskit, IBM Quantum, Braket and others, or run one and see a histogram.
+- **`quantum.routes`**: logistics routing as a one-hot QUBO (one route per shipment, plus shared-lane clash costs) solved by QAOA, `VERIFIED` against the exact optimum and checked `FEASIBLE`. Reads a CSV (shipment, route, cost, lane) or inline text.
+- **`quantum.scenarios`**: one-factor Monte Carlo value at risk and expected shortfall from qubit draws, with a quantum amplitude estimation of the tail probability: its estimate, oracle calls and error bound, next to the Monte Carlo sample count needed for the same error. `BREACH` / `WITHIN LIMIT` against a stated limit.
+- **`pqc.scan`**: quantum-safe readiness of a cryptography inventory. It flags what Shor's algorithm breaks and what Grover's search weakens, applies Mosca's harvest-now-decrypt-later rule (`pqc.quantum_threat_years`, `pqc.migration_years`) and names the NIST FIPS 203 / 204 / 205 replacement (ML-KEM, ML-DSA, SLH-DSA).
+- **Four quantum applications**: `pqc_readiness.algo` (SOC Incident Command), `risk_scenarios.algo` (Algo Trading Desk), `route_optimizer.algo` (Supply Chain Control Tower) and `circuit_lab.algo` (Quantum Optimization Lab), each with an `eval` block, behaviour tests and sample data.
+- Tests: circuits against Qiskit, routing against brute force, Monte Carlo VaR against the normal formula, QAE within its error bound, the crypto rules and Mosca's test.
+- Editor support for `circuit`, `qubits` and `measure`, with hover help and a snippet.
+
 ## [0.3.2] — 2026-11-08
 
 ### Added

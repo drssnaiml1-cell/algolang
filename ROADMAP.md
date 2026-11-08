@@ -1,6 +1,6 @@
 # AlgoLang roadmap
 
-**Current release: v0.3.2** (quantum tools preview) · **Next: v0.4 — Trustworthy AI** · **Then: v0.5 — Quantum AI**
+**Current release: v0.3.3** (quantum circuits and four quantum applications) · **Next: v0.4 — Trustworthy AI** · **Then: v0.5 — Quantum AI**
 
 AlgoProfessor AI R&D Solutions, Hyderabad. Designed by Dr. S. Satyanarayana. [www.algoprofessor.com](https://www.algoprofessor.com)
 

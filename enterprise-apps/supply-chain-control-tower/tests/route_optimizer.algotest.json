@@ -1,0 +1,11 @@
+{
+  "program": "../programs/route_optimizer.algo",
+  "cases": [
+    {
+      "name": "Verified, feasible quantum routes go to dispatch",
+      "inputs": {"request": "data/route_options.csv, clash cost 60000 for shared lanes"},
+      "expect": {"status": "ok", "agents_called": ["Router", "Dispatch"], "tools_used": ["quantum.routes"],
+                 "output_contains": "VERIFIED", "emits": 2}
+    }
+  ]
+}

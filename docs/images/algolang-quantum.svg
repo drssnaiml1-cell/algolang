@@ -160,7 +160,8 @@
 
     <!-- policy band -->
     <rect x="40" y="334" width="1200" height="44" rx="10" fill="#c9a227" fill-opacity=".08" stroke="#c9a227" stroke-opacity=".45"/>
-    <text x="60" y="361" fill="#f1dc94" font-size="13.5"><tspan font-weight="800">Policy, checked at compile time (E123) and enforced at run time:</tspan>  max qubits · shots · allowed tools · seeded, replayable runs · every call in the hash-chained audit log</text>
-    <text x="40" y="406" fill="#9aa6c2" font-size="12.5">Built-in tools: quantum.run (OpenQASM 2.0) · quantum.qubo · quantum.maxcut · quantum.grover · quantum.random. The simulator computes the ideal result exactly: correct, not faster.</text>
+    <text x="60" y="361" fill="#f1dc94" font-size="13.5"><tspan font-weight="800">Policy, checked at compile time (E123, E124) and enforced at run time:</tspan>  max qubits · shots · allowed tools · seeded, replayable runs · every call in the hash-chained audit log</text>
+    <text x="40" y="400" fill="#9aa6c2" font-size="12.5">Built-in tools: quantum.run · quantum.qubo · quantum.maxcut · quantum.routes · quantum.scenarios (Monte Carlo + amplitude estimation) · pqc.scan · quantum.grover · quantum.random</text>
+    <text x="40" y="419" fill="#9aa6c2" font-size="12.5">v0.3.3: write circuits in AlgoLang itself, <tspan fill="#e9c75a" font-family="Consolas, monospace">circuit Bell { qubits 2  h q0  cx q0, q1  measure }</tspan>, exported to OpenQASM. The simulator is exact: correct, not faster.</text>
   </g>
 </svg>

@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────
-//  AlgoLang v0.3.2 grammar  —  AlgoProfessor AI R&D Solutions
+//  AlgoLang v0.3.3 grammar  —  AlgoProfessor AI R&D Solutions
 //  Core rule: there are no functions. Every unit of work is an
 //  `agent`; a `flow` only orchestrates agents.
 // ─────────────────────────────────────────────────────────────
@@ -14,6 +14,7 @@ start: item*
      | flow_decl
      | eval_decl
      | stream_decl
+     | circuit_decl
 
 // use "shared/agents.algo"           import another file's models, tools and agents
 // use pack insurance.claims_triage    import a domain pack from the library
@@ -130,6 +131,16 @@ stream_decl: "stream" NAME ["on" NAME] "{" stream_clause* "}"
               | "key" (DOTTED | NAME)                                 -> st_key
               | "max" "in" "flight" NUMBER                            -> st_inflight
 st_map: NAME "=" (DOTTED | NAME)
+
+// Quantum circuits (v0.3.3): written gate by gate, checked by the compiler, compiled to OpenQASM 2.0.
+// Each circuit becomes the tool circuit.Name, which agents use like any other tool.
+// circuit Bell { qubits 2   h q0   cx q0, q1   measure }
+circuit_decl: "circuit" NAME "{" circuit_stmt* "}"
+?circuit_stmt: "qubits" NUMBER                                    -> c_qubits
+             | "measure"                                          -> c_measure
+             | NAME ["(" ANGLE ("," ANGLE)* ")"] QUBIT ("," QUBIT)* -> c_gate
+QUBIT.2: /q\d+/
+ANGLE: /[-+]?(\d+(\.\d+)?|pi)(\s*[*\/]\s*(\d+(\.\d+)?|pi))*/
 
 COMPARE: "<=" | ">=" | "==" | "!=" | "<" | ">"
 

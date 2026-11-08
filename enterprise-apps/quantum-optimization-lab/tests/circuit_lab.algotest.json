@@ -1,0 +1,26 @@
+{
+  "program": "../programs/circuit_lab.algo",
+  "cases": [
+    {
+      "name": "Circuit blocks run as governed tools",
+      "inputs": {
+        "question": "are these qubits entangled"
+      },
+      "expect": {
+        "status": "ok",
+        "agents_called": [
+          "Entanglement",
+          "Search",
+          "Verified"
+        ],
+        "tools_used": [
+          "circuit.Bell",
+          "circuit.GHZ",
+          "circuit.Grover2"
+        ],
+        "output_contains": "COUNTS for circuit.Grover2",
+        "emits": 3
+      }
+    }
+  ]
+}

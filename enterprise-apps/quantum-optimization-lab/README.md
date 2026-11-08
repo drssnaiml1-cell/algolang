@@ -52,6 +52,9 @@ equal-weight expected return 14.9% · average volatility 22.4% · sectors: banki
 | `portfolio_optimizer.algo` | Choose k assets for a mandate, verified, risk-reviewed, human-approved | `quantum.portfolio` (plugin, QAOA on a QUBO) |
 | `shift_scheduler.algo` | Split clashing plant jobs into two shifts | `quantum.maxcut` (built in) |
 | `audit_sampling.algo` | Draw an unpredictable audit sample of vouchers | `quantum.random` (built in) |
+| `circuit_lab.algo` *(v0.3.3)* | Bell, GHZ and Grover circuits written as `circuit` blocks; the Grover result is checked exactly | `circuit.Bell`, `circuit.GHZ`, `circuit.Grover2` |
+
+The other three quantum applications live with the teams that use them: quantum-safe security in [SOC Incident Command](../soc-incident-command/), Monte Carlo risk in the [Algo Trading Desk](../algo-trading-desk/) and logistics routing in the [Supply Chain Control Tower](../supply-chain-control-tower/).
 
 ## Company tools (`plugins/quantum_lab_tools.py`)
 

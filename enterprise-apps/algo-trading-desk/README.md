@@ -75,6 +75,7 @@ flowchart TD
 | `programs/strategy_review.algo` | `strategy` | Backtest ∥ desk rules → three reviewers → FAILS? revisions : robustness (uncertain) → paper approval or revisions |
 | `programs/pre_trade_check.algo` | `order` | Quote ∥ limits → BREACH? reject : risk gate (uncertain) → paper ticket for human approval, or reject |
 | `programs/eod_risk_report.algo` | `desk` | Book → stress → risk level → brief; surveillance over positions (parallel) → concern → report |
+| `programs/risk_scenarios.algo` *(quantum, v0.3.3)* | `book` | `quantum.scenarios` on `data/risk_book.csv`: Monte Carlo VaR and expected shortfall with a quantum amplitude estimation check → BREACH of the limit? risk committee (human) : risk note |
 
 ## Company tools (`plugins/`)
 

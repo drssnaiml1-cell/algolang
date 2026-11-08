@@ -72,6 +72,7 @@ flowchart TD
 |---|---|---|
 | `programs/alert_to_incident.algo` | `alerts` | Enrich ∥ threat intel → batch → analysts (parallel) → severity → incident → runbook |
 | `programs/phishing_desk.algo` | `email` | Link check → indicators → assessment → likelihood → advice |
+| `programs/pqc_readiness.algo` *(quantum-safe, v0.3.3)* | `scope` | `pqc.scan` over `data/crypto_inventory.csv` (Shor / Grover rules, Mosca's harvest-now-decrypt-later test) → BROKEN-NOW? incident → migration plan to ML-KEM / ML-DSA / SLH-DSA → URGENT? CISO approval |
 
 ## Company tools (`plugins/`)
 
