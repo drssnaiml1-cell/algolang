@@ -12,6 +12,18 @@
 - KYC: checks the customer file, screens names against the sanctions/PEP watchlist, rates risk and records the outcome
 - Gender, caste, religion, nationality and marital status are forbidden inputs. The compiler rejects any agent that takes one
 
+
+## How it works: live figures
+Each figure is drawn from the program itself by `tools/make_figures.py`, so it always matches the code. Moving dots show data flowing between agents; dashed blue lines are decisions; gold badges mark human gates and blue badges mark `uncertain<T>` agents that are sampled several times.
+
+**Deccan Bank KYC onboarding** · [`programs/kyc_onboarding.algo`](programs/kyc_onboarding.algo)
+
+<p align="center"><img src="../../docs/images/apps/bank-credit-onboarding--kyc_onboarding.svg" alt="Deccan Bank KYC onboarding: document check, sanctions screening, risk rating, outcome." width="100%"></p>
+
+**Deccan Bank loan origination** · [`programs/loan_decision.algo`](programs/loan_decision.algo)
+
+<p align="center"><img src="../../docs/images/apps/bank-credit-onboarding--loan_decision.svg" alt="Deccan Bank loan origination: committee decision with bureau data and affordability maths." width="100%"></p>
+
 ## How the agents work together (`loan_decision.algo`)
 
 ```mermaid

@@ -15,6 +15,26 @@
 - End-of-day report: positions and P&L, stress test, risk level, and trade surveillance over every position in parallel
 - Per-call cost and energy budgets, plus run caps; every call is priced in USD/INR, Wh and CO₂
 
+
+## How it works: live figures
+Each figure is drawn from the program itself by `tools/make_figures.py`, so it always matches the code. Moving dots show data flowing between agents; dashed blue lines are decisions; gold badges mark human gates and blue badges mark `uncertain<T>` agents that are sampled several times.
+
+**QuantOracle end-of-day report** · [`programs/eod_risk_report.algo`](programs/eod_risk_report.algo)
+
+<p align="center"><img src="../../docs/images/apps/algo-trading-desk--eod_risk_report.svg" alt="QuantOracle end-of-day report: book, stress test, risk level and trade surveillance in one run." width="100%"></p>
+
+**QuantOracle pre-trade risk gate** · [`programs/pre_trade_check.algo`](programs/pre_trade_check.algo)
+
+<p align="center"><img src="../../docs/images/apps/algo-trading-desk--pre_trade_check.svg" alt="QuantOracle pre-trade risk gate: every order intent is checked before a ticket is prepared." width="100%"></p>
+
+**Quantum Monte Carlo risk** · [`programs/risk_scenarios.algo`](programs/risk_scenarios.algo)
+
+<p align="center"><img src="../../docs/images/apps/algo-trading-desk--risk_scenarios.svg" alt="Quantum Monte Carlo risk: end-of-day value at risk with a quantum amplitude estimation (QAE) check." width="100%"></p>
+
+**QuantOracle strategy review board** · [`programs/strategy_review.algo`](programs/strategy_review.algo)
+
+<p align="center"><img src="../../docs/images/apps/algo-trading-desk--strategy_review.svg" alt="QuantOracle strategy review board: can a strategy go to paper trading?" width="100%"></p>
+
 ## How the agents work together (`pre_trade_check.algo`)
 
 ```mermaid
@@ -100,18 +120,19 @@ Agents can call a tool only if the program declares it, the agent lists it under
 | Allowed tools | `kb.search`, `calc.eval`, `backtest.stats`, `market.quote`, `risk.limits`, `book.positions` |
 | Audit | SHA-256 hash-chained log in `runs/`, checked with `algo audit verify` |
 
-## Real-time (Kafka)
+## Real-time (AlgoPulse™)
 
-`programs/pre_trade_check.algo` ends with a `stream` block: order intents on `orders.intent` → pre-trade risk gate → `orders.decisions` / `orders.review` / `orders.dlq`. Every event runs the flow once under the same governance.
+`programs/pre_trade_check.algo` ends with a `stream` block: order intents on `orders.intent` → pre-trade risk gate → `orders.decisions` / `orders.review` / `orders.dlq`. Every event runs the flow once under the same governance, on AlgoPulse, AlgoLang's built-in event engine.
 
 ```bash
-algo stream programs/pre_trade_check.algo --input data/order_events.jsonl                 # offline, no Kafka needed
-docker compose -f ../../deploy/kafka/docker-compose.yml up -d  # ZooKeeper + Kafka
-algo stream programs/pre_trade_check.algo --kafka --produce data/order_events.jsonl
-algo stream programs/pre_trade_check.algo --kafka
+algo stream programs/pre_trade_check.algo --input data/order_events.jsonl             # offline, from a file
+algo stream programs/pre_trade_check.algo --pulse --produce data/order_events.jsonl   # publish to the local bus (pulse/market/)
+algo stream programs/pre_trade_check.algo --pulse                        # process; re-runs resume where they stopped
+algo pulse topics --bus market
 ```
 
 The sample file includes a malformed event (and, for the trading desk, a re-delivered duplicate) so you can see dead-letter routing and de-duplication at work.
+
 
 ## Run it
 

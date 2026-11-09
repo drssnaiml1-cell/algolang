@@ -1,10 +1,11 @@
-"""algostream — real-time event processing for AlgoLang (v0.3.1).
+"""algostream — real-time event processing for AlgoLang (v0.3.1; AlgoPulse™ since v0.3.4).
 
-A `stream` block binds a flow to a Kafka topic. Every event that arrives runs the flow once, under the
-same policies, budgets, human review and audit log as any other run:
+A `stream` block binds a flow to a topic on an AlgoPulse bus, AlgoLang's built-in event engine
+(algopulse.py). Every event that arrives runs the flow once, under the same policies, budgets, human
+review and audit log as any other run:
 
     stream order_flow on main {
-        from kafka "market" topic "orders.intent" group "quantoracle-risk-gate"
+        from pulse "market" topic "orders.intent" group "quantoracle-risk-gate"
         map order = event.order
         key event.order_id
         to topic "orders.decisions"
@@ -14,8 +15,8 @@ same policies, budgets, human review and audit log as any other run:
     }
 
     algo stream program.algo --input events.jsonl     offline: events from a file, results to runs/streams/
-    algo stream program.algo --kafka                  live Kafka (cluster address from algo.config.json)
-    algo stream program.algo --kafka --produce events.jsonl   publish sample events to the source topic
+    algo stream program.algo --pulse                  the bus named in the stream block (algo.config.json)
+    algo stream program.algo --pulse --produce events.jsonl   publish sample events to the source topic
 
 Routing of each result
     ok          → `to topic`
@@ -23,18 +24,9 @@ Routing of each result
     blocked, failed, or an event that cannot be read → `dead letter topic`
 A route that is not declared falls back to `to topic`. Nothing is ever silently dropped.
 
-Delivery is at-least-once: offsets are committed only after the results of a batch are written and
-flushed. Events with a key already processed in this session are skipped, and the result cache makes a
-re-delivered event cheap, so a restart does not double-charge the budget.
-
-Kafka clusters are set in algo.config.json:
-
-    "kafka": {"market": {"bootstrap_servers": "localhost:9092"}}
-
-Any other key is passed to the Kafka client (security_protocol, sasl_mechanism, …). A key ending in
-`_env` is read from that environment variable, so secrets stay out of the file:
-    "sasl_plain_password_env": "KAFKA_PASSWORD"
-ALGO_KAFKA_BOOTSTRAP overrides bootstrap_servers for every cluster.
+Delivery is at-least-once: the consumer group's offset is committed only after the results of a batch
+are written. Events with a key already processed in this session are skipped, and the result cache
+makes a re-delivered event cheap, so a restart does not double-charge the budget.
 """
 from __future__ import annotations
 
@@ -122,85 +114,46 @@ class MemoryBroker:
         return out
 
 
-def cluster_config(name):
-    """Client settings for a named cluster from algo.config.json (`kafka` section)."""
-    import algoruntime
-    cfg = (algoruntime.load_config().get("kafka") or {})
-    if name not in cfg and not os.environ.get("ALGO_KAFKA_BOOTSTRAP"):
-        known = ", ".join(sorted(cfg)) or "none configured"
-        raise SystemExit(f"Kafka cluster '{name}' is not in the \"kafka\" section of algo.config.json (known: {known}).\n"
-                         f'Add for example:  "kafka": {{"{name}": {{"bootstrap_servers": "localhost:9092"}}}}')
-    out = {}
-    for k, v in dict(cfg.get(name) or {}).items():
-        if k.endswith("_env"):
-            secret = os.environ.get(v)
-            if secret is None:
-                raise SystemExit(f"Kafka cluster '{name}': environment variable {v} (for {k[:-4]}) is not set")
-            out[k[:-4]] = secret
-        else:
-            out[k] = v
-    if os.environ.get("ALGO_KAFKA_BOOTSTRAP"):
-        out["bootstrap_servers"] = os.environ["ALGO_KAFKA_BOOTSTRAP"]
-    out.setdefault("bootstrap_servers", "localhost:9092")
-    return out
+class PulseBroker:
+    """An AlgoPulse™ bus (algopulse.py): a local folder, or a bus served by `algo pulse serve`.
 
-
-class KafkaBroker:
-    """Apache Kafka through the kafka-python client (pip install -r requirements-stream.txt).
-    Works with ZooKeeper-based clusters (Kafka ≤ 3.x) and KRaft clusters (Kafka 3.3+ and 4.x) alike:
-    clients only ever talk to the brokers."""
-
-    CONSUMER_KEYS = {"bootstrap_servers", "client_id", "security_protocol", "sasl_mechanism", "sasl_plain_username",
-                     "sasl_plain_password", "ssl_cafile", "ssl_certfile", "ssl_keyfile", "ssl_check_hostname",
-                     "request_timeout_ms", "session_timeout_ms", "max_poll_interval_ms", "auto_offset_reset",
-                     "api_version"}
-    PRODUCER_KEYS = {"bootstrap_servers", "client_id", "security_protocol", "sasl_mechanism", "sasl_plain_username",
-                     "sasl_plain_password", "ssl_cafile", "ssl_certfile", "ssl_keyfile", "ssl_check_hostname",
-                     "request_timeout_ms", "compression_type", "linger_ms", "api_version"}
+    The consumer group's committed offset is where reading starts; it moves forward only on commit(),
+    which the processor calls after the batch's results have been written. A crash before that point
+    means the batch is read again (at-least-once)."""
 
     def __init__(self, settings: dict):
-        try:
-            import kafka  # noqa: F401
-        except ImportError:
-            raise SystemExit("Kafka support needs the kafka-python client:  pip install -r requirements-stream.txt")
+        import algopulse
         self.settings = settings
-        self.consumer = None
-        from kafka import KafkaProducer
-        pk = {k: v for k, v in settings.items() if k in self.PRODUCER_KEYS}
-        self.producer = KafkaProducer(acks="all", retries=5, **pk)
+        self.bus = algopulse.open_bus(settings)
+        self.source = self.group = None
+        self.cursor = 0
 
     def subscribe(self, topic, group=None, outputs=()):
-        from kafka import KafkaConsumer
-        ck = {k: v for k, v in self.settings.items() if k in self.CONSUMER_KEYS}
-        ck.setdefault("auto_offset_reset", "earliest")
-        self.consumer = KafkaConsumer(topic, group_id=group, enable_auto_commit=False, **ck)
+        self.source, self.group = topic, group or "default"
+        self.cursor = self.bus.committed(topic, self.group)
 
     def poll(self, max_records, timeout=1.0):
-        got = self.consumer.poll(timeout_ms=int(timeout * 1000), max_records=max_records)
-        out = []
-        for tp, records in got.items():
-            for r in records:
-                key = r.key.decode("utf-8", "replace") if isinstance(r.key, bytes) else r.key
-                out.append(Message(r.value, key, tp.topic, tp.partition, r.offset))
-        return out
+        deadline = time.time() + timeout
+        while True:
+            got = self.bus.read(self.source, self.cursor, max_records)
+            if got or time.time() >= deadline:
+                break
+            time.sleep(0.1)
+        self.cursor += len(got)
+        return [Message(e["value"], e.get("key"), self.source, 0, e["offset"]) for e in got]
 
     def produce(self, topic, value, key=None):
-        self.producer.send(topic, value=value.encode("utf-8") if isinstance(value, str) else value,
-                           key=key.encode("utf-8") if isinstance(key, str) else key)
+        self.bus.append(topic, [(key, value)])
 
     def flush(self):
-        self.producer.flush()
+        pass                                   # every append is already written and fsync'd
 
     def commit(self):
-        if self.consumer is not None:
-            self.consumer.commit()
+        if self.source:
+            self.bus.commit(self.source, self.group, self.cursor)
 
     def close(self):
-        try:
-            if self.consumer is not None:
-                self.consumer.close()
-        finally:
-            self.producer.close()
+        pass
 
 
 # ───────────────────────────── the stream processor ─────────────────────────────
@@ -393,7 +346,7 @@ def pick_stream(program, name=None):
     streams = program._prog.streams
     if not streams:
         raise SystemExit(f"{program.name}.algo has no stream block. Add one, for example:\n"
-                         '  stream events on main { from kafka "local" topic "events.in"  to topic "events.out" }')
+                         '  stream events on main { from pulse "local" topic "events.in"  to topic "events.out" }')
     if name is None:
         if len(streams) > 1:
             raise SystemExit("this program has several streams; choose one with --name: "
@@ -405,7 +358,7 @@ def pick_stream(program, name=None):
     raise SystemExit(f"no stream named '{name}' (streams: {', '.join(s.name for s in streams)})")
 
 
-def cli(file, name=None, input_path=None, kafka=False, produce=None, max_events=None, idle=None, live=False,
+def cli(file, name=None, input_path=None, pulse=False, produce=None, max_events=None, idle=None, live=False,
         as_json=False, out_dir=None):
     import algolang as al
     from algoc import CompileError
@@ -418,23 +371,25 @@ def cli(file, name=None, input_path=None, kafka=False, produce=None, max_events=
     st = pick_stream(program, name)
     log = (lambda *_: None) if as_json else print
     out = Path(out_dir) if out_dir else Path("runs") / "streams" / st.name
-    if kafka:
-        broker = KafkaBroker(cluster_config(st.cluster))
+    if pulse:
+        import algopulse
+        settings = algopulse.bus_config(st.bus)
+        broker = PulseBroker(settings)
         if produce:
             mem = MemoryBroker()
             n = mem.load(st.source, produce)
             helper = StreamProcessor(program, st, mem)
+            evs = []
             for m in mem.topics.get(st.source, []):
                 _, ev = helper.decode(m)
-                broker.produce(st.source, m.value, key=helper.key_for(m, ev))
-            broker.flush()
-            broker.close()
-            print(f"published {n} event(s) to {st.source} on cluster '{st.cluster}'")
+                evs.append((helper.key_for(m, ev), m.value))
+            broker.bus.append(st.source, evs)
+            print(f"published {n} event(s) to {st.source} on AlgoPulse bus '{st.bus}' ({algopulse.where(settings)})")
             return 0
-        where = f"Kafka cluster '{st.cluster}' ({broker.settings['bootstrap_servers']})"
+        where = f"AlgoPulse bus '{st.bus}' ({algopulse.where(settings)})"
     else:
         if not input_path:
-            raise SystemExit("offline mode needs events: --input events.jsonl (or use --kafka for a live cluster)")
+            raise SystemExit("offline mode needs events: --input events.jsonl (or use --pulse for a live AlgoPulse bus)")
         broker = MemoryBroker(out)
         broker.load(st.source, input_path)
         where = f"offline broker, events from {input_path}"
@@ -455,6 +410,6 @@ def cli(file, name=None, input_path=None, kafka=False, produce=None, max_events=
             f"{RED}{s['dead_letter']} dead-letter{END} · {s['duplicates']} duplicate(s) skipped")
         log(f"  latency p50 {s['latency_p50_ms']} ms · p95 {s['latency_p95_ms']} ms · {s['events_per_second']} events/s"
             f" · {s['tokens']} tokens · ${s['cost_usd']:.4f} · {s['energy_wh']} Wh")
-        if not kafka:
+        if not pulse:
             log(f"  {DIM}results → {out}/<topic>.jsonl · metrics → {out}/metrics.json{END}")
     return 0

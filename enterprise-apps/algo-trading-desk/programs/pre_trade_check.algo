@@ -75,10 +75,10 @@ eval risk_gate on main {
     }
 }
 
-// Real-time: every order intent published on Kafka runs this gate once (`algo stream pre_trade_check.algo --kafka`).
+// Real-time: every order intent published on AlgoPulse runs this gate once (`algo stream pre_trade_check.algo --pulse`).
 // Results are routed by outcome; nothing is dropped and the source topic is never written to.
 stream order_flow on main {
-    from kafka "market" topic "orders.intent" group "quantoracle-risk-gate"
+    from pulse "market" topic "orders.intent" group "quantoracle-risk-gate"
     map order = event.order
     key event.order_id
     to topic "orders.decisions"            // rejections and other completed decisions

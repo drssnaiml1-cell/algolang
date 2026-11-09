@@ -16,6 +16,26 @@
 - **Audit sampling:** picks vouchers to audit from measured qubits (`quantum.random`), and records the draw in the audit log
 - Seeded runs, so every quantum answer can be replayed and audited
 
+
+## How it works: live figures
+Each figure is drawn from the program itself by `tools/make_figures.py`, so it always matches the code. Moving dots show data flowing between agents; dashed blue lines are decisions; gold badges mark human gates and blue badges mark `uncertain<T>` agents that are sampled several times.
+
+**Unpredictable audit sampling** · [`programs/audit_sampling.algo`](programs/audit_sampling.algo)
+
+<p align="center"><img src="../../docs/images/apps/quantum-optimization-lab--audit_sampling.svg" alt="Unpredictable audit sampling: vouchers to check are drawn from measured qubits, and the draw is audited." width="100%"></p>
+
+**Circuit lab** · [`programs/circuit_lab.algo`](programs/circuit_lab.algo)
+
+<p align="center"><img src="../../docs/images/apps/quantum-optimization-lab--circuit_lab.svg" alt="Circuit lab: quantum circuits written in AlgoLang itself, checked by the compiler, run as governed tools." width="100%"></p>
+
+**Quantum portfolio optimiser** · [`programs/portfolio_optimizer.algo`](programs/portfolio_optimizer.algo)
+
+<p align="center"><img src="../../docs/images/apps/quantum-optimization-lab--portfolio_optimizer.svg" alt="Quantum portfolio optimiser: choose k assets with QAOA, then govern the answer like any other decision." width="100%"></p>
+
+**Quantum shift scheduler** · [`programs/shift_scheduler.algo`](programs/shift_scheduler.algo)
+
+<p align="center"><img src="../../docs/images/apps/quantum-optimization-lab--shift_scheduler.svg" alt="Quantum shift scheduler: split clashing plant jobs across two shifts with QAOA max-cut." width="100%"></p>
+
 ## How the agents work together (`portfolio_optimizer.algo`)
 
 ```mermaid

@@ -33,10 +33,10 @@ flow main(alerts: text) {
     }
 }
 
-// Real-time: SIEM alerts arrive on Kafka; each one becomes an incident decision within seconds.
-// algo stream programs/alert_to_incident.algo --kafka      (offline: --input data/alert_events.jsonl)
+// Real-time: SIEM alerts arrive on AlgoPulse; each one becomes an incident decision within seconds.
+// algo stream programs/alert_to_incident.algo --pulse      (offline: --input data/alert_events.jsonl)
 stream siem_alerts on main {
-    from kafka "soc" topic "soc.alerts" group "soc-incident-command"
+    from pulse "soc" topic "soc.alerts" group "soc-incident-command"
     map alerts = event.summary
     key event.alert_id
     to topic "soc.incidents"

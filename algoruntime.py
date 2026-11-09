@@ -41,7 +41,7 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from pathlib import Path
 
-VERSION = "0.3.3"
+VERSION = "0.3.4"
 # WebAssembly builds of Python (Pyodide, used by the web playground) cannot start threads:
 # `par` then runs its branches one after another, with identical results.
 CAN_THREAD = sys.platform not in ("emscripten", "wasi")

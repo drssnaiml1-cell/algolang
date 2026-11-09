@@ -34,6 +34,10 @@ jobs:
         run: python algoc.py dev test tests/specs
       - name: Enterprise applications (10 apps · tests + batch + streams + audit verification)
         run: python enterprise-apps/run_all.py --batch
+      - name: README figures match the programs (tools/make_figures.py)
+        run: |
+          python tools/make_figures.py > /dev/null
+          git diff --exit-code --stat -- docs/images || { echo "::error::figures are out of date: run python tools/make_figures.py and commit"; exit 1; }
 
   test:
     name: Tests · ${{ matrix.os }} · Python ${{ matrix.python }}
@@ -57,45 +61,34 @@ jobs:
       - run: pip install -e ".[dev]"
       - run: python -m pytest
 
-  kafka:
-    name: Real-time streams · ZooKeeper + Kafka
+  pulse:
+    name: Real-time streams · AlgoPulse server
     needs: lint
     runs-on: ubuntu-latest
-    services:
-      zookeeper:
-        image: confluentinc/cp-zookeeper:7.6.1
-        env:
-          ZOOKEEPER_CLIENT_PORT: 2181
-          ZOOKEEPER_TICK_TIME: 2000
-      kafka:
-        image: confluentinc/cp-kafka:7.6.1
-        ports: ["9092:9092"]
-        env:
-          KAFKA_BROKER_ID: 1
-          KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
-          KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:9092
-          KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-          KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-          KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
-          KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-          KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
-          KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-        options: >-
-          --health-cmd "kafka-broker-api-versions --bootstrap-server localhost:9092"
-          --health-interval 10s --health-timeout 10s --health-retries 15
+    env:
+      ALGO_PULSE_TOKEN: ci-${{ github.run_id }}
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v6
         with: {python-version: "3.12", cache: pip}
-      - run: pip install -e ".[dev,stream]"
-      - name: Round trip through a real broker (produce → stream → consume)
-        env: {ALGO_KAFKA_TEST: "1", ALGO_KAFKA_BOOTSTRAP: "localhost:9092"}
-        run: python -m pytest tests/test_stream.py -v
-      - name: Trading desk order flow on Kafka
-        working-directory: enterprise-apps/algo-trading-desk
+      - run: pip install -e ".[dev]"
+      - name: Start an AlgoPulse server
         run: |
-          python ../../algoc.py stream programs/pre_trade_check.algo --kafka --produce data/order_events.jsonl
-          python ../../algoc.py stream programs/pre_trade_check.algo --kafka --max 6 --idle 60
+          python algoc.py pulse serve --dir "$RUNNER_TEMP/pulse" --port 7070 > "$RUNNER_TEMP/pulse.log" 2>&1 &
+          for i in $(seq 1 30); do curl -sf -H "Authorization: Bearer $ALGO_PULSE_TOKEN" http://127.0.0.1:7070/health && break; sleep 1; done
+      - name: Stream tests, including the served-bus round trip
+        env: {ALGO_PULSE_TEST_URL: "http://127.0.0.1:7070"}
+        run: python -m pytest tests/test_stream.py -v
+      - name: Trading desk order flow over the server
+        working-directory: enterprise-apps/algo-trading-desk
+        env: {ALGO_PULSE_URL: "http://127.0.0.1:7070"}
+        run: |
+          python ../../algoc.py stream programs/pre_trade_check.algo --pulse --produce data/order_events.jsonl
+          python ../../algoc.py stream programs/pre_trade_check.algo --pulse --max 6 --idle 20
+          python ../../algoc.py pulse topics
+      - name: Server log
+        if: always()
+        run: cat "$RUNNER_TEMP/pulse.log"
 
   quantum:
     name: Quantum tools · cross-checked against Qiskit

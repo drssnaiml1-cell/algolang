@@ -12,6 +12,18 @@
 - Otherwise → scores complexity, chooses a handling route and estimates the payout after the deductible
 - A second program answers policyholder messages with live policy facts and a tone check
 
+
+## How it works: live figures
+Each figure is drawn from the program itself by `tools/make_figures.py`, so it always matches the code. Moving dots show data flowing between agents; dashed blue lines are decisions; gold badges mark human gates and blue badges mark `uncertain<T>` agents that are sampled several times.
+
+**NovaShield Claims Operations Center** · [`programs/claims_intake.algo`](programs/claims_intake.algo)
+
+<p align="center"><img src="../../docs/images/apps/claims-ops-center--claims_intake.svg" alt="NovaShield Claims Operations Center: first notice of loss to a governed decision." width="100%"></p>
+
+**NovaShield customer desk** · [`programs/customer_desk.algo`](programs/customer_desk.algo)
+
+<p align="center"><img src="../../docs/images/apps/claims-ops-center--customer_desk.svg" alt="NovaShield customer desk: answers policyholder messages, checks tone before sending." width="100%"></p>
+
 ## How the agents work together (`claims_intake.algo`)
 
 ```mermaid

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 470" width="1280" height="470" role="img" aria-labelledby="t d">
   <title id="t">AlgoLang — the agent-native programming language for trustworthy AI</title>
-  <desc id="d">An order event from Kafka flows to Quote and Limits agents in parallel, through a deterministic BREACH guard, to an uncertain RiskGate agent or a Reject agent. Every call is written to a hash-chained audit log.</desc>
+  <desc id="d">An order event from AlgoPulse flows to Quote and Limits agents in parallel, through a deterministic BREACH guard, to an uncertain RiskGate agent or a Reject agent. Every call is written to a hash-chained audit log.</desc>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
       <stop offset="0" stop-color="#081428"/>
@@ -78,7 +78,7 @@
       <text x="74" y="280"><tspan fill="#e9c75a">agent</tspan><tspan fill="#ffffff"> RiskGate</tspan><tspan fill="#c9cfe0">(order: text) -&gt; </tspan><tspan fill="#8fd3ff">uncertain&lt;score&gt;</tspan><tspan fill="#c9cfe0"> {</tspan></text>
       <text x="74" y="300"><tspan dx="33" fill="#e9c75a">policy</tspan><tspan fill="#c9cfe0"> { samples 5  budget cost 0.04 usd }  }</tspan></text>
       <text x="74" y="322"><tspan fill="#e9c75a">if</tspan><tspan fill="#c9cfe0"> limits </tspan><tspan fill="#e9c75a">contains</tspan><tspan fill="#a8e6a1"> "BREACH"</tspan><tspan fill="#c9cfe0"> { emit Reject(order, limits) }</tspan></text>
-      <text x="74" y="344"><tspan fill="#e9c75a">stream</tspan><tspan fill="#ffffff"> order_flow</tspan><tspan fill="#c9cfe0"> on main { from </tspan><tspan fill="#e9c75a">kafka</tspan><tspan fill="#a8e6a1"> "market"</tspan><tspan fill="#c9cfe0"> … }</tspan><tspan class="cursor" fill="#e9c75a">▍</tspan></text>
+      <text x="74" y="344"><tspan fill="#e9c75a">stream</tspan><tspan fill="#ffffff"> order_flow</tspan><tspan fill="#c9cfe0"> on main { from </tspan><tspan fill="#e9c75a">pulse</tspan><tspan fill="#a8e6a1"> "market"</tspan><tspan fill="#c9cfe0"> … }</tspan><tspan class="cursor" fill="#e9c75a">▍</tspan></text>
     </g>
   </g>
 
@@ -87,7 +87,7 @@
     <rect class="chip" x="56" y="384" width="160" height="30" rx="15"/><text class="chiptxt" x="136" y="404" text-anchor="middle">agents, not functions</text>
     <rect class="chip" x="226" y="384" width="140" height="30" rx="15"/><text class="chiptxt" x="296" y="404" text-anchor="middle">policies in code</text>
     <rect class="chip" x="376" y="384" width="118" height="30" rx="15"/><text class="chiptxt" x="435" y="404" text-anchor="middle">human gate</text>
-    <rect class="chip" x="504" y="384" width="112" height="30" rx="15"/><text class="chiptxt" x="560" y="404" text-anchor="middle">Kafka · quantum</text>
+    <rect class="chip" x="504" y="384" width="112" height="30" rx="15"/><text class="chiptxt" x="560" y="404" text-anchor="middle">Pulse · quantum</text>
     <text x="56" y="446" fill="#9aa6c2" font-size="13">Designed by <tspan fill="#f4f1e8" font-weight="600">Dr. S. Satyanarayana</tspan>  ·  <tspan fill="#e9c75a">www.algoprofessor.com</tspan>  ·  Apache 2.0</text>
   </g>
 
@@ -111,7 +111,7 @@
     <!-- event source -->
     <rect x="690" y="128" width="105" height="44" rx="22" class="node"/>
     <circle cx="712" cy="150" r="4" fill="#c9a227"/><circle cx="724" cy="142" r="3" fill="#c9a227" fill-opacity=".7"/><circle cx="724" cy="158" r="3" fill="#c9a227" fill-opacity=".7"/>
-    <text x="764" y="147" class="lbl" text-anchor="middle" font-size="13.5">Kafka</text>
+    <text x="764" y="147" class="lbl" text-anchor="middle" font-size="13.5">Pulse</text>
     <text x="764" y="162" class="sub" text-anchor="middle">event</text>
 
     <!-- parallel agents -->
@@ -157,7 +157,7 @@
       <text x="690" y="396" fill="#f4f1e8"><tspan fill="#e9c75a" font-weight="700">E100–E124</tspan>  compile-time safety checks</text>
       <text x="690" y="420" fill="#f4f1e8"><tspan fill="#e9c75a" font-weight="700">$ · ₹ · Wh · CO₂</tspan>  priced before every call</text>
       <text x="970" y="396" fill="#f4f1e8"><tspan fill="#e9c75a" font-weight="700">120</tspan> domain packs · <tspan fill="#e9c75a" font-weight="700">10</tspan> enterprise apps</text>
-      <text x="970" y="420" fill="#f4f1e8"><tspan fill="#e9c75a" font-weight="700">Kafka</tspan> · <tspan fill="#e9c75a" font-weight="700">quantum</tspan> · <tspan fill="#e9c75a" font-weight="700">MCP</tspan> · <tspan fill="#e9c75a" font-weight="700">eval</tspan> · <tspan fill="#e9c75a" font-weight="700">LSP</tspan></text>
+      <text x="970" y="420" fill="#f4f1e8"><tspan fill="#e9c75a" font-weight="700">AlgoPulse</tspan> · <tspan fill="#e9c75a" font-weight="700">quantum</tspan> · <tspan fill="#e9c75a" font-weight="700">MCP</tspan> · <tspan fill="#e9c75a" font-weight="700">eval</tspan> · <tspan fill="#e9c75a" font-weight="700">LSP</tspan></text>
       <text x="690" y="446" fill="#9aa6c2">CLI · Studio · Prompt UI · Python SDK · VS Code</text>
     </g>
   </g>

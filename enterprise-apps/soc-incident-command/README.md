@@ -11,6 +11,22 @@
 - Severe → hands the incident to IT operations for classification, diagnosis, priority and a first-response runbook
 - A phishing desk checks forwarded emails against the blocklist and advises staff and the SOC
 
+
+## How it works: live figures
+Each figure is drawn from the program itself by `tools/make_figures.py`, so it always matches the code. Moving dots show data flowing between agents; dashed blue lines are decisions; gold badges mark human gates and blue badges mark `uncertain<T>` agents that are sampled several times.
+
+**Helix SOC** · [`programs/alert_to_incident.algo`](programs/alert_to_incident.algo)
+
+<p align="center"><img src="../../docs/images/apps/soc-incident-command--alert_to_incident.svg" alt="Helix SOC: alerts to an incident: batch & analyse, enrich (CMDB, IOC), severity, IT incident runbook." width="100%"></p>
+
+**Helix phishing desk** · [`programs/phishing_desk.algo`](programs/phishing_desk.algo)
+
+<p align="center"><img src="../../docs/images/apps/soc-incident-command--phishing_desk.svg" alt="Helix phishing desk: staff forward a suspicious email, the desk checks indicators and advises." width="100%"></p>
+
+**Quantum-safe readiness** · [`programs/pqc_readiness.algo`](programs/pqc_readiness.algo)
+
+<p align="center"><img src="../../docs/images/apps/soc-incident-command--pqc_readiness.svg" alt="Quantum-safe readiness: which cryptography a large quantum computer could break, and what to move to." width="100%"></p>
+
 ## How the agents work together (`alert_to_incident.algo`)
 
 ```mermaid
@@ -95,18 +111,19 @@ Agents can call a tool only if the program declares it, the agent lists it under
 | Allowed tools | `kb.search`, `cmdb.lookup`, `ioc.check` |
 | Audit | SHA-256 hash-chained log in `runs/`, checked with `algo audit verify` |
 
-## Real-time (Kafka)
+## Real-time (AlgoPulse™)
 
-`programs/alert_to_incident.algo` ends with a `stream` block: SIEM alerts on `soc.alerts` → incident decision → `soc.incidents` / `soc.dlq`. Every event runs the flow once under the same governance.
+`programs/alert_to_incident.algo` ends with a `stream` block: SIEM alerts on `soc.alerts` → incident decision → `soc.incidents` / `soc.dlq`. Every event runs the flow once under the same governance, on AlgoPulse, AlgoLang's built-in event engine.
 
 ```bash
-algo stream programs/alert_to_incident.algo --input data/alert_events.jsonl                 # offline, no Kafka needed
-docker compose -f ../../deploy/kafka/docker-compose.yml up -d  # ZooKeeper + Kafka
-algo stream programs/alert_to_incident.algo --kafka --produce data/alert_events.jsonl
-algo stream programs/alert_to_incident.algo --kafka
+algo stream programs/alert_to_incident.algo --input data/alert_events.jsonl             # offline, from a file
+algo stream programs/alert_to_incident.algo --pulse --produce data/alert_events.jsonl   # publish to the local bus (pulse/soc/)
+algo stream programs/alert_to_incident.algo --pulse                        # process; re-runs resume where they stopped
+algo pulse topics --bus soc
 ```
 
 The sample file includes a malformed event (and, for the trading desk, a re-delivered duplicate) so you can see dead-letter routing and de-duplication at work.
+
 
 ## Run it
 

@@ -11,6 +11,18 @@
 - Critical → assesses the impact, proposes alternatives, scores their cost and writes a recovery plan
 - Otherwise → drafts the carrier follow-up
 
+
+## How it works: live figures
+Each figure is drawn from the program itself by `tools/make_figures.py`, so it always matches the code. Moving dots show data flowing between agents; dashed blue lines are decisions; gold badges mark human gates and blue badges mark `uncertain<T>` agents that are sampled several times.
+
+**Konark control tower** · [`programs/exception_desk.algo`](programs/exception_desk.algo)
+
+<p align="center"><img src="../../docs/images/apps/supply-chain-control-tower--exception_desk.svg" alt="Konark control tower: shipment exception → tracking + stock impact → critical? → recovery plan." width="100%"></p>
+
+**Quantum route optimiser** · [`programs/route_optimizer.algo`](programs/route_optimizer.algo)
+
+<p align="center"><img src="../../docs/images/apps/supply-chain-control-tower--route_optimizer.svg" alt="Quantum route optimiser: one route per shipment at the lowest total cost, avoiding shared-lane clashes." width="100%"></p>
+
 ## How the agents work together (`exception_desk.algo`)
 
 ```mermaid

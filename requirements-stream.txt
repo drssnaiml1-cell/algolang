@@ -1,3 +1,0 @@
--r requirements.txt
-# Real-time streams on Apache Kafka (algo stream --kafka)
-kafka-python>=2.0.2

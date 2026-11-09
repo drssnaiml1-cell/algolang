@@ -10,6 +10,18 @@
 - Suggests redlines and pulls Meridian's approved fallback wording from the clause library
 - For contracts: reads the file, analyses every clause in parallel, scores the risk and summarises it for counsel
 
+
+## How it works: live figures
+Each figure is drawn from the program itself by `tools/make_figures.py`, so it always matches the code. Moving dots show data flowing between agents; dashed blue lines are decisions; gold badges mark human gates and blue badges mark `uncertain<T>` agents that are sampled several times.
+
+**Meridian contract review** · [`programs/contract_review.algo`](programs/contract_review.algo)
+
+<p align="center"><img src="../../docs/images/apps/legal-contract-desk--contract_review.svg" alt="Meridian contract review: clause-by-clause analysis in parallel, risk score, summary for counsel." width="100%"></p>
+
+**Meridian NDA triage** · [`programs/nda_triage.algo`](programs/nda_triage.algo)
+
+<p align="center"><img src="../../docs/images/apps/legal-contract-desk--nda_triage.svg" alt="Meridian NDA triage: extract terms, compare with the playbook, score deviation, suggest redlines." width="100%"></p>
+
 ## How the agents work together (`nda_triage.algo`)
 
 ```mermaid

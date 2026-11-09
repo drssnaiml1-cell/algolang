@@ -12,6 +12,18 @@
 - For accreditation: maps every course outcome to programme outcomes, scores alignment and builds the CO-PO matrix
 - Writes questions for every unit at several Bloom levels, checks coverage and assembles the paper
 
+
+## How it works: live figures
+Each figure is drawn from the program itself by `tools/make_figures.py`, so it always matches the code. Moving dots show data flowing between agents; dashed blue lines are decisions; gold badges mark human gates and blue badges mark `uncertain<T>` agents that are sampled several times.
+
+**Fair admissions screening** · [`programs/admissions.algo`](programs/admissions.algo)
+
+<p align="center"><img src="../../docs/images/apps/university-admissions-obe--admissions.svg" alt="Fair admissions screening: three independent reviewers, a panel score, and a letter." width="100%"></p>
+
+**NBA / NAAC course file** · [`programs/obe_course_file.algo`](programs/obe_course_file.algo)
+
+<p align="center"><img src="../../docs/images/apps/university-admissions-obe--obe_course_file.svg" alt="NBA / NAAC course file: CO-PO mapping matrix plus a Bloom-balanced question paper." width="100%"></p>
+
 ## How the agents work together (`admissions.algo`)
 
 ```mermaid

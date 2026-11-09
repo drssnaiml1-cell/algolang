@@ -36,14 +36,13 @@
   "plugins": [
     "plugins/helix_tools.py"
   ],
-  "kafka": {
-    "soc": {
-      "bootstrap_servers": "localhost:9092",
-      "client_id": "soc-incident-command"
-    }
-  },
   "pqc": {
     "quantum_threat_years": 10,
     "migration_years": 3
+  },
+  "pulse": {
+    "soc": {
+      "dir": "pulse/soc"
+    }
   }
 }

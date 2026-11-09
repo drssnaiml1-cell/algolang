@@ -1,5 +1,7 @@
 # AlgoLang enterprise applications
 
+<p align="center"><img src="../docs/images/sections/06-enterprise-apps.svg" alt="Ten governed enterprise applications" width="100%"></p>
+
 Ten complete, governed multi-agent applications, one per industry. Each is a real AlgoLang project with:
 - organisation policy;
 - company tools over its own data;
@@ -52,10 +54,12 @@ python enterprise-apps/run_all.py --batch    # also batch-process each app's sam
 - **Branching on confidence:** `if risk > 0.85 { … } else { … }`.
 - **v0.3 trust features (Algo Trading Desk):** `uncertain<score>` gates sampled 5 times, deterministic `contains` guards for hard limits, cost and energy budgets, and `eval` blocks inside the programs.
 - **Quantum applications (v0.3.3):** circuit blocks in the Quantum Optimization Lab, quantum-safe readiness in SOC Incident Command, Monte Carlo risk with amplitude estimation in the Algo Trading Desk, and QAOA logistics routing in the Supply Chain Control Tower.
-- **Real-time streams (v0.3.1, Algo Trading Desk and SOC Incident Command):** a `stream` block runs the flow for every event on a Kafka topic.
+- **Real-time streams (v0.3.1, Algo Trading Desk and SOC Incident Command):** a `stream` block runs the flow for every event on an AlgoPulse™ topic, AlgoLang's built-in event engine.
 - **Quantum tools (v0.3.2, Quantum Optimization Lab):** QAOA portfolio selection and max-cut shift planning, each VERIFIED against the exact classical optimum before any agent acts on it; `shots` and `max qubits` policies.
 - **Company tools:** an agent gets a tool only if it declares it and the org allows it (`E115` otherwise).
 - **Fairness:** protected attributes are forbidden inputs (`E108` at compile time, blocked at run time).
 - **Human-in-the-loop, a hash-chained audit log, batch processing and caching**, all switched on by `algo.config.json`.
 
 All organisations, people, policies and records here are fictional examples.
+
+Every application's README shows an animated figure of each of its programs, drawn from the code by `tools/make_figures.py`.

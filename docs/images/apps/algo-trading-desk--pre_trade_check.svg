@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 452" width="1280" height="452" role="img" aria-label="QuantOracle pre-trade risk gate">
+  <title>QuantOracle pre-trade risk gate</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#081428"/><stop offset=".6" stop-color="#0e2140"/><stop offset="1" stop-color="#132c55"/></linearGradient>
+    <linearGradient id="gold" x1="0" x2="1"><stop offset="0" stop-color="#e9c75a"/><stop offset="1" stop-color="#c9a227"/></linearGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" fill="none" stroke="#c9a227" stroke-opacity=".06"/></pattern>
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <style>
+    text { font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif; }
+    .mono { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; }
+    .wire { fill: none; stroke: #c9a227; stroke-width: 2; stroke-dasharray: 6 6; animation: dash 1.1s linear infinite; }
+    .ctl { fill: none; stroke: #8fd3ff; stroke-opacity: .55; stroke-width: 1.4; stroke-dasharray: 3 5; animation: dash 2.2s linear infinite; }
+    .card { fill: #0f2547; stroke: #c9a227; stroke-opacity: .75; stroke-width: 1.4; }
+    .glow { animation: glow 3.6s ease-in-out infinite; }
+    .rise { animation: rise 1.2s cubic-bezier(.2,.8,.2,1) both; }
+    .fade { opacity: 0; animation: fade 7s ease-in-out infinite; }
+    .pulse { animation: pulse 2.4s ease-in-out infinite; }
+    @keyframes dash { to { stroke-dashoffset: -24; } }
+    @keyframes glow { 0%, 100% { stroke-opacity: .35; } 50% { stroke-opacity: 1; } }
+    @keyframes rise { from { transform: translateY(12px); } to { transform: none; } }
+    @keyframes fade { 0%, 6% { opacity: 0; } 14%, 88% { opacity: 1; } 100% { opacity: 0; } }
+    @keyframes pulse { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+    
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } .fade { opacity: 1; } }
+  </style>
+  <rect width="1280" height="452" fill="url(#bg)"/>
+  <rect width="1280" height="452" fill="url(#grid)"/>
+  <rect width="1280" height="4" fill="url(#gold)"/>
+  <text x="40" y="40" fill="#c9a227" font-size="13" letter-spacing="2.6" font-weight="700">ALGO TRADING DESK</text>
+  <text x="40" y="72" fill="#f4f1e8" font-size="26" font-weight="700">QuantOracle pre-trade risk gate</text>
+  <text x="40" y="96" fill="#c9b98a" font-size="16">every order intent is checked before a ticket is prepared.</text>
+  
+<rect x="40" y="110" width="111" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".55"/><text x="95" y="127" fill="#f1dc94" font-size="12.5" text-anchor="middle">6 agent calls</text>
+<rect x="161" y="110" width="67" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".55"/><text x="194" y="127" fill="#f1dc94" font-size="12.5" text-anchor="middle">2 tools</text>
+<rect x="238" y="110" width="96" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".55"/><text x="286" y="127" fill="#f1dc94" font-size="12.5" text-anchor="middle">2 decisions</text>
+<rect x="344" y="110" width="96" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".55"/><text x="392" y="127" fill="#f1dc94" font-size="12.5" text-anchor="middle">1 uncertain</text>
+<rect x="451" y="110" width="104" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".55"/><text x="502" y="127" fill="#f1dc94" font-size="12.5" text-anchor="middle">1 human gate</text>
+<rect x="564" y="110" width="169" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".55"/><text x="649" y="127" fill="#f1dc94" font-size="12.5" text-anchor="middle">stream · pulse/market</text>
+<path id="e0" d="M194.4 240.0 C 211.4 240.0, 211.4 198.0, 228.4 198.0" class="wire"/>
+<path id="e1" d="M194.4 240.0 C 211.4 240.0, 211.4 282.0, 228.4 282.0" class="wire"/>
+<path id="e2" d="M365.9 282.0 C 405.2 282.0, 405.2 240.0, 444.6 240.0" class="wire"/>
+<path id="e3" d="M365.9 198.0 C 580.1 198.0, 580.1 282.0, 794.4 282.0" class="wire"/>
+<path id="e4" d="M492.6 240.0 C 531.9 240.0, 531.9 282.0, 571.3 282.0" class="ctl"/>
+<path id="e5" d="M708.7 282.0 C 751.6 282.0, 751.6 282.0, 794.4 282.0" class="wire"/>
+<path id="e6" d="M365.9 198.0 C 468.6 198.0, 468.6 198.0, 571.3 198.0" class="wire"/>
+<path id="e7" d="M492.6 240.0 C 531.9 240.0, 531.9 198.0, 571.3 198.0" class="ctl"/>
+<path id="e8" d="M708.7 198.0 C 748.1 198.0, 748.1 198.0, 787.4 198.0" class="wire"/>
+<path id="e9" d="M835.4 198.0 C 874.8 198.0, 874.8 198.0, 914.1 198.0" class="ctl"/>
+<path id="e10" d="M1051.6 198.0 C 1094.4 198.0, 1094.4 198.0, 1137.3 198.0" class="wire"/>
+<path id="e11" d="M835.4 198.0 C 874.8 198.0, 874.8 282.0, 914.1 282.0" class="ctl"/>
+<path id="e12" d="M1051.6 282.0 C 1094.4 282.0, 1094.4 282.0, 1137.3 282.0" class="wire"/>
+<g class="rise" style="animation-delay:0.00s"><rect x="57.0" y="219.0" width="137.4" height="42" rx="21" fill="#081428" stroke="#e9c75a" stroke-width="1.6"/><text x="125.7" y="238.0" fill="#f4f1e8" font-size="14.5" font-weight="700" text-anchor="middle">order</text><text x="125.7" y="253.0" fill="#c9b98a" font-size="11" text-anchor="middle">input</text></g>
+<g class="rise" style="animation-delay:0.05s"><rect x="228.4" y="173.0" width="137.4" height="50" rx="10" fill="#0f2547" stroke="#c9a227" stroke-width="1.6"/><text x="297.1" y="194.0" fill="#f4f1e8" font-size="14.5" font-weight="700" text-anchor="middle">Quote</text><text x="297.1" y="211.0" fill="#c9b98a" font-size="11" text-anchor="middle">uses market.quote</text>
+<text x="236.4" y="168.0" fill="#e9c75a" font-size="11" font-weight="800">PAR</text>
+</g>
+<g class="rise" style="animation-delay:0.10s"><rect x="228.4" y="257.0" width="137.4" height="50" rx="10" fill="#0f2547" stroke="#c9a227" stroke-width="1.6"/><text x="297.1" y="278.0" fill="#f4f1e8" font-size="14.5" font-weight="700" text-anchor="middle">Limits</text><text x="297.1" y="295.0" fill="#c9b98a" font-size="11" text-anchor="middle">uses risk.limits</text>
+<text x="236.4" y="252.0" fill="#e9c75a" font-size="11" font-weight="800">PAR</text>
+</g>
+<g class="rise" style="animation-delay:0.15s"><polygon points="468.57142857142856,216.0 492.57142857142856,240.0 468.57142857142856,264.0 444.57142857142856,240.0" fill="#0f2547" stroke="#e9c75a" stroke-width="1.8"/><text x="468.6" y="244.0" fill="#e9c75a" font-size="12" font-weight="800" text-anchor="middle">if</text><rect x="376.2" y="194.0" width="184.8" height="19" rx="5" fill="#081428" fill-opacity=".92" stroke="#c9a227" stroke-opacity=".35"/><text x="468.6" y="208.0" fill="#c9b98a" font-size="11.5" text-anchor="middle" class="mono">limits contains &quot;BREACH&quot;</text></g>
+<g style="animation-delay:0.20s"><circle cx="811.4" cy="282.0" r="17" fill="url(#gold)" class="pulse"/><text x="811.4" y="286.0" fill="#0e2140" font-size="10.5" font-weight="800" text-anchor="middle">emit</text></g>
+<g class="rise" style="animation-delay:0.25s"><rect x="571.3" y="257.0" width="137.4" height="50" rx="10" fill="#0f2547" stroke="#e9c75a" stroke-width="1.6" stroke-dasharray="5 3"/><text x="640.0" y="278.0" fill="#f4f1e8" font-size="14.5" font-weight="700" text-anchor="middle">Reject</text><text x="640.0" y="295.0" fill="#c9b98a" font-size="11" text-anchor="middle">Pre-trade risk offi…</text>
+</g>
+<g class="rise" style="animation-delay:0.30s"><rect x="571.3" y="173.0" width="137.4" height="50" rx="10" fill="#0f2547" stroke="#e9c75a" stroke-width="1.6" stroke-dasharray="5 3"/><text x="640.0" y="194.0" fill="#f4f1e8" font-size="14.5" font-weight="700" text-anchor="middle">RiskGate</text><text x="640.0" y="211.0" fill="#c9b98a" font-size="11" text-anchor="middle">→ gate</text>
+<rect x="654.7" y="162.0" width="50" height="17" rx="8.5" fill="#8fd3ff"/><text x="679.7" y="174.0" fill="#0e2140" font-size="10" font-weight="800" text-anchor="middle">~ ×5</text>
+</g>
+<g class="rise" style="animation-delay:0.35s"><polygon points="811.4285714285713,174.0 835.4285714285713,198.0 811.4285714285713,222.0 787.4285714285713,198.0" fill="#0f2547" stroke="#e9c75a" stroke-width="1.8"/><text x="811.4" y="202.0" fill="#e9c75a" font-size="12" font-weight="800" text-anchor="middle">if</text><rect x="711.8" y="152.0" width="199.2" height="19" rx="5" fill="#081428" fill-opacity=".92" stroke="#c9a227" stroke-opacity=".35"/><text x="811.4" y="166.0" fill="#c9b98a" font-size="11.5" text-anchor="middle" class="mono">gate &gt; 0.75 and gate.conf…</text></g>
+<g style="animation-delay:0.40s"><circle cx="1154.3" cy="198.0" r="17" fill="url(#gold)" class="pulse"/><text x="1154.3" y="202.0" fill="#0e2140" font-size="10.5" font-weight="800" text-anchor="middle">emit</text></g>
+<g class="rise" style="animation-delay:0.45s"><rect x="914.1" y="173.0" width="137.4" height="50" rx="10" fill="#0f2547" stroke="#e9c75a" stroke-width="1.6" stroke-dasharray="5 3"/><text x="982.9" y="194.0" fill="#f4f1e8" font-size="14.5" font-weight="700" text-anchor="middle">Ticket</text><text x="982.9" y="211.0" fill="#c9b98a" font-size="11" text-anchor="middle">Order preparation a…</text>
+<g class="pulse"><rect x="993.6" y="162.0" width="54" height="17" rx="8.5" fill="#c9a227"/><text x="1020.6" y="174.0" fill="#0e2140" font-size="10" font-weight="800" text-anchor="middle">⚑ human</text></g>
+</g>
+<g style="animation-delay:0.50s"><circle cx="1154.3" cy="282.0" r="17" fill="url(#gold)" class="pulse"/><text x="1154.3" y="286.0" fill="#0e2140" font-size="10.5" font-weight="800" text-anchor="middle">emit</text></g>
+<g class="rise" style="animation-delay:0.55s"><rect x="914.1" y="257.0" width="137.4" height="50" rx="10" fill="#0f2547" stroke="#e9c75a" stroke-width="1.6" stroke-dasharray="5 3"/><text x="982.9" y="278.0" fill="#f4f1e8" font-size="14.5" font-weight="700" text-anchor="middle">Reject</text><text x="982.9" y="295.0" fill="#c9b98a" font-size="11" text-anchor="middle">Pre-trade risk offi…</text>
+</g>
+<circle r="4.5" fill="#ffe08a" filter="url(#soft)"><animateMotion dur="1.7s" begin="0.00s" repeatCount="indefinite"><mpath href="#e0"/></animateMotion></circle>
+<circle r="4.5" fill="#ffe08a" filter="url(#soft)"><animateMotion dur="1.7s" begin="0.37s" repeatCount="indefinite"><mpath href="#e1"/></animateMotion></circle>
+<circle r="4.5" fill="#ffe08a" filter="url(#soft)"><animateMotion dur="1.7s" begin="0.74s" repeatCount="indefinite"><mpath href="#e2"/></animateMotion></circle>
+<circle r="4.5" fill="#ffe08a" filter="url(#soft)"><animateMotion dur="1.7s" begin="1.11s" repeatCount="indefinite"><mpath href="#e3"/></animateMotion></circle>
+<circle r="4.5" fill="#ffe08a" filter="url(#soft)"><animateMotion dur="1.7s" begin="1.48s" repeatCount="indefinite"><mpath href="#e5"/></animateMotion></circle>
+<circle r="4.5" fill="#ffe08a" filter="url(#soft)"><animateMotion dur="1.7s" begin="1.85s" repeatCount="indefinite"><mpath href="#e6"/></animateMotion></circle>
+<circle r="4.5" fill="#ffe08a" filter="url(#soft)"><animateMotion dur="1.7s" begin="0.02s" repeatCount="indefinite"><mpath href="#e8"/></animateMotion></circle>
+<circle r="4.5" fill="#ffe08a" filter="url(#soft)"><animateMotion dur="1.7s" begin="0.39s" repeatCount="indefinite"><mpath href="#e10"/></animateMotion></circle>
+<circle r="4.5" fill="#ffe08a" filter="url(#soft)"><animateMotion dur="1.7s" begin="0.76s" repeatCount="indefinite"><mpath href="#e12"/></animateMotion></circle>
+<g transform="translate(40,390)"><rect x="0" y="-9" width="26" height="18" rx="5" fill="#0f2547" stroke="#c9a227"/><text x="34" y="5" fill="#9aa6c2" font-size="12.5">agent</text></g>
+<g transform="translate(124.0,390)"><rect x="0" y="-9" width="26" height="18" rx="5" fill="#0f2547" stroke="#e9c75a" stroke-dasharray="4 2"/><text x="34" y="5" fill="#9aa6c2" font-size="12.5">branch agent</text></g>
+<g transform="translate(258.4,390)"><polygon points="13,-10 24,0 13,10 2,0" fill="#0f2547" stroke="#e9c75a"/><text x="34" y="5" fill="#9aa6c2" font-size="12.5">decision</text></g>
+<g transform="translate(364.0,390)"><rect x="0" y="-8" width="26" height="16" rx="8" fill="#8fd3ff"/><text x="34" y="5" fill="#9aa6c2" font-size="12.5">uncertain (sampled)</text></g>
+<g transform="translate(548.8,390)"><rect x="0" y="-8" width="26" height="16" rx="8" fill="#c9a227"/><text x="34" y="5" fill="#9aa6c2" font-size="12.5">human gate</text></g>
+<g transform="translate(668.8,390)"><path d="M0 0 L26 0" class="wire"/><text x="34" y="5" fill="#9aa6c2" font-size="12.5">data</text></g>
+<g transform="translate(745.5999999999999,390)"><path d="M0 0 L26 0" class="ctl"/><text x="34" y="5" fill="#9aa6c2" font-size="12.5">control</text></g>
+<text x="40" y="414" fill="#9aa6c2" fill-opacity=".85" font-size="12">Drawn automatically from enterprise-apps/algo-trading-desk/programs/pre_trade_check.algo by tools/make_figures.py — the figure always matches the code.</text>
+  <text x="1240" y="438" fill="#9aa6c2" fill-opacity=".7" font-size="11" text-anchor="end">AlgoLang · AlgoProfessor AI R&amp;D Solutions</text>
+</svg>

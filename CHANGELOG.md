@@ -4,6 +4,21 @@ All notable changes to AlgoLang are documented here. The format follows [Keep a 
 
 ## [Unreleased]
 
+## [0.3.4] — 2026-11-09
+
+### Added
+- **AlgoPulse™, AlgoLang's own real-time event engine** (`algopulse.py`). A bus is a folder of durable, append-only topic logs with numbered offsets and consumer groups. Every event is fsync'd before it is acknowledged, and file locks keep offsets gap-free when several programs write at once. `algo pulse serve` shares a bus over HTTP behind a bearer token (`ALGO_PULSE_TOKEN`), and refuses to listen beyond localhost without one. Topic and group names are validated so they can never escape the bus folder.
+- **`algo pulse serve | publish | topics | tail`**, and `algo stream FILE --pulse` to run a `stream` block on the bus named in it. A stream resumes from its consumer group's committed offset. `"pulse"` in `algo.config.json` names each bus: a local folder (`{"dir": …}`) or a served bus (`{"url": …, "token_env": …}`). `ALGO_PULSE_URL` points every bus at one server.
+- **Animated figures for every README section and every application.** `tools/make_figures.py` draws the section figures, plus one figure per program for all 25 programs in the ten enterprise applications. Application figures are laid out from each program's real data-flow graph, with parallel agents, decisions, uncertain agents and human gates marked, so a figure always matches its code. CI fails if a committed figure is out of date. The figures are pure SVG (CSS and SMIL animation, no scripts) and stand still for readers who prefer reduced motion.
+- CI job **Real-time streams · AlgoPulse server**: it starts a real server, runs the stream tests (including a served-bus round trip) and streams the trading desk's order flow through it.
+
+### Changed
+- `stream` blocks read from AlgoPulse: `from pulse "bus" topic "t" group "g"` replaces `from kafka …`. The trading desk and SOC applications, their configs, docs and editor support are updated to match.
+
+### Removed
+- Apache Kafka and ZooKeeper support: the `kafka-python` client, `requirements-stream.txt`, the `algolang[stream]` extra, `deploy/kafka/` and the Kafka CI job. Streams now need nothing outside AlgoLang.
+- The lab website (`lab-website/`), with its README section and badge. The package homepage is now www.algoprofessor.com.
+
 ## [0.3.3] — 2026-11-08
 
 ### Added
@@ -32,6 +47,8 @@ All notable changes to AlgoLang are documented here. The format follows [Keep a 
 - The planned v0.4 risk-governance errors move to E124–E127, because E122 and E123 are now in use. Interoperability moves from v0.5 to v0.6.
 
 ## [0.3.1] — 2026-11-08
+
+_The Kafka support added in this release was replaced by AlgoPulse™, AlgoLang's own event engine, in 0.3.4._
 
 ### Added
 - **Real-time streams.** A new `stream name on flow { … }` block binds a flow to a Kafka topic: `from kafka "cluster" topic "t" group "g"`, `map input = event.path`, `key event.id`, `to topic`, `escalate to topic`, `dead letter topic` and `max in flight N`. Every event runs the flow once, under the same policies, budgets, human gate and audit log as any other run.

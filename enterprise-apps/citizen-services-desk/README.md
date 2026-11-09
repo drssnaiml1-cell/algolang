@@ -11,6 +11,18 @@
 - Checks every reply for clarity before it is sent
 - Welfare pre-check: extracts the facts, applies scheme rules and scores eligibility for the scheme officer
 
+
+## How it works: live figures
+Each figure is drawn from the program itself by `tools/make_figures.py`, so it always matches the code. Moving dots show data flowing between agents; dashed blue lines are decisions; gold badges mark human gates and blue badges mark `uncertain<T>` agents that are sampled several times.
+
+**Citizen grievance desk** · [`programs/grievance_desk.algo`](programs/grievance_desk.algo)
+
+<p align="center"><img src="../../docs/images/apps/citizen-services-desk--grievance_desk.svg" alt="Citizen grievance desk: urgency, priority cell or department routing, a clear reply." width="100%"></p>
+
+**Welfare eligibility pre-check** · [`programs/welfare_check.algo`](programs/welfare_check.algo)
+
+<p align="center"><img src="../../docs/images/apps/citizen-services-desk--welfare_check.svg" alt="Welfare eligibility pre-check: the scheme officer decides; the citizen gets a clear notice." width="100%"></p>
+
 ## How the agents work together (`grievance_desk.algo`)
 
 ```mermaid

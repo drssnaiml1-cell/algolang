@@ -14,6 +14,18 @@
 - Not urgent → offers the next routine appointment
 - A second program drafts the discharge summary from the inpatient record file for the doctor to approve
 
+
+## How it works: live figures
+Each figure is drawn from the program itself by `tools/make_figures.py`, so it always matches the code. Moving dots show data flowing between agents; dashed blue lines are decisions; gold badges mark human gates and blue badges mark `uncertain<T>` agents that are sampled several times.
+
+**Sunrise discharge summary drafting** · [`programs/discharge.algo`](programs/discharge.algo)
+
+<p align="center"><img src="../../docs/images/apps/hospital-care-coordination--discharge.svg" alt="Sunrise discharge summary drafting: the treating doctor approves the final text." width="100%"></p>
+
+**Sunrise ER triage assistant** · [`programs/er_triage.algo`](programs/er_triage.algo)
+
+<p align="center"><img src="../../docs/images/apps/hospital-care-coordination--er_triage.svg" alt="Sunrise ER triage assistant: decision SUPPORT: the duty clinician signs off every result." width="100%"></p>
+
 ## How the agents work together (`er_triage.algo`)
 
 ```mermaid

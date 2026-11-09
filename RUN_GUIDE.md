@@ -208,38 +208,51 @@ algo report                                 # tokens, money (USD and ₹), energ
 
 `pricing` is USD per million input and output tokens. The defaults are placeholders, so set your contracted prices. `{python}` means the Python that runs AlgoLang.
 
-## Step 4d. Real-time events with Kafka (v0.3.1)
+## Step 4d. Real-time events with AlgoPulse™ (v0.3.4)
 
-A `stream` block runs a flow for every event on a Kafka topic. Try it offline first, with no Kafka needed:
+A `stream` block runs a flow for every event on a topic of **AlgoPulse™**, AlgoLang's built-in event engine. Nothing else to install: a bus is a folder of append-only event logs, or a small server you start with one command.
+
+**Offline, from a file** (quickest way to see it):
 
 ```bash
 cd enterprise-apps/algo-trading-desk
 algo stream programs/pre_trade_check.algo --input data/order_events.jsonl
 ```
 
-You will see each order routed to `orders.decisions`, `orders.review` (a person decides) or `orders.dlq` (unreadable event, blocked or failed run), plus latency and cost. Results are saved in `runs/streams/order_flow/`.
+Each order is routed to `orders.decisions`, `orders.review` (a person decides) or `orders.dlq` (unreadable event, blocked or failed run), with latency and cost. Results are saved in `runs/streams/order_flow/`.
 
-**With a real ZooKeeper + Kafka** (needs Docker):
+**On a local AlgoPulse bus** (events persist in `pulse/market/`, shared by every program on this machine):
 
 ```bash
-pip install -r requirements-stream.txt                       # the Kafka client
-docker compose -f deploy/kafka/docker-compose.yml up -d      # ZooKeeper, Kafka and the topics
-cd enterprise-apps/algo-trading-desk
-algo stream programs/pre_trade_check.algo --kafka --produce data/order_events.jsonl
-algo stream programs/pre_trade_check.algo --kafka            # Ctrl+C to stop
-docker compose -f ../../deploy/kafka/docker-compose.yml down # when you are done
+algo stream programs/pre_trade_check.algo --pulse --produce data/order_events.jsonl   # publish sample orders
+algo stream programs/pre_trade_check.algo --pulse          # process them; Ctrl+C to stop
+algo pulse topics --bus market                              # how many events each topic holds
+algo pulse tail orders.review --bus market                  # look at the items waiting for a person
+```
+
+Run the stream again and it continues from where its consumer group stopped: nothing is processed twice and nothing is lost.
+
+**Across machines: serve the bus**
+
+```bash
+export ALGO_PULSE_TOKEN=change-me                           # required when serving beyond this machine
+algo pulse serve --dir pulse/market --host 0.0.0.0 --port 7070
+# on any other machine
+export ALGO_PULSE_URL=http://<server>:7070 ALGO_PULSE_TOKEN=change-me
+algo stream programs/pre_trade_check.algo --pulse
 ```
 
 | Option | What it does |
 | --- | --- |
 | `--input FILE` | Offline: read events from a JSON Lines file |
-| `--kafka` | Use the cluster named in the stream block (address in `algo.config.json` → `kafka`) |
-| `--produce FILE` | With `--kafka`: publish a JSON Lines file to the source topic, then exit |
+| `--pulse` | Use the AlgoPulse bus named in the stream block (`"pulse"` section of `algo.config.json`) |
+| `--produce FILE` | With `--pulse`: publish a JSON Lines file to the source topic, then exit |
 | `--max N` · `--idle S` | Stop after N events, or after S seconds with no events |
 | `--live` | Use real Claude models (default: the offline mock) |
 | `--name S` | Choose a stream when a program has several |
 
-Prefer Kafka without ZooKeeper? Use `deploy/kafka/docker-compose.kraft.yml` (KRaft mode, the default from Kafka 4.0). The commands are the same.
+`algo.config.json` names each bus: `"pulse": {"market": {"dir": "pulse/market"}}` for a local folder, or `{"url": "http://10.0.0.5:7070", "token_env": "PULSE_TOKEN"}` for a served bus.
+
 
 ## Step 4e. Quantum tools (v0.3.2 preview)
 

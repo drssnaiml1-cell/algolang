@@ -4,19 +4,19 @@
 [![Release](https://img.shields.io/github/v/release/drssnaiml1-cell/algolang?color=c9a227)](https://github.com/drssnaiml1-cell/algolang/releases/latest)
 [![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-0e2140)](LICENSE)
 [![AlgoProfessor](https://img.shields.io/badge/AlgoProfessor-www.algoprofessor.com-0e2140)](https://www.algoprofessor.com)
-[![Lab website](https://img.shields.io/badge/lab-profagentlabs.algoprofessor.com-c9a227)](https://www.profagentlabs.algoprofessor.com)
+[![AlgoProfessor](https://img.shields.io/badge/by-algoprofessor.com-c9a227)](https://www.algoprofessor.com)
 [![Website](https://img.shields.io/badge/website-playground%20%C2%B7%20library-0e2140)](https://drssnaiml1-cell.github.io/algolang/)
 
 
 <p align="center">
-  <a href="https://www.algoprofessor.com"><img src="docs/images/algolang-hero.svg" alt="AlgoLang: an order event from Kafka flows through parallel Quote and Limits agents, a deterministic BREACH guard, and an uncertain RiskGate agent with a human gate; every call is written to a hash-chained audit log" width="100%"></a>
+  <a href="https://www.algoprofessor.com"><img src="docs/images/algolang-hero.svg" alt="AlgoLang: an order event from AlgoPulse flows through parallel Quote and Limits agents, a deterministic BREACH guard, and an uncertain RiskGate agent with a human gate; every call is written to a hash-chained audit log" width="100%"></a>
 </p>
 
 **The AlgoProfessor agent-native programming language.**
 AlgoProfessor AI R&D Solutions, Hyderabad. Designed by Dr. S. Satyanarayana.
 🌐 **[www.algoprofessor.com](https://www.algoprofessor.com)**
 
-**Current version: 0.3.3** (quantum circuits and four quantum applications · real-time Kafka streams) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md) · [50 Sample Programs (PDF)](docs/AlgoLang_50_Sample_Programs.pdf) · [Language manual (PDF)](docs/AlgoLang_Documentation_v0.3.pdf)
+**Current version: 0.3.4** (AlgoPulse™ real-time engine · live figures · quantum circuits) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md) · [50 Sample Programs (PDF)](docs/AlgoLang_50_Sample_Programs.pdf) · [Language manual (PDF)](docs/AlgoLang_Documentation_v0.3.pdf)
 
 AlgoLang has **no functions**. Every unit of work is an `agent` with a role, a goal, explicit tools, a model and a policy. A `flow` is the only other construct, and it can do just four things:
 
@@ -46,7 +46,7 @@ flowchart TB
     end
     subgraph WORLD["④ Connected systems"]
         direction LR
-        LLM["Claude · mock · replay"] ~~~ MCP["MCP tool servers"] ~~~ KAF["Kafka + ZooKeeper<br/>real-time streams"] ~~~ QPU["⚛️ Quantum tools<br/>simulator · Qiskit"]
+        LLM["Claude · mock · replay"] ~~~ MCP["MCP tool servers"] ~~~ KAF["⚡ AlgoPulse™<br/>real-time events"] ~~~ QPU["⚛️ Quantum tools<br/>simulator · Qiskit"]
     end
     DOORS ==> COMPILER ==> RUNTIME <==> WORLD
 
@@ -59,8 +59,8 @@ flowchart TB
 | | |
 |---|---|
 | **Write** agents and flows; the compiler rejects unsafe programs before anything runs (25 error codes). | **Govern** every call with budgets, forbidden attributes, allowed tools and a human gate. |
-| **Prove** what happened: hash-chained audit logs, traces you can replay for free, `eval` blocks in CI. | **Scale** to real time: a `stream` block runs a flow for every event on a Kafka topic. |
-| **Optimise** with quantum tools: every QAOA answer is VERIFIED against the exact optimum before an agent acts on it. | **Connect** to Claude, MCP tool servers, Kafka and quantum backends, from the CLI, Studio, SDK or your editor. |
+| **Prove** what happened: hash-chained audit logs, traces you can replay for free, `eval` blocks in CI. | **Scale** to real time: a `stream` block runs a flow for every event on an AlgoPulse™ topic. |
+| **Optimise** with quantum tools: every QAOA answer is VERIFIED against the exact optimum before an agent acts on it. | **Connect** to Claude, MCP tool servers, AlgoPulse™ buses and quantum backends, from the CLI, Studio, SDK or your editor. |
 
 ## Contents
 
@@ -70,7 +70,7 @@ flowchart TB
 4. [Get started](#4-get-started)
 5. [Learn by example: 50 sample programs](#5-learn-by-example-50-sample-programs)
 6. [Enterprise applications](#6-enterprise-applications)
-7. [Real-time events: Kafka and ZooKeeper](#7-real-time-events-kafka-and-zookeeper)
+7. [Real-time events: AlgoPulse™](#7-real-time-events-algopulse)
 8. [Quantum applications](#8-quantum-applications)
 9. [The language](#9-the-language)
 10. [Governance and runtime guarantees](#10-governance-and-runtime-guarantees)
@@ -78,9 +78,11 @@ flowchart TB
 12. [For developers](#12-for-developers)
 13. [Roadmap: v0.4 Trustworthy AI, v0.5 Quantum AI](#13-roadmap-v04-trustworthy-ai-v05-quantum-ai)
 14. [Repository layout](#14-repository-layout)
-15. [ProfAlgoLabs™, author and licence](#15-profalgolabs-author-and-licence)
+15. [Author and licence](#15-author-and-licence)
 
 ## 1. Objective
+
+<p align="center"><img src="docs/images/sections/01-objective.svg" alt="Ten objectives of AlgoLang" width="100%"></p>
 
 ### Main objective
 
@@ -97,11 +99,13 @@ flowchart TB
 | 5 | Accountability | Every agent call returns a value with its confidence and provenance, and is written to a hash-chained audit log that can be verified. Traces can be replayed. |
 | 6 | Honest uncertainty | `uncertain<T>` agents are sampled several times. Their confidence reflects how much the samples agree, and decisions must check it. |
 | 7 | Cost, speed and sustainability | Cheap models for easy steps, strong models where needed, caching, parallelism, and every call priced in money, watt-hours and CO₂. |
-| 8 | Reuse at scale | 120 domain packs in 20 sectors, modules, MCP tools, Kafka streams, quantum tools, ten enterprise applications, and batch processing of thousands of records. |
+| 8 | Reuse at scale | 120 domain packs in 20 sectors, modules, MCP tools, AlgoPulse™ streams, quantum tools, ten enterprise applications, and batch processing of thousands of records. |
 | 9 | Access for everyone | Command line, graphical Studio, a plain-English Prompt UI, a Python SDK and editor support through a language server. |
 | 10 | Teachable and testable | An offline backend runs without an API key. `eval` blocks and behaviour tests run in CI; live mode uses real Claude models. |
 
 ## 2. Design principles
+
+<p align="center"><img src="docs/images/sections/02-principles.svg" alt="Six design principles" width="100%"></p>
 
 - **Explicit, never ambient.** An agent has only the tools it declares. Nothing is available by default.
 - **The stricter rule wins.** When the organisation policy and a program's own policy differ, the stricter one applies.
@@ -111,6 +115,8 @@ flowchart TB
 - **One engine, many doors.** The command line, Studio, Prompt UI, SDK and language server all run the same compiler and runtime.
 
 ## 3. What's new in v0.3
+
+<p align="center"><img src="docs/images/sections/03-whats-new.svg" alt="What's new from v0.3 to v0.3.4" width="100%"></p>
 
 ```algo
 tool kb.search_policies from mcp "company-kb"        // 1. tools from any MCP server
@@ -147,7 +153,7 @@ eval regression on main {                                    // 4. tests next to
 
 **v0.3.3 adds quantum circuits to the language** (`circuit Bell { qubits 2  h q0  cx q0, q1  measure }`) and four quantum applications: portfolio optimisation, quantum-safe security, Monte Carlo risk with amplitude estimation, and logistics routing.
 
-**v0.3.1 adds real-time streams:** a `stream` block runs a flow for every event on a Kafka topic. See [§7](#7-real-time-events-kafka-and-zookeeper).
+**v0.3.1 adds real-time streams:** a `stream` block runs a flow for every event on a topic. **v0.3.4 adds AlgoPulse™**, AlgoLang's own durable event engine, so streams need nothing outside AlgoLang. See [§7](#7-real-time-events-algopulse).
 
 A runnable tour lives in [`examples/v03/`](examples/v03/): an expense desk that uses an MCP server, an `uncertain<score>` reviewer, budgets and an eval block.
 
@@ -166,6 +172,8 @@ A runnable tour lives in [`examples/v03/`](examples/v03/): an expense desk that 
 - **Python SDK** (`import algolang`). The same engine drives all three modes.
 
 ## 4. Get started
+
+<p align="center"><img src="docs/images/sections/04-get-started.svg" alt="Quick start in a terminal" width="100%"></p>
 
 ### Three modes, one SDK
 
@@ -203,6 +211,8 @@ algo ui                                         # prompt-based mode
 
 ## 5. Learn by example: 50 sample programs
 
+<p align="center"><img src="docs/images/sections/05-50-programs.svg" alt="50 sample programs by pattern" width="100%"></p>
+
 **[AlgoLang: 50 Sample Programs](docs/AlgoLang_50_Sample_Programs.pdf)** (PDF, 106 pages) teaches the language through 50 small programs in 20 sectors. Each one shows its input, the code, and the output in the command line, Studio and Prompt UI. It also sets out the language's objectives and design principles and summarises its syntax.
 
 The runnable source of every program is in [`examples/50-programs/`](examples/50-programs/), and CI runs all 50 on every push.
@@ -218,6 +228,8 @@ The runnable source of every program is in [`examples/50-programs/`](examples/50
 
 ## 6. Enterprise applications
 
+<p align="center"><img src="docs/images/sections/06-enterprise-apps.svg" alt="Ten enterprise applications" width="100%"></p>
+
 [`enterprise-apps/`](enterprise-apps/) holds ten complete, governed multi-agent applications. Each has its own org policy, company tools over its own data, a knowledge base, programs, batch data and behaviour tests:
 
 | Application | Sector | What it automates |
@@ -226,7 +238,7 @@ The runnable source of every program is in [`examples/50-programs/`](examples/50
 | [Hospital Care Coordination](enterprise-apps/hospital-care-coordination/) | Healthcare | ER triage with the bed board, and discharge summaries (decision support) |
 | [Bank Credit & Onboarding](enterprise-apps/bank-credit-onboarding/) | Banking | Bureau + DTI + credit committee; KYC with sanctions screening |
 | [University Admissions & OBE](enterprise-apps/university-admissions-obe/) | Education | Fair admissions panel; NBA/NAAC CO-PO matrix and question papers |
-| [SOC Incident Command](enterprise-apps/soc-incident-command/) | Cybersecurity | Alert enrichment (CMDB, threat intel) → severity → incident → runbook; real-time SIEM alerts on Kafka |
+| [SOC Incident Command](enterprise-apps/soc-incident-command/) | Cybersecurity | Alert enrichment (CMDB, threat intel) → severity → incident → runbook; real-time SIEM alerts on AlgoPulse™ |
 | [Supply Chain Control Tower](enterprise-apps/supply-chain-control-tower/) | Logistics | Shipment exceptions → tracking + stock cover → recovery plan |
 | [Citizen Services Desk](enterprise-apps/citizen-services-desk/) | Government | Grievance routing with service-level targets; welfare pre-checks |
 | [Legal Contract Desk](enterprise-apps/legal-contract-desk/) | Legal | NDA triage against the playbook; clause-by-clause contract review |
@@ -238,18 +250,20 @@ python enterprise-apps/run_all.py --batch      # run every app's tests and sampl
 cd enterprise-apps/claims-ops-center && algo batch programs/claims_intake.algo --input data/claims_batch.csv
 ```
 
-## 7. Real-time events: Kafka and ZooKeeper
+## 7. Real-time events: AlgoPulse™
 
-<p align="center"><img src="docs/images/algolang-realtime.svg" alt="Producers publish to a Kafka topic with three partitions; ZooKeeper holds cluster metadata; an AlgoLang stream runs a governed flow per event and routes results to decision, review and dead-letter topics" width="100%"></p>
+<p align="center"><img src="docs/images/sections/07-realtime.svg" alt="AlgoPulse: producers, bus, stream block and routed result topics" width="100%"></p>
 
-A `stream` block turns any flow into a real-time service. Every event on a Kafka topic runs the flow once, with the same policies, budgets, human gate and audit log as any other run. Nothing new to learn: the agents and the flow stay exactly as they are.
+A `stream` block turns any flow into a real-time service. Every event on a topic runs the flow once, with the same policies, budgets, human gate and audit log as any other run. The agents and the flow stay exactly as they are.
+
+Events travel on **AlgoPulse™**, AlgoLang's own event engine. A bus is a folder of durable, append-only topic logs with numbered offsets and consumer groups, so it needs nothing outside AlgoLang. Programs on one machine share it directly. `algo pulse serve` puts it on the network behind a bearer token.
 
 ```algo
 // enterprise-apps/algo-trading-desk/programs/pre_trade_check.algo
 stream order_flow on main {
-    from kafka "market" topic "orders.intent" group "quantoracle-risk-gate"
+    from pulse "market" topic "orders.intent" group "quantoracle-risk-gate"
     map order = event.order               // flow input ← field of the JSON event
-    key event.order_id                    // used for partitioning and de-duplication
+    key event.order_id                    // used for de-duplication
     to topic "orders.decisions"           // ok
     escalate to topic "orders.review"     // a person must decide
     dead letter topic "orders.dlq"        // unreadable events, blocked or failed runs
@@ -258,11 +272,12 @@ stream order_flow on main {
 ```
 
 ```bash
-docker compose -f deploy/kafka/docker-compose.yml up -d        # ZooKeeper + Kafka + topics
 cd enterprise-apps/algo-trading-desk
-algo stream programs/pre_trade_check.algo --kafka --produce data/order_events.jsonl   # publish sample orders
-algo stream programs/pre_trade_check.algo --kafka                                      # run the risk gate live
-algo stream programs/pre_trade_check.algo --input data/order_events.jsonl               # same, offline, no Kafka
+algo stream programs/pre_trade_check.algo --input data/order_events.jsonl               # offline, from a file
+algo stream programs/pre_trade_check.algo --pulse --produce data/order_events.jsonl     # publish to the bus
+algo stream programs/pre_trade_check.algo --pulse                                        # run the risk gate live
+algo pulse topics --bus market                                                           # events per topic
+ALGO_PULSE_TOKEN=change-me algo pulse serve --dir pulse/market --host 0.0.0.0           # share the bus
 ```
 
 **How one event is handled**
@@ -271,13 +286,13 @@ algo stream programs/pre_trade_check.algo --input data/order_events.jsonl       
 sequenceDiagram
     autonumber
     participant P as Order system
-    participant K as Kafka (orders.intent)
+    participant B as AlgoPulse bus (orders.intent)
     participant S as algo stream
     participant F as flow main (agents)
     participant R as Result topics
     participant A as Audit log
-    P->>K: JSON event ORD-1001 (SELL 2 lots NIFTY …)
-    K->>S: poll batch (consumer group)
+    P->>B: JSON event ORD-1001 (SELL 2 lots NIFTY …)
+    B->>S: read from the group's committed offset
     S->>S: decode JSON · map inputs · skip duplicate keys
     S->>F: run flow (policies, budgets, sampling)
     F->>A: one hash-chained record per agent call
@@ -289,21 +304,20 @@ sequenceDiagram
     else invalid, blocked or failed
         S->>R: orders.dlq
     end
-    S->>K: commit offsets (only after results are flushed)
+    S->>B: commit the group's offset (only after results are written)
 ```
 
 | Guarantee | How |
 |---|---|
 | **Checked before it runs** | E122: the flow and its inputs exist, mappings read from `event`, no result topic equals the source topic (no endless loops) |
 | **Nothing is dropped** | Every event ends in exactly one result topic; a route you do not declare falls back to `to topic` |
-| **At-least-once delivery** | Offsets are committed only after results are written and flushed; keys already seen are skipped and the cache makes re-delivery cheap |
+| **Durable, at-least-once** | Every event is written and fsync'd before it is acknowledged. A group's offset moves only after results are written, so a restart resumes exactly where it stopped |
+| **Many writers, one order** | File locks keep offsets gap-free and unique when several programs write to a local bus at once |
 | **Governed like any run** | Each event gets its own run ID, audit chain, budget checks and review-queue entry |
-| **Observable** | Per-stream metrics: events/s, latency p50/p95, ok / escalated / dead-letter counts, tokens, $ and Wh (`runs/streams/<name>/metrics.json`) |
-| **Secure configuration** | Cluster settings live in `algo.config.json` (`"kafka": {"market": {"bootstrap_servers": …}}`); SASL/SSL secrets are read from environment variables (`"sasl_plain_password_env": "KAFKA_PASSWORD"`) |
+| **Observable** | Per-stream metrics: events/s, latency p50/p95, ok / escalated / dead-letter counts, tokens, $ and Wh (`runs/streams/<name>/metrics.json`); `algo pulse tail` shows any topic |
+| **Secure** | Topic and group names cannot escape the bus folder. A served bus requires a bearer token (`ALGO_PULSE_TOKEN`) and refuses to listen beyond localhost without one |
 
-**ZooKeeper or KRaft?** [`deploy/kafka/docker-compose.yml`](deploy/kafka/docker-compose.yml) runs the classic ZooKeeper + Kafka pair (Confluent Platform 7.6, Apache Kafka 3.6). Apache Kafka 4.0 removed ZooKeeper, so new production clusters should use KRaft: [`docker-compose.kraft.yml`](deploy/kafka/docker-compose.kraft.yml). AlgoLang streams behave the same on both, because clients only talk to the brokers. CI tests every push against a real ZooKeeper + Kafka pair.
-
-Two enterprise applications ship with streams: the **Algo Trading Desk** (order intents → pre-trade risk gate) and the **SOC Incident Command** (SIEM alerts → incidents). Install the client with `pip install -r requirements-stream.txt` (or `pip install "algolang[stream]"`).
+`algo.config.json` names each bus: `"pulse": {"market": {"dir": "pulse/market"}}` for a local folder, or `{"url": "http://10.0.0.5:7070", "token_env": "PULSE_TOKEN"}` for a served bus. Two enterprise applications ship with streams: the **Algo Trading Desk** (order intents → pre-trade risk gate) and the **SOC Incident Command** (SIEM alerts → incidents). CI starts a real AlgoPulse server on every push and runs the trading desk through it.
 
 ## 8. Quantum applications
 
@@ -415,6 +429,8 @@ The [**Quantum Optimization Lab**](enterprise-apps/quantum-optimization-lab/) al
 
 ## 9. The language
 
+<p align="center"><img src="docs/images/sections/09-language.svg" alt="From .algo source to a governed run" width="100%"></p>
+
 ### The language in one screen
 
 ```algo
@@ -465,7 +481,6 @@ flow main(topic: text) {
 | E113 | `[a, b] =` does not match the `par` block |
 | E114 | `par for` over a non-list |
 | E115 | Tool not allowed by the organisation policy (`allowed_tools`) |
-
 | E116 | Circular `use` import |
 | E117 | `uncertain<T>` value compared without checking its `.confidence` in the same condition |
 | E118 | `.confidence` read on something that is not an agent result, or another attribute read |
@@ -479,6 +494,8 @@ flow main(topic: text) {
 Errors from imported modules are reported with the file name, and the org config is enforced at compile time: a forbidden attribute or an ungranted tool is an error before anything runs.
 
 ## 10. Governance and runtime guarantees
+
+<p align="center"><img src="docs/images/sections/10-governance.svg" alt="Defence in depth for every agent call" width="100%"></p>
 
 **The life of one agent call**
 
@@ -522,6 +539,8 @@ flowchart LR
 
 ## 11. Python SDK
 
+<p align="center"><img src="docs/images/sections/11-sdk.svg" alt="The Python SDK workflow" width="100%"></p>
+
 ```python
 import algolang as al
 
@@ -543,6 +562,8 @@ al.audit.verify("runs/claims_triage.audit.jsonl")                    # tamper ch
 
 ## 12. For developers
 
+<p align="center"><img src="docs/images/sections/12-developers.svg" alt="Three developer tracks" width="100%"></p>
+
 [DEVELOPER_GUIDE.md](DEVELOPER_GUIDE.md) has three tracks:
 
 1. **Application developers:** the SDK, company tools, `*.algotest.json` behaviour tests, and `algo dev ci`.
@@ -558,6 +579,8 @@ make check        # ruff + pytest + lint of every .algo file
 ```
 
 ## 13. Roadmap: v0.4 Trustworthy AI, v0.5 Quantum AI
+
+<p align="center"><img src="docs/images/sections/13-roadmap.svg" alt="Roadmap timeline" width="100%"></p>
 
 The next release puts **trustworthy AI** at the centre. Its aim is that every AlgoLang system can show, with evidence produced by the compiler and runtime, that it is lawful, fair, robust, transparent, private, secure and under human control. The full plan, with syntax sketches and how each item maps to the NIST AI Risk Management Framework, the EU AI Act and ISO/IEC 42001, is in **[ROADMAP.md](ROADMAP.md)**.
 
@@ -584,15 +607,18 @@ Already shipped toward this goal: hash-chained audit logs, human review queues, 
 | v0.1 | The language: agents, flows, policies, compiler, runtime | Released |
 | v0.2 | Enterprise: modules, org policy, 120 domain packs, audit, review queue, SDK, three modes | Released |
 | v0.3 | Uncertainty, evals and replay, MCP, cost and energy budgets, language server, deterministic guards | Released |
-| v0.3.1 | Real-time `stream` blocks on Kafka and ZooKeeper | Released |
+| v0.3.1 | Real-time `stream` blocks | Released |
 | v0.3.2 | Quantum tools preview: QAOA verified exactly, OpenQASM, Grover, quantum policies | Released |
-| v0.3.3 | Quantum circuits in the language; quantum-safe security, Monte Carlo with amplitude estimation, logistics routing | **Current** |
+| v0.3.3 | Quantum circuits in the language; quantum-safe security, Monte Carlo with amplitude estimation, logistics routing | Released |
+| v0.3.4 | AlgoPulse™, AlgoLang's own real-time event engine; animated figures for every section and every application | **Current** |
 | v0.4 | Trustworthy AI | Next |
 | v0.5 | Quantum AI: hardware backends, noise, uncertain quantum results, chemistry and risk algorithms | Planned |
 | v0.6 | Interoperability: agents as MCP servers, argument types, output streaming | Planned |
 | v1.0 | Native runtime and ecosystem | Planned |
 
 ## 14. Repository layout
+
+<p align="center"><img src="docs/images/sections/14-layout.svg" alt="Repository layout" width="100%"></p>
 
 ```
 RUN_GUIDE.md                  how to install and execute, step by step
@@ -614,7 +640,7 @@ algostudio.py, .html          AlgoLang Studio graphical IDE (algo studio): Domai
 algoagent.py                  AI program writer and wizard (algo ask, algo wizard)
 install.bat / install.sh      one-time installers (Windows / Linux, macOS)
 algo.bat / algo               the `algo` command
-requirements*.txt             Python dependencies (lark; anthropic for --live; kafka-python for streams; numpy for quantum tools)
+requirements*.txt             Python dependencies (lark; anthropic for --live; numpy for quantum tools)
 Dockerfile                    container environment
 grammar.lark                  formal grammar (Lark EBNF)
 algoc.py                      compiler: parse → AST → checks → Python codegen
@@ -622,32 +648,30 @@ algoruntime.py                runtime engine
 algoeval.py                   eval blocks, traces and replay (algo eval, algo replay)        — v0.3
 algomcp.py                    MCP client and tool bindings (algo mcp)                         — v0.3
 algolsp.py                    language server (algo lsp)                                      — v0.3
-algostream.py                 real-time streams on Kafka (algo stream)                        — v0.3.1
+algostream.py                 stream blocks: routing, metrics, at-least-once (algo stream)    — v0.3.1
+algopulse.py                  AlgoPulse™ event engine: durable topics, groups, server (algo pulse) — v0.3.4
 algoquantum.py                quantum tools: simulator, OpenQASM, QAOA + exact check, Grover — v0.3.2;
                               circuit blocks, routing, Monte Carlo + QAE, PQC readiness — v0.3.3
-deploy/kafka/                 Docker Compose: ZooKeeper + Kafka (and a KRaft variant)
-docs/images/                  README diagrams (animated SVG) and Studio screenshots
+docs/images/                  animated SVG figures: sections/, apps/ (drawn from the programs), Studio screenshots
+tools/make_figures.py         regenerates every figure (CI checks they match the code)
 examples/v03/                 tour of v0.3: MCP demo server, uncertain<T>, budgets, eval
 examples/50-programs/          the 50 programs from "AlgoLang: 50 Sample Programs" + inputs.json
 docs/                         language manual (LaTeX + PDF) and AlgoLang_50_Sample_Programs.pdf
 enterprise-apps/              ten governed enterprise applications (incl. Algo Trading Desk, Quantum Optimization Lab)
-lab-website/                  ProfAlgoLabs™ website (cPanel-ready)
 ROADMAP.md                    v0.4 Trustworthy AI and v0.5 Quantum AI plans, later releases
 examples/*.algo               source programs (bad_example.algo shows every error)
 vscode-algolang/              VS Code extension: highlighting + the language server
 .vscode/tasks.json            Ctrl+Shift+B to run the open .algo file
 ```
 
-## 15. ProfAlgoLabs™, author and licence
+## 15. Author and licence
 
-AlgoLang is designed by **Dr. S. Satyanarayana, Ph.D., PDF (AI)**, Founder, CEO & Chief Agentic AI Scientist of **AlgoProfessor AI R&D Solutions**, Hyderabad. It is the flagship research of ProfAlgoLabs™, AlgoProfessor's research lab.
+<p align="center"><img src="docs/images/sections/15-author.svg" alt="Author and licence" width="100%"></p>
 
-- 🌐 [www.algoprofessor.com](https://www.algoprofessor.com) · Lab: [www.profagentlabs.algoprofessor.com](https://www.profagentlabs.algoprofessor.com)
+AlgoLang is designed by **Dr. S. Satyanarayana, Ph.D., PDF (AI)**, Founder, CEO & Chief Agentic AI Scientist of **AlgoProfessor AI R&D Solutions**, Hyderabad.
+
+- 🌐 [www.algoprofessor.com](https://www.algoprofessor.com)
 - Contact: ceo@algoprofessor.com
-
-### ProfAlgoLabs™ website
-
-The lab's 3D website lives in [`lab-website/`](lab-website/). It is ready to upload to cPanel at **[www.profagentlabs.algoprofessor.com](https://www.profagentlabs.algoprofessor.com)** and includes the 10 AlgoProfessor services, a secure contact form, a visitor counter, SEO files and security headers.
 
 ### Licence
 

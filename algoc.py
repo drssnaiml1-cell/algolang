@@ -114,10 +114,10 @@ class Circuit:
 
 @dataclass
 class Stream:
-    """`stream name on flow { … }`: run a flow once for every event on a Kafka topic."""
+    """`stream name on flow { … }`: run a flow once for every event on an AlgoPulse™ topic."""
     name: str
     flow: str
-    cluster: str | None = None
+    bus: str | None = None
     source: str | None = None
     group: str | None = None
     sink: str | None = None
@@ -328,7 +328,7 @@ def to_ast(tree: Tree) -> tuple[Program, list[Diag]]:
             for c in clauses:
                 k = c.data
                 if k == "st_source":
-                    st.cluster, st.source = _s(c.children[0]), _s(c.children[1])
+                    st.bus, st.source = _s(c.children[0]), _s(c.children[1])
                     st.group = _s(c.children[2]) if c.children[2] is not None else None
                 elif k == "st_sink":
                     st.sink = _s(c.children[0])
@@ -455,7 +455,7 @@ class Checker:
             self.err("E122", st.line, f"stream {st.name} runs flow '{st.flow}', which does not exist")
             return
         if not st.source:
-            self.err("E122", st.line, f"stream {st.name} needs a source: from kafka \"cluster\" topic \"name\"")
+            self.err("E122", st.line, f"stream {st.name} needs a source: from pulse \"bus\" topic \"name\"")
         names = {p.name for p in f.params}
         for inp, path in st.mapping.items():
             if inp not in names:
@@ -1087,7 +1087,7 @@ def compile_source(src: str, name: str, base_dir: Path | str | None = None):
     return CodeGen(prog, name).gen(), prog
 
 
-VERSION = "0.3.3"
+VERSION = "0.3.4"
 
 TEMPLATE = '''// {name}.algo — created by `algo new`
 // Run it:  algo run {name}.algo --arg "topic=Your topic here"
@@ -1395,20 +1395,22 @@ def main(argv=None):
     s.add_argument("tool", nargs="?")
     s.add_argument("arguments", nargs="?", default="{}", help="JSON arguments for `call`")
     sub.add_parser("lsp", help="language server for editors (VS Code, Neovim …) over stdio")
+    s = sub.add_parser("pulse", help="AlgoPulse event engine: serve | publish | topics | tail", add_help=False)
+    s.add_argument("pulse_args", nargs=argparse.REMAINDER)
     s = sub.add_parser("quantum", help="quantum circuits in a program: list, export to OpenQASM, or run one")
     s.add_argument("action", choices=["list", "export", "run"])
     s.add_argument("file")
     s.add_argument("name", nargs="?", help="circuit name (export: all circuits when omitted)")
     s.add_argument("--shots", type=int, default=None)
     s.add_argument("--out", default=None, help="export: folder for the .qasm files (default: print them)")
-    s = sub.add_parser("stream", help="real-time: run a flow for every event on a Kafka topic (or a file, offline)")
+    s = sub.add_parser("stream", help="real-time: run a flow for every event on an AlgoPulse topic (or a file, offline)")
     s.add_argument("file")
     s.add_argument("--name", default=None, help="which stream block to run (if the program has several)")
     s.add_argument("--input", default=None, help="offline: read events from a JSON Lines file")
-    s.add_argument("--kafka", action="store_true", help="use the live Kafka cluster named in the stream block")
-    s.add_argument("--produce", default=None, metavar="EVENTS", help="with --kafka: publish a JSON Lines file to the source topic and exit")
+    s.add_argument("--pulse", action="store_true", help="use the AlgoPulse bus named in the stream block")
+    s.add_argument("--produce", default=None, metavar="EVENTS", help="with --pulse: publish a JSON Lines file to the source topic and exit")
     s.add_argument("--max", type=int, default=None, help="stop after this many events")
-    s.add_argument("--idle", type=float, default=None, help="with --kafka: stop after this many seconds without events")
+    s.add_argument("--idle", type=float, default=None, help="with --pulse: stop after this many seconds without events")
     s.add_argument("--live", action="store_true", help="call real Claude models (default: offline mock backend)")
     s.add_argument("--out", default=None, help="offline: folder for result topics (default runs/streams/<name>)")
     s.add_argument("--json", action="store_true")
@@ -1426,11 +1428,14 @@ def main(argv=None):
     if a.cmd == "mcp":
         import algomcp
         return algomcp.cli(a.action, a.server, a.tool, a.arguments)
+    if a.cmd == "pulse":
+        import algopulse
+        return algopulse.cli(a.pulse_args or ["--help"])
     if a.cmd == "quantum":
         return quantum_cli(a)
     if a.cmd == "stream":
         import algostream
-        return algostream.cli(a.file, name=a.name, input_path=a.input, kafka=a.kafka, produce=a.produce,
+        return algostream.cli(a.file, name=a.name, input_path=a.input, pulse=a.pulse, produce=a.produce,
                               max_events=a.max, idle=a.idle, live=a.live, as_json=a.json, out_dir=a.out)
     if a.cmd == "lsp":
         import algolsp

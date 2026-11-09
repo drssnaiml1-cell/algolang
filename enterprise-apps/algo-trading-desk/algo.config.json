@@ -45,17 +45,16 @@
   "plugins": [
     "plugins/quant_tools.py"
   ],
-  "kafka": {
-    "market": {
-      "bootstrap_servers": "localhost:9092",
-      "client_id": "quantoracle-risk-gate"
-    }
-  },
   "quantum": {
     "backend": "simulator",
     "max_qubits": 16,
     "shots": 4096,
     "seed": 3,
     "qae_bits": 9
+  },
+  "pulse": {
+    "market": {
+      "dir": "pulse/market"
+    }
   }
 }

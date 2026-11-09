@@ -40,9 +40,9 @@ KEYWORDS = {
               "Cost and energy are priced before the call; a call over budget is blocked.",
     "eval": "**eval** — tests next to the code: `eval name on main { case \"label\" (input = \"…\") { expect … } }`. "
             "Run with `algo eval file.algo`; `--replay` re-checks from recorded traces with no model calls.",
-    "stream": "**stream** — real-time events: `stream name on main { from kafka \"cluster\" topic \"in\"  map x = event.x  "
+    "stream": "**stream** — real-time events: `stream name on main { from pulse \"bus\" topic \"in\"  map x = event.x  "
               "to topic \"out\"  escalate to topic \"review\"  dead letter topic \"dlq\" }`. Every event runs the flow "
-              "once. Run with `algo stream file.algo --kafka` (or `--input events.jsonl` offline).",
+              "once. Run with `algo stream file.algo --pulse` (or `--input events.jsonl` offline).",
     "shots": "**shots N**: measurements per quantum circuit for this agent's `quantum.*` tools (1–100000).",
     "qubits": "**max qubits N**: the largest circuit this agent's `quantum.*` tools may run; the stricter of this and "
               "`quantum.max_qubits` in algo.config.json applies. Bigger circuits are BLOCKED.",
@@ -53,8 +53,9 @@ KEYWORDS = {
                "It becomes the tool `circuit.Bell`; agents run it with `uses circuit.Bell` under their `shots` policy. "
                "`algo quantum export file.algo` prints the OpenQASM 2.0.",
     "measure": "**measure** — measure every qubit at the end of a circuit (the default when omitted).",
-    "kafka": "**kafka** — `from kafka \"cluster\" topic \"name\" group \"consumer-group\"`. The cluster address is in "
-             "algo.config.json: `\"kafka\": {\"cluster\": {\"bootstrap_servers\": \"localhost:9092\"}}`.",
+    "pulse": "**pulse** — `from pulse \"bus\" topic \"name\" group \"consumer-group\"`: AlgoPulse™, AlgoLang's built-in "
+             "event engine. A bus is a local folder or a served bus: `\"pulse\": {\"bus\": {\"dir\": \"pulse\"}}` or "
+             "`{\"url\": \"http://host:7070\", \"token_env\": \"PULSE_TOKEN\"}` in algo.config.json.",
     "case": "**case** — one eval case: `case \"label\" (input = \"value\") { expect … }`.",
     "expect": "**expect** — `status ok`, `called A`, `not called A`, `tool t`, `output contains \"…\"`, `emits N`, "
               "`tokens < N`, `cost < 0.05`, `energy < 1`, `escalated <= N`, `confidence >= 0.7`.",
@@ -85,7 +86,7 @@ SNIPPETS = [
     ("flow main", "flow main(${1:input}: text) {\n    ${2:result} = ${3:Agent}(${1:input})\n    emit ${2:result}\n}"),
     ("eval", "eval ${1:regression} on main {\n    case \"${2:first case}\" (${3:input} = \"${4:value}\") {\n        expect status ok\n    }\n}"),
     ("circuit", "circuit ${1:Bell} {\n    qubits ${2:2}\n    h q0\n    cx q0, q1\n    measure\n}"),
-    ("stream", "stream ${1:events} on main {\n    from kafka \"${2:local}\" topic \"${3:events.in}\" group \"${4:algolang}\"\n    map ${5:input} = event.${5:input}\n    key event.${6:id}\n    to topic \"${7:events.out}\"\n    escalate to topic \"${8:events.review}\"\n    dead letter topic \"${9:events.dlq}\"\n}"),
+    ("stream", "stream ${1:events} on main {\n    from pulse \"${2:local}\" topic \"${3:events.in}\" group \"${4:algolang}\"\n    map ${5:input} = event.${5:input}\n    key event.${6:id}\n    to topic \"${7:events.out}\"\n    escalate to topic \"${8:events.review}\"\n    dead letter topic \"${9:events.dlq}\"\n}"),
     ("policy", "policy {\n    budget tokens ${1:4000}\n    budget cost ${2:0.05} usd\n    require human when confidence < ${3:0.8}\n}"),
 ]
 

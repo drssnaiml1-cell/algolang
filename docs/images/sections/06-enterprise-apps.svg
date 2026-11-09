@@ -1,0 +1,115 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 398" width="1280" height="398" role="img" aria-label="Ten governed applications, ready to run">
+  <title>Ten governed applications, ready to run</title>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#081428"/><stop offset=".6" stop-color="#0e2140"/><stop offset="1" stop-color="#132c55"/></linearGradient>
+    <linearGradient id="gold" x1="0" x2="1"><stop offset="0" stop-color="#e9c75a"/><stop offset="1" stop-color="#c9a227"/></linearGradient>
+    <pattern id="grid" width="32" height="32" patternUnits="userSpaceOnUse"><path d="M32 0H0V32" fill="none" stroke="#c9a227" stroke-opacity=".06"/></pattern>
+    <filter id="soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="2.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  </defs>
+  <style>
+    text { font-family: "Segoe UI", "Helvetica Neue", Helvetica, Arial, sans-serif; }
+    .mono { font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace; }
+    .wire { fill: none; stroke: #c9a227; stroke-width: 2; stroke-dasharray: 6 6; animation: dash 1.1s linear infinite; }
+    .ctl { fill: none; stroke: #8fd3ff; stroke-opacity: .55; stroke-width: 1.4; stroke-dasharray: 3 5; animation: dash 2.2s linear infinite; }
+    .card { fill: #0f2547; stroke: #c9a227; stroke-opacity: .75; stroke-width: 1.4; }
+    .glow { animation: glow 3.6s ease-in-out infinite; }
+    .rise { animation: rise 1.2s cubic-bezier(.2,.8,.2,1) both; }
+    .fade { opacity: 0; animation: fade 7s ease-in-out infinite; }
+    .pulse { animation: pulse 2.4s ease-in-out infinite; }
+    @keyframes dash { to { stroke-dashoffset: -24; } }
+    @keyframes glow { 0%, 100% { stroke-opacity: .35; } 50% { stroke-opacity: 1; } }
+    @keyframes rise { from { transform: translateY(12px); } to { transform: none; } }
+    @keyframes fade { 0%, 6% { opacity: 0; } 14%, 88% { opacity: 1; } 100% { opacity: 0; } }
+    @keyframes pulse { 0%, 100% { opacity: .55; } 50% { opacity: 1; } }
+    
+    @media (prefers-reduced-motion: reduce) { * { animation: none !important; } .fade { opacity: 1; } }
+  </style>
+  <rect width="1280" height="398" fill="url(#bg)"/>
+  <rect width="1280" height="398" fill="url(#grid)"/>
+  <rect width="1280" height="4" fill="url(#gold)"/>
+  <text x="40" y="40" fill="#c9a227" font-size="13" letter-spacing="2.6" font-weight="700">6 · ENTERPRISE APPLICATIONS</text>
+  <text x="40" y="72" fill="#f4f1e8" font-size="26" font-weight="700">Ten governed applications, ready to run</text>
+  <text x="40" y="96" fill="#c9b98a" font-size="16">Each has its own org policy, company tools, knowledge base, programs, batch data and behaviour tests.</text>
+  
+<g class="rise" style="animation-delay:0.00s">
+<rect x="40.0" y="124" width="225.6" height="104" rx="12" class="card"/>
+<rect x="40.0" y="124" width="225.6" height="104" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.00s"/>
+<circle cx="66.0" cy="152" r="15" fill="url(#gold)"/><text x="66.0" y="157" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">1</text>
+<text x="90.0" y="157" fill="#f4f1e8" font-size="16" font-weight="700">Claims Operations</text>
+<text x="58.0" y="186" fill="#c9b98a" font-size="13.5">Insurance · FNOL to</text>
+<text x="58.0" y="205" fill="#c9b98a" font-size="13.5">payout or SIU</text>
+</g>
+<g class="rise" style="animation-delay:0.08s">
+<rect x="283.6" y="124" width="225.6" height="104" rx="12" class="card"/>
+<rect x="283.6" y="124" width="225.6" height="104" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.12s"/>
+<circle cx="309.6" cy="152" r="15" fill="url(#gold)"/><text x="309.6" y="157" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">2</text>
+<text x="333.6" y="157" fill="#f4f1e8" font-size="16" font-weight="700">Hospital Care</text>
+<text x="301.6" y="186" fill="#c9b98a" font-size="13.5">Healthcare · ER triage,</text>
+<text x="301.6" y="205" fill="#c9b98a" font-size="13.5">discharge</text>
+</g>
+<g class="rise" style="animation-delay:0.16s">
+<rect x="527.2" y="124" width="225.6" height="104" rx="12" class="card"/>
+<rect x="527.2" y="124" width="225.6" height="104" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.24s"/>
+<circle cx="553.2" cy="152" r="15" fill="url(#gold)"/><text x="553.2" y="157" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">3</text>
+<text x="577.2" y="157" fill="#f4f1e8" font-size="16" font-weight="700">Bank Credit &amp; KYC</text>
+<text x="545.2" y="186" fill="#c9b98a" font-size="13.5">Banking · committee,</text>
+<text x="545.2" y="205" fill="#c9b98a" font-size="13.5">sanctions</text>
+</g>
+<g class="rise" style="animation-delay:0.24s">
+<rect x="770.8" y="124" width="225.6" height="104" rx="12" class="card"/>
+<rect x="770.8" y="124" width="225.6" height="104" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.36s"/>
+<circle cx="796.8" cy="152" r="15" fill="url(#gold)"/><text x="796.8" y="157" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">4</text>
+<text x="820.8" y="157" fill="#f4f1e8" font-size="16" font-weight="700">Admissions &amp; OBE</text>
+<text x="788.8" y="186" fill="#c9b98a" font-size="13.5">Education · fair panel,</text>
+<text x="788.8" y="205" fill="#c9b98a" font-size="13.5">CO-PO</text>
+</g>
+<g class="rise" style="animation-delay:0.32s">
+<rect x="1014.4" y="124" width="225.6" height="104" rx="12" class="card"/>
+<rect x="1014.4" y="124" width="225.6" height="104" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.48s"/>
+<circle cx="1040.4" cy="152" r="15" fill="url(#gold)"/><text x="1040.4" y="157" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">5</text>
+<text x="1064.4" y="157" fill="#f4f1e8" font-size="16" font-weight="700">SOC Incident Comma…</text>
+<text x="1032.4" y="186" fill="#c9b98a" font-size="13.5">Cybersecurity · alerts,</text>
+<text x="1032.4" y="205" fill="#c9b98a" font-size="13.5">PQC, streams</text>
+</g>
+<g class="rise" style="animation-delay:0.40s">
+<rect x="40.0" y="246" width="225.6" height="104" rx="12" class="card"/>
+<rect x="40.0" y="246" width="225.6" height="104" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.60s"/>
+<circle cx="66.0" cy="274" r="15" fill="url(#gold)"/><text x="66.0" y="279" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">6</text>
+<text x="90.0" y="279" fill="#f4f1e8" font-size="16" font-weight="700">Supply Chain Tower</text>
+<text x="58.0" y="308" fill="#c9b98a" font-size="13.5">Logistics · exceptions,</text>
+<text x="58.0" y="327" fill="#c9b98a" font-size="13.5">routes</text>
+</g>
+<g class="rise" style="animation-delay:0.48s">
+<rect x="283.6" y="246" width="225.6" height="104" rx="12" class="card"/>
+<rect x="283.6" y="246" width="225.6" height="104" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.72s"/>
+<circle cx="309.6" cy="274" r="15" fill="url(#gold)"/><text x="309.6" y="279" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">7</text>
+<text x="333.6" y="279" fill="#f4f1e8" font-size="16" font-weight="700">Citizen Services</text>
+<text x="301.6" y="308" fill="#c9b98a" font-size="13.5">Government · grievances,</text>
+<text x="301.6" y="327" fill="#c9b98a" font-size="13.5">welfare</text>
+</g>
+<g class="rise" style="animation-delay:0.56s">
+<rect x="527.2" y="246" width="225.6" height="104" rx="12" class="card"/>
+<rect x="527.2" y="246" width="225.6" height="104" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.84s"/>
+<circle cx="553.2" cy="274" r="15" fill="url(#gold)"/><text x="553.2" y="279" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">8</text>
+<text x="577.2" y="279" fill="#f4f1e8" font-size="16" font-weight="700">Legal Contract Desk</text>
+<text x="545.2" y="308" fill="#c9b98a" font-size="13.5">Legal · NDA triage,</text>
+<text x="545.2" y="327" fill="#c9b98a" font-size="13.5">clause review</text>
+</g>
+<g class="rise" style="animation-delay:0.64s">
+<rect x="770.8" y="246" width="225.6" height="104" rx="12" class="card"/>
+<rect x="770.8" y="246" width="225.6" height="104" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.96s"/>
+<circle cx="796.8" cy="274" r="15" fill="url(#gold)"/><text x="796.8" y="279" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">9</text>
+<text x="820.8" y="279" fill="#f4f1e8" font-size="16" font-weight="700">Algo Trading Desk</text>
+<text x="788.8" y="308" fill="#c9b98a" font-size="13.5">Markets · risk gate, VaR,</text>
+<text x="788.8" y="327" fill="#c9b98a" font-size="13.5">streams</text>
+</g>
+<g class="rise" style="animation-delay:0.72s">
+<rect x="1014.4" y="246" width="225.6" height="104" rx="12" class="card"/>
+<rect x="1014.4" y="246" width="225.6" height="104" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:1.08s"/>
+<circle cx="1040.4" cy="274" r="15" fill="url(#gold)"/><text x="1040.4" y="279" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">10</text>
+<text x="1064.4" y="279" fill="#f4f1e8" font-size="16" font-weight="700">Quantum Optimizati…</text>
+<text x="1032.4" y="308" fill="#c9b98a" font-size="13.5">Quantum · QAOA verified,</text>
+<text x="1032.4" y="327" fill="#c9b98a" font-size="13.5">circuits</text>
+</g>
+  <text x="1240" y="384" fill="#9aa6c2" fill-opacity=".7" font-size="11" text-anchor="end">AlgoLang · AlgoProfessor AI R&amp;D Solutions</text>
+</svg>
