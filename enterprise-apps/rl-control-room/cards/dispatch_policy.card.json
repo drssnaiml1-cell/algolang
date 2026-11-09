@@ -1,0 +1,232 @@
+{
+  "card": "AlgoLang AI system card",
+  "card_version": 1,
+  "program": "dispatch_policy",
+  "source": "dispatch_policy.algo",
+  "source_sha256": "85be5ca150d5dc9de7d196fd0a7c7d43f1a979d366ec3b5dc9acac3ea281c425",
+  "purpose": "Battery dispatch for an internal campus microgrid",
+  "risk_level": "minimal",
+  "disclosure": null,
+  "flows": [
+    {
+      "name": "main",
+      "inputs": [
+        "request"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "Deploy",
+      "role": "Energy operations manager",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.75 by 2 different people",
+      "explain": "evidence",
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Evaluator",
+      "role": "Control systems engineer",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "rl.evaluate"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "KeepBaseline",
+      "role": "Control systems engineer",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "OpsRisk",
+      "role": "Head of energy operations",
+      "returns": "uncertain<score>",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "kb.search"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": 5,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Pilot",
+      "role": "Energy operations manager",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "every result is reviewed",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Rejected",
+      "role": "Grid safety engineer",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "StressTester",
+      "role": "Grid safety engineer",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "rl.stress"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Trainer",
+      "role": "Reinforcement learning engineer",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "rl.train"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    }
+  ],
+  "tools": [
+    {
+      "name": "kb.search",
+      "kind": "built-in",
+      "trusted": true,
+      "description": "Search the organisation's knowledge base of .txt and .md documents"
+    },
+    {
+      "name": "rl.evaluate",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Evaluate the learned policy against the exact optimum and baselines on 1,000 simulated days"
+    },
+    {
+      "name": "rl.stress",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Stress-test the dispatch policies on heatwave days only"
+    },
+    {
+      "name": "rl.train",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Train a battery dispatch policy with tabular Q-learning (safety shield on or off)"
+    }
+  ],
+  "streams": [],
+  "circuits": [],
+  "human_oversight": [
+    "Deploy: reviewed when confidence < 0.75 by 2 different people",
+    "Evaluator: reviewed when confidence < 0.75",
+    "KeepBaseline: reviewed when confidence < 0.75",
+    "OpsRisk: reviewed when confidence < 0.75",
+    "Pilot: every result is reviewed",
+    "Rejected: reviewed when confidence < 0.75",
+    "StressTester: reviewed when confidence < 0.75",
+    "Trainer: reviewed when confidence < 0.75"
+  ],
+  "data_protection": {
+    "redact_pii": "no agents",
+    "forbidden_attributes": [
+      "caste",
+      "gender",
+      "religion"
+    ],
+    "retention_days": {}
+  },
+  "evaluation": {
+    "cases": 3,
+    "fairness": [],
+    "robustness": [],
+    "explanations_checked": false
+  },
+  "limitations": [
+    "Generated from the source code: it documents design-time safeguards and test coverage, not measured real-world performance.",
+    "Offline evals use a deterministic mock model; repeat them with `algo eval --live` before deployment.",
+    "Protected attributes are withheld by keyword. Proxies such as names, postcodes or schools can still carry them; counterfactual fairness tests measure the effect.",
+    "Fairness has not been tested (no `expect fair` case).",
+    "Robustness has not been tested (no `expect robust` case)."
+  ]
+}

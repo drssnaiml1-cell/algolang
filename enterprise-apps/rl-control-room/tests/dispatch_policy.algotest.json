@@ -1,0 +1,15 @@
+{
+  "program": "../programs/dispatch_policy.algo",
+  "cases": [
+    {"name": "Shielded policy is evaluated and stress-tested in parallel, then reviewed",
+     "inputs": {"request": "Learn a battery dispatch policy for the campus microgrid with the safety shield on"},
+     "expect": {"status": "ok", "agents_called": ["Trainer", "Evaluator", "StressTester", "OpsRisk"],
+                "tools_used": ["rl.train", "rl.evaluate", "rl.stress"], "output_contains": "SAFE AND BEATS BASELINE"}},
+    {"name": "A policy trained without the shield is rejected before evaluation",
+     "inputs": {"request": "Learn a battery dispatch policy for the campus microgrid without the safety shield"},
+     "expect": {"status": "ok", "agents_called": ["Trainer", "Rejected"], "emits": 2}},
+    {"name": "An under-trained policy keeps the time-of-day rule",
+     "inputs": {"request": "Learn a battery dispatch policy for the campus microgrid with the safety shield on, short training of 50 episodes"},
+     "expect": {"status": "ok", "agents_called": ["KeepBaseline"], "output_contains": "SAFE BUT WEAKER"}}
+  ]
+}

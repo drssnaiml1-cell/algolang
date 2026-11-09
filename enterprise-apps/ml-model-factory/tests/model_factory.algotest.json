@@ -1,0 +1,15 @@
+{
+  "program": "../programs/model_factory.algo",
+  "cases": [
+    {"name": "Stable week: three families trained in parallel, champion reviewed",
+     "inputs": {"request": "Churn model on the customer dataset, production WEEK-45"},
+     "expect": {"status": "ok", "agents_called": ["DataAuditor", "LogisticTrainer", "DeepTrainer", "BoostTrainer", "Selector", "DriftMonitor", "ModelRisk"],
+                "tools_used": ["data.profile", "ml.train", "ml.compare", "ml.drift"], "output_contains": "CHAMPION"}},
+    {"name": "Drifted week goes to retraining",
+     "inputs": {"request": "Churn model on the customer dataset, production WEEK-46"},
+     "expect": {"status": "ok", "agents_called": ["DriftMonitor", "Retrain"], "output_contains": "DRIFT DETECTED", "emits": 4}},
+    {"name": "Leakage is caught before training",
+     "inputs": {"request": "Churn model on the customers with refunds dataset, production WEEK-45"},
+     "expect": {"status": "ok", "agents_called": ["DataAuditor", "Remediation"], "output_contains": "LEAKAGE", "emits": 2}}
+  ]
+}

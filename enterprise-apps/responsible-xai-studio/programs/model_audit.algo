@@ -1,0 +1,92 @@
+// AlgoXAI Audit Studio™ — is the credit model fair, and can every decision be explained?
+// exact Shapley explanation + fairness audit (in parallel) + actionable recourse for the applicant
+//   bias found → remediation, reviewed by a person · passed → audit opinion → two-person certification
+// The protected group is used only to audit; it is never an input to the model or to any agent.
+risk limited "Auditing a credit-scoring model for fairness and explainability"
+disclose "This audit and the recourse advice were prepared with AI tools and reviewed by the model risk team."
+policy { redact pii  forbid gender, caste, religion }
+tool xai.shapley
+tool fair.audit
+tool xai.counterfactual
+tool kb.search
+
+model fast = "claude-haiku-5-5"
+
+agent Explainer(request: text) -> text {
+    role   "Explainable-AI analyst"
+    goal   "Explain the credit decision and the model's global drivers for {request}"
+    uses   xai.shapley
+    model  fast
+    policy { explain with evidence }
+}
+
+agent FairnessAuditor(request: text) -> text {
+    role  "Fairness auditor"
+    goal  "Audit approval rates, equal opportunity, calibration and proxies across groups for {request}"
+    uses  fair.audit
+    model fast
+}
+
+agent Recourse(request: text) -> text {
+    role  "Customer advocate"
+    goal  "Find the smallest change the applicant could make to be approved, for {request}"
+    uses  xai.counterfactual
+    model fast
+}
+
+agent AuditOpinion(request: text, explanation: text, fairness: text) -> uncertain<score> {
+    role   "Head of model risk"
+    goal   "Score 0 to 1 whether the model in {request} can be certified, given {explanation}, {fairness} and the fair-lending standard"
+    uses   kb.search
+    policy { samples 5 }
+}
+
+agent Certify(request: text, fairness: text) -> text {
+    role   "Head of model risk"
+    goal   "Write the certification for the model in {request}, citing {fairness}, with the monitoring plan"
+    policy { require approvals 2  explain with evidence }
+}
+
+agent Conditional(request: text, fairness: text) -> text {
+    role   "Head of model risk"
+    goal   "Write conditions the model in {request} must meet before certification, given {fairness}"
+    policy { require human for always }
+}
+
+agent Remediation(request: text, fairness: text, explanation: text) -> text {
+    role   "Fairness auditor"
+    goal   "Write the remediation plan for the model in {request}: remove proxies, retrain, re-audit, given {fairness} and {explanation}"
+    policy { require human for always  explain with evidence }
+}
+
+flow main(request: text) {
+    [explanation, fairness] = par { Explainer(request), FairnessAuditor(request) }
+    recourse = Recourse(request)
+    if fairness contains "BIAS FOUND" {
+        emit explanation, fairness, recourse, Remediation(request, fairness, explanation)
+    } else {
+        opinion = AuditOpinion(request, explanation, fairness)
+        if opinion > 0.7 and opinion.confidence >= 0.75 {
+            emit explanation, fairness, recourse, opinion, Certify(request, fairness)
+        } else {
+            emit explanation, fairness, recourse, opinion, Conditional(request, fairness)
+        }
+    }
+}
+
+eval audit on main {
+    case "vendor model v1 uses a proxy: bias found" (request = "Audit vendor credit model v1 and explain the decision for applicant AP-10002") {
+        expect status ok
+        expect output contains "BIAS FOUND"
+        expect called Remediation
+        expect not called Certify
+        expect explained
+    }
+    case "model v2 without the proxy passes" (request = "Audit credit model v2 and explain the decision for applicant AP-10002") {
+        expect status ok
+        expect output contains "FAIRNESS CHECKS PASSED"
+        expect called AuditOpinion
+        expect not called Remediation
+        expect robust (typos, reorder) consistency >= 0.9
+    }
+}

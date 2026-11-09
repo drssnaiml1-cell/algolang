@@ -27,6 +27,9 @@ BATCH = {
     "algo-trading-desk": ("pre_trade_check.algo", "order_intents.csv"),
     "quantum-optimization-lab": ("portfolio_optimizer.algo", "portfolio_requests.csv"),
     "llm-graph-optimizer": ("cascade_router.algo", "requests.csv"),
+    "ml-model-factory": ("model_factory.algo", "model_requests.csv"),
+    "rl-control-room": ("dispatch_policy.algo", "rl_requests.csv"),
+    "responsible-xai-studio": ("model_audit.algo", "audit_requests.csv"),
 }
 # Real-time `stream` blocks, replayed offline from a JSON Lines file of events (v0.3.1)
 STREAM = {

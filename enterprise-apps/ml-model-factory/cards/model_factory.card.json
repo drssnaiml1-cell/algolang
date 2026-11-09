@@ -1,0 +1,301 @@
+{
+  "card": "AlgoLang AI system card",
+  "card_version": 1,
+  "program": "model_factory",
+  "source": "model_factory.algo",
+  "source_sha256": "dfac4647ac57b1ca2ac738b370ef3d879ca549210f2cee9c664587b54c313b30",
+  "purpose": "Predicting which customers may leave, to target retention offers",
+  "risk_level": "limited",
+  "disclosure": "Retention offers are prioritised with a machine-learning model; staff review every offer.",
+  "flows": [
+    {
+      "name": "main",
+      "inputs": [
+        "request"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "BoostTrainer",
+      "role": "ML engineer",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "ml.train"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "DataAuditor",
+      "role": "Data quality engineer",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "data.profile"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "DeepTrainer",
+      "role": "Deep learning engineer",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "ml.train"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Deploy",
+      "role": "MLOps release manager",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.75 by 2 different people",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "DriftMonitor",
+      "role": "MLOps engineer",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "ml.drift"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "LogisticTrainer",
+      "role": "ML engineer",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "ml.train"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "ModelRisk",
+      "role": "Model risk officer",
+      "returns": "uncertain<score>",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "kb.search"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": 5,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Remediation",
+      "role": "Data quality engineer",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Retrain",
+      "role": "Head of data science",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "every result is reviewed",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Selector",
+      "role": "Head of data science",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "ml.compare"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Shadow",
+      "role": "MLOps release manager",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "every result is reviewed",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    }
+  ],
+  "tools": [
+    {
+      "name": "data.profile",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Profile a training dataset: rows, class balance, missing values, target leakage"
+    },
+    {
+      "name": "kb.search",
+      "kind": "built-in",
+      "trusted": true,
+      "description": "Search the organisation's knowledge base of .txt and .md documents"
+    },
+    {
+      "name": "ml.compare",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Compare all model families on the same folds and choose a calibrated champion"
+    },
+    {
+      "name": "ml.drift",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Population stability index of every feature: training data vs a production week (WEEK-nn)"
+    },
+    {
+      "name": "ml.train",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Train one model family with stratified 5-fold cross-validation (logistic, deep network, boosted trees)"
+    }
+  ],
+  "streams": [],
+  "circuits": [],
+  "human_oversight": [
+    "BoostTrainer: reviewed when confidence < 0.75",
+    "DataAuditor: reviewed when confidence < 0.75",
+    "DeepTrainer: reviewed when confidence < 0.75",
+    "Deploy: reviewed when confidence < 0.75 by 2 different people",
+    "DriftMonitor: reviewed when confidence < 0.75",
+    "LogisticTrainer: reviewed when confidence < 0.75",
+    "ModelRisk: reviewed when confidence < 0.75",
+    "Remediation: reviewed when confidence < 0.75",
+    "Retrain: every result is reviewed",
+    "Selector: reviewed when confidence < 0.75",
+    "Shadow: every result is reviewed"
+  ],
+  "data_protection": {
+    "redact_pii": "all agents",
+    "forbidden_attributes": [
+      "caste",
+      "gender",
+      "religion"
+    ],
+    "retention_days": {}
+  },
+  "evaluation": {
+    "cases": 3,
+    "fairness": [],
+    "robustness": [],
+    "explanations_checked": false
+  },
+  "limitations": [
+    "Generated from the source code: it documents design-time safeguards and test coverage, not measured real-world performance.",
+    "Offline evals use a deterministic mock model; repeat them with `algo eval --live` before deployment.",
+    "Protected attributes are withheld by keyword. Proxies such as names, postcodes or schools can still carry them; counterfactual fairness tests measure the effect.",
+    "Fairness has not been tested (no `expect fair` case).",
+    "Robustness has not been tested (no `expect robust` case)."
+  ]
+}

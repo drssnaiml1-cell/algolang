@@ -1,0 +1,129 @@
+// AlgoML Model Factory™ — train, compare and ship a churn model under governance.
+// profile (leakage?) → three model families trained in parallel (logistic, deep network, boosted trees)
+//   → calibrated champion → production drift check → quality-risk review → two-person deployment, or retrain.
+// Every number comes from real cross-validation on the data; no model guesses a metric.
+risk limited "Predicting which customers may leave, to target retention offers"
+disclose "Retention offers are prioritised with a machine-learning model; staff review every offer."
+policy { redact pii }
+tool data.profile
+tool ml.train
+tool ml.compare
+tool ml.drift
+tool kb.search
+
+model fast = "claude-haiku-5-5"
+
+agent DataAuditor(request: text) -> text {
+    role  "Data quality engineer"
+    goal  "Profile the training data for {request}: size, balance, missing values and target leakage"
+    uses  data.profile
+    model fast
+}
+
+agent LogisticTrainer(request: text) -> text {
+    role  "ML engineer"
+    goal  "Train a logistic regression baseline with 5-fold cross-validation for {request}"
+    uses  ml.train
+    model fast
+}
+
+agent DeepTrainer(request: text) -> text {
+    role  "Deep learning engineer"
+    goal  "Train a deep neural network with 5-fold cross-validation for {request}"
+    uses  ml.train
+    model fast
+}
+
+agent BoostTrainer(request: text) -> text {
+    role  "ML engineer"
+    goal  "Train gradient-boosted trees with 5-fold cross-validation for {request}"
+    uses  ml.train
+    model fast
+}
+
+agent Selector(request: text, a: text, b: text, c: text) -> text {
+    role  "Head of data science"
+    goal  "Choose the calibrated champion for {request} from {a}, {b} and {c}"
+    uses  ml.compare
+    model fast
+}
+
+agent DriftMonitor(request: text) -> text {
+    role  "MLOps engineer"
+    goal  "Compare the production data named in {request} with the training data"
+    uses  ml.drift
+    model fast
+}
+
+agent ModelRisk(request: text, champion: text) -> uncertain<score> {
+    role   "Model risk officer"
+    goal   "Score 0 to 1 whether {champion} is fit to deploy for {request}, under the model governance standard"
+    uses   kb.search
+    policy { samples 5 }
+}
+
+agent Deploy(request: text, champion: text) -> text {
+    role   "MLOps release manager"
+    goal   "Write the deployment plan for {champion} for {request}: shadow week, monitoring, rollback"
+    policy { require approvals 2  explain with evidence }
+}
+
+agent Shadow(request: text, champion: text) -> text {
+    role  "MLOps release manager"
+    goal  "Plan a shadow deployment only for {champion} for {request}, and what must improve first"
+    policy { require human for always }
+}
+
+agent Retrain(request: text, drift: text) -> text {
+    role  "Head of data science"
+    goal  "Plan retraining because {drift} for {request}: new data window, features to watch, owner"
+    policy { require human for always }
+}
+
+agent Remediation(request: text, profile: text) -> text {
+    role "Data quality engineer"
+    goal "Explain the problem in {profile} and how to fix the data for {request} before any training"
+}
+
+flow main(request: text) {
+    profile = DataAuditor(request)
+    if profile contains "LEAKAGE" {
+        emit profile, Remediation(request, profile)
+    } else {
+        [lr, dn, gb] = par { LogisticTrainer(request), DeepTrainer(request), BoostTrainer(request) }
+        champion = Selector(request, lr, dn, gb)
+        drift    = DriftMonitor(request)
+        if drift contains "DRIFT DETECTED" {
+            emit profile, champion, drift, Retrain(request, drift)
+        } else {
+            risk = ModelRisk(request, champion)
+            if risk > 0.7 and risk.confidence >= 0.75 {
+                emit profile, champion, drift, risk, Deploy(request, champion)
+            } else {
+                emit profile, champion, drift, risk, Shadow(request, champion)
+            }
+        }
+    }
+}
+
+eval factory on main {
+    case "clean data, stable week: champion goes to review" (request = "Churn model on the customer dataset, production WEEK-45") {
+        expect status ok
+        expect tool ml.compare
+        expect output contains "CHAMPION"
+        expect called ModelRisk
+        expect not called Retrain
+    }
+    case "drifted production week: retrain, do not deploy" (request = "Churn model on the customer dataset, production WEEK-46") {
+        expect status ok
+        expect output contains "DRIFT DETECTED"
+        expect called Retrain
+        expect not called Deploy
+    }
+    case "a leaking column stops training" (request = "Churn model on the customers with refunds dataset, production WEEK-45") {
+        expect status ok
+        expect output contains "LEAKAGE"
+        expect called Remediation
+        expect not called Selector
+    }
+}

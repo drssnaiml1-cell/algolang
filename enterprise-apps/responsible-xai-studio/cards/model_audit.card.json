@@ -1,0 +1,230 @@
+{
+  "card": "AlgoLang AI system card",
+  "card_version": 1,
+  "program": "model_audit",
+  "source": "model_audit.algo",
+  "source_sha256": "1d119adad289ea76f27b0253fb7a32906a097767d8efa690253480ea0695f437",
+  "purpose": "Auditing a credit-scoring model for fairness and explainability",
+  "risk_level": "limited",
+  "disclosure": "This audit and the recourse advice were prepared with AI tools and reviewed by the model risk team.",
+  "flows": [
+    {
+      "name": "main",
+      "inputs": [
+        "request"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "AuditOpinion",
+      "role": "Head of model risk",
+      "returns": "uncertain<score>",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "kb.search"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "marital_status",
+        "religion"
+      ],
+      "samples": 5,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Certify",
+      "role": "Head of model risk",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.75 by 2 different people",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "marital_status",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Conditional",
+      "role": "Head of model risk",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "every result is reviewed",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "marital_status",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Explainer",
+      "role": "Explainable-AI analyst",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "xai.shapley"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "marital_status",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "FairnessAuditor",
+      "role": "Fairness auditor",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "fair.audit"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "marital_status",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Recourse",
+      "role": "Customer advocate",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "xai.counterfactual"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "marital_status",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Remediation",
+      "role": "Fairness auditor",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "every result is reviewed",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "marital_status",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    }
+  ],
+  "tools": [
+    {
+      "name": "fair.audit",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Fairness audit across the protected group: disparate impact, equal opportunity, calibration, proxies"
+    },
+    {
+      "name": "kb.search",
+      "kind": "built-in",
+      "trusted": true,
+      "description": "Search the organisation's knowledge base of .txt and .md documents"
+    },
+    {
+      "name": "xai.counterfactual",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Smallest actionable change that turns a declined applicant (AP-#####) into an approval"
+    },
+    {
+      "name": "xai.shapley",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Exact Shapley explanation of one applicant's credit score (AP-#####), and global importance"
+    }
+  ],
+  "streams": [],
+  "circuits": [],
+  "human_oversight": [
+    "AuditOpinion: reviewed when confidence < 0.75",
+    "Certify: reviewed when confidence < 0.75 by 2 different people",
+    "Conditional: every result is reviewed",
+    "Explainer: reviewed when confidence < 0.75",
+    "FairnessAuditor: reviewed when confidence < 0.75",
+    "Recourse: reviewed when confidence < 0.75",
+    "Remediation: every result is reviewed"
+  ],
+  "data_protection": {
+    "redact_pii": "all agents",
+    "forbidden_attributes": [
+      "caste",
+      "gender",
+      "marital_status",
+      "religion"
+    ],
+    "retention_days": {}
+  },
+  "evaluation": {
+    "cases": 2,
+    "fairness": [],
+    "robustness": [
+      {
+        "eval": "audit",
+        "case": "model v2 without the proxy passes",
+        "perturbations": [
+          "typos",
+          "reorder"
+        ],
+        "consistency": ">= 0.9"
+      }
+    ],
+    "explanations_checked": true
+  },
+  "limitations": [
+    "Generated from the source code: it documents design-time safeguards and test coverage, not measured real-world performance.",
+    "Offline evals use a deterministic mock model; repeat them with `algo eval --live` before deployment.",
+    "Protected attributes are withheld by keyword. Proxies such as names, postcodes or schools can still carry them; counterfactual fairness tests measure the effect.",
+    "Fairness has not been tested (no `expect fair` case)."
+  ]
+}

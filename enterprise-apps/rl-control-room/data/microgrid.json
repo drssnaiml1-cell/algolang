@@ -1,0 +1,17 @@
+{
+  "name": "Hyderabad campus microgrid (synthetic)",
+  "battery_mwh": 2.0,
+  "levels": 11,
+  "step_mwh": 0.2,
+  "efficiency": 0.92,
+  "degradation_inr_per_mwh": 450,
+  "import_cap_mw": 1.75,
+  "export_price_factor": 0.55,
+  "day_types": {
+    "sunny":    {"p": 0.55, "solar_peak_mw": 1.1, "price_scale": 1.0,  "load_scale": 1.0},
+    "cloudy":   {"p": 0.35, "solar_peak_mw": 0.4, "price_scale": 1.05, "load_scale": 1.0},
+    "heatwave": {"p": 0.10, "solar_peak_mw": 1.0, "price_scale": 1.6,  "load_scale": 1.35}
+  },
+  "price_inr_per_mwh": [3200,3000,2900,2900,3000,3400,4200,5200,5600,5000,4500,4200,4000,3900,4100,4600,5600,7200,8600,9000,8200,6400,4800,3800],
+  "load_mw":           [0.55,0.52,0.50,0.50,0.52,0.60,0.75,0.95,1.05,1.10,1.15,1.20,1.20,1.18,1.15,1.12,1.15,1.25,1.35,1.30,1.15,0.95,0.75,0.62]
+}

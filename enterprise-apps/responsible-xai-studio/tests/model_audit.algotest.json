@@ -1,0 +1,12 @@
+{
+  "program": "../programs/model_audit.algo",
+  "cases": [
+    {"name": "Vendor model v1 is biased through the area proxy",
+     "inputs": {"request": "Audit vendor credit model v1 and explain the decision for applicant AP-10002"},
+     "expect": {"status": "ok", "agents_called": ["Explainer", "FairnessAuditor", "Recourse", "Remediation"],
+                "tools_used": ["xai.shapley", "fair.audit", "xai.counterfactual"], "output_contains": "BIAS FOUND"}},
+    {"name": "Model v2 passes the fairness checks and goes to the audit opinion",
+     "inputs": {"request": "Audit credit model v2 and explain the decision for applicant AP-10002"},
+     "expect": {"status": "ok", "agents_called": ["AuditOpinion"], "output_contains": "FAIRNESS CHECKS PASSED"}}
+  ]
+}

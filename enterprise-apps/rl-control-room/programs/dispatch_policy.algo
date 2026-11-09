@@ -1,0 +1,105 @@
+// AlgoRL Control Room™ — learn a battery dispatch policy, prove it is safe, and let people decide.
+// train (Q-learning) → shield off? reject → evaluate vs the exact optimum + heatwave stress test (in parallel)
+//   unsafe → reject · beats the baseline → operations risk review → two-person deployment · else keep the rule
+risk minimal "Battery dispatch for an internal campus microgrid"
+tool rl.train
+tool rl.evaluate
+tool rl.stress
+tool kb.search
+
+model fast = "claude-haiku-5-5"
+
+agent Trainer(request: text) -> text {
+    role  "Reinforcement learning engineer"
+    goal  "Train the dispatch policy for {request}"
+    uses  rl.train
+    model fast
+}
+
+agent Evaluator(request: text) -> text {
+    role  "Control systems engineer"
+    goal  "Evaluate the learned policy for {request} against the exact optimum and the baselines"
+    uses  rl.evaluate
+    model fast
+}
+
+agent StressTester(request: text) -> text {
+    role  "Grid safety engineer"
+    goal  "Stress-test the learned policy for {request} on heatwave days"
+    uses  rl.stress
+    model fast
+}
+
+agent OpsRisk(request: text, evaluation: text, stress: text) -> uncertain<score> {
+    role   "Head of energy operations"
+    goal   "Score 0 to 1 whether to deploy the policy for {request}, given {evaluation} and {stress} and the grid code"
+    uses   kb.search
+    policy { samples 5 }
+}
+
+agent Deploy(request: text, evaluation: text) -> text {
+    role   "Energy operations manager"
+    goal   "Write the deployment for the policy in {evaluation} for {request}: pilot week, monitoring, manual override"
+    policy { require approvals 2  explain with evidence }
+}
+
+agent Pilot(request: text, evaluation: text) -> text {
+    role  "Energy operations manager"
+    goal  "Plan a supervised pilot only for {evaluation} for {request}"
+    policy { require human for always }
+}
+
+agent KeepBaseline(request: text, evaluation: text) -> text {
+    role "Control systems engineer"
+    goal "Explain why the time-of-day rule stays in service for {request} given {evaluation}, and what training would help"
+}
+
+agent Rejected(request: text, finding: text) -> text {
+    role "Grid safety engineer"
+    goal "Explain why the policy for {request} must not run, because {finding}, and what must change"
+}
+
+flow main(request: text) {
+    trained = Trainer(request)
+    if trained contains "shield OFF" {
+        emit trained, Rejected(request, trained)            // grid code: no policy runs without the shield
+    } else {
+        [evaluation, stress] = par { Evaluator(request), StressTester(request) }
+        if evaluation contains "UNSAFE" or stress contains "STRESS FAIL" {
+            emit trained, evaluation, stress, Rejected(request, evaluation)
+        } else {
+            if evaluation contains "BEATS BASELINE" {
+                risk = OpsRisk(request, evaluation, stress)
+                if risk > 0.7 and risk.confidence >= 0.75 {
+                    emit trained, evaluation, stress, risk, Deploy(request, evaluation)
+                } else {
+                    emit trained, evaluation, stress, risk, Pilot(request, evaluation)
+                }
+            } else {
+                emit trained, evaluation, stress, KeepBaseline(request, evaluation)
+            }
+        }
+    }
+}
+
+eval control_room on main {
+    case "shielded policy beats the rule and is safe" (request = "Learn a battery dispatch policy for the campus microgrid with the safety shield on") {
+        expect status ok
+        expect tool rl.evaluate
+        expect output contains "SAFE AND BEATS BASELINE"
+        expect output contains "STRESS PASS"
+        expect called OpsRisk
+        expect not called Rejected
+    }
+    case "no shield, no deployment" (request = "Learn a battery dispatch policy for the campus microgrid without the safety shield") {
+        expect status ok
+        expect called Rejected
+        expect not called Evaluator
+    }
+    case "under-trained policy keeps the rule in service" (request = "Learn a battery dispatch policy for the campus microgrid with the safety shield on, short training of 50 episodes") {
+        expect status ok
+        expect output contains "SAFE BUT WEAKER"
+        expect called KeepBaseline
+        expect not called Deploy
+    }
+}

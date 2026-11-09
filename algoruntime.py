@@ -382,7 +382,8 @@ class MockBackend:
                 tool_calls.append({"tool": t, "chars": len(out), "text": out[:4000]})
                 notes.append(f"{t}: {out.splitlines()[0][:60] if out else ''}")
         canon = algotrust is not None and algotrust.MOCK_CANONICAL[0]
-        seed = _h(spec.name, algotrust.canonical(goal) if canon else goal)
+        gkey = algotrust.canonical(goal) if canon else goal      # an ideal model answers the meaning
+        seed = _h(spec.name, gkey)
         conf = round(0.62 + (seed % 3300) / 10000, 2)           # 0.62 – 0.95
         short = (goal[:70] + "…") if len(goal) > 70 else goal
         if canon:                                    # an ideal model answers the meaning, not the wording
@@ -391,7 +392,7 @@ class MockBackend:
         if returns == "score":
             val = round(0.55 + (seed // 7 % 4000) / 10000, 2)      # 0.55 – 0.95
             if sample:                                              # repeated samples disagree a little
-                jitter = ((_h(spec.name, goal, sample) % 1600) - 800) / 10000      # ±0.08
+                jitter = ((_h(spec.name, gkey, sample) % 1600) - 800) / 10000      # ±0.08
                 val = round(min(1.0, max(0.0, val + jitter)), 2)
                 conf = round(min(0.97, max(0.5, conf + jitter / 2)), 2)
         elif returns == "list":
@@ -402,7 +403,7 @@ class MockBackend:
                         "Related-work coverage", "Clarity & presentation"]
                 val = pool[: n]
         elif returns == "bool":
-            val = bool(seed % 2) if not sample or _h(spec.name, goal, sample) % 5 else not bool(seed % 2)
+            val = bool(seed % 2) if not sample or _h(spec.name, gkey, sample) % 5 else not bool(seed % 2)
         elif returns == "json":
             val = {"agent": spec.name, "summary": short}
         else:
