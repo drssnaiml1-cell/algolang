@@ -1,5 +1,6 @@
 // Meridian contract review — clause-by-clause analysis in parallel, risk score, summary for counsel.
 // The input names a contract file under data/, e.g. "contracts/MSA-ACME-2026.txt".
+risk minimal "Clause analysis for in-house counsel"
 use pack legal.contract_review as cr
 tool clause.library
 

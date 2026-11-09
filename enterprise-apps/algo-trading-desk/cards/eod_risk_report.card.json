@@ -1,0 +1,284 @@
+{
+  "card": "AlgoLang AI system card",
+  "card_version": 1,
+  "algolang": "0.4.0",
+  "program": "eod_risk_report",
+  "source": "eod_risk_report.algo",
+  "source_sha256": "b78f271b4ba9316b653b4e6bbcd318bbf95132c22ae5f805ce2f5e477bf69040",
+  "purpose": "Internal end-of-day risk and surveillance report for the trading desk",
+  "risk_level": "minimal",
+  "disclosure": null,
+  "flows": [
+    {
+      "name": "main",
+      "inputs": [
+        "desk"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "Book",
+      "role": "Middle-office analyst",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "book.positions"
+      ],
+      "human_oversight": "reviewed when confidence < 0.85",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "client_password",
+        "gender",
+        "pan_number",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "pr.Brief",
+      "role": "Brief specialist, portfolio risk brief",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.85",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "client_password",
+        "gender",
+        "pan_number",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack markets.portfolio_risk"
+    },
+    {
+      "name": "pr.Exposures",
+      "role": "Exposures specialist, portfolio risk brief",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "calc.eval"
+      ],
+      "human_oversight": "reviewed when confidence < 0.85",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "client_password",
+        "gender",
+        "pan_number",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack markets.portfolio_risk"
+    },
+    {
+      "name": "pr.RiskLevel",
+      "role": "Risk level specialist, portfolio risk brief",
+      "returns": "score",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.9",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "client_password",
+        "gender",
+        "pan_number",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack markets.portfolio_risk"
+    },
+    {
+      "name": "pr.Stress",
+      "role": "Stress specialist, portfolio risk brief",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.85",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "client_password",
+        "gender",
+        "pan_number",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack markets.portfolio_risk"
+    },
+    {
+      "name": "ts.Concern",
+      "role": "Concern specialist, trade surveillance",
+      "returns": "score",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.9",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "client_password",
+        "gender",
+        "nationality",
+        "pan_number",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack markets.trade_surveillance"
+    },
+    {
+      "name": "ts.Investigator",
+      "role": "Investigator specialist, trade surveillance",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.85",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "client_password",
+        "gender",
+        "pan_number",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack markets.trade_surveillance"
+    },
+    {
+      "name": "ts.Report",
+      "role": "Report specialist, trade surveillance",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.85",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "client_password",
+        "gender",
+        "pan_number",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack markets.trade_surveillance"
+    },
+    {
+      "name": "ts.Splitter",
+      "role": "Splitter specialist, trade surveillance",
+      "returns": "list",
+      "model": "fast",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.85",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "client_password",
+        "gender",
+        "pan_number",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack markets.trade_surveillance"
+    }
+  ],
+  "tools": [
+    {
+      "name": "book.positions",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "The desk's open positions and P&L"
+    },
+    {
+      "name": "calc.eval",
+      "kind": "built-in",
+      "trusted": true,
+      "description": "Evaluate an arithmetic expression such as (1200 * 0.18) + 45"
+    }
+  ],
+  "streams": [],
+  "circuits": [],
+  "human_oversight": [
+    "Book: reviewed when confidence < 0.85",
+    "pr.Brief: reviewed when confidence < 0.85",
+    "pr.Exposures: reviewed when confidence < 0.85",
+    "pr.RiskLevel: reviewed when confidence < 0.9",
+    "pr.Stress: reviewed when confidence < 0.85",
+    "ts.Concern: reviewed when confidence < 0.9",
+    "ts.Investigator: reviewed when confidence < 0.85",
+    "ts.Report: reviewed when confidence < 0.85",
+    "ts.Splitter: reviewed when confidence < 0.85"
+  ],
+  "data_protection": {
+    "redact_pii": "no agents",
+    "forbidden_attributes": [
+      "aadhaar",
+      "caste",
+      "client_password",
+      "gender",
+      "nationality",
+      "pan_number",
+      "religion"
+    ],
+    "retention_days": {}
+  },
+  "evaluation": {
+    "cases": 1,
+    "fairness": [],
+    "robustness": [],
+    "explanations_checked": false
+  },
+  "limitations": [
+    "Generated from the source code: it documents design-time safeguards and test coverage, not measured real-world performance.",
+    "Offline evals use a deterministic mock model; repeat them with `algo eval --live` before deployment.",
+    "Protected attributes are withheld by keyword. Proxies such as names, postcodes or schools can still carry them; counterfactual fairness tests measure the effect.",
+    "Fairness has not been tested (no `expect fair` case).",
+    "Robustness has not been tested (no `expect robust` case)."
+  ]
+}

@@ -78,6 +78,10 @@ class Program:
     tool_lines: dict = field(default_factory=dict)
     streams: list = field(default_factory=list)   # stream blocks: Stream objects (v0.3.1)
     circuits: dict = field(default_factory=dict)  # circuit blocks: name → Circuit (v0.3.3)
+    risk: tuple | None = None                     # (level, purpose, line): `risk high "…"` (v0.4)
+    default_policy: dict = field(default_factory=dict)
+    disclosure: str | None = None                 # `disclose "…"` (v0.4)
+    untrusted: set = field(default_factory=set)   # tools declared `untrusted` (v0.4)
 
 
 @dataclass
@@ -222,6 +226,27 @@ def parse_policy(rules) -> dict:
             pol["shots"] = int(float(str(r.children[0])))
         elif r.data == "max_qubits":
             pol["max_qubits"] = int(float(str(r.children[0])))
+        elif r.data == "explain_evidence":
+            pol["explain"] = "evidence"
+        elif r.data == "explain":
+            pol.setdefault("explain", "reasons")
+        elif r.data == "redact_pii":
+            pol["redact_pii"] = True
+        elif r.data == "human_always":
+            pol["human_always"] = True
+        elif r.data == "approvals":
+            n = float(str(r.children[0]))
+            if n != int(n) or not 1 <= n <= 5:
+                pol.setdefault("_errors", []).append("`require approvals` must be a whole number from 1 to 5")
+            pol["approvals"] = int(n)
+        elif r.data == "retain":
+            what, days = str(r.children[0]).lower(), float(str(r.children[1]))
+            if what not in ("audit", "traces"):
+                pol.setdefault("_errors", []).append(f"`retain {what}`: you can retain audit or traces")
+            elif days != int(days) or not 1 <= days <= 3650:
+                pol.setdefault("_errors", []).append(f"`retain {what}` must be a whole number of days from 1 to 3650")
+            else:
+                pol[f"retain_{what}_days"] = int(days)
         elif r.data == "budget_cost":
             amount, cur = float(str(r.children[0])), str(r.children[1] or "usd").lower()
             if cur in ("usd", "inr"):
@@ -237,6 +262,9 @@ def parse_policy(rules) -> dict:
     return pol
 
 
+TRUST_KEYS = ("redact_pii", "forbid", "explain", "retain_audit_days", "retain_traces_days")
+
+
 def merge_policy(base: dict, own: dict) -> dict:
     """Combine two policies; the stricter rule always wins."""
     out = dict(base)
@@ -244,8 +272,14 @@ def merge_policy(base: dict, own: dict) -> dict:
         if k not in out:
             out[k] = v
         elif k in ("budget_tokens", "timeout_s", "budget_cost_usd", "budget_cost_inr", "budget_energy_wh",
-                   "max_qubits"):
+                   "max_qubits", "retain_audit_days", "retain_traces_days"):
             out[k] = min(out[k], v)
+        elif k == "approvals":
+            out[k] = max(out[k], v)
+        elif k in ("redact_pii", "human_always"):
+            out[k] = out[k] or v
+        elif k == "explain":
+            out[k] = "evidence" if "evidence" in (out[k], v) else "reasons"
         elif k == "_errors":
             out[k] = out[k] + [e for e in v if e not in out[k]]
         elif k == "human_below":
@@ -273,11 +307,20 @@ def to_ast(tree: Tree) -> tuple[Program, list[Diag]]:
             name, s = item.children
             prog.models[str(name)] = _s(s)
         elif item.data == "tool_decl":
-            tname, server = item.children
+            tname, server, untrusted = item.children
             prog.tools.add(str(tname))
             prog.tool_lines[str(tname)] = _line(item)
             if server is not None:
                 prog.mcp_tools[str(tname)] = _s(server)
+            if untrusted is not None:
+                prog.untrusted.add(str(tname))
+        elif item.data == "risk_decl":
+            level, purpose = item.children
+            if prog.risk is not None:
+                diags.append(Diag("E129", _line(item), "the program declares its risk level twice"))
+            prog.risk = (str(level).lower(), _s(purpose) if purpose is not None else "", _line(item))
+        elif item.data == "disclose_decl":
+            prog.disclosure = _s(item.children[0])
         elif item.data == "eval_decl":
             ename, flow, *cases = item.children
             ev = Eval(str(ename), str(flow) if flow is not None else "main", [], _line(item))
@@ -300,6 +343,15 @@ def to_ast(tree: Tree) -> tuple[Program, list[Diag]]:
                         expects.append((kind, None, _s(e.children[0])))
                     elif kind == "emits":
                         expects.append((kind, "==", int(str(e.children[0]))))
+                    elif kind == "fair":
+                        attr, *vals = e.children
+                        expects.append((kind, str(attr), [_s(v) for v in vals]))
+                    elif kind == "robust":
+                        *names, op, num = e.children
+                        perts = [str(n) for n in names if n is not None] or ["typos", "paraphrase", "reorder"]
+                        expects.append((kind, str(op), (perts, float(str(num)))))
+                    elif kind == "explained":
+                        expects.append((kind, None, True))
                     else:
                         expects.append((kind, None, str(e.children[0])))
                 ev.cases.append(EvalCase(_s(cname), inputs, expects, _line(c)))
@@ -367,6 +419,7 @@ def to_ast(tree: Tree) -> tuple[Program, list[Diag]]:
             if f.name in prog.agents or f.name in prog.flows:
                 diags.append(Diag("E107", f.line, f"'{f.name}' is defined twice"))
             prog.flows[f.name] = f
+    prog.default_policy = default_policy
     if default_policy:                       # file-level policy applies to every agent in the file
         for a in prog.agents.values():
             a.policy = merge_policy(default_policy, a.policy)
@@ -403,6 +456,9 @@ class Checker:
             self.check_eval(ev)
         for c in self.p.circuits.values():
             self.check_circuit(c)
+        if not library:
+            self.check_trust()
+        self.check_forbidden_tools()
         seen = set()
         for st in self.p.streams:
             if st.name in seen:
@@ -410,6 +466,97 @@ class Checker:
             seen.add(st.name)
             self.check_stream(st)
         return self.diags
+
+    # ───────────── v0.4 Trustworthy AI ─────────────
+    RISK_LEVELS = ("minimal", "limited", "high")
+
+    def overseen(self, a):
+        """Does a person review this agent's results (always, below a confidence gate, or N approvers)?
+        The organisation's `min_human_below` gate in algo.config.json counts too."""
+        pol = a.policy
+        try:
+            import algoruntime
+            org_gate = (algoruntime.load_config().get("policy") or {}).get("min_human_below")
+        except Exception:  # noqa
+            org_gate = None
+        return bool(pol.get("human_always") or pol.get("human_below") is not None or pol.get("approvals")
+                    or org_gate is not None)
+
+    def flow_agents(self, f):
+        names = []
+        for st in f.body:
+            if isinstance(st, Tree):
+                for c in st.find_data("call"):
+                    n = str(c.children[0])
+                    if n in self.p.agents:
+                        names.append(n)
+        return names
+
+    def check_trust(self):
+        """`risk` levels: stricter rules for higher-risk systems (EU AI Act style, NIST AI RMF 'Manage')."""
+        if self.p.risk is None:
+            return
+        level, purpose, line = self.p.risk
+        if level not in self.RISK_LEVELS:
+            self.err("E129", line, f"unknown risk level '{level}' (use minimal, limited or high)")
+            return
+        if level in ("limited", "high") and not self.p.disclosure:
+            self.err("E129", line, f"a {level}-risk program must tell people they are dealing with AI: "
+                                   f"add  disclose \"You are using an AI system …\"")
+        if level != "high":
+            return
+        if not purpose:
+            self.err("E129", line, 'a high-risk program must state its purpose: risk high "Credit decisions about individuals"')
+        try:
+            import algoruntime
+            has_cfg = algoruntime.config_path() is not None
+            audit = (algoruntime.load_config().get("audit") or {}) if has_cfg else {}
+        except Exception:  # noqa
+            has_cfg, audit = False, {}
+        if has_cfg and not audit.get("sign"):        # without a config here, the runtime enforces it
+            self.err("E129", line, 'a high-risk program needs signed audit logs: in algo.config.json set '
+                                   '"audit": {"sign": true}  (create a key with  algo keys init)')
+        for f in self.p.flows.values():
+            used = self.flow_agents(f)
+            if used and not any(self.overseen(self.p.agents[n]) for n in used):
+                self.err("E125", f.line, f"high-risk flow {f.name} has no human oversight: give the deciding agent "
+                                         f"`require human when confidence < …`, `require human for always` or "
+                                         f"`require approvals 2`")
+        kinds = {k for ev in self.p.evals for c in ev.cases for k, _o, _v in c.expects}
+        if "fair" not in kinds:
+            self.err("E126", line, 'a high-risk program needs a fairness test: in an eval case add  '
+                                   'expect fair across gender ["female", "male"]')
+        if "robust" not in kinds:
+            self.err("E126", line, "a high-risk program needs a robustness test: in an eval case add  "
+                                   "expect robust consistency >= 0.9")
+        for a in self.p.agents.values():
+            if not a.policy.get("redact_pii"):
+                self.err("E127", a.line, f"agent {a.name}: high-risk programs mask personal data before every model "
+                                         f"call: add `redact pii` to its policy (or to the program's policy block)")
+            if self.overseen(a) and a.policy.get("explain") != "evidence":
+                self.err("E127", a.line, f"agent {a.name} makes a reviewed decision in a high-risk program, so it must "
+                                         f"explain itself: add `explain with evidence` to its policy")
+
+    def check_forbidden_tools(self):
+        """E128: a forbidden attribute must not reach an agent through one of its tools."""
+        try:
+            import algoruntime
+            org = algoruntime.load_config().get("policy") or {}
+            tools = algoruntime.TOOLS
+        except Exception:  # noqa
+            org, tools = {}, {}
+        for a in self.p.agents.values():
+            if a.origin is not None:
+                continue
+            forbid = set(a.policy.get("forbid", [])) | set(org.get("forbid") or [])
+            for t in a.uses:
+                desc = (tools[t].description if t in tools else "") or ""
+                for attr in forbid:
+                    words = {attr.lower(), attr.lower().replace("_", " ")}
+                    hay = (t.replace(".", " ").replace("_", " ") + " " + desc).lower()
+                    if any(re.search(rf"\b{re.escape(w)}\b", hay) for w in words):
+                        self.err("E128", a.line, f"agent {a.name} forbids '{attr}', but its tool {t} provides it "
+                                                 f"(\"{(desc or t)[:60]}\"): remove the tool or the attribute from it")
 
     def check_circuit(self, c):
         """Circuit blocks: a qubit count within the simulator limit, known gates, right arity and angles."""
@@ -513,6 +660,18 @@ class Checker:
                     self.err("E119", c.line, f"eval {ev.name}, case \"{c.name}\": tool '{val}' is not declared")
                 elif kind == "status" and val not in ("ok", "blocked", "failed"):
                     self.err("E119", c.line, f"eval {ev.name}, case \"{c.name}\": status must be ok, blocked or failed")
+                elif kind == "fair" and len(set(v.lower() for v in val)) < 2:
+                    self.err("E130", c.line, f"eval {ev.name}, case \"{c.name}\": `expect fair across {_op}` needs at "
+                                             f"least two different values to compare")
+                elif kind == "robust":
+                    perts, need = val
+                    bad = [x for x in perts if x not in ("typos", "paraphrase", "reorder", "case", "spacing")]
+                    if bad:
+                        self.err("E130", c.line, f"eval {ev.name}, case \"{c.name}\": unknown perturbation "
+                                                 f"'{bad[0]}' (use typos, paraphrase, reorder, case, spacing)")
+                    if not 0 <= need <= 1:
+                        self.err("E130", c.line, f"eval {ev.name}, case \"{c.name}\": consistency is a share "
+                                                 f"from 0 to 1")
 
     def check_org(self):
         """Organisation policy (algo.config.json) is enforced before anything runs."""
@@ -558,7 +717,8 @@ class Checker:
             if attr in names:
                 self.err("E108", a.line, f"agent {a.name} takes forbidden attribute '{attr}' as an input")
         for msg in a.policy.get("_errors", []):
-            self.err("E121", a.line, f"agent {a.name}: {msg}")
+            code = "E130" if msg.startswith(("`require approvals`", "`retain")) else "E121"
+            self.err(code, a.line, f"agent {a.name}: {msg}")
         if a.policy.get("samples") is not None and not 1 <= a.policy["samples"] <= 15:
             self.err("E121", a.line, f"agent {a.name}: samples must be between 1 and 15")
         self.check_quantum(a)
@@ -750,6 +910,9 @@ class CodeGen:
                 self.w(f"rt.mcp_tool({t!r}, {p.mcp_tools[t]!r})")
             else:
                 self.w(f"rt.tool({t!r})")
+        if p.untrusted or p.risk or p.disclosure:
+            self.w(f"rt.trust(untrusted={sorted(p.untrusted)!r}, risk={(p.risk[0] if p.risk else None)!r}, "
+                   f"disclosure={p.disclosure!r})")
         self.w()
         for a in p.agents.values():
             params = [(x.name, x.type, x.default) for x in a.params]
@@ -1062,6 +1225,7 @@ def load_program(src, name, base_dir: Path, stack=(), file_label=None, library=F
         prog.tools |= sub.tools
         for t, srv in sub.mcp_tools.items():
             prog.mcp_tools.setdefault(t, srv)
+        prog.untrusted |= sub.untrusted                  # an imported untrusted tool stays untrusted
         for a in sub.agents.values():
             new_name = f"{alias}.{a.name}" if alias else a.name
             if new_name in prog.agents:
@@ -1069,6 +1233,10 @@ def load_program(src, name, base_dir: Path, stack=(), file_label=None, library=F
                                                 f"import it with `as <name>` to keep both", file_label))
                 continue
             a.name, a.origin = new_name, a.origin or label
+            # v0.4: the importing program's trust rules reach imported agents too (they only add protection)
+            inherit = {k: v for k, v in prog.default_policy.items() if k in TRUST_KEYS}
+            if inherit:
+                a.policy = merge_policy(a.policy, inherit)
             prog.agents[new_name] = a
     # local definitions come after imports, so re-check local names against imported ones
     checker = Checker(prog)
@@ -1087,7 +1255,7 @@ def compile_source(src: str, name: str, base_dir: Path | str | None = None):
     return CodeGen(prog, name).gen(), prog
 
 
-VERSION = "0.3.4"
+VERSION = "0.4.0"
 
 TEMPLATE = '''// {name}.algo — created by `algo new`
 // Run it:  algo run {name}.algo --arg "topic=Your topic here"
@@ -1364,6 +1532,7 @@ def main(argv=None):
     s.add_argument("item", nargs="?")
     s.add_argument("--reviewer", default="")
     s.add_argument("--note", default="")
+    s.add_argument("--override", default=None, help="approve with a corrected answer instead of the model's")
     s = sub.add_parser("audit", help="verify tamper-evident audit logs")
     s.add_argument("action", choices=["verify"])
     s.add_argument("target", nargs="?", default="runs")
@@ -1395,6 +1564,26 @@ def main(argv=None):
     s.add_argument("tool", nargs="?")
     s.add_argument("arguments", nargs="?", default="{}", help="JSON arguments for `call`")
     sub.add_parser("lsp", help="language server for editors (VS Code, Neovim …) over stdio")
+    # v0.4 Trustworthy AI
+    s = sub.add_parser("card", help="AI system card (Markdown + JSON) generated from the source")
+    s.add_argument("files", nargs="+")
+    s.add_argument("--out", default=None, help="folder for the cards (default: next to each program)")
+    s.add_argument("--check", action="store_true", help="fail if a committed card is missing or out of date")
+    s = sub.add_parser("trust", help="trust report: 10 trustworthy-AI properties with evidence")
+    s.add_argument("action", choices=["report"])
+    s.add_argument("paths", nargs="+", help=".algo files or folders")
+    s.add_argument("--html", default=None, help="also write an HTML report to this file")
+    s.add_argument("--json", action="store_true")
+    s.add_argument("--no-evals", action="store_true", help="do not run eval blocks (faster, less evidence)")
+    s = sub.add_parser("evidence", help="signed evidence pack for auditors: export | verify")
+    s.add_argument("action", choices=["export", "verify"])
+    s.add_argument("target", help="program (.algo) to export, or pack (.zip) to verify")
+    s.add_argument("--out", default=None)
+    s.add_argument("--no-evals", action="store_true")
+    s = sub.add_parser("keys", help="Ed25519 audit signing key: init | show")
+    s.add_argument("action", nargs="?", default="show", choices=["init", "show"])
+    s = sub.add_parser("retention", help="apply the organisation's retention limits to audit logs and traces")
+    s.add_argument("--dry-run", action="store_true")
     s = sub.add_parser("pulse", help="AlgoPulse event engine: serve | publish | topics | tail", add_help=False)
     s.add_argument("pulse_args", nargs=argparse.REMAINDER)
     s = sub.add_parser("quantum", help="quantum circuits in a program: list, export to OpenQASM, or run one")
@@ -1437,6 +1626,17 @@ def main(argv=None):
         import algostream
         return algostream.cli(a.file, name=a.name, input_path=a.input, pulse=a.pulse, produce=a.produce,
                               max_events=a.max, idle=a.idle, live=a.live, as_json=a.json, out_dir=a.out)
+    if a.cmd in ("card", "trust", "evidence", "keys", "retention"):
+        import algoassure as T
+        if a.cmd == "card":
+            return T.cli_card(a.files, a.out, a.check)
+        if a.cmd == "trust":
+            return T.cli_report(a.paths, a.html, a.json, a.no_evals)
+        if a.cmd == "evidence":
+            return T.cli_evidence(a.action, a.target, a.out, a.no_evals)
+        if a.cmd == "keys":
+            return T.cli_keys(a.action)
+        return T.cli_retention(a.dry_run)
     if a.cmd == "lsp":
         import algolsp
         return algolsp.main()
@@ -1465,7 +1665,7 @@ def main(argv=None):
             return X.cmd_batch(a.file, a.input, a.out, a.workers, a.live)
         if a.cmd == "review":
             return X.cmd_review(a.action if a.action in ("approve", "reject") else None, a.item,
-                                a.reviewer, a.note, show_all=a.action == "all")
+                                a.reviewer, a.note, show_all=a.action == "all", override=a.override)
         if a.cmd == "audit":
             return X.cmd_audit_verify(a.target)
         if a.cmd == "report":

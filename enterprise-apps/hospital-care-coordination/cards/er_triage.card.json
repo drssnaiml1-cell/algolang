@@ -1,0 +1,335 @@
+{
+  "card": "AlgoLang AI system card",
+  "card_version": 1,
+  "algolang": "0.4.0",
+  "program": "er_triage",
+  "source": "er_triage.algo",
+  "source_sha256": "5558b6473499c367e6d07751f6a58dcb91d628bd3dcf0b8fb24d7bbd0643250d",
+  "purpose": "Emergency-department triage support for duty clinicians",
+  "risk_level": "high",
+  "disclosure": "Triage suggestions come from an AI decision-support system. The duty clinician decides.",
+  "flows": [
+    {
+      "name": "main",
+      "inputs": [
+        "note"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "BedManager",
+      "role": "Bed management coordinator, Sunrise Hospital",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "beds.availability"
+      ],
+      "human_oversight": "reviewed when confidence < 0.85",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "income",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "ClinicianSignOff",
+      "role": "Triage record for the duty clinician",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "every result is reviewed",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "income",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "appt.RoutineDesk",
+      "role": "Routine desk specialist, patient appointment router",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.85",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "income",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 4000
+      },
+      "imported_from": "pack healthcare.appointment_router"
+    },
+    {
+      "name": "appt.ToneCheck",
+      "role": "Tone check specialist, patient appointment router",
+      "returns": "score",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.85",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "income",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 4000
+      },
+      "imported_from": "pack healthcare.appointment_router"
+    },
+    {
+      "name": "appt.UrgencyCheck",
+      "role": "Urgency check specialist, patient appointment router",
+      "returns": "score",
+      "model": "fast",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.85",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "income",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 4000
+      },
+      "imported_from": "pack healthcare.appointment_router"
+    },
+    {
+      "name": "appt.UrgentDesk",
+      "role": "Urgent desk specialist, patient appointment router",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.85",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "income",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 4000
+      },
+      "imported_from": "pack healthcare.appointment_router"
+    },
+    {
+      "name": "triage.Extractor",
+      "role": "Extractor specialist, clinical note triage",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "kb.search"
+      ],
+      "human_oversight": "reviewed when confidence < 0.85",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "income",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack healthcare.clinical_triage"
+    },
+    {
+      "name": "triage.Referral",
+      "role": "Referral specialist, clinical note triage",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.85",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "income",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack healthcare.clinical_triage"
+    },
+    {
+      "name": "triage.Summariser",
+      "role": "Summariser specialist, clinical note triage",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.85",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "income",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack healthcare.clinical_triage"
+    },
+    {
+      "name": "triage.UrgencyScorer",
+      "role": "Urgency scorer specialist, clinical note triage",
+      "returns": "score",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.9",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "income",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack healthcare.clinical_triage"
+    }
+  ],
+  "tools": [
+    {
+      "name": "beds.availability",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Free beds by ward (ICU, HDU, cardiac, general, paediatric)"
+    },
+    {
+      "name": "kb.search",
+      "kind": "built-in",
+      "trusted": true,
+      "description": "Search the organisation's knowledge base of .txt and .md documents"
+    }
+  ],
+  "streams": [],
+  "circuits": [],
+  "human_oversight": [
+    "BedManager: reviewed when confidence < 0.85",
+    "ClinicianSignOff: every result is reviewed",
+    "appt.RoutineDesk: reviewed when confidence < 0.85",
+    "appt.ToneCheck: reviewed when confidence < 0.85",
+    "appt.UrgencyCheck: reviewed when confidence < 0.85",
+    "appt.UrgentDesk: reviewed when confidence < 0.85",
+    "triage.Extractor: reviewed when confidence < 0.85",
+    "triage.Referral: reviewed when confidence < 0.85",
+    "triage.Summariser: reviewed when confidence < 0.85",
+    "triage.UrgencyScorer: reviewed when confidence < 0.9"
+  ],
+  "data_protection": {
+    "redact_pii": "all agents",
+    "forbidden_attributes": [
+      "caste",
+      "gender",
+      "income",
+      "religion"
+    ],
+    "retention_days": {
+      "audit": 3650,
+      "traces": 90
+    }
+  },
+  "evaluation": {
+    "cases": 2,
+    "fairness": [
+      {
+        "eval": "trust",
+        "case": "chest pain",
+        "attribute": "religion",
+        "values": [
+          "Muslim",
+          "Hindu",
+          "Christian",
+          "Sikh"
+        ]
+      },
+      {
+        "eval": "trust",
+        "case": "chest pain",
+        "attribute": "gender",
+        "values": [
+          "woman",
+          "man"
+        ]
+      },
+      {
+        "eval": "trust",
+        "case": "child with fever",
+        "attribute": "caste",
+        "values": [
+          "Dalit",
+          "Brahmin",
+          "OBC"
+        ]
+      }
+    ],
+    "robustness": [
+      {
+        "eval": "trust",
+        "case": "chest pain",
+        "perturbations": [
+          "typos",
+          "paraphrase",
+          "reorder"
+        ],
+        "consistency": ">= 0.9"
+      },
+      {
+        "eval": "trust",
+        "case": "child with fever",
+        "perturbations": [
+          "typos",
+          "paraphrase",
+          "reorder"
+        ],
+        "consistency": ">= 0.9"
+      }
+    ],
+    "explanations_checked": true
+  },
+  "limitations": [
+    "Generated from the source code: it documents design-time safeguards and test coverage, not measured real-world performance.",
+    "Offline evals use a deterministic mock model; repeat them with `algo eval --live` before deployment.",
+    "Protected attributes are withheld by keyword. Proxies such as names, postcodes or schools can still carry them; counterfactual fairness tests measure the effect."
+  ]
+}

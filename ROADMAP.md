@@ -1,14 +1,16 @@
 # AlgoLang roadmap
 
-**Current release: v0.3.3** (quantum circuits and four quantum applications) · **Next: v0.4 — Trustworthy AI** · **Then: v0.5 — Quantum AI**
+**Current release: v0.4.0 — Trustworthy AI** · **Next: v0.5 — Quantum AI** · **Then: v0.6 — Interoperability, v1.0 — native runtime**
 
 AlgoProfessor AI R&D Solutions, Hyderabad. Designed by Dr. S. Satyanarayana. [www.algoprofessor.com](https://www.algoprofessor.com)
 
 ---
 
-## 1. Objective of v0.4
+## 1. v0.4 Trustworthy AI (released in 0.4.0)
 
 **Make trustworthiness something an AlgoLang program can prove, not just claim.**
+
+> **Status: released in v0.4.0.** All ten work packages below shipped, with tests (`tests/test_trust.py`), a CI job that builds and tamper-tests evidence packs, and four high-risk enterprise programs that compile under `risk high`. Where the shipped syntax differs from the sketch, the sketch has been updated. The compiler errors are **E125–E130** (E122–E124 were taken by streams, quantum tools and circuits).
 
 v0.1–v0.3 made agentic AI *governed*: policies, audit chains, human review, uncertainty and budgets. v0.4 makes it *trustworthy by evidence*. The compiler will check that each safeguard a system needs is present, and the runtime and `eval` blocks will produce evidence that it worked. An auditor, regulator or customer can then read that evidence.
 
@@ -107,6 +109,8 @@ policy { redact pii  retain audit 180 days  retain traces 30 days }
 tool web.fetch from mcp "browser" untrusted
 ```
 
+- Shipped: fencing of untrusted output (instruction-like lines removed and recorded, size limit, data markers), live-model instructions never to follow fenced text, and MCP server pinning with `"sha256"` in `mcp_servers`. Network sandboxing of tool code stays the job of the host (containers, firewalls).
+
 - Output from untrusted tools is fenced as data, scanned for prompt-injection patterns and size-limited. Instructions inside it are never followed.
 - Tools are deny-by-default for network and file access. MCP servers can be pinned to a version and a hash.
 - **Done when:** a red-team suite of injection payloads cannot change a flow's decision.
@@ -139,8 +143,8 @@ risk high "Credit decisions about individuals"     // program header
 | `limited` | a system card and a disclosure that users are talking to AI |
 | `high` | everything above, plus human oversight on every decision, `explain`, `redact pii`, fairness and robustness evals, signed audit logs |
 
-- New errors: **E124** (high-risk program without human oversight), **E125** (without fairness evals), **E126** (without explain), **E127** (forbidden attribute reachable through a tool). E122 and E123 are now used by streams and quantum tools.
-- **Done when:** all nine enterprise applications declare a risk level and compile under it.
+- Errors (as shipped): **E125** high-risk flow without human oversight · **E126** without fairness or robustness evals · **E127** an agent without `redact pii`, or a reviewed decision without `explain with evidence` · **E128** forbidden attribute reachable through a tool · **E129** risk declaration problems (unknown level, missing `disclose` or purpose, high risk without signed audit) · **E130** trust value errors.
+- **Done:** all 25 programs in the ten enterprise applications declare a risk level and compile under it; four are high risk.
 
 ### WP10 · Assurance reporting
 
@@ -154,7 +158,7 @@ algo trust report enterprise-apps/bank-credit-onboarding
 
 ---
 
-## 4. Already in place (v0.1 – v0.3.2)
+## 4. Foundations from v0.1 – v0.3.4
 
 | Trustworthy-AI property | Shipped |
 |---|---|

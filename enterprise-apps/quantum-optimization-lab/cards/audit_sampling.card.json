@@ -1,0 +1,110 @@
+{
+  "card": "AlgoLang AI system card",
+  "card_version": 1,
+  "algolang": "0.4.0",
+  "program": "audit_sampling",
+  "source": "audit_sampling.algo",
+  "source_sha256": "276e1bda56b484a90f91ba4d81c5146fa015258ebe08267073f15450a5887f5d",
+  "purpose": "Random selection of vouchers for internal audit",
+  "risk_level": "minimal",
+  "disclosure": null,
+  "flows": [
+    {
+      "name": "main",
+      "inputs": [
+        "period"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "AuditPlan",
+      "role": "Internal auditor",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "kb.search"
+      ],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "gender",
+        "pan_number",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Sampler",
+      "role": "Internal audit sampler",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "quantum.random"
+      ],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "gender",
+        "pan_number",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    }
+  ],
+  "tools": [
+    {
+      "name": "kb.search",
+      "kind": "built-in",
+      "trusted": true,
+      "description": "Search the organisation's knowledge base of .txt and .md documents"
+    },
+    {
+      "name": "quantum.random",
+      "kind": "built-in quantum",
+      "trusted": true,
+      "description": "Random bits (\"64 bits\") or a random sample (\"pick 5 of 120\") from qubits"
+    }
+  ],
+  "streams": [],
+  "circuits": [],
+  "human_oversight": [
+    "AuditPlan: reviewed when confidence < 0.8",
+    "Sampler: reviewed when confidence < 0.8"
+  ],
+  "data_protection": {
+    "redact_pii": "no agents",
+    "forbidden_attributes": [
+      "aadhaar",
+      "caste",
+      "gender",
+      "pan_number",
+      "religion"
+    ],
+    "retention_days": {}
+  },
+  "evaluation": {
+    "cases": 1,
+    "fairness": [],
+    "robustness": [],
+    "explanations_checked": false
+  },
+  "limitations": [
+    "Generated from the source code: it documents design-time safeguards and test coverage, not measured real-world performance.",
+    "Offline evals use a deterministic mock model; repeat them with `algo eval --live` before deployment.",
+    "Protected attributes are withheld by keyword. Proxies such as names, postcodes or schools can still carry them; counterfactual fairness tests measure the effect.",
+    "Fairness has not been tested (no `expect fair` case).",
+    "Robustness has not been tested (no `expect robust` case).",
+    "Quantum results come from a simulator unless a hardware backend is configured."
+  ]
+}

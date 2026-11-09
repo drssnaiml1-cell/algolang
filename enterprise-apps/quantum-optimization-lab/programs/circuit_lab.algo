@@ -1,5 +1,6 @@
 // Circuit lab — quantum circuits written in AlgoLang itself, checked by the compiler, run as governed tools.
 // Each `circuit` becomes the tool circuit.Name; `algo quantum export circuit_lab.algo` prints the OpenQASM 2.0.
+risk minimal "Teaching and testing quantum circuits"
 circuit Bell {
     qubits 2
     h q0

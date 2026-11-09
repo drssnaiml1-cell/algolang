@@ -1,0 +1,313 @@
+{
+  "card": "AlgoLang AI system card",
+  "card_version": 1,
+  "algolang": "0.4.0",
+  "program": "strategy_review",
+  "source": "strategy_review.algo",
+  "source_sha256": "4ea962f1128d71289e4f2584f606640ee93c76c56f85802d3b2303d171abf89a",
+  "purpose": "Internal review of trading strategies before paper trading",
+  "risk_level": "minimal",
+  "disclosure": null,
+  "flows": [
+    {
+      "name": "main",
+      "inputs": [
+        "strategy"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "Backtest",
+      "role": "Backtesting analyst, QuantOracle desk",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "backtest.stats"
+      ],
+      "human_oversight": "reviewed when confidence < 0.85",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "client_password",
+        "gender",
+        "pan_number",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000,
+        "budget_cost_usd": 0.05
+      },
+      "imported_from": null
+    },
+    {
+      "name": "DeskPolicy",
+      "role": "Risk and conduct officer",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "kb.search"
+      ],
+      "human_oversight": "reviewed when confidence < 0.85",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "client_password",
+        "gender",
+        "pan_number",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000,
+        "budget_cost_usd": 0.05
+      },
+      "imported_from": null
+    },
+    {
+      "name": "PaperApproval",
+      "role": "Head of trading",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.95",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "client_password",
+        "gender",
+        "pan_number",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000,
+        "budget_cost_usd": 0.05
+      },
+      "imported_from": null
+    },
+    {
+      "name": "Revisions",
+      "role": "Head of trading",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.85",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "client_password",
+        "gender",
+        "pan_number",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000,
+        "budget_cost_usd": 0.05
+      },
+      "imported_from": null
+    },
+    {
+      "name": "Robustness",
+      "role": "Senior quant reviewer",
+      "returns": "uncertain<score>",
+      "model": "smart",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.85",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "client_password",
+        "gender",
+        "pan_number",
+        "religion"
+      ],
+      "samples": 5,
+      "budgets": {
+        "budget_tokens": 6000,
+        "budget_cost_usd": 0.05
+      },
+      "imported_from": null
+    },
+    {
+      "name": "board.Analyst",
+      "role": "Analyst specialist, research note review",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.85",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "client_password",
+        "gender",
+        "pan_number",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 4000
+      },
+      "imported_from": "pack markets.research_review"
+    },
+    {
+      "name": "board.Compliance",
+      "role": "Compliance specialist, research note review",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.85",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "client_password",
+        "gender",
+        "pan_number",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 4000
+      },
+      "imported_from": "pack markets.research_review"
+    },
+    {
+      "name": "board.Editor",
+      "role": "Editor specialist, research note review",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.85",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "client_password",
+        "gender",
+        "pan_number",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 4000
+      },
+      "imported_from": "pack markets.research_review"
+    },
+    {
+      "name": "board.Feedback",
+      "role": "Feedback specialist, research note review",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.85",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "client_password",
+        "gender",
+        "pan_number",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 4000
+      },
+      "imported_from": "pack markets.research_review"
+    },
+    {
+      "name": "board.Reviewers",
+      "role": "Reviewers specialist, research note review",
+      "returns": "score",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.85",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "client_password",
+        "gender",
+        "pan_number",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 4000
+      },
+      "imported_from": "pack markets.research_review"
+    }
+  ],
+  "tools": [
+    {
+      "name": "backtest.stats",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Backtest statistics for a strategy id (STR-###)"
+    },
+    {
+      "name": "kb.search",
+      "kind": "built-in",
+      "trusted": true,
+      "description": "Search the organisation's knowledge base of .txt and .md documents"
+    }
+  ],
+  "streams": [],
+  "circuits": [],
+  "human_oversight": [
+    "Backtest: reviewed when confidence < 0.85",
+    "DeskPolicy: reviewed when confidence < 0.85",
+    "PaperApproval: reviewed when confidence < 0.95",
+    "Revisions: reviewed when confidence < 0.85",
+    "Robustness: reviewed when confidence < 0.85",
+    "board.Analyst: reviewed when confidence < 0.85",
+    "board.Compliance: reviewed when confidence < 0.85",
+    "board.Editor: reviewed when confidence < 0.85",
+    "board.Feedback: reviewed when confidence < 0.85",
+    "board.Reviewers: reviewed when confidence < 0.85"
+  ],
+  "data_protection": {
+    "redact_pii": "no agents",
+    "forbidden_attributes": [
+      "aadhaar",
+      "caste",
+      "client_password",
+      "gender",
+      "pan_number",
+      "religion"
+    ],
+    "retention_days": {}
+  },
+  "evaluation": {
+    "cases": 2,
+    "fairness": [],
+    "robustness": [],
+    "explanations_checked": false
+  },
+  "limitations": [
+    "Generated from the source code: it documents design-time safeguards and test coverage, not measured real-world performance.",
+    "Offline evals use a deterministic mock model; repeat them with `algo eval --live` before deployment.",
+    "Protected attributes are withheld by keyword. Proxies such as names, postcodes or schools can still carry them; counterfactual fairness tests measure the effect.",
+    "Fairness has not been tested (no `expect fair` case).",
+    "Robustness has not been tested (no `expect robust` case)."
+  ]
+}

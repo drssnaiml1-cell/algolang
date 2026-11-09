@@ -304,6 +304,37 @@ algo run programs/route_optimizer.algo --arg "request=data/route_options.csv, cl
 
 Settings in `algo.config.json`: `"quantum": {"qae_bits": 9}` (evaluation qubits for amplitude estimation) and `"pqc": {"quantum_threat_years": 10, "migration_years": 3}`. The years until a quantum computer can break today's public-key cryptography are an assumption: set your organisation's own.
 
+## Step 4g. Trustworthy AI (v0.4)
+
+Try it on the credit desk, a high-risk program:
+
+```bash
+cd enterprise-apps/bank-credit-onboarding
+algo eval programs/loan_decision.algo                      # fairness, robustness and explanation tests
+algo run programs/loan_decision.algo --arg "application=APP-3101 home loan INR 45,00,000, income INR 1,80,000"
+algo review                                                # the decision waits for two credit officers
+algo review approve <id> --reviewer "Priya" --note "affordability checked"
+algo review approve <id> --reviewer "Ravi"  --note "agree"
+algo audit verify runs                                     # every record signed and chained
+algo card programs/*.algo --out cards                      # AI system cards
+algo trust report programs --html trust.html               # ten properties with evidence
+algo evidence export programs/loan_decision.algo --out loan.evidence.zip
+algo evidence verify loan.evidence.zip
+```
+
+| In a program | What it does |
+| --- | --- |
+| `risk high "purpose"` + `disclose "…"` | stricter compile-time rules (E125–E130) |
+| `policy { redact pii }` | personal data masked before any model call |
+| `policy { forbid gender, religion }` | protected values withheld (even misspelt) |
+| `policy { explain with evidence }` | reasons plus quotes that must be real |
+| `policy { require approvals 2 }` · `require human for always` | four-eyes or always-on review |
+| `policy { retain audit 365 days  retain traces 30 days }` | retention, with a verifiable checkpoint |
+| `tool web.fetch untrusted` | fenced tool output |
+| `expect fair across gender ["woman", "man"]` · `expect robust consistency >= 0.9` · `expect explained` | trust tests in `eval` blocks |
+
+In `algo.config.json`: `"audit": {"sign": true, "public_keys": ["…"]}` (run `algo keys init` once), `"retention": {"audit_days": 180, "traces_days": 30}`, `"fairness_tolerance": 0.05`, `"protected_values": {"caste": ["…"]}`, and `"sha256"` on an MCP server to pin it.
+
 ## Step 5. Live mode with real Claude (optional)
 
 By default agents are offline test agents, which give the same answer for the same input. To call real Claude models:

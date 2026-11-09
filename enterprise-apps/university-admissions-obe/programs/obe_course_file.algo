@@ -1,4 +1,5 @@
 // NBA / NAAC course file — CO-PO mapping matrix plus a Bloom-balanced question paper.
+risk minimal "Course-file drafting for faculty"
 use pack education.outcome_mapping as obe
 use pack education.question_bank as qb
 tool kb.search

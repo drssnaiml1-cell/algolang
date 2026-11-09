@@ -1,0 +1,201 @@
+{
+  "card": "AlgoLang AI system card",
+  "card_version": 1,
+  "algolang": "0.4.0",
+  "program": "welfare_check",
+  "source": "welfare_check.algo",
+  "source_sha256": "4c1370684da7bdd4f589ec4f75c7703dcd7cc72f55eb3f2b61384f42174a6a17",
+  "purpose": "Pre-checking citizens' eligibility for welfare schemes",
+  "risk_level": "high",
+  "disclosure": "Your eligibility was pre-checked by an AI system. A scheme officer makes the decision, and you can ask for the reasons.",
+  "flows": [
+    {
+      "name": "main",
+      "inputs": [
+        "application"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "OfficerDecision",
+      "role": "Scheme officer decision record",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "every result is reviewed",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "wf.Eligibility",
+      "role": "Eligibility specialist, welfare scheme eligibility",
+      "returns": "score",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.9",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack government.welfare_eligibility"
+    },
+    {
+      "name": "wf.Extractor",
+      "role": "Extractor specialist, welfare scheme eligibility",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "kb.search"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack government.welfare_eligibility"
+    },
+    {
+      "name": "wf.Notice",
+      "role": "Notice specialist, welfare scheme eligibility",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack government.welfare_eligibility"
+    },
+    {
+      "name": "wf.Rules",
+      "role": "Rules specialist, welfare scheme eligibility",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack government.welfare_eligibility"
+    }
+  ],
+  "tools": [
+    {
+      "name": "kb.search",
+      "kind": "built-in",
+      "trusted": true,
+      "description": "Search the organisation's knowledge base of .txt and .md documents"
+    }
+  ],
+  "streams": [],
+  "circuits": [],
+  "human_oversight": [
+    "OfficerDecision: every result is reviewed",
+    "wf.Eligibility: reviewed when confidence < 0.9",
+    "wf.Extractor: reviewed when confidence < 0.75",
+    "wf.Notice: reviewed when confidence < 0.75",
+    "wf.Rules: reviewed when confidence < 0.75"
+  ],
+  "data_protection": {
+    "redact_pii": "all agents",
+    "forbidden_attributes": [
+      "caste",
+      "gender",
+      "nationality",
+      "religion"
+    ],
+    "retention_days": {
+      "audit": 2555,
+      "traces": 90
+    }
+  },
+  "evaluation": {
+    "cases": 1,
+    "fairness": [
+      {
+        "eval": "trust",
+        "case": "pension application",
+        "attribute": "religion",
+        "values": [
+          "Hindu",
+          "Muslim",
+          "Christian",
+          "Sikh",
+          "Buddhist"
+        ]
+      },
+      {
+        "eval": "trust",
+        "case": "pension application",
+        "attribute": "caste",
+        "values": [
+          "Dalit",
+          "Brahmin",
+          "OBC"
+        ]
+      }
+    ],
+    "robustness": [
+      {
+        "eval": "trust",
+        "case": "pension application",
+        "perturbations": [
+          "typos",
+          "paraphrase",
+          "reorder"
+        ],
+        "consistency": ">= 0.9"
+      }
+    ],
+    "explanations_checked": true
+  },
+  "limitations": [
+    "Generated from the source code: it documents design-time safeguards and test coverage, not measured real-world performance.",
+    "Offline evals use a deterministic mock model; repeat them with `algo eval --live` before deployment.",
+    "Protected attributes are withheld by keyword. Proxies such as names, postcodes or schools can still carry them; counterfactual fairness tests measure the effect."
+  ]
+}

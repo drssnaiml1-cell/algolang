@@ -4,6 +4,32 @@ All notable changes to AlgoLang are documented here. The format follows [Keep a 
 
 ## [Unreleased]
 
+## [0.4.0] — 2026-11-09 · Trustworthy AI
+
+v0.4 makes trustworthiness something a program can prove. The compiler checks that each safeguard a system needs is present, the runtime enforces it, `eval` blocks measure it, and the toolchain writes the evidence an auditor reads.
+
+### Added
+- **Risk levels.** `risk minimal | limited "purpose" | high "purpose"` and `disclose "…"`. Limited and high risk need a disclosure. High risk also needs, at compile time: human oversight in every flow (**E125**), fairness and robustness tests (**E126**), `redact pii` on every agent and `explain with evidence` on every reviewed decision (**E127**), a stated purpose and signed audit logs (**E129**). The runtime refuses to run a high-risk program whose audit log is not signed.
+- **Privacy.** `redact pii` masks names, emails, phone numbers, Aadhaar, PAN, IFSC, passport, account and card numbers (Luhn-checked) and dates of birth before any prompt is built. Trusted tools still receive the real values, and their answers are masked again, including any value already seen. `forbid <attribute>` now also withholds that attribute's values (female, Hindu, married, aged 45 …), even when misspelt. `retain audit|traces N days` drops older records after each run; a signed checkpoint keeps the audit chain verifiable. An org can set `"redact_pii": true`, `"retention"` and `"protected_values"` in `algo.config.json`.
+- **Explainability.** `explain` (reasons) and `explain with evidence` (reasons plus quotes). Quotes that are not in the agent's inputs or tool results are asked for again, then the result goes to a person. Reasons and evidence are stored in the audit log and returned on `Result.reasons` / `Result.evidence`.
+- **Security.** `tool x untrusted` (also with `from mcp`): output is size-limited, instruction-like lines are removed and recorded, and the text is wrapped as data that live models are told never to obey. MCP servers can be pinned with `"sha256"` in `mcp_servers`; a changed server program is refused before it starts.
+- **Human oversight.** `require human for always` and `require approvals N` (different named reviewers; four-eyes = 2). `algo review approve … --override "…"` records a corrected answer. Every reviewer decision is also written into the run's own audit chain. Studio shows the reason and approval progress.
+- **Accountability.** `"audit": {"sign": true}` signs every audit record with Ed25519 (built-in RFC 8032 implementation; uses the `cryptography` package when installed). `algo keys init` creates the key (git-ignored); `"public_keys"` pins trusted keys; `ALGO_AUDIT_KEY` supplies a key from a secret store. `algo audit verify` checks hashes, links and signatures.
+- **Fairness and robustness tests.** `expect fair across <attribute> [values]` reruns a case once per value and requires the same decision and scores within `fairness_tolerance` (default 0.05). `expect robust (typos, paraphrase, reorder, case, spacing) consistency >= x` reruns it with meaning-preserving changes; numbers, IDs and codes are never altered. `expect explained` requires every explanation to be grounded. Offline, the mock behaves like an ideal model, so these tests measure the program; with `--live` they measure the model.
+- **`algo card`**: an AI system card (Markdown + JSON) generated from the source: purpose, risk level, disclosure, agents, tools, oversight, data protection, tests and known limitations. `--check` fails when a committed card is stale.
+- **`algo trust report`**: ten trustworthy-AI properties per program (met, gap, fail, not tested, not required), with evidence, mapped to NIST AI RMF functions and EU AI Act articles, as text, JSON or HTML.
+- **`algo evidence export | verify`**: a signed zip with the source, config, system card, eval results, audit logs, review queue, traces and trust report; verification checks every file hash, the manifest signature and every audit chain.
+- **`algo retention`** applies the organisation's retention limits on demand.
+- **Enterprise applications.** All 25 programs declare a risk level. Credit decisions, university admissions, ER triage and welfare eligibility are high risk and meet every rule, with four-eyes or always-on review, fairness tests across gender, religion, caste and marital status, robustness tests and signed audit logs. Six more programs are limited risk and disclose AI use. Every program ships a generated system card in its app's `cards/` folder.
+- `tests/test_trust.py` (24 tests: RFC 8032 vectors, PII never reaching a backend, injection that cannot flip a guard, four-eyes approval, tampering, retention, fairness and robustness, cards, reports and evidence packs). A CI job runs them with the built-in Ed25519, builds trust reports for all ten apps, and verifies and then tampers with the evidence packs of the four high-risk programs.
+- **Language manual v0.4** (`docs/AlgoLang_Documentation_v0.4.pdf`, 98 pages): a new *Trustworthy AI* chapter, a summary of the 0.3.1–0.3.4 features, and error codes E122–E130.
+- Figures: a new *What's new* figure for the ten properties, updated governance, roadmap and layout figures, and risk-level chips on every application figure. Editor support: v0.4 keywords, hover help and snippets.
+
+### Changed
+- A program's `policy { }` block now also applies its trust rules (`redact pii`, `forbid`, `explain`, `retain`) to agents imported with `use`.
+- Eval runs keep their own audit log and review queue (`runs/eval/`), so they no longer fill the real review queue.
+- `ROADMAP.md`: v0.4 is released; v0.5 Quantum AI is next.
+
 ## [0.3.4] — 2026-11-09
 
 ### Added

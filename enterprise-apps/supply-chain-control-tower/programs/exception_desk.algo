@@ -1,4 +1,5 @@
 // Konark control tower — shipment exception → tracking + stock impact → critical? → recovery plan.
+risk minimal "Shipment exception handling for the control tower"
 use pack supplychain.shipment_exceptions as ex
 use pack supplychain.route_disruption as rd
 tool shipment.track

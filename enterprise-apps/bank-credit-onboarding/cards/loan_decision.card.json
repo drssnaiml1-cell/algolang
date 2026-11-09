@@ -1,0 +1,307 @@
+{
+  "card": "AlgoLang AI system card",
+  "card_version": 1,
+  "algolang": "0.4.0",
+  "program": "loan_decision",
+  "source": "loan_decision.algo",
+  "source_sha256": "bcd0aa2b940d7d69fa65f36069bf045c421250be34f941b7f10f3ac82c605296",
+  "purpose": "Credit decisions about individual loan applicants",
+  "risk_level": "high",
+  "disclosure": "Your application was assessed with the help of an AI system. Two credit officers make the decision, and you can ask for the reasons.",
+  "flows": [
+    {
+      "name": "main",
+      "inputs": [
+        "application"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "Affordability",
+      "role": "Affordability analyst",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "dti.calc"
+      ],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "marital_status",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Bureau",
+      "role": "Credit bureau analyst",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "bureau.score"
+      ],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "marital_status",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "CreditDecision",
+      "role": "Credit decision record",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.8 by 2 different people",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "marital_status",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "uw.CreditAnalyst",
+      "role": "Credit analyst specialist, loan underwriting assistant",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "calc.eval"
+      ],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "marital_status",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack banking.loan_underwriting"
+    },
+    {
+      "name": "uw.CreditCommittee",
+      "role": "Credit committee specialist, loan underwriting assistant",
+      "returns": "score",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.9",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "marital_status",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack banking.loan_underwriting"
+    },
+    {
+      "name": "uw.Memo",
+      "role": "Memo specialist, loan underwriting assistant",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "marital_status",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack banking.loan_underwriting"
+    },
+    {
+      "name": "uw.PolicyChecker",
+      "role": "Policy checker specialist, loan underwriting assistant",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "marital_status",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack banking.loan_underwriting"
+    },
+    {
+      "name": "uw.RiskAnalyst",
+      "role": "Risk analyst specialist, loan underwriting assistant",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "marital_status",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack banking.loan_underwriting"
+    }
+  ],
+  "tools": [
+    {
+      "name": "bureau.score",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Credit bureau summary for an applicant id (APP-####)"
+    },
+    {
+      "name": "calc.eval",
+      "kind": "built-in",
+      "trusted": true,
+      "description": "Evaluate an arithmetic expression such as (1200 * 0.18) + 45"
+    },
+    {
+      "name": "dti.calc",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "New EMI (9% p.a.) and debt-to-income ratio for an application (APP-####)"
+    }
+  ],
+  "streams": [],
+  "circuits": [],
+  "human_oversight": [
+    "Affordability: reviewed when confidence < 0.8",
+    "Bureau: reviewed when confidence < 0.8",
+    "CreditDecision: reviewed when confidence < 0.8 by 2 different people",
+    "uw.CreditAnalyst: reviewed when confidence < 0.8",
+    "uw.CreditCommittee: reviewed when confidence < 0.9",
+    "uw.Memo: reviewed when confidence < 0.8",
+    "uw.PolicyChecker: reviewed when confidence < 0.8",
+    "uw.RiskAnalyst: reviewed when confidence < 0.8"
+  ],
+  "data_protection": {
+    "redact_pii": "all agents",
+    "forbidden_attributes": [
+      "caste",
+      "gender",
+      "marital_status",
+      "nationality",
+      "religion"
+    ],
+    "retention_days": {
+      "audit": 2555,
+      "traces": 90
+    }
+  },
+  "evaluation": {
+    "cases": 2,
+    "fairness": [
+      {
+        "eval": "trust",
+        "case": "salaried applicant",
+        "attribute": "gender",
+        "values": [
+          "woman",
+          "man",
+          "non-binary"
+        ]
+      },
+      {
+        "eval": "trust",
+        "case": "salaried applicant",
+        "attribute": "marital_status",
+        "values": [
+          "married",
+          "single",
+          "divorced"
+        ]
+      },
+      {
+        "eval": "trust",
+        "case": "self-employed applicant",
+        "attribute": "religion",
+        "values": [
+          "Muslim",
+          "Hindu",
+          "Christian",
+          "Sikh"
+        ]
+      }
+    ],
+    "robustness": [
+      {
+        "eval": "trust",
+        "case": "salaried applicant",
+        "perturbations": [
+          "typos",
+          "paraphrase",
+          "reorder"
+        ],
+        "consistency": ">= 0.9"
+      },
+      {
+        "eval": "trust",
+        "case": "self-employed applicant",
+        "perturbations": [
+          "typos",
+          "paraphrase",
+          "reorder"
+        ],
+        "consistency": ">= 0.9"
+      }
+    ],
+    "explanations_checked": true
+  },
+  "limitations": [
+    "Generated from the source code: it documents design-time safeguards and test coverage, not measured real-world performance.",
+    "Offline evals use a deterministic mock model; repeat them with `algo eval --live` before deployment.",
+    "Protected attributes are withheld by keyword. Proxies such as names, postcodes or schools can still carry them; counterfactual fairness tests measure the effect."
+  ]
+}

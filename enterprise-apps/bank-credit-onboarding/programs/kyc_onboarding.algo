@@ -1,5 +1,7 @@
 // Deccan Bank KYC onboarding — document check, sanctions screening, risk rating, outcome.
 // The input names the customer file under data/, e.g. "kyc/CUST-5501.txt for Asha Rao".
+risk limited "Customer due-diligence support for bank onboarding staff"
+disclose "This onboarding assessment was prepared with an AI system and is checked by bank staff."
 use pack banking.kyc_review as kyc
 tool sanctions.screen
 

@@ -1,0 +1,272 @@
+{
+  "card": "AlgoLang AI system card",
+  "card_version": 1,
+  "algolang": "0.4.0",
+  "program": "obe_course_file",
+  "source": "obe_course_file.algo",
+  "source_sha256": "6b942a48e70dc31ca0767665ed8de65f5c378939690400cdd4ee6121d4b7ce5e",
+  "purpose": "Course-file drafting for faculty",
+  "risk_level": "minimal",
+  "disclosure": null,
+  "flows": [
+    {
+      "name": "main",
+      "inputs": [
+        "course"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "OBEGuide",
+      "role": "IQAC accreditation coordinator",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "kb.search"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "income",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "obe.Alignment",
+      "role": "Alignment specialist, course outcome mapping",
+      "returns": "score",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "income",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 3000
+      },
+      "imported_from": "pack education.outcome_mapping"
+    },
+    {
+      "name": "obe.Mapper",
+      "role": "Mapper specialist, course outcome mapping",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "income",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 3000
+      },
+      "imported_from": "pack education.outcome_mapping"
+    },
+    {
+      "name": "obe.Matrix",
+      "role": "Matrix specialist, course outcome mapping",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "income",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 3000
+      },
+      "imported_from": "pack education.outcome_mapping"
+    },
+    {
+      "name": "obe.Outcomes",
+      "role": "Outcomes specialist, course outcome mapping",
+      "returns": "list",
+      "model": "fast",
+      "tools": [
+        "file.read"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "income",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 3000
+      },
+      "imported_from": "pack education.outcome_mapping"
+    },
+    {
+      "name": "qb.Coverage",
+      "role": "Coverage specialist, exam question bank",
+      "returns": "score",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "income",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 4000
+      },
+      "imported_from": "pack education.question_bank"
+    },
+    {
+      "name": "qb.Paper",
+      "role": "Paper specialist, exam question bank",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "income",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 4000
+      },
+      "imported_from": "pack education.question_bank"
+    },
+    {
+      "name": "qb.Setter",
+      "role": "Setter specialist, exam question bank",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "income",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 4000
+      },
+      "imported_from": "pack education.question_bank"
+    },
+    {
+      "name": "qb.Units",
+      "role": "Units specialist, exam question bank",
+      "returns": "list",
+      "model": "fast",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "income",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 4000
+      },
+      "imported_from": "pack education.question_bank"
+    }
+  ],
+  "tools": [
+    {
+      "name": "file.read",
+      "kind": "built-in",
+      "trusted": true,
+      "description": "Read a text file from the organisation's workspace (path relative to it)"
+    },
+    {
+      "name": "kb.search",
+      "kind": "built-in",
+      "trusted": true,
+      "description": "Search the organisation's knowledge base of .txt and .md documents"
+    }
+  ],
+  "streams": [],
+  "circuits": [],
+  "human_oversight": [
+    "OBEGuide: reviewed when confidence < 0.75",
+    "obe.Alignment: reviewed when confidence < 0.75",
+    "obe.Mapper: reviewed when confidence < 0.75",
+    "obe.Matrix: reviewed when confidence < 0.75",
+    "obe.Outcomes: reviewed when confidence < 0.75",
+    "qb.Coverage: reviewed when confidence < 0.8",
+    "qb.Paper: reviewed when confidence < 0.75",
+    "qb.Setter: reviewed when confidence < 0.75",
+    "qb.Units: reviewed when confidence < 0.75"
+  ],
+  "data_protection": {
+    "redact_pii": "no agents",
+    "forbidden_attributes": [
+      "caste",
+      "gender",
+      "income",
+      "nationality",
+      "religion"
+    ],
+    "retention_days": {}
+  },
+  "evaluation": {
+    "cases": 0,
+    "fairness": [],
+    "robustness": [],
+    "explanations_checked": false
+  },
+  "limitations": [
+    "Generated from the source code: it documents design-time safeguards and test coverage, not measured real-world performance.",
+    "Offline evals use a deterministic mock model; repeat them with `algo eval --live` before deployment.",
+    "Protected attributes are withheld by keyword. Proxies such as names, postcodes or schools can still carry them; counterfactual fairness tests measure the effect.",
+    "Fairness has not been tested (no `expect fair` case).",
+    "Robustness has not been tested (no `expect robust` case)."
+  ]
+}

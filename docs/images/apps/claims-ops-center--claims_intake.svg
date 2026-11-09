@@ -31,10 +31,11 @@
   <text x="40" y="72" fill="#f4f1e8" font-size="26" font-weight="700">NovaShield Claims Operations Center</text>
   <text x="40" y="96" fill="#c9b98a" font-size="16">first notice of loss to a governed decision.</text>
   
-<rect x="40" y="110" width="118" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".55"/><text x="99" y="127" fill="#f1dc94" font-size="12.5" text-anchor="middle">10 agent calls</text>
-<rect x="168" y="110" width="67" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".55"/><text x="202" y="127" fill="#f1dc94" font-size="12.5" text-anchor="middle">3 tools</text>
-<rect x="245" y="110" width="89" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".55"/><text x="290" y="127" fill="#f1dc94" font-size="12.5" text-anchor="middle">1 decision</text>
-<rect x="344" y="110" width="111" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".55"/><text x="400" y="127" fill="#f1dc94" font-size="12.5" text-anchor="middle">3 human gates</text>
+<rect x="40" y="110" width="104" height="24" rx="12" fill="#e9c75a" fill-opacity=".13" stroke="#e9c75a" stroke-opacity=".75"/><text x="92" y="127" fill="#e9c75a" font-size="12.5" font-weight="700" text-anchor="middle">limited risk</text>
+<rect x="154" y="110" width="118" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".75"/><text x="213" y="127" fill="#f1dc94" font-size="12.5" font-weight="400" text-anchor="middle">10 agent calls</text>
+<rect x="282" y="110" width="67" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".75"/><text x="315" y="127" fill="#f1dc94" font-size="12.5" font-weight="400" text-anchor="middle">3 tools</text>
+<rect x="359" y="110" width="89" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".75"/><text x="403" y="127" fill="#f1dc94" font-size="12.5" font-weight="400" text-anchor="middle">1 decision</text>
+<rect x="458" y="110" width="111" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".75"/><text x="513" y="127" fill="#f1dc94" font-size="12.5" font-weight="400" text-anchor="middle">3 human gates</text>
 <path id="e0" d="M173.0 266.0 C 190.0 266.0, 190.0 224.0, 207.0 224.0" class="wire"/>
 <path id="e1" d="M173.0 266.0 C 190.0 266.0, 190.0 308.0, 207.0 308.0" class="wire"/>
 <path id="e2" d="M323.0 224.0 C 340.0 224.0, 340.0 182.0, 357.0 182.0" class="wire"/>

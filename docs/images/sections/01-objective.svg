@@ -54,7 +54,7 @@
 <rect x="527.2" y="124" width="225.6" height="118" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.24s"/>
 <circle cx="553.2" cy="152" r="15" fill="url(#gold)"/><text x="553.2" y="157" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">3</text>
 <text x="577.2" y="157" fill="#f4f1e8" font-size="16" font-weight="700">Safe before run</text>
-<text x="545.2" y="186" fill="#c9b98a" font-size="13.5">25 compile-time checks</text>
+<text x="545.2" y="186" fill="#c9b98a" font-size="13.5">31 compile-time checks</text>
 <text x="545.2" y="205" fill="#c9b98a" font-size="13.5">stop unsafe programs</text>
 <text x="545.2" y="224" fill="#c9b98a" font-size="13.5">before any call.</text>
 </g>
@@ -73,8 +73,8 @@
 <circle cx="1040.4" cy="152" r="15" fill="url(#gold)"/><text x="1040.4" y="157" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">5</text>
 <text x="1064.4" y="157" fill="#f4f1e8" font-size="16" font-weight="700">Accountability</text>
 <text x="1032.4" y="186" fill="#c9b98a" font-size="13.5">Confidence, provenance</text>
-<text x="1032.4" y="205" fill="#c9b98a" font-size="13.5">and a hash-chained audit</text>
-<text x="1032.4" y="224" fill="#c9b98a" font-size="13.5">log for every call.</text>
+<text x="1032.4" y="205" fill="#c9b98a" font-size="13.5">and an Ed25519-signed,</text>
+<text x="1032.4" y="224" fill="#c9b98a" font-size="13.5">hash-chained audit log.</text>
 </g>
 <g class="rise" style="animation-delay:0.40s">
 <rect x="40.0" y="260" width="225.6" height="118" rx="12" class="card"/>
@@ -116,10 +116,10 @@
 <rect x="1014.4" y="260" width="225.6" height="118" rx="12" class="card"/>
 <rect x="1014.4" y="260" width="225.6" height="118" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:1.08s"/>
 <circle cx="1040.4" cy="288" r="15" fill="url(#gold)"/><text x="1040.4" y="293" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">10</text>
-<text x="1064.4" y="293" fill="#f4f1e8" font-size="16" font-weight="700">Teachable, testable</text>
-<text x="1032.4" y="322" fill="#c9b98a" font-size="13.5">Offline backend, eval</text>
-<text x="1032.4" y="341" fill="#c9b98a" font-size="13.5">blocks, replayable</text>
-<text x="1032.4" y="360" fill="#c9b98a" font-size="13.5">traces, CI for every app.</text>
+<text x="1064.4" y="293" fill="#f4f1e8" font-size="16" font-weight="700">Trustworthy by evi…</text>
+<text x="1032.4" y="322" fill="#c9b98a" font-size="13.5">Risk levels, fairness and</text>
+<text x="1032.4" y="341" fill="#c9b98a" font-size="13.5">robustness tests, system</text>
+<text x="1032.4" y="360" fill="#c9b98a" font-size="13.5">cards, trust reports.</text>
 </g>
   <text x="1240" y="412" fill="#9aa6c2" fill-opacity=".7" font-size="11" text-anchor="end">AlgoLang · AlgoProfessor AI R&amp;D Solutions</text>
 </svg>

@@ -2,6 +2,7 @@
 // quote ∥ limits → hard-limit guard (deterministic) → risk gate (uncertain, sampled 5×)
 // → paper order ticket for a HUMAN to approve, or rejection.
 // Agents never send orders: a person approves every ticket (require human when confidence < 0.99).
+risk minimal "Internal pre-trade risk gate for paper-trading order intents"
 tool market.quote
 tool risk.limits
 

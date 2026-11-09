@@ -2,6 +2,7 @@
 // backtest facts → quant, risk and compliance reviewers in parallel → robustness (uncertain, sampled)
 // → a FAILING backtest is sent back deterministically; otherwise approve for PAPER trading only when the
 //   robustness score is high AND its samples agree.
+risk minimal "Internal review of trading strategies before paper trading"
 use pack markets.research_review as board
 tool backtest.stats
 tool kb.search

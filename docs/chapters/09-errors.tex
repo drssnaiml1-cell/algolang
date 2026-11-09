@@ -103,6 +103,33 @@ An \kw{eval} block names a flow, an input, an agent, a tool or a status that doe
 \errhead{E121}{Bad policy value}
 An unknown currency in \code{budget cost} (use \code{usd} or \code{inr}), an unknown unit in \code{budget energy} (use \code{wh} or \code{kwh}), or \code{samples} outside 1--15.
 
+\errhead{E122}{Stream block error}
+A \kw{stream} names a flow or an input that does not exist, maps an input from something other than \code{event}, sends results to its own source topic (an endless loop), or sets \code{max in flight} outside 1--256.
+
+\errhead{E123}{Quantum policy or tool error}
+\code{shots} outside 1--100000, or \code{max qubits} outside 1--24.
+
+\errhead{E124}{Circuit block error}
+A \kw{circuit} has no or too many qubits, an unknown gate, the wrong number of qubits or angles, a qubit that does not exist, a bad angle, or the same name as another circuit.
+
+\errhead{E125}{High-risk flow without human oversight}
+A flow in a \code{risk high} program calls no agent whose results a person reviews: add \code{require human when confidence < \ldots}, \code{require human for always} or \code{require approvals N}.
+
+\errhead{E126}{High-risk program without fairness or robustness tests}
+Add \code{expect fair across \ldots} and \code{expect robust \ldots} to an \kw{eval} case.
+
+\errhead{E127}{High-risk agent without masking or explanation}
+Every agent of a high-risk program needs \code{redact pii}, and every reviewed decision needs \code{explain with evidence}. Both can be set once in the program's \kw{policy} block.
+
+\errhead{E128}{Forbidden attribute reachable through a tool}
+An agent forbids an attribute, but one of its tools provides it (by its name or description).
+
+\errhead{E129}{Risk declaration error}
+An unknown risk level; a limited- or high-risk program without \kw{disclose}; a high-risk program without a purpose or without \code{"audit": \{"sign": true\}}.
+
+\errhead{E130}{Trust value error}
+\code{require approvals} outside 1--5; \code{retain} outside 1--3650 days or not \code{audit}/\code{traces}; \code{expect fair} with fewer than two values; an unknown perturbation; or a consistency outside 0--1.
+
 \section{Run-time outcomes}
 
 Some problems can only be detected while the program runs. They are not compile errors; each stops the run with a clear message and an exit code (Chapter~\ref{ch:cli}).

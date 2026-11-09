@@ -34,5 +34,8 @@
   },
   "plugins": [
     "plugins/civic_tools.py"
-  ]
+  ],
+  "audit": {
+    "sign": true
+  }
 }

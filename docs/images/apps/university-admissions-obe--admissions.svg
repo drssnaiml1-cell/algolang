@@ -31,38 +31,46 @@
   <text x="40" y="72" fill="#f4f1e8" font-size="26" font-weight="700">Fair admissions screening</text>
   <text x="40" y="96" fill="#c9b98a" font-size="16">three independent reviewers, a panel score, and a letter.</text>
   
-<rect x="40" y="110" width="111" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".55"/><text x="95" y="127" fill="#f1dc94" font-size="12.5" text-anchor="middle">6 agent calls</text>
-<rect x="161" y="110" width="60" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".55"/><text x="191" y="127" fill="#f1dc94" font-size="12.5" text-anchor="middle">1 tool</text>
-<rect x="231" y="110" width="96" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".55"/><text x="279" y="127" fill="#f1dc94" font-size="12.5" text-anchor="middle">0 decisions</text>
-<rect x="337" y="110" width="104" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".55"/><text x="389" y="127" fill="#f1dc94" font-size="12.5" text-anchor="middle">1 human gate</text>
-<path id="e0" d="M258.0 308.0 C 280.0 308.0, 280.0 182.0, 302.0 182.0" class="wire"/>
-<path id="e1" d="M258.0 308.0 C 280.0 308.0, 280.0 266.0, 302.0 266.0" class="wire"/>
-<path id="e2" d="M258.0 308.0 C 280.0 308.0, 280.0 350.0, 302.0 350.0" class="wire"/>
-<path id="e3" d="M258.0 308.0 C 280.0 308.0, 280.0 434.0, 302.0 434.0" class="wire"/>
-<path id="e4" d="M498.0 266.0 C 520.0 266.0, 520.0 308.0, 542.0 308.0" class="wire"/>
-<path id="e5" d="M498.0 350.0 C 520.0 350.0, 520.0 308.0, 542.0 308.0" class="wire"/>
-<path id="e6" d="M498.0 434.0 C 520.0 434.0, 520.0 308.0, 542.0 308.0" class="wire"/>
-<path id="e7" d="M738.0 308.0 C 760.0 308.0, 760.0 308.0, 782.0 308.0" class="wire"/>
-<path id="e8" d="M498.0 182.0 C 800.5 182.0, 800.5 308.0, 1103.0 308.0" class="wire"/>
-<path id="e9" d="M978.0 308.0 C 1040.5 308.0, 1040.5 308.0, 1103.0 308.0" class="wire"/>
-<g class="rise" style="animation-delay:0.00s"><rect x="62.0" y="287.0" width="196.0" height="42" rx="21" fill="#081428" stroke="#e9c75a" stroke-width="1.6"/><text x="160.0" y="306.0" fill="#f4f1e8" font-size="14.5" font-weight="700" text-anchor="middle">application</text><text x="160.0" y="321.0" fill="#c9b98a" font-size="11" text-anchor="middle">input</text></g>
-<g class="rise" style="animation-delay:0.05s"><rect x="302.0" y="157.0" width="196.0" height="50" rx="10" fill="#0f2547" stroke="#c9a227" stroke-width="1.6"/><text x="400.0" y="178.0" fill="#f4f1e8" font-size="14.5" font-weight="700" text-anchor="middle">SeatDesk</text><text x="400.0" y="195.0" fill="#c9b98a" font-size="11" text-anchor="middle">uses seats.lookup</text>
+<rect x="40" y="110" width="82" height="24" rx="12" fill="#e0705c" fill-opacity=".13" stroke="#e0705c" stroke-opacity=".75"/><text x="81" y="127" fill="#e0705c" font-size="12.5" font-weight="700" text-anchor="middle">high risk</text>
+<rect x="132" y="110" width="111" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".75"/><text x="187" y="127" fill="#f1dc94" font-size="12.5" font-weight="400" text-anchor="middle">7 agent calls</text>
+<rect x="253" y="110" width="60" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".75"/><text x="282" y="127" fill="#f1dc94" font-size="12.5" font-weight="400" text-anchor="middle">1 tool</text>
+<rect x="322" y="110" width="96" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".75"/><text x="371" y="127" fill="#f1dc94" font-size="12.5" font-weight="400" text-anchor="middle">0 decisions</text>
+<rect x="429" y="110" width="111" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".75"/><text x="484" y="127" fill="#f1dc94" font-size="12.5" font-weight="400" text-anchor="middle">2 human gates</text>
+<rect x="550" y="110" width="82" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".75"/><text x="590" y="127" fill="#f1dc94" font-size="12.5" font-weight="400" text-anchor="middle">four-eyes</text>
+<rect x="641" y="110" width="89" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".75"/><text x="686" y="127" fill="#f1dc94" font-size="12.5" font-weight="400" text-anchor="middle">PII masked</text>
+<rect x="740" y="110" width="82" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".75"/><text x="781" y="127" fill="#f1dc94" font-size="12.5" font-weight="400" text-anchor="middle">explained</text>
+<path id="e0" d="M223.0 308.0 C 240.0 308.0, 240.0 182.0, 257.0 182.0" class="wire"/>
+<path id="e1" d="M223.0 308.0 C 240.0 308.0, 240.0 266.0, 257.0 266.0" class="wire"/>
+<path id="e2" d="M223.0 308.0 C 240.0 308.0, 240.0 350.0, 257.0 350.0" class="wire"/>
+<path id="e3" d="M223.0 308.0 C 240.0 308.0, 240.0 434.0, 257.0 434.0" class="wire"/>
+<path id="e4" d="M423.0 266.0 C 440.0 266.0, 440.0 308.0, 457.0 308.0" class="wire"/>
+<path id="e5" d="M423.0 350.0 C 440.0 350.0, 440.0 308.0, 457.0 308.0" class="wire"/>
+<path id="e6" d="M423.0 434.0 C 440.0 434.0, 440.0 308.0, 457.0 308.0" class="wire"/>
+<path id="e7" d="M623.0 308.0 C 640.0 308.0, 640.0 308.0, 657.0 308.0" class="wire"/>
+<path id="e8" d="M823.0 308.0 C 840.0 308.0, 840.0 308.0, 857.0 308.0" class="wire"/>
+<path id="e9" d="M423.0 182.0 C 773.0 182.0, 773.0 308.0, 1123.0 308.0" class="wire"/>
+<path id="e10" d="M1023.0 308.0 C 1073.0 308.0, 1073.0 308.0, 1123.0 308.0" class="wire"/>
+<g class="rise" style="animation-delay:0.00s"><rect x="57.0" y="287.0" width="166.0" height="42" rx="21" fill="#081428" stroke="#e9c75a" stroke-width="1.6"/><text x="140.0" y="306.0" fill="#f4f1e8" font-size="14.5" font-weight="700" text-anchor="middle">application</text><text x="140.0" y="321.0" fill="#c9b98a" font-size="11" text-anchor="middle">input</text></g>
+<g class="rise" style="animation-delay:0.05s"><rect x="257.0" y="157.0" width="166.0" height="50" rx="10" fill="#0f2547" stroke="#c9a227" stroke-width="1.6"/><text x="340.0" y="178.0" fill="#f4f1e8" font-size="14.5" font-weight="700" text-anchor="middle">SeatDesk</text><text x="340.0" y="195.0" fill="#c9b98a" font-size="11" text-anchor="middle">uses seats.lookup</text>
 </g>
-<g class="rise" style="animation-delay:0.10s"><rect x="302.0" y="241.0" width="196.0" height="50" rx="10" fill="#0f2547" stroke="#c9a227" stroke-width="1.6"/><text x="400.0" y="262.0" fill="#f4f1e8" font-size="14.5" font-weight="700" text-anchor="middle">AcademicReviewer</text><text x="400.0" y="279.0" fill="#c9b98a" font-size="11" text-anchor="middle">parallel · par</text>
-<text x="310.0" y="236.0" fill="#e9c75a" font-size="11" font-weight="800">PAR</text>
+<g class="rise" style="animation-delay:0.10s"><rect x="257.0" y="241.0" width="166.0" height="50" rx="10" fill="#0f2547" stroke="#c9a227" stroke-width="1.6"/><text x="340.0" y="262.0" fill="#f4f1e8" font-size="14.5" font-weight="700" text-anchor="middle">AcademicReviewer</text><text x="340.0" y="279.0" fill="#c9b98a" font-size="11" text-anchor="middle">parallel · par</text>
+<text x="265.0" y="236.0" fill="#e9c75a" font-size="11" font-weight="800">PAR</text>
 </g>
-<g class="rise" style="animation-delay:0.15s"><rect x="302.0" y="325.0" width="196.0" height="50" rx="10" fill="#0f2547" stroke="#c9a227" stroke-width="1.6"/><text x="400.0" y="346.0" fill="#f4f1e8" font-size="14.5" font-weight="700" text-anchor="middle">StatementReviewer</text><text x="400.0" y="363.0" fill="#c9b98a" font-size="11" text-anchor="middle">parallel · par</text>
-<text x="310.0" y="320.0" fill="#e9c75a" font-size="11" font-weight="800">PAR</text>
+<g class="rise" style="animation-delay:0.15s"><rect x="257.0" y="325.0" width="166.0" height="50" rx="10" fill="#0f2547" stroke="#c9a227" stroke-width="1.6"/><text x="340.0" y="346.0" fill="#f4f1e8" font-size="14.5" font-weight="700" text-anchor="middle">StatementReviewer</text><text x="340.0" y="363.0" fill="#c9b98a" font-size="11" text-anchor="middle">parallel · par</text>
+<text x="265.0" y="320.0" fill="#e9c75a" font-size="11" font-weight="800">PAR</text>
 </g>
-<g class="rise" style="animation-delay:0.20s"><rect x="302.0" y="409.0" width="196.0" height="50" rx="10" fill="#0f2547" stroke="#c9a227" stroke-width="1.6"/><text x="400.0" y="430.0" fill="#f4f1e8" font-size="14.5" font-weight="700" text-anchor="middle">PotentialReviewer</text><text x="400.0" y="447.0" fill="#c9b98a" font-size="11" text-anchor="middle">parallel · par</text>
-<text x="310.0" y="404.0" fill="#e9c75a" font-size="11" font-weight="800">PAR</text>
+<g class="rise" style="animation-delay:0.20s"><rect x="257.0" y="409.0" width="166.0" height="50" rx="10" fill="#0f2547" stroke="#c9a227" stroke-width="1.6"/><text x="340.0" y="430.0" fill="#f4f1e8" font-size="14.5" font-weight="700" text-anchor="middle">PotentialReviewer</text><text x="340.0" y="447.0" fill="#c9b98a" font-size="11" text-anchor="middle">parallel · par</text>
+<text x="265.0" y="404.0" fill="#e9c75a" font-size="11" font-weight="800">PAR</text>
 </g>
-<g class="rise" style="animation-delay:0.25s"><rect x="542.0" y="283.0" width="196.0" height="50" rx="10" fill="#0f2547" stroke="#c9a227" stroke-width="1.6"/><text x="640.0" y="304.0" fill="#f4f1e8" font-size="14.5" font-weight="700" text-anchor="middle">AdmissionsPanel</text><text x="640.0" y="321.0" fill="#c9b98a" font-size="11" text-anchor="middle">→ verdict</text>
-<g class="pulse"><rect x="680.0" y="272.0" width="54" height="17" rx="8.5" fill="#c9a227"/><text x="707.0" y="284.0" fill="#0e2140" font-size="10" font-weight="800" text-anchor="middle">⚑ human</text></g>
+<g class="rise" style="animation-delay:0.25s"><rect x="457.0" y="283.0" width="166.0" height="50" rx="10" fill="#0f2547" stroke="#c9a227" stroke-width="1.6"/><text x="540.0" y="304.0" fill="#f4f1e8" font-size="14.5" font-weight="700" text-anchor="middle">AdmissionsPanel</text><text x="540.0" y="321.0" fill="#c9b98a" font-size="11" text-anchor="middle">→ verdict</text>
+<g class="pulse"><rect x="565.0" y="272.0" width="54" height="17" rx="8.5" fill="#c9a227"/><text x="592.0" y="284.0" fill="#0e2140" font-size="10" font-weight="800" text-anchor="middle">⚑ human</text></g>
 </g>
-<g class="rise" style="animation-delay:0.30s"><rect x="782.0" y="283.0" width="196.0" height="50" rx="10" fill="#0f2547" stroke="#c9a227" stroke-width="1.6"/><text x="880.0" y="304.0" fill="#f4f1e8" font-size="14.5" font-weight="700" text-anchor="middle">Letter</text><text x="880.0" y="321.0" fill="#c9b98a" font-size="11" text-anchor="middle">→ letter</text>
+<g class="rise" style="animation-delay:0.30s"><rect x="657.0" y="283.0" width="166.0" height="50" rx="10" fill="#0f2547" stroke="#c9a227" stroke-width="1.6"/><text x="740.0" y="304.0" fill="#f4f1e8" font-size="14.5" font-weight="700" text-anchor="middle">Letter</text><text x="740.0" y="321.0" fill="#c9b98a" font-size="11" text-anchor="middle">→ letter</text>
 </g>
-<g style="animation-delay:0.35s"><circle cx="1120.0" cy="308.0" r="17" fill="url(#gold)" class="pulse"/><text x="1120.0" y="312.0" fill="#0e2140" font-size="10.5" font-weight="800" text-anchor="middle">emit</text></g>
+<g class="rise" style="animation-delay:0.35s"><rect x="857.0" y="283.0" width="166.0" height="50" rx="10" fill="#0f2547" stroke="#c9a227" stroke-width="1.6"/><text x="940.0" y="304.0" fill="#f4f1e8" font-size="14.5" font-weight="700" text-anchor="middle">PanelDecision</text><text x="940.0" y="321.0" fill="#c9b98a" font-size="11" text-anchor="middle">→ record</text>
+<g class="pulse"><rect x="965.0" y="272.0" width="54" height="17" rx="8.5" fill="#c9a227"/><text x="992.0" y="284.0" fill="#0e2140" font-size="10" font-weight="800" text-anchor="middle">⚑ human</text></g>
+</g>
+<g style="animation-delay:0.40s"><circle cx="1140.0" cy="308.0" r="17" fill="url(#gold)" class="pulse"/><text x="1140.0" y="312.0" fill="#0e2140" font-size="10.5" font-weight="800" text-anchor="middle">emit</text></g>
 <circle r="4.5" fill="#ffe08a" filter="url(#soft)"><animateMotion dur="1.7s" begin="0.00s" repeatCount="indefinite"><mpath href="#e0"/></animateMotion></circle>
 <circle r="4.5" fill="#ffe08a" filter="url(#soft)"><animateMotion dur="1.7s" begin="0.37s" repeatCount="indefinite"><mpath href="#e1"/></animateMotion></circle>
 <circle r="4.5" fill="#ffe08a" filter="url(#soft)"><animateMotion dur="1.7s" begin="0.74s" repeatCount="indefinite"><mpath href="#e2"/></animateMotion></circle>
@@ -73,6 +81,7 @@
 <circle r="4.5" fill="#ffe08a" filter="url(#soft)"><animateMotion dur="1.7s" begin="0.39s" repeatCount="indefinite"><mpath href="#e7"/></animateMotion></circle>
 <circle r="4.5" fill="#ffe08a" filter="url(#soft)"><animateMotion dur="1.7s" begin="0.76s" repeatCount="indefinite"><mpath href="#e8"/></animateMotion></circle>
 <circle r="4.5" fill="#ffe08a" filter="url(#soft)"><animateMotion dur="1.7s" begin="1.13s" repeatCount="indefinite"><mpath href="#e9"/></animateMotion></circle>
+<circle r="4.5" fill="#ffe08a" filter="url(#soft)"><animateMotion dur="1.7s" begin="1.50s" repeatCount="indefinite"><mpath href="#e10"/></animateMotion></circle>
 <g transform="translate(40,526)"><rect x="0" y="-9" width="26" height="18" rx="5" fill="#0f2547" stroke="#c9a227"/><text x="34" y="5" fill="#9aa6c2" font-size="12.5">agent</text></g>
 <g transform="translate(124.0,526)"><rect x="0" y="-9" width="26" height="18" rx="5" fill="#0f2547" stroke="#e9c75a" stroke-dasharray="4 2"/><text x="34" y="5" fill="#9aa6c2" font-size="12.5">branch agent</text></g>
 <g transform="translate(258.4,526)"><polygon points="13,-10 24,0 13,10 2,0" fill="#0f2547" stroke="#e9c75a"/><text x="34" y="5" fill="#9aa6c2" font-size="12.5">decision</text></g>

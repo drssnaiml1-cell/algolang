@@ -1,0 +1,174 @@
+{
+  "card": "AlgoLang AI system card",
+  "card_version": 1,
+  "algolang": "0.4.0",
+  "program": "nda_triage",
+  "source": "nda_triage.algo",
+  "source_sha256": "b12cf89bb97329faf2b8ee2cf719c335e2aae534dceb45d88849b2d7a6cf5bab",
+  "purpose": "NDA deviation triage for the legal team",
+  "risk_level": "minimal",
+  "disclosure": null,
+  "flows": [
+    {
+      "name": "main",
+      "inputs": [
+        "nda"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "FallbackWording",
+      "role": "Contracts manager",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "clause.library"
+      ],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "nt.Deviation",
+      "role": "Deviation specialist, nda triage",
+      "returns": "score",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 4000
+      },
+      "imported_from": "pack legal.nda_triage"
+    },
+    {
+      "name": "nt.Playbook",
+      "role": "Playbook specialist, nda triage",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 4000
+      },
+      "imported_from": "pack legal.nda_triage"
+    },
+    {
+      "name": "nt.Redlines",
+      "role": "Redlines specialist, nda triage",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 4000
+      },
+      "imported_from": "pack legal.nda_triage"
+    },
+    {
+      "name": "nt.Terms",
+      "role": "Terms specialist, nda triage",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "kb.search"
+      ],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 4000
+      },
+      "imported_from": "pack legal.nda_triage"
+    }
+  ],
+  "tools": [
+    {
+      "name": "clause.library",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Meridian's approved fallback wording for clauses named in the request"
+    },
+    {
+      "name": "kb.search",
+      "kind": "built-in",
+      "trusted": true,
+      "description": "Search the organisation's knowledge base of .txt and .md documents"
+    }
+  ],
+  "streams": [],
+  "circuits": [],
+  "human_oversight": [
+    "FallbackWording: reviewed when confidence < 0.8",
+    "nt.Deviation: reviewed when confidence < 0.8",
+    "nt.Playbook: reviewed when confidence < 0.8",
+    "nt.Redlines: reviewed when confidence < 0.8",
+    "nt.Terms: reviewed when confidence < 0.8"
+  ],
+  "data_protection": {
+    "redact_pii": "no agents",
+    "forbidden_attributes": [
+      "caste",
+      "gender",
+      "nationality",
+      "religion"
+    ],
+    "retention_days": {}
+  },
+  "evaluation": {
+    "cases": 0,
+    "fairness": [],
+    "robustness": [],
+    "explanations_checked": false
+  },
+  "limitations": [
+    "Generated from the source code: it documents design-time safeguards and test coverage, not measured real-world performance.",
+    "Offline evals use a deterministic mock model; repeat them with `algo eval --live` before deployment.",
+    "Protected attributes are withheld by keyword. Proxies such as names, postcodes or schools can still carry them; counterfactual fairness tests measure the effect.",
+    "Fairness has not been tested (no `expect fair` case).",
+    "Robustness has not been tested (no `expect robust` case)."
+  ]
+}

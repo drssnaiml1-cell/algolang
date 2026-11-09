@@ -31,10 +31,11 @@
   <text x="40" y="72" fill="#f4f1e8" font-size="26" font-weight="700">Helix phishing desk</text>
   <text x="40" y="96" fill="#c9b98a" font-size="16">staff forward a suspicious email, the desk checks indicators and advises.</text>
   
-<rect x="40" y="110" width="111" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".55"/><text x="95" y="127" fill="#f1dc94" font-size="12.5" text-anchor="middle">5 agent calls</text>
-<rect x="161" y="110" width="60" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".55"/><text x="191" y="127" fill="#f1dc94" font-size="12.5" text-anchor="middle">1 tool</text>
-<rect x="231" y="110" width="96" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".55"/><text x="279" y="127" fill="#f1dc94" font-size="12.5" text-anchor="middle">0 decisions</text>
-<rect x="337" y="110" width="104" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".55"/><text x="389" y="127" fill="#f1dc94" font-size="12.5" text-anchor="middle">1 human gate</text>
+<rect x="40" y="110" width="104" height="24" rx="12" fill="#e9c75a" fill-opacity=".13" stroke="#e9c75a" stroke-opacity=".75"/><text x="92" y="127" fill="#e9c75a" font-size="12.5" font-weight="700" text-anchor="middle">limited risk</text>
+<rect x="154" y="110" width="111" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".75"/><text x="209" y="127" fill="#f1dc94" font-size="12.5" font-weight="400" text-anchor="middle">5 agent calls</text>
+<rect x="274" y="110" width="60" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".75"/><text x="304" y="127" fill="#f1dc94" font-size="12.5" font-weight="400" text-anchor="middle">1 tool</text>
+<rect x="344" y="110" width="96" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".75"/><text x="392" y="127" fill="#f1dc94" font-size="12.5" font-weight="400" text-anchor="middle">0 decisions</text>
+<rect x="451" y="110" width="104" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".75"/><text x="502" y="127" fill="#f1dc94" font-size="12.5" font-weight="400" text-anchor="middle">1 human gate</text>
 <path id="e0" d="M223.0 240.0 C 240.0 240.0, 240.0 198.0, 257.0 198.0" class="wire"/>
 <path id="e1" d="M223.0 240.0 C 240.0 240.0, 240.0 282.0, 257.0 282.0" class="wire"/>
 <path id="e2" d="M423.0 282.0 C 440.0 282.0, 440.0 240.0, 457.0 240.0" class="wire"/>

@@ -1,0 +1,176 @@
+{
+  "card": "AlgoLang AI system card",
+  "card_version": 1,
+  "algolang": "0.4.0",
+  "program": "customer_desk",
+  "source": "customer_desk.algo",
+  "source_sha256": "3b72344371b4fca401fb33ceb6d26ef31fe9d8fee7d89882bdf0f1d9bad59a70",
+  "purpose": "Replies to policyholder messages",
+  "risk_level": "limited",
+  "disclosure": "You are chatting with NovaShield's AI assistant. Ask for a person at any time.",
+  "flows": [
+    {
+      "name": "main",
+      "inputs": [
+        "query"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "PolicyFacts",
+      "role": "Policy services assistant",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "policydb.lookup"
+      ],
+      "human_oversight": "reviewed when confidence < 0.7",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "desk.ClaimsDesk",
+      "role": "Claims desk specialist, policyholder query router",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "kb.search"
+      ],
+      "human_oversight": "reviewed when confidence < 0.7",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 3000
+      },
+      "imported_from": "pack insurance.query_router"
+    },
+    {
+      "name": "desk.Clarity",
+      "role": "Clarity specialist, policyholder query router",
+      "returns": "score",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.7",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 3000
+      },
+      "imported_from": "pack insurance.query_router"
+    },
+    {
+      "name": "desk.IsClaim",
+      "role": "Is claim specialist, policyholder query router",
+      "returns": "score",
+      "model": "fast",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.7",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 3000
+      },
+      "imported_from": "pack insurance.query_router"
+    },
+    {
+      "name": "desk.PolicyDesk",
+      "role": "Policy desk specialist, policyholder query router",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "kb.search"
+      ],
+      "human_oversight": "reviewed when confidence < 0.7",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 3000
+      },
+      "imported_from": "pack insurance.query_router"
+    }
+  ],
+  "tools": [
+    {
+      "name": "kb.search",
+      "kind": "built-in",
+      "trusted": true,
+      "description": "Search the organisation's knowledge base of .txt and .md documents"
+    },
+    {
+      "name": "policydb.lookup",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Look up a motor or home policy by its number (NS-12345)"
+    }
+  ],
+  "streams": [],
+  "circuits": [],
+  "human_oversight": [
+    "PolicyFacts: reviewed when confidence < 0.7",
+    "desk.ClaimsDesk: reviewed when confidence < 0.7",
+    "desk.Clarity: reviewed when confidence < 0.7",
+    "desk.IsClaim: reviewed when confidence < 0.7",
+    "desk.PolicyDesk: reviewed when confidence < 0.7"
+  ],
+  "data_protection": {
+    "redact_pii": "no agents",
+    "forbidden_attributes": [
+      "caste",
+      "gender",
+      "nationality",
+      "religion"
+    ],
+    "retention_days": {}
+  },
+  "evaluation": {
+    "cases": 0,
+    "fairness": [],
+    "robustness": [],
+    "explanations_checked": false
+  },
+  "limitations": [
+    "Generated from the source code: it documents design-time safeguards and test coverage, not measured real-world performance.",
+    "Offline evals use a deterministic mock model; repeat them with `algo eval --live` before deployment.",
+    "Protected attributes are withheld by keyword. Proxies such as names, postcodes or schools can still carry them; counterfactual fairness tests measure the effect.",
+    "Fairness has not been tested (no `expect fair` case).",
+    "Robustness has not been tested (no `expect robust` case)."
+  ]
+}

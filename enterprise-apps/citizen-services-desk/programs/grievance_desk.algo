@@ -1,4 +1,6 @@
 // Citizen grievance desk — urgency, priority cell or department routing, a clear reply.
+risk limited "Routing and replying to citizens' grievances"
+disclose "This reply was drafted by an AI assistant and checked by the grievance cell."
 use pack government.grievance_routing as gr
 tool ward.directory
 

@@ -40,6 +40,24 @@ KEYWORDS = {
               "Cost and energy are priced before the call; a call over budget is blocked.",
     "eval": "**eval** — tests next to the code: `eval name on main { case \"label\" (input = \"…\") { expect … } }`. "
             "Run with `algo eval file.algo`; `--replay` re-checks from recorded traces with no model calls.",
+    "risk": "**risk** — the program's risk level (v0.4): `risk minimal`, `risk limited \"purpose\"` (needs `disclose`) or "
+            "`risk high \"purpose\"`, which also needs human oversight, `explain with evidence`, `redact pii`, fairness "
+            "and robustness evals and signed audit logs (E125–E129).",
+    "disclose": "**disclose** — the notice people see: `disclose \"You are chatting with an AI assistant.\"` Required for "
+                "limited- and high-risk programs.",
+    "explain": "**explain** — in a policy: `explain` (reasons) or `explain with evidence` (reasons plus quotes that must "
+               "appear in the agent's inputs or tool results; otherwise the result goes to a person).",
+    "redact": "**redact pii** — mask names, phone numbers, emails, Aadhaar, PAN, account and card numbers before any model "
+              "call. Trusted tools still receive the real values.",
+    "retain": "**retain** — `retain audit 180 days` / `retain traces 30 days`: older records are removed after each run; "
+              "a signed checkpoint keeps the audit chain verifiable.",
+    "approvals": "**require approvals N** — N different named reviewers must approve each result (four-eyes = 2).",
+    "untrusted": "**untrusted** — `tool web.fetch untrusted`: its output is size-limited, instruction-like lines are "
+                 "removed, and it is wrapped as data the model must not obey.",
+    "fair": "**expect fair across** attribute [values] — run the case once per value and require the same decision "
+            "(scores within `fairness_tolerance`, default 0.05).",
+    "robust": "**expect robust** (typos, paraphrase, reorder, case, spacing) consistency >= 0.9 — perturb the inputs and "
+              "require the same decision.",
     "stream": "**stream** — real-time events: `stream name on main { from pulse \"bus\" topic \"in\"  map x = event.x  "
               "to topic \"out\"  escalate to topic \"review\"  dead letter topic \"dlq\" }`. Every event runs the flow "
               "once. Run with `algo stream file.algo --pulse` (or `--input events.jsonl` offline).",
@@ -86,6 +104,9 @@ SNIPPETS = [
     ("flow main", "flow main(${1:input}: text) {\n    ${2:result} = ${3:Agent}(${1:input})\n    emit ${2:result}\n}"),
     ("eval", "eval ${1:regression} on main {\n    case \"${2:first case}\" (${3:input} = \"${4:value}\") {\n        expect status ok\n    }\n}"),
     ("circuit", "circuit ${1:Bell} {\n    qubits ${2:2}\n    h q0\n    cx q0, q1\n    measure\n}"),
+    ("risk", "risk ${1|minimal,limited,high|} \"${2:purpose}\"\ndisclose \"${3:You are using an AI system. A person reviews its decisions.}\""),
+    ("trust policy", "policy { redact pii  explain with evidence  require approvals ${1:2} }"),
+    ("fairness test", "expect fair across ${1:gender} [\"${2:woman}\", \"${3:man}\", \"${4:non-binary}\"]\nexpect robust consistency >= ${5:0.9}\nexpect explained"),
     ("stream", "stream ${1:events} on main {\n    from pulse \"${2:local}\" topic \"${3:events.in}\" group \"${4:algolang}\"\n    map ${5:input} = event.${5:input}\n    key event.${6:id}\n    to topic \"${7:events.out}\"\n    escalate to topic \"${8:events.review}\"\n    dead letter topic \"${9:events.dlq}\"\n}"),
     ("policy", "policy {\n    budget tokens ${1:4000}\n    budget cost ${2:0.05} usd\n    require human when confidence < ${3:0.8}\n}"),
 ]

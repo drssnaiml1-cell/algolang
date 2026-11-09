@@ -1,4 +1,5 @@
 // Unpredictable audit sampling — vouchers to check are drawn from measured qubits, and the draw is audited.
+risk minimal "Random selection of vouchers for internal audit"
 tool quantum.random
 tool kb.search
 

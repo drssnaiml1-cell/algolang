@@ -466,8 +466,9 @@ class _Review:
         return _rt.list_reviews("all", path)
 
     @staticmethod
-    def approve(item_id, reviewer="", note="", path=None):
-        return _rt.decide_review(item_id, "approved", reviewer, note, path)
+    def approve(item_id, reviewer="", note="", path=None, override=None):
+        """Approve a review item (v0.4: `override` records a corrected answer in place of the model's)."""
+        return _rt.decide_review(item_id, "approved", reviewer, note, path, override=override)
 
     @staticmethod
     def reject(item_id, reviewer="", note="", path=None):

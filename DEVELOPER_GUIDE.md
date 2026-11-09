@@ -154,7 +154,7 @@ Without `make`, run `ruff check . && pytest && python algoc.py dev lint examples
             └──────────────┬───────────────────────┘
                      SDK  algolang/__init__.py   Program · RunResult · domains · compose · audit · review
                            │
-   source ─► grammar.lark ─► Lark Earley parser ─► AST (algoc.to_ast) ─► Checker (E100–E124)
+   source ─► grammar.lark ─► Lark Earley parser ─► AST (algoc.to_ast) ─► Checker (E100–E130)
              ─► use/imports (load_program) ─► CodeGen ─► Python module ─► algoruntime.Runtime
                                                                             │
           policies · org config · tools · Mock/Claude/Replay backends · cache · hash-chained audit · review queue
@@ -179,6 +179,8 @@ Without `make`, run `ruff check . && pytest && python algoc.py dev lint examples
 | `algoeval.py` | `algo eval` (eval blocks), traces, `algo replay` (v0.3) |
 | `algomcp.py` | MCP client over stdio/HTTP, `tool x from mcp "server"` bindings, `algo mcp` (v0.3) |
 | `algolsp.py` | Language server (`algo lsp`): diagnostics, hover, completion, definition, symbols (v0.3) |
+| `algotrust.py` | v0.4 trust layer: PII redaction, protected-value withholding, untrusted-tool fencing, explanation grounding, perturbations, Ed25519 signing, retention |
+| `algoassure.py` | v0.4 evidence: `algo card`, `algo trust report`, `algo evidence export/verify`, `algo keys`, `algo retention` |
 | `algostream.py` | `stream` blocks (`algo stream`): MemoryBroker for tests, PulseBroker, routing, at-least-once commits, metrics (v0.3.1) |
 | `algopulse.py` | AlgoPulse™ event engine (`algo pulse`): durable append-only topic logs with consumer-group offsets, file locking for many local writers, and a token-protected HTTP server (v0.3.4) |
 | `algoquantum.py` | Quantum tools (v0.3.2): state-vector simulator, OpenQASM 2.0 reader, QAOA with exact verification, QUBO builders, Grover, random; registered by `algoruntime` at import. v0.3.3: `circuit_tool` for `circuit` blocks, `quantum.routes`, `quantum.scenarios` (Monte Carlo + `qae_estimate`), `pqc.scan` (`classify_crypto`) |

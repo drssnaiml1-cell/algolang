@@ -1,0 +1,174 @@
+{
+  "card": "AlgoLang AI system card",
+  "card_version": 1,
+  "algolang": "0.4.0",
+  "program": "contract_review",
+  "source": "contract_review.algo",
+  "source_sha256": "7106834d55498e56e900fc156df982a3b7816841b758977dc6f1406fb6a4625e",
+  "purpose": "Clause analysis for in-house counsel",
+  "risk_level": "minimal",
+  "disclosure": null,
+  "flows": [
+    {
+      "name": "main",
+      "inputs": [
+        "contract"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "Fallbacks",
+      "role": "Contracts manager",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "clause.library"
+      ],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "cr.Analyst",
+      "role": "Analyst specialist, contract clause review",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack legal.contract_review"
+    },
+    {
+      "name": "cr.Clauses",
+      "role": "Clauses specialist, contract clause review",
+      "returns": "list",
+      "model": "fast",
+      "tools": [
+        "file.read"
+      ],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack legal.contract_review"
+    },
+    {
+      "name": "cr.Risk",
+      "role": "Risk specialist, contract clause review",
+      "returns": "score",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.9",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack legal.contract_review"
+    },
+    {
+      "name": "cr.Summary",
+      "role": "Summary specialist, contract clause review",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack legal.contract_review"
+    }
+  ],
+  "tools": [
+    {
+      "name": "clause.library",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Meridian's approved fallback wording for clauses named in the request"
+    },
+    {
+      "name": "file.read",
+      "kind": "built-in",
+      "trusted": true,
+      "description": "Read a text file from the organisation's workspace (path relative to it)"
+    }
+  ],
+  "streams": [],
+  "circuits": [],
+  "human_oversight": [
+    "Fallbacks: reviewed when confidence < 0.8",
+    "cr.Analyst: reviewed when confidence < 0.8",
+    "cr.Clauses: reviewed when confidence < 0.8",
+    "cr.Risk: reviewed when confidence < 0.9",
+    "cr.Summary: reviewed when confidence < 0.8"
+  ],
+  "data_protection": {
+    "redact_pii": "no agents",
+    "forbidden_attributes": [
+      "caste",
+      "gender",
+      "nationality",
+      "religion"
+    ],
+    "retention_days": {}
+  },
+  "evaluation": {
+    "cases": 0,
+    "fairness": [],
+    "robustness": [],
+    "explanations_checked": false
+  },
+  "limitations": [
+    "Generated from the source code: it documents design-time safeguards and test coverage, not measured real-world performance.",
+    "Offline evals use a deterministic mock model; repeat them with `algo eval --live` before deployment.",
+    "Protected attributes are withheld by keyword. Proxies such as names, postcodes or schools can still carry them; counterfactual fairness tests measure the effect.",
+    "Fairness has not been tested (no `expect fair` case).",
+    "Robustness has not been tested (no `expect robust` case)."
+  ]
+}

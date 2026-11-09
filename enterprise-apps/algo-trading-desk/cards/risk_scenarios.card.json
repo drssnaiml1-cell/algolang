@@ -1,0 +1,135 @@
+{
+  "card": "AlgoLang AI system card",
+  "card_version": 1,
+  "algolang": "0.4.0",
+  "program": "risk_scenarios",
+  "source": "risk_scenarios.algo",
+  "source_sha256": "871174800af7c4acdaf8f2ed898414c172768e2ff15e69b297187d9647d52340",
+  "purpose": "Internal value-at-risk scenarios for the desk's risk book",
+  "risk_level": "minimal",
+  "disclosure": null,
+  "flows": [
+    {
+      "name": "main",
+      "inputs": [
+        "book"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "RiskCommittee",
+      "role": "Risk committee secretary",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.99",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "client_password",
+        "gender",
+        "pan_number",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "RiskNote",
+      "role": "Risk reporter",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.85",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "client_password",
+        "gender",
+        "pan_number",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Scenarios",
+      "role": "Quantitative risk analyst",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "quantum.scenarios"
+      ],
+      "human_oversight": "reviewed when confidence < 0.85",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "client_password",
+        "gender",
+        "pan_number",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_cost_usd": 0.01
+      },
+      "imported_from": null
+    }
+  ],
+  "tools": [
+    {
+      "name": "kb.search",
+      "kind": "built-in",
+      "trusted": true,
+      "description": "Search the organisation's knowledge base of .txt and .md documents"
+    },
+    {
+      "name": "quantum.scenarios",
+      "kind": "built-in quantum",
+      "trusted": true,
+      "description": "Monte Carlo VaR / expected shortfall with a quantum amplitude estimation check"
+    }
+  ],
+  "streams": [],
+  "circuits": [],
+  "human_oversight": [
+    "RiskCommittee: reviewed when confidence < 0.99",
+    "RiskNote: reviewed when confidence < 0.85",
+    "Scenarios: reviewed when confidence < 0.85"
+  ],
+  "data_protection": {
+    "redact_pii": "no agents",
+    "forbidden_attributes": [
+      "aadhaar",
+      "caste",
+      "client_password",
+      "gender",
+      "pan_number",
+      "religion"
+    ],
+    "retention_days": {}
+  },
+  "evaluation": {
+    "cases": 2,
+    "fairness": [],
+    "robustness": [],
+    "explanations_checked": false
+  },
+  "limitations": [
+    "Generated from the source code: it documents design-time safeguards and test coverage, not measured real-world performance.",
+    "Offline evals use a deterministic mock model; repeat them with `algo eval --live` before deployment.",
+    "Protected attributes are withheld by keyword. Proxies such as names, postcodes or schools can still carry them; counterfactual fairness tests measure the effect.",
+    "Fairness has not been tested (no `expect fair` case).",
+    "Robustness has not been tested (no `expect robust` case).",
+    "Quantum results come from a simulator unless a hardware backend is configured."
+  ]
+}

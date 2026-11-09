@@ -1,0 +1,180 @@
+{
+  "card": "AlgoLang AI system card",
+  "card_version": 1,
+  "algolang": "0.4.0",
+  "program": "kyc_onboarding",
+  "source": "kyc_onboarding.algo",
+  "source_sha256": "2f7cfce9a890ff0ac74af69b85038a29ece91b147bf3899e41242de9e253f68e",
+  "purpose": "Customer due-diligence support for bank onboarding staff",
+  "risk_level": "limited",
+  "disclosure": "This onboarding assessment was prepared with an AI system and is checked by bank staff.",
+  "flows": [
+    {
+      "name": "main",
+      "inputs": [
+        "customer_file"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "Sanctions",
+      "role": "Sanctions and PEP screening officer",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "sanctions.screen"
+      ],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "marital_status",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "kyc.DocChecker",
+      "role": "Doc checker specialist, kyc document review",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "file.read"
+      ],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "marital_status",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack banking.kyc_review"
+    },
+    {
+      "name": "kyc.Outcome",
+      "role": "Outcome specialist, kyc document review",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "marital_status",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack banking.kyc_review"
+    },
+    {
+      "name": "kyc.RiskRating",
+      "role": "Risk rating specialist, kyc document review",
+      "returns": "score",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.9",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "marital_status",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack banking.kyc_review"
+    },
+    {
+      "name": "kyc.Verifier",
+      "role": "Verifier specialist, kyc document review",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "marital_status",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack banking.kyc_review"
+    }
+  ],
+  "tools": [
+    {
+      "name": "file.read",
+      "kind": "built-in",
+      "trusted": true,
+      "description": "Read a text file from the organisation's workspace (path relative to it)"
+    },
+    {
+      "name": "sanctions.screen",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Screen a customer name against the bank's sanctions and PEP list"
+    }
+  ],
+  "streams": [],
+  "circuits": [],
+  "human_oversight": [
+    "Sanctions: reviewed when confidence < 0.8",
+    "kyc.DocChecker: reviewed when confidence < 0.8",
+    "kyc.Outcome: reviewed when confidence < 0.8",
+    "kyc.RiskRating: reviewed when confidence < 0.9",
+    "kyc.Verifier: reviewed when confidence < 0.8"
+  ],
+  "data_protection": {
+    "redact_pii": "no agents",
+    "forbidden_attributes": [
+      "caste",
+      "gender",
+      "marital_status",
+      "nationality",
+      "religion"
+    ],
+    "retention_days": {}
+  },
+  "evaluation": {
+    "cases": 0,
+    "fairness": [],
+    "robustness": [],
+    "explanations_checked": false
+  },
+  "limitations": [
+    "Generated from the source code: it documents design-time safeguards and test coverage, not measured real-world performance.",
+    "Offline evals use a deterministic mock model; repeat them with `algo eval --live` before deployment.",
+    "Protected attributes are withheld by keyword. Proxies such as names, postcodes or schools can still carry them; counterfactual fairness tests measure the effect.",
+    "Fairness has not been tested (no `expect fair` case).",
+    "Robustness has not been tested (no `expect robust` case)."
+  ]
+}

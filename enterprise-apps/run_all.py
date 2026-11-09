@@ -54,6 +54,11 @@ def main():
             print(r.stdout, r.stderr)
         status = "ok" if bad == 0 and r.returncode == 0 else "FAIL"
         extra = ""
+        progs = sorted(str(x.relative_to(app)) for x in (app / "programs").glob("*.algo"))
+        cards = run(["card", *progs, "--out", "cards", "--check"], app, env_app)     # v0.4: system cards up to date
+        if cards.returncode != 0:
+            status, bad = "FAIL", bad + 1
+            print(cards.stdout[-800:])
         if batch and app.name in BATCH:
             prog, csv_file = BATCH[app.name]
             out = Path(tmp) / "results.csv"

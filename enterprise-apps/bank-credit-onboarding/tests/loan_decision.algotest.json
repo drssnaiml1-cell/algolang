@@ -12,14 +12,15 @@
           "Bureau",
           "Affordability",
           "uw.CreditCommittee",
-          "uw.Memo"
+          "uw.Memo",
+          "CreditDecision"
         ],
         "tools_used": [
           "bureau.score",
           "dti.calc"
         ],
         "output_contains": "within policy",
-        "emits": 4,
+        "emits": 5,
         "max_tokens": 1400
       }
     },
@@ -32,13 +33,14 @@
         "status": "ok",
         "agents_called": [
           "Affordability",
-          "uw.CreditCommittee"
+          "uw.CreditCommittee",
+          "CreditDecision"
         ],
         "tools_used": [
           "dti.calc"
         ],
         "output_contains": "ABOVE the 50% policy limit",
-        "emits": 4,
+        "emits": 5,
         "max_tokens": 1400
       }
     }

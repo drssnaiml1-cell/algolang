@@ -1,0 +1,261 @@
+{
+  "card": "AlgoLang AI system card",
+  "card_version": 1,
+  "algolang": "0.4.0",
+  "program": "admissions",
+  "source": "admissions.algo",
+  "source_sha256": "803ff8b8408aebd65096ff7467c38563d142727492bdc5cdcce5dd15e2e57cec",
+  "purpose": "Screening university applications for the admissions panel",
+  "risk_level": "high",
+  "disclosure": "Applications are screened with the help of an AI system. The admissions panel decides, and applicants can ask for the reasons.",
+  "flows": [
+    {
+      "name": "main",
+      "inputs": [
+        "application"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "PanelDecision",
+      "role": "Admissions decision record",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.75 by 2 different people",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "income",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "SeatDesk",
+      "role": "Admissions office seat-matrix officer",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "seats.lookup"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "income",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "adm.AcademicReviewer",
+      "role": "Academic reviewer specialist, admissions screening",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "income",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack education.admissions"
+    },
+    {
+      "name": "adm.AdmissionsPanel",
+      "role": "Admissions panel specialist, admissions screening",
+      "returns": "score",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.9",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "income",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack education.admissions"
+    },
+    {
+      "name": "adm.Letter",
+      "role": "Letter specialist, admissions screening",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "income",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack education.admissions"
+    },
+    {
+      "name": "adm.PotentialReviewer",
+      "role": "Potential reviewer specialist, admissions screening",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "income",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack education.admissions"
+    },
+    {
+      "name": "adm.StatementReviewer",
+      "role": "Statement reviewer specialist, admissions screening",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "income",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack education.admissions"
+    }
+  ],
+  "tools": [
+    {
+      "name": "seats.lookup",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Seats and cut-offs for a programme (B.Tech AI&DS, CSE, ECE, M.Tech AI)"
+    }
+  ],
+  "streams": [],
+  "circuits": [],
+  "human_oversight": [
+    "PanelDecision: reviewed when confidence < 0.75 by 2 different people",
+    "SeatDesk: reviewed when confidence < 0.75",
+    "adm.AcademicReviewer: reviewed when confidence < 0.75",
+    "adm.AdmissionsPanel: reviewed when confidence < 0.9",
+    "adm.Letter: reviewed when confidence < 0.75",
+    "adm.PotentialReviewer: reviewed when confidence < 0.75",
+    "adm.StatementReviewer: reviewed when confidence < 0.75"
+  ],
+  "data_protection": {
+    "redact_pii": "all agents",
+    "forbidden_attributes": [
+      "caste",
+      "gender",
+      "income",
+      "nationality",
+      "religion"
+    ],
+    "retention_days": {
+      "audit": 1825,
+      "traces": 90
+    }
+  },
+  "evaluation": {
+    "cases": 1,
+    "fairness": [
+      {
+        "eval": "trust",
+        "case": "strong applicant",
+        "attribute": "gender",
+        "values": [
+          "woman",
+          "man",
+          "non-binary"
+        ]
+      },
+      {
+        "eval": "trust",
+        "case": "strong applicant",
+        "attribute": "religion",
+        "values": [
+          "Hindu",
+          "Muslim",
+          "Christian",
+          "Sikh",
+          "Buddhist"
+        ]
+      },
+      {
+        "eval": "trust",
+        "case": "strong applicant",
+        "attribute": "caste",
+        "values": [
+          "Dalit",
+          "Brahmin",
+          "OBC"
+        ]
+      }
+    ],
+    "robustness": [
+      {
+        "eval": "trust",
+        "case": "strong applicant",
+        "perturbations": [
+          "typos",
+          "paraphrase",
+          "reorder"
+        ],
+        "consistency": ">= 0.9"
+      }
+    ],
+    "explanations_checked": true
+  },
+  "limitations": [
+    "Generated from the source code: it documents design-time safeguards and test coverage, not measured real-world performance.",
+    "Offline evals use a deterministic mock model; repeat them with `algo eval --live` before deployment.",
+    "Protected attributes are withheld by keyword. Proxies such as names, postcodes or schools can still carry them; counterfactual fairness tests measure the effect."
+  ]
+}

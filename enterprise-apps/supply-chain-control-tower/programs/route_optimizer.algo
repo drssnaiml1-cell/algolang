@@ -2,6 +2,7 @@
 // options → QUBO (one qubit per shipment-route option) solved by QAOA → VERIFIED against the exact optimum
 //   and FEASIBLE (exactly one route per shipment)? → dispatch plan for the logistics manager to approve
 //   otherwise → the classical optimum is used and the gap is explained. An unchecked quantum answer is never used.
+risk minimal "Route planning for shipments"
 tool quantum.routes
 tool shipment.track
 

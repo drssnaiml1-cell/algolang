@@ -1,5 +1,5 @@
 % ═════════════════════════════════════════════════════════════════════
-%  The AlgoLang Programming Language — Official Documentation, v0.3
+%  The AlgoLang Programming Language — Official Documentation, v0.4
 %  Dr. S. Satyanarayana, Ph.D., PDF (AI)
 %  AlgoProfessor AI R&D Solutions, Hyderabad
 %
@@ -10,7 +10,7 @@
 \usepackage{algolang-docs}
 
 \hypersetup{
-  pdftitle={The AlgoLang Programming Language — Official Documentation v0.3},
+  pdftitle={The AlgoLang Programming Language — Official Documentation v0.4},
   pdfauthor={Dr. S. Satyanarayana, Ph.D., PDF (AI)},
   pdfsubject={AlgoLang: an open-source, agent-native programming language for building AI systems},
   pdfkeywords={AlgoLang, agentic AI, programming language, responsible AI, AlgoProfessor},
@@ -47,7 +47,7 @@
     {\lightfont\large An open-source, agent-native language for building AI systems}\\[3mm]
     {\lightfont\normalsize Every unit of work is an agent.}};
   \node[anchor=north] at ([yshift=-205mm]current page.north) {%
-    \badge{version}{0.3.0}\enspace
+    \badge{version}{0.4.0}\enspace
     \badge{license}{Apache-2.0}\enspace
     \badge{python}{$\geq$ 3.9}\enspace
     \badge{runs on}{Windows · Linux · macOS · Colab}\enspace
@@ -59,7 +59,7 @@
     {\lightfont\small AlgoProfessor AI R\&D Solutions, Hyderabad}\\[0.8mm]
     {\lightfont\small\color{gold} www.algoprofessor.com}};
   \node[anchor=south,font=\sffamily\scriptsize\bfseries,text=navy] at ([yshift=2.6mm]current page.south)
-    {VERSION 0.3 · NOVEMBER 2026};
+    {VERSION 0.4 · NOVEMBER 2026};
 \end{tikzpicture}
 \end{titlepage}
 
@@ -68,7 +68,7 @@
 \vspace*{\fill}
 {\small\color{muted}
 \textbf{\color{navy}The AlgoLang Programming Language — Official Documentation}\\
-Version 0.3 · November 2026
+Version 0.4 · November 2026
 
 Author: Dr.\ S.\ Satyanarayana, Ph.D., PDF (AI)\\
 Founder, CEO \& Chief Agentic AI Scientist, AlgoProfessor AI R\&D Solutions, Hyderabad, India\\
@@ -84,7 +84,7 @@ Copyright \textcopyright\ 2026 Dr.\ S.\ Satyanarayana and AlgoProfessor AI R\&D 
 
 \textbf{Trademarks.} Claude is a product of Anthropic. Other names are the property of their respective owners and are used for identification only.
 
-\textbf{Status.} AlgoLang 0.3 adds \code{uncertain<T>} types, deterministic guards, \kw{eval} blocks with trace replay, MCP tool bindings, cost and energy budgets and a language server (Chapter~\ref{ch:v03}), on top of the 0.2 Enterprise features (Chapter~\ref{ch:enterprise}). Version 0.4 is dedicated to trustworthy AI. It remains a preview release. Language details may change before version 1.0; changes are proposed and discussed through the process in Chapter~\ref{ch:project}.
+\textbf{Status.} AlgoLang 0.4 is the Trustworthy AI release: risk levels, privacy, grounded explanations, untrusted tools, four-eyes review, signed audit logs, fairness and robustness tests, system cards, evidence packs and trust reports (Chapter~\ref{ch:v04}). It builds on 0.3 (uncertainty, evals, MCP, budgets, streams, quantum; Chapter~\ref{ch:v03}) and the 0.2 Enterprise features (Chapter~\ref{ch:enterprise}). Version 0.5 is dedicated to quantum AI. It remains a preview release. Language details may change before version 1.0; changes are proposed and discussed through the process in Chapter~\ref{ch:project}.
 
 Typeset with XeLaTeX in TeX Gyre Pagella, Inter and DejaVu Sans Mono.\par}
 
@@ -122,6 +122,7 @@ Typeset with XeLaTeX in TeX Gyre Pagella, Inter and DejaVu Sans Mono.\par}
 \input{chapters/13-internals}
 \input{chapters/18-enterprise}
 \input{chapters/19-v03}
+\input{chapters/20-v04}
 
 \docpart{Patterns and Practice}
 \input{chapters/14-patterns}

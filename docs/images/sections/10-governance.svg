@@ -29,49 +29,49 @@
   <rect width="1280" height="4" fill="url(#gold)"/>
   <text x="40" y="40" fill="#c9a227" font-size="13" letter-spacing="2.6" font-weight="700">10 · GOVERNANCE</text>
   <text x="40" y="72" fill="#f4f1e8" font-size="26" font-weight="700">Defence in depth for every agent call</text>
-  <text x="40" y="96" fill="#c9b98a" font-size="16">Each layer can stop a call; every outcome, allowed or blocked, is written to the audit chain.</text>
+  <text x="40" y="96" fill="#c9b98a" font-size="16">Each layer can stop a call; every outcome, allowed or blocked, is written to the signed audit chain.</text>
   
 <path id="drop" d="M1190 120 L1190 540" class="wire"/>
 <g class="rise" style="animation-delay:0.00s">
 <rect x="40" y="126" width="1100" height="58" rx="10" class="card"/>
 <rect x="40" y="126" width="6" height="58" rx="3" fill="url(#gold)"/>
 <text x="62" y="151" fill="#f4f1e8" font-size="16" font-weight="700">Organisation policy</text>
-<text x="62" y="172" fill="#c9b98a" font-size="13.5">forbidden attributes, allowed tools, token, cost and energy caps, review threshold</text>
+<text x="62" y="172" fill="#c9b98a" font-size="13.5">forbidden attributes, allowed tools, caps, review threshold, pinned MCP servers</text>
 <text x="1120" y="161" fill="#e9c75a" font-size="13" text-anchor="end" class="mono">algo.config.json</text>
 </g>
 <g class="rise" style="animation-delay:0.10s">
 <rect x="58" y="196" width="1064" height="58" rx="10" class="card"/>
 <rect x="58" y="196" width="6" height="58" rx="3" fill="url(#gold)"/>
 <text x="80" y="221" fill="#f4f1e8" font-size="16" font-weight="700">Compile-time checks</text>
-<text x="80" y="242" fill="#c9b98a" font-size="13.5">unsafe programs never start: undeclared tools, forbidden inputs, unguarded scores</text>
-<text x="1102" y="231" fill="#e9c75a" font-size="13" text-anchor="end" class="mono">E100–E124</text>
+<text x="80" y="242" fill="#c9b98a" font-size="13.5">unsafe programs never start; high-risk programs must carry every safeguard</text>
+<text x="1102" y="231" fill="#e9c75a" font-size="13" text-anchor="end" class="mono">E100–E130</text>
 </g>
 <g class="rise" style="animation-delay:0.20s">
 <rect x="76" y="266" width="1028" height="58" rx="10" class="card"/>
 <rect x="76" y="266" width="6" height="58" rx="3" fill="url(#gold)"/>
-<text x="98" y="291" fill="#f4f1e8" font-size="16" font-weight="700">Pre-flight budgets</text>
-<text x="98" y="312" fill="#c9b98a" font-size="13.5">each call is priced in tokens, $, ₹ and Wh before it is allowed to run</text>
-<text x="1084" y="301" fill="#e9c75a" font-size="13" text-anchor="end" class="mono">budget cost 0.05 usd</text>
+<text x="98" y="291" fill="#f4f1e8" font-size="16" font-weight="700">Privacy and fencing</text>
+<text x="98" y="312" fill="#c9b98a" font-size="13.5">personal data masked, protected values withheld, untrusted tool output fenced</text>
+<text x="1084" y="301" fill="#e9c75a" font-size="13" text-anchor="end" class="mono">redact pii</text>
 </g>
 <g class="rise" style="animation-delay:0.30s">
 <rect x="94" y="336" width="992" height="58" rx="10" class="card"/>
 <rect x="94" y="336" width="6" height="58" rx="3" fill="url(#gold)"/>
-<text x="116" y="361" fill="#f4f1e8" font-size="16" font-weight="700">Sampling and confidence</text>
-<text x="116" y="382" fill="#c9b98a" font-size="13.5">uncertain agents are sampled; confidence = model × agreement</text>
+<text x="116" y="361" fill="#f4f1e8" font-size="16" font-weight="700">Budgets and sampling</text>
+<text x="116" y="382" fill="#c9b98a" font-size="13.5">tokens, $, ₹ and Wh priced before the call; uncertain agents sampled</text>
 <text x="1066" y="371" fill="#e9c75a" font-size="13" text-anchor="end" class="mono">samples 5</text>
 </g>
 <g class="rise" style="animation-delay:0.40s">
 <rect x="112" y="406" width="956" height="58" rx="10" class="card"/>
 <rect x="112" y="406" width="6" height="58" rx="3" fill="url(#gold)"/>
-<text x="134" y="431" fill="#f4f1e8" font-size="16" font-weight="700">Human gate</text>
-<text x="134" y="452" fill="#c9b98a" font-size="13.5">below the threshold the result waits in the review queue for a named person</text>
-<text x="1048" y="441" fill="#e9c75a" font-size="13" text-anchor="end" class="mono">algo review</text>
+<text x="134" y="431" fill="#f4f1e8" font-size="16" font-weight="700">Explanation and people</text>
+<text x="134" y="452" fill="#c9b98a" font-size="13.5">grounded reasons with evidence; review queue with four-eyes approval</text>
+<text x="1048" y="441" fill="#e9c75a" font-size="13" text-anchor="end" class="mono">require approvals 2</text>
 </g>
 <g class="rise" style="animation-delay:0.50s">
 <rect x="130" y="476" width="920" height="58" rx="10" class="card"/>
 <rect x="130" y="476" width="6" height="58" rx="3" fill="url(#gold)"/>
-<text x="152" y="501" fill="#f4f1e8" font-size="16" font-weight="700">Hash-chained audit</text>
-<text x="152" y="522" fill="#c9b98a" font-size="13.5">SHA-256 chain over every record: any edit or deletion is detected</text>
+<text x="152" y="501" fill="#f4f1e8" font-size="16" font-weight="700">Signed audit</text>
+<text x="152" y="522" fill="#c9b98a" font-size="13.5">Ed25519 signatures over a SHA-256 chain; retention keeps it verifiable</text>
 <text x="1030" y="511" fill="#e9c75a" font-size="13" text-anchor="end" class="mono">algo audit verify</text>
 </g>
 <circle r="4.5" fill="#ffe08a" filter="url(#soft)"><animateMotion dur="3.2s" begin="0.00s" repeatCount="indefinite"><mpath href="#drop"/></animateMotion></circle>

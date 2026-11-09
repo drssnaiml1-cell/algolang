@@ -1,0 +1,146 @@
+{
+  "card": "AlgoLang AI system card",
+  "card_version": 1,
+  "algolang": "0.4.0",
+  "program": "discharge",
+  "source": "discharge.algo",
+  "source_sha256": "12642f6a8cfd2181b16b3a164ca3576905885c7b963b9f41532ed39d094873d4",
+  "purpose": "Drafting patient discharge summaries for the treating doctor",
+  "risk_level": "limited",
+  "disclosure": "This summary was drafted by an AI system and approved by your treating doctor.",
+  "flows": [
+    {
+      "name": "main",
+      "inputs": [
+        "record"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "ds.Checker",
+      "role": "Checker specialist, discharge summary drafting",
+      "returns": "score",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.9",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "income",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack healthcare.discharge_summary"
+    },
+    {
+      "name": "ds.Collector",
+      "role": "Collector specialist, discharge summary drafting",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "file.read"
+      ],
+      "human_oversight": "reviewed when confidence < 0.85",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "income",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack healthcare.discharge_summary"
+    },
+    {
+      "name": "ds.Finaliser",
+      "role": "Finaliser specialist, discharge summary drafting",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.85",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "income",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack healthcare.discharge_summary"
+    },
+    {
+      "name": "ds.Writer",
+      "role": "Writer specialist, discharge summary drafting",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.85",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "income",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack healthcare.discharge_summary"
+    }
+  ],
+  "tools": [
+    {
+      "name": "file.read",
+      "kind": "built-in",
+      "trusted": true,
+      "description": "Read a text file from the organisation's workspace (path relative to it)"
+    }
+  ],
+  "streams": [],
+  "circuits": [],
+  "human_oversight": [
+    "ds.Checker: reviewed when confidence < 0.9",
+    "ds.Collector: reviewed when confidence < 0.85",
+    "ds.Finaliser: reviewed when confidence < 0.85",
+    "ds.Writer: reviewed when confidence < 0.85"
+  ],
+  "data_protection": {
+    "redact_pii": "no agents",
+    "forbidden_attributes": [
+      "caste",
+      "gender",
+      "income",
+      "religion"
+    ],
+    "retention_days": {}
+  },
+  "evaluation": {
+    "cases": 0,
+    "fairness": [],
+    "robustness": [],
+    "explanations_checked": false
+  },
+  "limitations": [
+    "Generated from the source code: it documents design-time safeguards and test coverage, not measured real-world performance.",
+    "Offline evals use a deterministic mock model; repeat them with `algo eval --live` before deployment.",
+    "Protected attributes are withheld by keyword. Proxies such as names, postcodes or schools can still carry them; counterfactual fairness tests measure the effect.",
+    "Fairness has not been tested (no `expect fair` case).",
+    "Robustness has not been tested (no `expect robust` case)."
+  ]
+}

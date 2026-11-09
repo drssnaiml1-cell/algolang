@@ -3,6 +3,7 @@
 //   yes → risk review (uncertain, sampled 5×) → PAPER proposal for a human to approve
 //   no  → the classical optimum is explained instead. An unverified quantum answer is never used.
 // Research and paper portfolios only. Not investment advice. All data is synthetic.
+risk minimal "Internal portfolio construction research"
 tool market.universe
 tool quantum.portfolio
 tool kb.search

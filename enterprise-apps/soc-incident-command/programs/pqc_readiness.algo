@@ -2,6 +2,7 @@
 // inventory scan (pqc.scan: Shor / Grover rules, Mosca's harvest-now-decrypt-later test)
 //   → deterministic guards: BROKEN-NOW opens an incident at once; URGENT systems need the CISO's sign-off
 //   → phased migration plan to NIST FIPS 203 / 204 / 205 (ML-KEM, ML-DSA, SLH-DSA)
+risk minimal "Quantum-safe cryptography migration planning"
 tool pqc.scan
 tool kb.search
 

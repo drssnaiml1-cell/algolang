@@ -1,0 +1,172 @@
+{
+  "card": "AlgoLang AI system card",
+  "card_version": 1,
+  "algolang": "0.4.0",
+  "program": "circuit_lab",
+  "source": "circuit_lab.algo",
+  "source_sha256": "f05e5c9eec5c5d49b159524d08edaa45124006f50088ac9c87c5ac07c22b6ade",
+  "purpose": "Teaching and testing quantum circuits",
+  "risk_level": "minimal",
+  "disclosure": null,
+  "flows": [
+    {
+      "name": "main",
+      "inputs": [
+        "question"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "Entanglement",
+      "role": "Quantum physicist",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "circuit.Bell",
+        "circuit.GHZ"
+      ],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "gender",
+        "pan_number",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Investigate",
+      "role": "Quantum algorithms engineer",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "gender",
+        "pan_number",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Search",
+      "role": "Quantum algorithms engineer",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "circuit.Grover2"
+      ],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "gender",
+        "pan_number",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Verified",
+      "role": "Quantum algorithms engineer",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "gender",
+        "pan_number",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    }
+  ],
+  "tools": [
+    {
+      "name": "circuit.Bell",
+      "kind": "quantum circuit",
+      "trusted": true,
+      "description": ""
+    },
+    {
+      "name": "circuit.GHZ",
+      "kind": "quantum circuit",
+      "trusted": true,
+      "description": ""
+    },
+    {
+      "name": "circuit.Grover2",
+      "kind": "quantum circuit",
+      "trusted": true,
+      "description": ""
+    }
+  ],
+  "streams": [],
+  "circuits": [
+    {
+      "name": "Bell",
+      "qubits": 2
+    },
+    {
+      "name": "GHZ",
+      "qubits": 3
+    },
+    {
+      "name": "Grover2",
+      "qubits": 2
+    }
+  ],
+  "human_oversight": [
+    "Entanglement: reviewed when confidence < 0.8",
+    "Investigate: reviewed when confidence < 0.8",
+    "Search: reviewed when confidence < 0.8",
+    "Verified: reviewed when confidence < 0.8"
+  ],
+  "data_protection": {
+    "redact_pii": "no agents",
+    "forbidden_attributes": [
+      "aadhaar",
+      "caste",
+      "gender",
+      "pan_number",
+      "religion"
+    ],
+    "retention_days": {}
+  },
+  "evaluation": {
+    "cases": 1,
+    "fairness": [],
+    "robustness": [],
+    "explanations_checked": false
+  },
+  "limitations": [
+    "Generated from the source code: it documents design-time safeguards and test coverage, not measured real-world performance.",
+    "Offline evals use a deterministic mock model; repeat them with `algo eval --live` before deployment.",
+    "Protected attributes are withheld by keyword. Proxies such as names, postcodes or schools can still carry them; counterfactual fairness tests measure the effect.",
+    "Fairness has not been tested (no `expect fair` case).",
+    "Robustness has not been tested (no `expect robust` case).",
+    "Quantum results come from a simulator unless a hardware backend is configured."
+  ]
+}

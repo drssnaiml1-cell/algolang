@@ -1,0 +1,316 @@
+{
+  "card": "AlgoLang AI system card",
+  "card_version": 1,
+  "algolang": "0.4.0",
+  "program": "claims_intake",
+  "source": "claims_intake.algo",
+  "source_sha256": "43f6cf492532c1df5014d47c3d4579476936ef6790d5f8f45991144d47093fa2",
+  "purpose": "First notice of loss to a reviewed insurance claim decision",
+  "risk_level": "limited",
+  "disclosure": "Your claim was first assessed by an AI system; a claims handler reviews the decision.",
+  "flows": [
+    {
+      "name": "main",
+      "inputs": [
+        "claim"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "PayoutEstimator",
+      "role": "Claims finance analyst",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "payout.estimate"
+      ],
+      "human_oversight": "reviewed when confidence < 0.85",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": null
+    },
+    {
+      "name": "PolicyCheck",
+      "role": "Policy administration officer, NovaShield",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "policydb.lookup"
+      ],
+      "human_oversight": "reviewed when confidence < 0.7",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": null
+    },
+    {
+      "name": "fraud.Adjuster",
+      "role": "Adjuster specialist, claims fraud screening",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.7",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack insurance.fraud_screening"
+    },
+    {
+      "name": "fraud.DocumentExaminer",
+      "role": "Document examiner specialist, claims fraud screening",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.7",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack insurance.fraud_screening"
+    },
+    {
+      "name": "fraud.FraudPanel",
+      "role": "Fraud panel specialist, claims fraud screening",
+      "returns": "score",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.9",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack insurance.fraud_screening"
+    },
+    {
+      "name": "fraud.PatternAnalyst",
+      "role": "Pattern analyst specialist, claims fraud screening",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.7",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack insurance.fraud_screening"
+    },
+    {
+      "name": "fraud.Referral",
+      "role": "Referral specialist, claims fraud screening",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.7",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack insurance.fraud_screening"
+    },
+    {
+      "name": "triage.Complexity",
+      "role": "Complexity specialist, claims triage",
+      "returns": "score",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.9",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack insurance.claims_triage"
+    },
+    {
+      "name": "triage.Coverage",
+      "role": "Coverage specialist, claims triage",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.7",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack insurance.claims_triage"
+    },
+    {
+      "name": "triage.Intake",
+      "role": "Intake specialist, claims triage",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "kb.search"
+      ],
+      "human_oversight": "reviewed when confidence < 0.7",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack insurance.claims_triage"
+    },
+    {
+      "name": "triage.Routing",
+      "role": "Routing specialist, claims triage",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.7",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "nationality",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack insurance.claims_triage"
+    }
+  ],
+  "tools": [
+    {
+      "name": "kb.search",
+      "kind": "built-in",
+      "trusted": true,
+      "description": "Search the organisation's knowledge base of .txt and .md documents"
+    },
+    {
+      "name": "payout.estimate",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Estimate payout = claimed amount − deductible, capped at sum insured"
+    },
+    {
+      "name": "policydb.lookup",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Look up a motor or home policy by its number (NS-12345)"
+    }
+  ],
+  "streams": [],
+  "circuits": [],
+  "human_oversight": [
+    "PayoutEstimator: reviewed when confidence < 0.85",
+    "PolicyCheck: reviewed when confidence < 0.7",
+    "fraud.Adjuster: reviewed when confidence < 0.7",
+    "fraud.DocumentExaminer: reviewed when confidence < 0.7",
+    "fraud.FraudPanel: reviewed when confidence < 0.9",
+    "fraud.PatternAnalyst: reviewed when confidence < 0.7",
+    "fraud.Referral: reviewed when confidence < 0.7",
+    "triage.Complexity: reviewed when confidence < 0.9",
+    "triage.Coverage: reviewed when confidence < 0.7",
+    "triage.Intake: reviewed when confidence < 0.7",
+    "triage.Routing: reviewed when confidence < 0.7"
+  ],
+  "data_protection": {
+    "redact_pii": "no agents",
+    "forbidden_attributes": [
+      "caste",
+      "gender",
+      "nationality",
+      "religion"
+    ],
+    "retention_days": {}
+  },
+  "evaluation": {
+    "cases": 0,
+    "fairness": [],
+    "robustness": [],
+    "explanations_checked": false
+  },
+  "limitations": [
+    "Generated from the source code: it documents design-time safeguards and test coverage, not measured real-world performance.",
+    "Offline evals use a deterministic mock model; repeat them with `algo eval --live` before deployment.",
+    "Protected attributes are withheld by keyword. Proxies such as names, postcodes or schools can still carry them; counterfactual fairness tests measure the effect.",
+    "Fairness has not been tested (no `expect fair` case).",
+    "Robustness has not been tested (no `expect robust` case)."
+  ]
+}

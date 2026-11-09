@@ -31,10 +31,11 @@
   <text x="40" y="72" fill="#f4f1e8" font-size="26" font-weight="700">NBA / NAAC course file</text>
   <text x="40" y="96" fill="#c9b98a" font-size="16">CO-PO mapping matrix plus a Bloom-balanced question paper.</text>
   
-<rect x="40" y="110" width="111" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".55"/><text x="95" y="127" fill="#f1dc94" font-size="12.5" text-anchor="middle">9 agent calls</text>
-<rect x="161" y="110" width="67" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".55"/><text x="194" y="127" fill="#f1dc94" font-size="12.5" text-anchor="middle">2 tools</text>
-<rect x="238" y="110" width="96" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".55"/><text x="286" y="127" fill="#f1dc94" font-size="12.5" text-anchor="middle">0 decisions</text>
-<rect x="344" y="110" width="111" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".55"/><text x="400" y="127" fill="#f1dc94" font-size="12.5" text-anchor="middle">2 human gates</text>
+<rect x="40" y="110" width="104" height="24" rx="12" fill="#6cc28a" fill-opacity=".13" stroke="#6cc28a" stroke-opacity=".75"/><text x="92" y="127" fill="#6cc28a" font-size="12.5" font-weight="700" text-anchor="middle">minimal risk</text>
+<rect x="154" y="110" width="111" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".75"/><text x="209" y="127" fill="#f1dc94" font-size="12.5" font-weight="400" text-anchor="middle">9 agent calls</text>
+<rect x="274" y="110" width="67" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".75"/><text x="308" y="127" fill="#f1dc94" font-size="12.5" font-weight="400" text-anchor="middle">2 tools</text>
+<rect x="352" y="110" width="96" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".75"/><text x="400" y="127" fill="#f1dc94" font-size="12.5" font-weight="400" text-anchor="middle">0 decisions</text>
+<rect x="458" y="110" width="111" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".75"/><text x="513" y="127" fill="#f1dc94" font-size="12.5" font-weight="400" text-anchor="middle">2 human gates</text>
 <path id="e0" d="M223.0 266.0 C 240.0 266.0, 240.0 182.0, 257.0 182.0" class="wire"/>
 <path id="e1" d="M223.0 266.0 C 240.0 266.0, 240.0 266.0, 257.0 266.0" class="wire"/>
 <path id="e2" d="M423.0 266.0 C 440.0 266.0, 440.0 224.0, 457.0 224.0" class="wire"/>

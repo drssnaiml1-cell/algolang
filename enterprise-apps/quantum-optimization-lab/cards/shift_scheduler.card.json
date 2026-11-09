@@ -1,0 +1,160 @@
+{
+  "card": "AlgoLang AI system card",
+  "card_version": 1,
+  "algolang": "0.4.0",
+  "program": "shift_scheduler",
+  "source": "shift_scheduler.algo",
+  "source_sha256": "21bacb0ba56b9327ceb483abc0f123d0b39ad32bce1d4ac3e98ec1ab031b8878",
+  "purpose": "Splitting clashing plant maintenance jobs across shifts",
+  "risk_level": "minimal",
+  "disclosure": null,
+  "flows": [
+    {
+      "name": "main",
+      "inputs": [
+        "site"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "Clashes",
+      "role": "Plant scheduler",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "ops.clashes"
+      ],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "gender",
+        "pan_number",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "ManualPlanning",
+      "role": "Operations planner",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "gender",
+        "pan_number",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "ShiftPlan",
+      "role": "Operations planner",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "kb.search"
+      ],
+      "human_oversight": "reviewed when confidence < 0.9",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "gender",
+        "pan_number",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "ShiftSplitter",
+      "role": "Quantum optimisation engineer",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "quantum.maxcut"
+      ],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "gender",
+        "pan_number",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    }
+  ],
+  "tools": [
+    {
+      "name": "kb.search",
+      "kind": "built-in",
+      "trusted": true,
+      "description": "Search the organisation's knowledge base of .txt and .md documents"
+    },
+    {
+      "name": "ops.clashes",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Pairs of plant jobs that clash, with weights, as edges for max-cut"
+    },
+    {
+      "name": "quantum.maxcut",
+      "kind": "built-in quantum",
+      "trusted": true,
+      "description": "Split a weighted graph (\"A-B:3, B-C:1\") into two groups with QAOA max-cut"
+    }
+  ],
+  "streams": [],
+  "circuits": [],
+  "human_oversight": [
+    "Clashes: reviewed when confidence < 0.8",
+    "ManualPlanning: reviewed when confidence < 0.8",
+    "ShiftPlan: reviewed when confidence < 0.9",
+    "ShiftSplitter: reviewed when confidence < 0.8"
+  ],
+  "data_protection": {
+    "redact_pii": "no agents",
+    "forbidden_attributes": [
+      "aadhaar",
+      "caste",
+      "gender",
+      "pan_number",
+      "religion"
+    ],
+    "retention_days": {}
+  },
+  "evaluation": {
+    "cases": 1,
+    "fairness": [],
+    "robustness": [],
+    "explanations_checked": false
+  },
+  "limitations": [
+    "Generated from the source code: it documents design-time safeguards and test coverage, not measured real-world performance.",
+    "Offline evals use a deterministic mock model; repeat them with `algo eval --live` before deployment.",
+    "Protected attributes are withheld by keyword. Proxies such as names, postcodes or schools can still carry them; counterfactual fairness tests measure the effect.",
+    "Fairness has not been tested (no `expect fair` case).",
+    "Robustness has not been tested (no `expect robust` case).",
+    "Quantum results come from a simulator unless a hardware backend is configured."
+  ]
+}

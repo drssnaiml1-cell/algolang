@@ -43,6 +43,86 @@ def slug(s: str) -> str:
     return re.sub(r"[^a-z0-9]+", "-", s.lower()).strip("-")[:60] or "case"
 
 
+# ───────────────────────── v0.4: fairness, robustness, explanations ─────────────────────────
+def decision(res):
+    """What a run decided, independent of wording: its status and which agents ran with which outcome."""
+    calls = sorted((c.get("agent", ""), c.get("status", "")) for c in res.calls if c.get("agent"))
+    return (res.status, tuple(calls))
+
+
+def scores(res):
+    out = {}
+    for c in res.calls:
+        v = c.get("output")
+        if rt.base_type(str(c.get("returns", ""))) == "score" and isinstance(v, (int, float)) and not isinstance(v, bool):
+            out.setdefault(c["agent"], []).append(float(v))
+    return out
+
+
+def counterfactuals(inputs, values):
+    """One input set per value. A listed value already in the text is swapped for each other value;
+    otherwise the value is stated at the start of the longest text input."""
+    texts = {k: v for k, v in inputs.items() if isinstance(v, str)}
+    pat = re.compile(r"\b(" + "|".join(re.escape(v) for v in sorted(values, key=len, reverse=True)) + r")\b", re.I)
+    present = any(pat.search(v) for v in texts.values())
+    target = max(texts, key=lambda k: len(texts[k])) if texts else None
+    out = []
+    for val in values:
+        new = dict(inputs)
+        if present:
+            for k, v in texts.items():
+                new[k] = pat.sub(lambda m, val=val: val.capitalize() if m.group(0)[0].isupper() else val, v)
+        elif target is not None:
+            new[target] = f"[{val}] {texts[target]}"
+        out.append((val, new))
+    return out
+
+
+def check_fair(program, case, flow, attr, values, live, audit_dir, tolerance):
+    runs = [(v, program.run(live=live, quiet=True, audit_dir=audit_dir, flow=flow, **inp))
+            for v, inp in counterfactuals(case.inputs, values)]
+    base = decision(runs[0][1])
+    changed = [v for v, r in runs[1:] if decision(r) != base]
+    gap = 0.0
+    per = [scores(r) for _v, r in runs]
+    for agent in set().union(*per):
+        vals = [x for sc in per for x in sc.get(agent, [])]
+        if len(vals) > 1:
+            gap = max(gap, max(vals) - min(vals))
+    ok = not changed and gap <= tolerance
+    return dict(attribute=attr, values=values, decision_changed_for=changed, score_gap=round(gap, 4),
+                tolerance=tolerance, passed=ok)
+
+
+def check_robust(program, case, flow, perts, op, need, live, audit_dir):
+    import algotrust
+    algotrust.MOCK_CANONICAL[0] = not live           # offline: an ideal model, so the program itself is tested
+    try:
+        base = decision(program.run(live=live, quiet=True, audit_dir=audit_dir, flow=flow, **case.inputs))
+        same, broken = 0, []
+        variants = [(k, sd) for k in perts for sd in (1, 2)]
+        for kind, sd in variants:
+            inp = {k: algotrust.perturb(v, kind, sd) if isinstance(v, str) else v for k, v in case.inputs.items()}
+            if decision(program.run(live=live, quiet=True, audit_dir=audit_dir, flow=flow, **inp)) == base:
+                same += 1
+            else:
+                first = next((v for v in inp.values() if isinstance(v, str)), "")
+                broken.append(dict(perturbation=kind, variant=sd, input=first[:120]))
+    finally:
+        algotrust.MOCK_CANONICAL[0] = False
+    score = same / len(variants) if variants else 1.0
+    return dict(perturbations=perts, variants=len(variants), consistency=round(score, 3), required=f"{op} {need:g}",
+                broken_by=broken, passed=OPS[op](score, need))
+
+
+def check_explained(res):
+    ex = [c for c in res.calls if c.get("explanation")]
+    bad = [c["agent"] for c in ex if not c["explanation"].get("grounded")]
+    if not ex:
+        return ["no agent gave an explanation (add `explain with evidence` to a policy)"]
+    return [f"{a}'s explanation is not grounded in its inputs or tool results" for a in bad]
+
+
 def check(expects, res) -> list[str]:
     """Return the expectations a RunResult fails (empty list = pass)."""
     fails = []
@@ -79,6 +159,8 @@ def run_evals(program, live=False, replay=None, record=None, only=None, audit_di
     if replay == "":
         trace_root = base / "runs" / "traces" / "eval"
     results = []
+    if audit_dir is None:              # eval runs keep their own audit logs and review queue
+        audit_dir = str(base / "runs" / "eval")
     for ev in program.evals:
         if only and ev.name != only:
             continue
@@ -99,13 +181,39 @@ def run_evals(program, live=False, replay=None, record=None, only=None, audit_di
                 res = program.run(live=live, quiet=True, audit_dir=audit_dir, trace=str(tpath), flow=ev.flow,
                                   **case.inputs)
             fails = check(case.expects, res)
+            trust = {}
+            for kind, op, val in case.expects:
+                if kind == "explained":
+                    fails += check_explained(res)
+                elif kind in ("fair", "robust") and replay is not None:
+                    trust["note"] = "fairness and robustness tests run offline or with --live, not from traces"
+                elif kind == "fair":
+                    tol = float(program_cfg().get("fairness_tolerance", 0.05))
+                    r = check_fair(program, case, ev.flow, op, val, live, audit_dir, tol)
+                    trust.setdefault("fairness", []).append(r)
+                    if not r["passed"]:
+                        why = (f"decision changed for {', '.join(r['decision_changed_for'])}" if r["decision_changed_for"]
+                               else f"scores differ by {r['score_gap']:.3f} > {tol}")
+                        fails.append(f"not fair across {op}: {why}")
+                elif kind == "robust":
+                    perts, need = val
+                    r = check_robust(program, case, ev.flow, perts, op, need, live, audit_dir)
+                    trust["robustness"] = r
+                    if not r["passed"]:
+                        b = r["broken_by"][0] if r["broken_by"] else {}
+                        fails.append(f"robustness: consistency {r['consistency']:.2f}, expected {r['required']}"
+                                     + (f" (broken by {b['perturbation']}: {b['input']!r})" if b else ""))
             if replay_info and replay_info["misses"]:
                 fails.append("inputs changed since the trace was recorded for: "
                              + ", ".join(sorted({m["agent"] for m in replay_info["misses"]})))
             results.append(dict(eval=ev.name, case=case.name, passed=not fails, failures=fails,
                                 seconds=round(time.time() - t0, 3), trace=str(tpath), stats=res.stats,
-                                status=res.status, replay=replay_info))
+                                status=res.status, replay=replay_info, trust=trust or None))
     return results
+
+
+def program_cfg():
+    return rt.load_config()
 
 
 def cli_eval(file, live=False, replay=None, record=None, only=None, as_json=False):
@@ -141,6 +249,14 @@ def cli_eval(file, live=False, replay=None, record=None, only=None, as_json=Fals
         rp = r.get("replay")
         rp = f"  {DIM}replayed {rp['hits']} calls{END}" if rp else ""
         print(f"    {mark} {r['case']}{cost}{rp}")
+        t = r.get("trust") or {}
+        for fr in t.get("fairness", []):
+            print(f"        {DIM}fair across {fr['attribute']} ({', '.join(fr['values'])}): "
+                  f"{'same decision' if not fr['decision_changed_for'] else 'decision changed'}, score gap {fr['score_gap']:.3f}{END}")
+        if t.get("robustness"):
+            rb = t["robustness"]
+            print(f"        {DIM}robust to {', '.join(rb['perturbations'])}: consistency {rb['consistency']:.2f} "
+                  f"over {rb['variants']} variants{END}")
         for f in r["failures"]:
             print(f"        {RED}{f}{END}")
     print(f"\n  {len(results) - failed}/{len(results)} cases pass" + (f"  ·  {RED}{failed} failing{END}" if failed else ""))

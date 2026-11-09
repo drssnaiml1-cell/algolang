@@ -1,0 +1,187 @@
+{
+  "card": "AlgoLang AI system card",
+  "card_version": 1,
+  "algolang": "0.4.0",
+  "program": "portfolio_optimizer",
+  "source": "portfolio_optimizer.algo",
+  "source_sha256": "895f0e969eb9aeb853b95a9261db74a0c55d2cce85d5be04310f865b7c195384",
+  "purpose": "Internal portfolio construction research",
+  "risk_level": "minimal",
+  "disclosure": null,
+  "flows": [
+    {
+      "name": "main",
+      "inputs": [
+        "request"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "ClassicalFallback",
+      "role": "Quant analyst",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "gender",
+        "pan_number",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Proposal",
+      "role": "Portfolio manager",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.99",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "gender",
+        "pan_number",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "QuantumOptimizer",
+      "role": "Quantum optimisation engineer",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "quantum.portfolio"
+      ],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "gender",
+        "pan_number",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_cost_usd": 0.01
+      },
+      "imported_from": null
+    },
+    {
+      "name": "RiskReview",
+      "role": "Chief risk officer",
+      "returns": "uncertain<score>",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "kb.search"
+      ],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "gender",
+        "pan_number",
+        "religion"
+      ],
+      "samples": 5,
+      "budgets": {
+        "budget_cost_usd": 0.04
+      },
+      "imported_from": null
+    },
+    {
+      "name": "Universe",
+      "role": "Market data analyst",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "market.universe"
+      ],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "aadhaar",
+        "caste",
+        "gender",
+        "pan_number",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_cost_usd": 0.005
+      },
+      "imported_from": null
+    }
+  ],
+  "tools": [
+    {
+      "name": "kb.search",
+      "kind": "built-in",
+      "trusted": true,
+      "description": "Search the organisation's knowledge base of .txt and .md documents"
+    },
+    {
+      "name": "market.universe",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Eligible assets with expected return and volatility (large caps; say 'mid-caps' to include them)"
+    },
+    {
+      "name": "quantum.portfolio",
+      "kind": "built-in quantum",
+      "trusted": true,
+      "description": "Choose k assets with QAOA (mean–variance with a cardinality constraint), verified exactly"
+    }
+  ],
+  "streams": [],
+  "circuits": [],
+  "human_oversight": [
+    "ClassicalFallback: reviewed when confidence < 0.8",
+    "Proposal: reviewed when confidence < 0.99",
+    "QuantumOptimizer: reviewed when confidence < 0.8",
+    "RiskReview: reviewed when confidence < 0.8",
+    "Universe: reviewed when confidence < 0.8"
+  ],
+  "data_protection": {
+    "redact_pii": "no agents",
+    "forbidden_attributes": [
+      "aadhaar",
+      "caste",
+      "gender",
+      "pan_number",
+      "religion"
+    ],
+    "retention_days": {}
+  },
+  "evaluation": {
+    "cases": 2,
+    "fairness": [],
+    "robustness": [],
+    "explanations_checked": false
+  },
+  "limitations": [
+    "Generated from the source code: it documents design-time safeguards and test coverage, not measured real-world performance.",
+    "Offline evals use a deterministic mock model; repeat them with `algo eval --live` before deployment.",
+    "Protected attributes are withheld by keyword. Proxies such as names, postcodes or schools can still carry them; counterfactual fairness tests measure the effect.",
+    "Fairness has not been tested (no `expect fair` case).",
+    "Robustness has not been tested (no `expect robust` case).",
+    "Quantum results come from a simulator unless a hardware backend is configured."
+  ]
+}

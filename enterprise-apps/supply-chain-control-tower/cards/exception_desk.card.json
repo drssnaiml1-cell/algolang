@@ -1,0 +1,271 @@
+{
+  "card": "AlgoLang AI system card",
+  "card_version": 1,
+  "algolang": "0.4.0",
+  "program": "exception_desk",
+  "source": "exception_desk.algo",
+  "source_sha256": "0412a1706f1abc67485575636665fa2f0c9e0f5496fc262050ce576f060cb0d3",
+  "purpose": "Shipment exception handling for the control tower",
+  "risk_level": "minimal",
+  "disclosure": null,
+  "flows": [
+    {
+      "name": "main",
+      "inputs": [
+        "exception"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "StockImpact",
+      "role": "Inventory planner",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "inventory.levels"
+      ],
+      "human_oversight": "reviewed when confidence < 0.7",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Tracker",
+      "role": "Shipment tracking analyst",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "shipment.track"
+      ],
+      "human_oversight": "reviewed when confidence < 0.7",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "ex.Carrier",
+      "role": "Carrier specialist, shipment exception router",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.7",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 4000
+      },
+      "imported_from": "pack supplychain.shipment_exceptions"
+    },
+    {
+      "name": "ex.Clarity",
+      "role": "Clarity specialist, shipment exception router",
+      "returns": "score",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 4000
+      },
+      "imported_from": "pack supplychain.shipment_exceptions"
+    },
+    {
+      "name": "ex.ControlTower",
+      "role": "Control tower specialist, shipment exception router",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.7",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 4000
+      },
+      "imported_from": "pack supplychain.shipment_exceptions"
+    },
+    {
+      "name": "ex.Critical",
+      "role": "Critical specialist, shipment exception router",
+      "returns": "score",
+      "model": "fast",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.7",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 4000
+      },
+      "imported_from": "pack supplychain.shipment_exceptions"
+    },
+    {
+      "name": "rd.Cost",
+      "role": "Cost specialist, route disruption response",
+      "returns": "score",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.9",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack supplychain.route_disruption"
+    },
+    {
+      "name": "rd.Impact",
+      "role": "Impact specialist, route disruption response",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.7",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack supplychain.route_disruption"
+    },
+    {
+      "name": "rd.Options",
+      "role": "Options specialist, route disruption response",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.7",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack supplychain.route_disruption"
+    },
+    {
+      "name": "rd.Plan",
+      "role": "Plan specialist, route disruption response",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.7",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack supplychain.route_disruption"
+    }
+  ],
+  "tools": [
+    {
+      "name": "inventory.levels",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Stock on hand and days of cover for SKUs named in the request"
+    },
+    {
+      "name": "shipment.track",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Status, location and ETA of a shipment (SHP-#####)"
+    }
+  ],
+  "streams": [],
+  "circuits": [],
+  "human_oversight": [
+    "StockImpact: reviewed when confidence < 0.7",
+    "Tracker: reviewed when confidence < 0.7",
+    "ex.Carrier: reviewed when confidence < 0.7",
+    "ex.Clarity: reviewed when confidence < 0.8",
+    "ex.ControlTower: reviewed when confidence < 0.7",
+    "ex.Critical: reviewed when confidence < 0.7",
+    "rd.Cost: reviewed when confidence < 0.9",
+    "rd.Impact: reviewed when confidence < 0.7",
+    "rd.Options: reviewed when confidence < 0.7",
+    "rd.Plan: reviewed when confidence < 0.7"
+  ],
+  "data_protection": {
+    "redact_pii": "no agents",
+    "forbidden_attributes": [
+      "caste",
+      "gender",
+      "religion"
+    ],
+    "retention_days": {}
+  },
+  "evaluation": {
+    "cases": 0,
+    "fairness": [],
+    "robustness": [],
+    "explanations_checked": false
+  },
+  "limitations": [
+    "Generated from the source code: it documents design-time safeguards and test coverage, not measured real-world performance.",
+    "Offline evals use a deterministic mock model; repeat them with `algo eval --live` before deployment.",
+    "Protected attributes are withheld by keyword. Proxies such as names, postcodes or schools can still carry them; counterfactual fairness tests measure the effect.",
+    "Fairness has not been tested (no `expect fair` case).",
+    "Robustness has not been tested (no `expect robust` case)."
+  ]
+}

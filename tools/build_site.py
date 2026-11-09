@@ -401,7 +401,7 @@ def downloads():
     rows = [
         ("Python package", f'<code>pip install git+{REPO}</code>, or the wheel from <a href="{rel}">the latest release</a>', "The SDK, CLI, Studio, Prompt UI and all 120 packs"),
         ("Full source zip", f'<a href="{rel}">AlgoLang_v{VERSION}.zip on GitHub Releases</a>', "Installers for Windows, Linux and macOS, examples, notebook and VS Code highlighting"),
-        ("Language manual (PDF)", f'<a href="downloads/AlgoLang_Documentation_v{MINOR}.pdf">AlgoLang_Documentation_v{MINOR}.pdf</a>', "91 pages: language, runtime, enterprise edition, v0.3 uncertainty, evals, MCP and budgets, responsible AI"),
+        ("Language manual (PDF)", f'<a href="downloads/AlgoLang_Documentation_v{MINOR}.pdf">AlgoLang_Documentation_v{MINOR}.pdf</a>', "98 pages: language, runtime, enterprise edition, uncertainty, evals, MCP, budgets, streams, quantum and v0.4 trustworthy AI"),
         ("50 Sample Programs (PDF)", '<a href="downloads/AlgoLang_50_Sample_Programs.pdf">AlgoLang_50_Sample_Programs.pdf</a>', "106 pages: 50 programs in 20 sectors, each with input, code and output in all three modes"),
         ("Presentation (PDF)", '<a href="downloads/AlgoLang_Presentation.pdf">AlgoLang_Presentation.pdf</a>', "Slides comparing AlgoLang with other languages, with real applications"),
         ("Notebook", '<a href="downloads/AlgoLang_Notebook.ipynb">AlgoLang_Notebook.ipynb</a>', "Self-contained: upload to Google Colab and choose Run all"),

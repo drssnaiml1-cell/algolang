@@ -14,13 +14,14 @@
           "adm.StatementReviewer",
           "adm.PotentialReviewer",
           "adm.AdmissionsPanel",
-          "adm.Letter"
+          "adm.Letter",
+          "PanelDecision"
         ],
         "tools_used": [
           "seats.lookup"
         ],
         "output_contains": "merit cut-off 82.5",
-        "emits": 3,
+        "emits": 4,
         "max_tokens": 1200
       }
     }

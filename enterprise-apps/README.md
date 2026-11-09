@@ -27,6 +27,20 @@ They all run offline as they are, and with real Claude models when you add `--li
 
 **10 applications · 25 programs · 34 behaviour tests**, all run in CI on every push.
 
+## Risk levels and system cards (v0.4)
+
+Every program declares a risk level, and every app has a `cards/` folder with a generated AI system card per program (`algo card programs/*.algo --out cards`; CI fails if one is stale).
+
+| Risk | Programs | What the compiler requires |
+|---|---|---|
+| **High** | `loan_decision` (credit), `admissions`, `er_triage`, `welfare_check` | human oversight (four-eyes or always-on review), `explain with evidence`, `redact pii`, fairness and robustness tests, signed audit logs, a disclosure |
+| **Limited** | `kyc_onboarding`, `grievance_desk`, `claims_intake`, `customer_desk`, `discharge`, `phishing_desk` | a disclosure that people are dealing with AI |
+| **Minimal** | the other 15 internal tools | nothing extra |
+
+```bash
+cd bank-credit-onboarding && algo trust report programs --html trust.html
+```
+
 ## Run every application
 
 ```bash

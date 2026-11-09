@@ -1,4 +1,6 @@
 // NovaShield customer desk — answers policyholder messages, checks tone before sending.
+risk limited "Replies to policyholder messages"
+disclose "You are chatting with NovaShield's AI assistant. Ask for a person at any time."
 use pack insurance.query_router as desk
 tool policydb.lookup
 

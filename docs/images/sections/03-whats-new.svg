@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 446" width="1280" height="446" role="img" aria-label="v0.3 → v0.3.4: from uncertainty to real-time and quantum">
-  <title>v0.3 → v0.3.4: from uncertainty to real-time and quantum</title>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 446" width="1280" height="446" role="img" aria-label="v0.4 Trustworthy AI: safeguards the compiler checks, evidence the runtime proves">
+  <title>v0.4 Trustworthy AI: safeguards the compiler checks, evidence the runtime proves</title>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#081428"/><stop offset=".6" stop-color="#0e2140"/><stop offset="1" stop-color="#132c55"/></linearGradient>
     <linearGradient id="gold" x1="0" x2="1"><stop offset="0" stop-color="#e9c75a"/><stop offset="1" stop-color="#c9a227"/></linearGradient>
@@ -27,107 +27,108 @@
   <rect width="1280" height="446" fill="url(#bg)"/>
   <rect width="1280" height="446" fill="url(#grid)"/>
   <rect width="1280" height="4" fill="url(#gold)"/>
-  <text x="40" y="40" fill="#c9a227" font-size="13" letter-spacing="2.6" font-weight="700">3 · WHAT'S NEW IN V0.3</text>
-  <text x="40" y="72" fill="#f4f1e8" font-size="26" font-weight="700">v0.3 → v0.3.4: from uncertainty to real-time and quantum</text>
-  <text x="40" y="96" fill="#c9b98a" font-size="16">Each feature is checked by the compiler and covered by tests and CI.</text>
+  <text x="40" y="40" fill="#c9a227" font-size="13" letter-spacing="2.6" font-weight="700">3 · WHAT'S NEW IN V0.4</text>
+  <text x="40" y="72" fill="#f4f1e8" font-size="26" font-weight="700">v0.4 Trustworthy AI: safeguards the compiler checks, evidence the runtime proves</text>
+  <text x="40" y="96" fill="#c9b98a" font-size="16">Ten properties, each enforced in code, tested in eval blocks and reported for auditors.</text>
   
 <g class="rise" style="animation-delay:0.00s">
 <rect x="40.0" y="124" width="225.6" height="128" rx="12" class="card"/>
 <rect x="40.0" y="124" width="225.6" height="128" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.00s"/>
 <circle cx="66.0" cy="152" r="15" fill="url(#gold)"/><text x="66.0" y="157" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">1</text>
-<text x="90.0" y="157" fill="#f4f1e8" font-size="16" font-weight="700">uncertain&lt;T&gt;</text>
-<text x="58.0" y="186" fill="#c9b98a" font-size="13.5">Sampled agents;</text>
-<text x="58.0" y="205" fill="#c9b98a" font-size="13.5">confidence from</text>
-<text x="58.0" y="224" fill="#c9b98a" font-size="13.5">agreement; E117 guard.</text>
-<text x="251.6" y="240" fill="#e9c75a" font-size="12" text-anchor="end" class="mono">v0.3</text>
+<text x="90.0" y="157" fill="#f4f1e8" font-size="16" font-weight="700">Fairness</text>
+<text x="58.0" y="186" fill="#c9b98a" font-size="13.5">expect fair across gender</text>
+<text x="58.0" y="205" fill="#c9b98a" font-size="13.5">[…]: same decision for</text>
+<text x="58.0" y="224" fill="#c9b98a" font-size="13.5">every value.</text>
+<text x="251.6" y="240" fill="#e9c75a" font-size="12" text-anchor="end" class="mono">evals</text>
 </g>
 <g class="rise" style="animation-delay:0.08s">
 <rect x="283.6" y="124" width="225.6" height="128" rx="12" class="card"/>
 <rect x="283.6" y="124" width="225.6" height="128" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.12s"/>
 <circle cx="309.6" cy="152" r="15" fill="url(#gold)"/><text x="309.6" y="157" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">2</text>
-<text x="333.6" y="157" fill="#f4f1e8" font-size="16" font-weight="700">eval + replay</text>
-<text x="301.6" y="186" fill="#c9b98a" font-size="13.5">Behaviour tests in the</text>
-<text x="301.6" y="205" fill="#c9b98a" font-size="13.5">language; free, exact</text>
-<text x="301.6" y="224" fill="#c9b98a" font-size="13.5">trace replay.</text>
-<text x="495.2" y="240" fill="#e9c75a" font-size="12" text-anchor="end" class="mono">v0.3</text>
+<text x="333.6" y="157" fill="#f4f1e8" font-size="16" font-weight="700">Robustness</text>
+<text x="301.6" y="186" fill="#c9b98a" font-size="13.5">expect robust: typos,</text>
+<text x="301.6" y="205" fill="#c9b98a" font-size="13.5">paraphrase, reorder keep</text>
+<text x="301.6" y="224" fill="#c9b98a" font-size="13.5">the decision.</text>
+<text x="495.2" y="240" fill="#e9c75a" font-size="12" text-anchor="end" class="mono">evals</text>
 </g>
 <g class="rise" style="animation-delay:0.16s">
 <rect x="527.2" y="124" width="225.6" height="128" rx="12" class="card"/>
 <rect x="527.2" y="124" width="225.6" height="128" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.24s"/>
 <circle cx="553.2" cy="152" r="15" fill="url(#gold)"/><text x="553.2" y="157" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">3</text>
-<text x="577.2" y="157" fill="#f4f1e8" font-size="16" font-weight="700">MCP tools</text>
-<text x="545.2" y="186" fill="#c9b98a" font-size="13.5">Bind tools on any Model</text>
-<text x="545.2" y="205" fill="#c9b98a" font-size="13.5">Context Protocol server.</text>
-<text x="738.8" y="240" fill="#e9c75a" font-size="12" text-anchor="end" class="mono">v0.3</text>
+<text x="577.2" y="157" fill="#f4f1e8" font-size="16" font-weight="700">Transparency</text>
+<text x="545.2" y="186" fill="#c9b98a" font-size="13.5">algo card: an AI system</text>
+<text x="545.2" y="205" fill="#c9b98a" font-size="13.5">card generated from the</text>
+<text x="545.2" y="224" fill="#c9b98a" font-size="13.5">source.</text>
+<text x="738.8" y="240" fill="#e9c75a" font-size="12" text-anchor="end" class="mono">algo card</text>
 </g>
 <g class="rise" style="animation-delay:0.24s">
 <rect x="770.8" y="124" width="225.6" height="128" rx="12" class="card"/>
 <rect x="770.8" y="124" width="225.6" height="128" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.36s"/>
 <circle cx="796.8" cy="152" r="15" fill="url(#gold)"/><text x="796.8" y="157" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">4</text>
-<text x="820.8" y="157" fill="#f4f1e8" font-size="16" font-weight="700">Cost &amp; energy</text>
-<text x="788.8" y="186" fill="#c9b98a" font-size="13.5">Budgets in $, ₹ and Wh,</text>
-<text x="788.8" y="205" fill="#c9b98a" font-size="13.5">checked before every</text>
-<text x="788.8" y="224" fill="#c9b98a" font-size="13.5">call.</text>
-<text x="982.4" y="240" fill="#e9c75a" font-size="12" text-anchor="end" class="mono">v0.3</text>
+<text x="820.8" y="157" fill="#f4f1e8" font-size="16" font-weight="700">Explainability</text>
+<text x="788.8" y="186" fill="#c9b98a" font-size="13.5">explain with evidence:</text>
+<text x="788.8" y="205" fill="#c9b98a" font-size="13.5">reasons with quotes that</text>
+<text x="788.8" y="224" fill="#c9b98a" font-size="13.5">must be real.</text>
+<text x="982.4" y="240" fill="#e9c75a" font-size="12" text-anchor="end" class="mono">policy</text>
 </g>
 <g class="rise" style="animation-delay:0.32s">
 <rect x="1014.4" y="124" width="225.6" height="128" rx="12" class="card"/>
 <rect x="1014.4" y="124" width="225.6" height="128" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.48s"/>
 <circle cx="1040.4" cy="152" r="15" fill="url(#gold)"/><text x="1040.4" y="157" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">5</text>
-<text x="1064.4" y="157" fill="#f4f1e8" font-size="16" font-weight="700">Language server</text>
-<text x="1032.4" y="186" fill="#c9b98a" font-size="13.5">Live errors, hover,</text>
-<text x="1032.4" y="205" fill="#c9b98a" font-size="13.5">completion,</text>
-<text x="1032.4" y="224" fill="#c9b98a" font-size="13.5">go-to-definition.</text>
-<text x="1226.0" y="240" fill="#e9c75a" font-size="12" text-anchor="end" class="mono">v0.3</text>
+<text x="1064.4" y="157" fill="#f4f1e8" font-size="16" font-weight="700">Privacy</text>
+<text x="1032.4" y="186" fill="#c9b98a" font-size="13.5">redact pii and withheld</text>
+<text x="1032.4" y="205" fill="#c9b98a" font-size="13.5">attributes before any</text>
+<text x="1032.4" y="224" fill="#c9b98a" font-size="13.5">model call.</text>
+<text x="1226.0" y="240" fill="#e9c75a" font-size="12" text-anchor="end" class="mono">policy</text>
 </g>
 <g class="rise" style="animation-delay:0.40s">
 <rect x="40.0" y="270" width="225.6" height="128" rx="12" class="card"/>
 <rect x="40.0" y="270" width="225.6" height="128" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.60s"/>
 <circle cx="66.0" cy="298" r="15" fill="url(#gold)"/><text x="66.0" y="303" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">6</text>
-<text x="90.0" y="303" fill="#f4f1e8" font-size="16" font-weight="700">stream blocks</text>
-<text x="58.0" y="332" fill="#c9b98a" font-size="13.5">A flow runs once for</text>
-<text x="58.0" y="351" fill="#c9b98a" font-size="13.5">every event on a topic.</text>
-<text x="251.6" y="386" fill="#e9c75a" font-size="12" text-anchor="end" class="mono">v0.3.1</text>
+<text x="90.0" y="303" fill="#f4f1e8" font-size="16" font-weight="700">Security</text>
+<text x="58.0" y="332" fill="#c9b98a" font-size="13.5">untrusted tools are</text>
+<text x="58.0" y="351" fill="#c9b98a" font-size="13.5">fenced; MCP servers</text>
+<text x="58.0" y="370" fill="#c9b98a" font-size="13.5">pinned by hash.</text>
+<text x="251.6" y="386" fill="#e9c75a" font-size="12" text-anchor="end" class="mono">tool</text>
 </g>
 <g class="rise" style="animation-delay:0.48s">
 <rect x="283.6" y="270" width="225.6" height="128" rx="12" class="card"/>
 <rect x="283.6" y="270" width="225.6" height="128" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.72s"/>
 <circle cx="309.6" cy="298" r="15" fill="url(#gold)"/><text x="309.6" y="303" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">7</text>
-<text x="333.6" y="303" fill="#f4f1e8" font-size="16" font-weight="700">Quantum tools</text>
-<text x="301.6" y="332" fill="#c9b98a" font-size="13.5">QAOA verified exactly,</text>
-<text x="301.6" y="351" fill="#c9b98a" font-size="13.5">OpenQASM, Grover, qubit</text>
-<text x="301.6" y="370" fill="#c9b98a" font-size="13.5">budgets.</text>
-<text x="495.2" y="386" fill="#e9c75a" font-size="12" text-anchor="end" class="mono">v0.3.2</text>
+<text x="333.6" y="303" fill="#f4f1e8" font-size="16" font-weight="700">Human oversight</text>
+<text x="301.6" y="332" fill="#c9b98a" font-size="13.5">require human for always</text>
+<text x="301.6" y="351" fill="#c9b98a" font-size="13.5">· require approvals 2.</text>
+<text x="495.2" y="386" fill="#e9c75a" font-size="12" text-anchor="end" class="mono">policy</text>
 </g>
 <g class="rise" style="animation-delay:0.56s">
 <rect x="527.2" y="270" width="225.6" height="128" rx="12" class="card"/>
 <rect x="527.2" y="270" width="225.6" height="128" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.84s"/>
 <circle cx="553.2" cy="298" r="15" fill="url(#gold)"/><text x="553.2" y="303" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">8</text>
-<text x="577.2" y="303" fill="#f4f1e8" font-size="16" font-weight="700">circuit blocks</text>
-<text x="545.2" y="332" fill="#c9b98a" font-size="13.5">Quantum circuits written</text>
-<text x="545.2" y="351" fill="#c9b98a" font-size="13.5">in AlgoLang, checked</text>
-<text x="545.2" y="370" fill="#c9b98a" font-size="13.5">(E124).</text>
-<text x="738.8" y="386" fill="#e9c75a" font-size="12" text-anchor="end" class="mono">v0.3.3</text>
+<text x="577.2" y="303" fill="#f4f1e8" font-size="16" font-weight="700">Accountability</text>
+<text x="545.2" y="332" fill="#c9b98a" font-size="13.5">Ed25519-signed audit</text>
+<text x="545.2" y="351" fill="#c9b98a" font-size="13.5">chains and evidence</text>
+<text x="545.2" y="370" fill="#c9b98a" font-size="13.5">packs.</text>
+<text x="738.8" y="386" fill="#e9c75a" font-size="12" text-anchor="end" class="mono">audit</text>
 </g>
 <g class="rise" style="animation-delay:0.64s">
 <rect x="770.8" y="270" width="225.6" height="128" rx="12" class="card"/>
 <rect x="770.8" y="270" width="225.6" height="128" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.96s"/>
 <circle cx="796.8" cy="298" r="15" fill="url(#gold)"/><text x="796.8" y="303" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">9</text>
-<text x="820.8" y="303" fill="#f4f1e8" font-size="16" font-weight="700">AlgoPulse™</text>
-<text x="788.8" y="332" fill="#c9b98a" font-size="13.5">Built-in durable event</text>
-<text x="788.8" y="351" fill="#c9b98a" font-size="13.5">engine: local bus or</text>
-<text x="788.8" y="370" fill="#c9b98a" font-size="13.5">served bus.</text>
-<text x="982.4" y="386" fill="#e9c75a" font-size="12" text-anchor="end" class="mono">v0.3.4</text>
+<text x="820.8" y="303" fill="#f4f1e8" font-size="16" font-weight="700">Risk-based rules</text>
+<text x="788.8" y="332" fill="#c9b98a" font-size="13.5">risk high makes the</text>
+<text x="788.8" y="351" fill="#c9b98a" font-size="13.5">compiler demand every</text>
+<text x="788.8" y="370" fill="#c9b98a" font-size="13.5">safeguard.</text>
+<text x="982.4" y="386" fill="#e9c75a" font-size="12" text-anchor="end" class="mono">E125–E130</text>
 </g>
 <g class="rise" style="animation-delay:0.72s">
 <rect x="1014.4" y="270" width="225.6" height="128" rx="12" class="card"/>
 <rect x="1014.4" y="270" width="225.6" height="128" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:1.08s"/>
 <circle cx="1040.4" cy="298" r="15" fill="url(#gold)"/><text x="1040.4" y="303" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">10</text>
-<text x="1064.4" y="303" fill="#f4f1e8" font-size="16" font-weight="700">Live figures</text>
-<text x="1032.4" y="332" fill="#c9b98a" font-size="13.5">Every app figure drawn</text>
-<text x="1032.4" y="351" fill="#c9b98a" font-size="13.5">from its program by the</text>
-<text x="1032.4" y="370" fill="#c9b98a" font-size="13.5">toolchain.</text>
-<text x="1226.0" y="386" fill="#e9c75a" font-size="12" text-anchor="end" class="mono">v0.3.4</text>
+<text x="1064.4" y="303" fill="#f4f1e8" font-size="16" font-weight="700">Assurance</text>
+<text x="1032.4" y="332" fill="#c9b98a" font-size="13.5">algo trust report: ten</text>
+<text x="1032.4" y="351" fill="#c9b98a" font-size="13.5">properties, NIST AI RMF,</text>
+<text x="1032.4" y="370" fill="#c9b98a" font-size="13.5">EU AI Act.</text>
+<text x="1226.0" y="386" fill="#e9c75a" font-size="12" text-anchor="end" class="mono">report</text>
 </g>
   <text x="1240" y="432" fill="#9aa6c2" fill-opacity=".7" font-size="11" text-anchor="end">AlgoLang · AlgoProfessor AI R&amp;D Solutions</text>
 </svg>

@@ -421,7 +421,8 @@ def app_figure(app: str, prog_path: Path):
             uses = list(ag.uses) if ag else []
             tools.update(uses)
             pol = ag.policy if ag else {}
-            is_h = bool(pol.get("human_below") or pol.get("require_human"))
+            is_h = bool(pol.get("human_below") or pol.get("require_human") or pol.get("human_always")
+                        or pol.get("approvals"))
             is_u = bool(ag and str(ag.returns).startswith("uncertain"))
             human += is_h
             unc += is_u
@@ -447,7 +448,10 @@ def app_figure(app: str, prog_path: Path):
             shapes.append("</g>")
 
     plural = (lambda n, w: f"{n} {w}{'' if n == 1 else 's'}")
-    chips = [plural(n_agents, "agent call"), plural(len(tools), "tool"), plural(n_dec, "decision")]
+    level = prog.risk[0] if getattr(prog, "risk", None) else None
+    chips = ([f"{level} risk"] if level else []) + \
+        [plural(n_agents, "agent call"), plural(len(tools), "tool"), plural(n_dec, "decision")]
+    pols = [a.policy for a in prog.agents.values()]
     if unc:
         chips.append(f"{unc} uncertain")
     if human:
@@ -456,12 +460,21 @@ def app_figure(app: str, prog_path: Path):
         chips.append(f"stream · pulse/{s.bus}")
     if getattr(prog, "circuits", None):
         chips.append(f"{len(prog.circuits)} circuit{'s' if len(prog.circuits) > 1 else ''}")
+    if any(pl.get("approvals", 0) >= 2 for pl in pols):
+        chips.append("four-eyes")
+    if pols and all(pl.get("redact_pii") for pl in pols):
+        chips.append("PII masked")
+    if any(pl.get("explain") == "evidence" for pl in pols):
+        chips.append("explained")
+    risk_color = {"high": "#e0705c", "limited": "#e9c75a", "minimal": "#6cc28a"}
     right, cx0 = [], 40
     for c in chips:
         w = 16 + len(c) * 7.3
-        right.append(f'<rect x="{cx0:.0f}" y="{top - 30}" width="{w:.0f}" height="24" rx="12" fill="{GOLD}" fill-opacity=".13" '
-                     f'stroke="{GOLD}" stroke-opacity=".55"/><text x="{cx0 + w / 2:.0f}" y="{top - 13}" fill="#f1dc94" '
-                     f'font-size="12.5" text-anchor="middle">{x(c)}</text>')
+        col = risk_color.get(c.split(" ")[0], GOLD) if c.endswith(" risk") else GOLD
+        txt = col if c.endswith(" risk") else "#f1dc94"
+        right.append(f'<rect x="{cx0:.0f}" y="{top - 30}" width="{w:.0f}" height="24" rx="12" fill="{col}" fill-opacity=".13" '
+                     f'stroke="{col}" stroke-opacity=".75"/><text x="{cx0 + w / 2:.0f}" y="{top - 13}" fill="{txt}" '
+                     f'font-size="12.5" font-weight="{700 if c.endswith(" risk") else 400}" text-anchor="middle">{x(c)}</text>')
         cx0 += w + 10
     ly = h - 62
     leg = [("agent", f'<rect x="0" y="-9" width="26" height="18" rx="5" fill="{CARD}" stroke="{GOLD}"/>'),
@@ -490,14 +503,14 @@ SECTIONS = {
         subtitle="Every objective is enforced by the compiler or the runtime, not left to good intentions.", cols=5, lines=3,
         items=[dict(t="Agent-native", d="No functions: every task is an agent with role, goal, tools, model and policy."),
                dict(t="Readable flows", d="Call agents, run them in parallel, branch, emit. Nothing else."),
-               dict(t="Safe before run", d="25 compile-time checks stop unsafe programs before any call."),
+               dict(t="Safe before run", d="31 compile-time checks stop unsafe programs before any call."),
                dict(t="Governance", d="Budgets, retries, forbidden attributes and human review in the code."),
-               dict(t="Accountability", d="Confidence, provenance and a hash-chained audit log for every call."),
+               dict(t="Accountability", d="Confidence, provenance and an Ed25519-signed, hash-chained audit log."),
                dict(t="Honest uncertainty", d="uncertain<T> agents are sampled; decisions must check confidence."),
                dict(t="Cost and energy", d="Every call priced in $, ₹, watt-hours and CO₂ before it runs."),
                dict(t="Reuse at scale", d="120 domain packs, modules, MCP, AlgoPulse streams, quantum tools."),
                dict(t="For everyone", d="CLI, Studio, Prompt UI, Python SDK and editor support."),
-               dict(t="Teachable, testable", d="Offline backend, eval blocks, replayable traces, CI for every app.")])),
+               dict(t="Trustworthy by evidence", d="Risk levels, fairness and robustness tests, system cards, trust reports.")])),
     "02-principles": (layers, dict(
         caption="2 · Design principles", title="Six principles that shape every program",
         subtitle="From the outside in: what is allowed, who decides, and how it is proved.",
@@ -508,18 +521,18 @@ SECTIONS = {
                 ("People stay in the loop", "Low-confidence calls go to a human review queue instead of going out.", "require human"),
                 ("One engine, many doors", "CLI, Studio, Prompt UI, SDK and language server run the same compiler.", "algo · studio · ui")])),
     "03-whats-new": (cards, dict(
-        caption="3 · What's new in v0.3", title="v0.3 → v0.3.4: from uncertainty to real-time and quantum",
-        subtitle="Each feature is checked by the compiler and covered by tests and CI.", cols=5, lines=3, card_h=128,
-        items=[dict(t="uncertain<T>", d="Sampled agents; confidence from agreement; E117 guard.", tag="v0.3"),
-               dict(t="eval + replay", d="Behaviour tests in the language; free, exact trace replay.", tag="v0.3"),
-               dict(t="MCP tools", d="Bind tools on any Model Context Protocol server.", tag="v0.3"),
-               dict(t="Cost & energy", d="Budgets in $, ₹ and Wh, checked before every call.", tag="v0.3"),
-               dict(t="Language server", d="Live errors, hover, completion, go-to-definition.", tag="v0.3"),
-               dict(t="stream blocks", d="A flow runs once for every event on a topic.", tag="v0.3.1"),
-               dict(t="Quantum tools", d="QAOA verified exactly, OpenQASM, Grover, qubit budgets.", tag="v0.3.2"),
-               dict(t="circuit blocks", d="Quantum circuits written in AlgoLang, checked (E124).", tag="v0.3.3"),
-               dict(t="AlgoPulse™", d="Built-in durable event engine: local bus or served bus.", tag="v0.3.4"),
-               dict(t="Live figures", d="Every app figure drawn from its program by the toolchain.", tag="v0.3.4")])),
+        caption="3 · What's new in v0.4", title="v0.4 Trustworthy AI: safeguards the compiler checks, evidence the runtime proves",
+        subtitle="Ten properties, each enforced in code, tested in eval blocks and reported for auditors.", cols=5, lines=3, card_h=128,
+        items=[dict(t="Fairness", d="expect fair across gender […]: same decision for every value.", tag="evals"),
+               dict(t="Robustness", d="expect robust: typos, paraphrase, reorder keep the decision.", tag="evals"),
+               dict(t="Transparency", d="algo card: an AI system card generated from the source.", tag="algo card"),
+               dict(t="Explainability", d="explain with evidence: reasons with quotes that must be real.", tag="policy"),
+               dict(t="Privacy", d="redact pii and withheld attributes before any model call.", tag="policy"),
+               dict(t="Security", d="untrusted tools are fenced; MCP servers pinned by hash.", tag="tool"),
+               dict(t="Human oversight", d="require human for always · require approvals 2.", tag="policy"),
+               dict(t="Accountability", d="Ed25519-signed audit chains and evidence packs.", tag="audit"),
+               dict(t="Risk-based rules", d="risk high makes the compiler demand every safeguard.", tag="E125–E130"),
+               dict(t="Assurance", d="algo trust report: ten properties, NIST AI RMF, EU AI Act.", tag="report")])),
     "04-get-started": (terminal, dict(
         caption="4 · Get started", title="From install to a governed multi-agent run in minutes",
         subtitle="Offline by default: no API key needed until you add --live.", window="algo — enterprise quick start",
@@ -557,18 +570,18 @@ SECTIONS = {
         subtitle="One small grammar; the compiler proves the rules before the runtime executes them.",
         steps=[("Source", "model, tool, agent, flow, stream, circuit and eval declarations", ".algo"),
                ("Parse", "Lark grammar to an abstract syntax tree, with file and line for every node", "grammar.lark"),
-               ("Check", "25 rules: agents only, declared tools, forbidden attributes, confidence guards", "E100–E124"),
+               ("Check", "31 rules: agents only, declared tools, forbidden attributes, risk-level safeguards", "E100–E130"),
                ("Generate", "Plain Python that calls the runtime; readable and testable", "algoc.py"),
                ("Run", "Policies, budgets, sampling, human gate and audit for every agent call", "algoruntime.py")])),
     "10-governance": (layers, dict(
         caption="10 · Governance", title="Defence in depth for every agent call",
-        subtitle="Each layer can stop a call; every outcome, allowed or blocked, is written to the audit chain.",
-        layers=[("Organisation policy", "forbidden attributes, allowed tools, token, cost and energy caps, review threshold", "algo.config.json"),
-                ("Compile-time checks", "unsafe programs never start: undeclared tools, forbidden inputs, unguarded scores", "E100–E124"),
-                ("Pre-flight budgets", "each call is priced in tokens, $, ₹ and Wh before it is allowed to run", "budget cost 0.05 usd"),
-                ("Sampling and confidence", "uncertain agents are sampled; confidence = model × agreement", "samples 5"),
-                ("Human gate", "below the threshold the result waits in the review queue for a named person", "algo review"),
-                ("Hash-chained audit", "SHA-256 chain over every record: any edit or deletion is detected", "algo audit verify")])),
+        subtitle="Each layer can stop a call; every outcome, allowed or blocked, is written to the signed audit chain.",
+        layers=[("Organisation policy", "forbidden attributes, allowed tools, caps, review threshold, pinned MCP servers", "algo.config.json"),
+                ("Compile-time checks", "unsafe programs never start; high-risk programs must carry every safeguard", "E100–E130"),
+                ("Privacy and fencing", "personal data masked, protected values withheld, untrusted tool output fenced", "redact pii"),
+                ("Budgets and sampling", "tokens, $, ₹ and Wh priced before the call; uncertain agents sampled", "samples 5"),
+                ("Explanation and people", "grounded reasons with evidence; review queue with four-eyes approval", "require approvals 2"),
+                ("Signed audit", "Ed25519 signatures over a SHA-256 chain; retention keeps it verifiable", "algo audit verify")])),
     "11-sdk": (pipeline, dict(
         caption="11 · Python SDK", title="The same engine from Python",
         subtitle="import algolang — every mode (CLI, Studio, Prompt UI) is built on this API.",
@@ -586,22 +599,22 @@ SECTIONS = {
                dict(t="Maintainers", d="CI on Linux, macOS and Windows, releases from a button, the website and the container.", tag="Actions → Release")])),
     "13-roadmap": (timeline, dict(
         caption="13 · Roadmap", title="Where AlgoLang has been, and where it is going",
-        subtitle="Next: trustworthy AI as evidence produced by the compiler and runtime, then quantum AI on real hardware.",
+        subtitle="Now: trustworthy AI as evidence. Next: quantum AI on real hardware, then interoperability and a native runtime.",
         versions=[("v0.1", "agents, flows, policies", "done"), ("v0.2", "enterprise, 120 packs, SDK", "done"),
-                  ("v0.3", "uncertainty, evals, MCP, budgets, LSP", "done"), ("v0.3.1", "stream blocks", "done"),
-                  ("v0.3.2", "quantum tools preview", "done"), ("v0.3.3", "quantum circuits, 4 apps", "done"),
-                  ("v0.3.4", "AlgoPulse™ engine, live figures", "current"), ("v0.4", "Trustworthy AI", "next"),
-                  ("v0.5", "Quantum AI on hardware", "planned"), ("v1.0", "native runtime, ecosystem", "planned")])),
+                  ("v0.3", "uncertainty, evals, MCP, LSP", "done"), ("v0.3.2–3", "quantum tools and circuits", "done"),
+                  ("v0.3.4", "AlgoPulse™, live figures", "done"), ("v0.4", "Trustworthy AI", "current"),
+                  ("v0.5", "Quantum AI on hardware", "next"), ("v0.6", "Interoperability", "planned"),
+                  ("v1.0", "native runtime, ecosystem", "planned")])),
     "14-layout": (cards, dict(
         caption="14 · Repository layout", title="What lives where",
         subtitle="Compiler and runtime at the root; libraries, applications and documentation in their own folders.",
         cols=3, lines=3, card_h=122,
         items=[dict(t="Compiler & runtime", d="grammar.lark, algoc.py, algoruntime.py, algoeval.py, algolsp.py", tag="core"),
+               dict(t="Trust layer", d="algotrust.py (privacy, fencing, signing), algoassure.py (cards, reports, evidence)", tag="v0.4"),
                dict(t="Engines", d="algopulse.py (events), algostream.py (streams), algoquantum.py, algomcp.py", tag="engines"),
                dict(t="Modes", d="algoshell, algostudio, algoprompt.html, algoagent, the algo command", tag="doors"),
-               dict(t="Libraries", d="packs/ (120 domain packs), examples/, examples/50-programs/", tag="reuse"),
-               dict(t="Applications", d="enterprise-apps/: ten governed apps with tools, data and tests", tag="apps"),
-               dict(t="Docs & tooling", d="docs/, ROADMAP.md, guides, tests/, tools/, vscode-algolang/, CI", tag="docs")])),
+               dict(t="Libraries & docs", d="packs/ (120 domain packs), examples/, docs/, guides, tests/, tools/, CI", tag="reuse"),
+               dict(t="Applications", d="enterprise-apps/: ten governed apps with tools, data, tests and system cards", tag="apps")])),
     "15-author": (cards, dict(
         caption="15 · Author and licence", title="Designed in Hyderabad by AlgoProfessor AI R&D Solutions",
         cols=3, lines=3, card_h=118,

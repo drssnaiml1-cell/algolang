@@ -32,7 +32,7 @@ jobs:
         run: python algoc.py dev lint examples packs enterprise-apps
       - name: Behaviour specs (tests/specs/*.algotest.json, offline and deterministic)
         run: python algoc.py dev test tests/specs
-      - name: Enterprise applications (10 apps · tests + batch + streams + audit verification)
+      - name: Enterprise applications (10 apps · tests + batch + streams + audit verification + system cards)
         run: python enterprise-apps/run_all.py --batch
       - name: README figures match the programs (tools/make_figures.py)
         run: |
@@ -89,6 +89,52 @@ jobs:
       - name: Server log
         if: always()
         run: cat "$RUNNER_TEMP/pulse.log"
+
+  trust:
+    name: Trustworthy AI · evidence for every application
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with: {python-version: "3.12", cache: pip}
+      - run: pip install -e ".[dev]"
+      - name: Trust tests with the built-in Ed25519 (no cryptography package)
+        run: |
+          pip uninstall -y cryptography || true
+          python -m pytest tests/test_trust.py -v
+      - name: Trust report for all ten applications (fairness, robustness, oversight, signed audit …)
+        run: |
+          for app in enterprise-apps/*/; do
+            [ -d "$app/programs" ] || continue
+            (cd "$app" && python ../../algoc.py trust report programs --html "$RUNNER_TEMP/trust-$(basename $app).html")
+          done
+      - name: Signed evidence packs for the high-risk programs, verified, then tampered with
+        run: |
+          set -e
+          for p in bank-credit-onboarding:loan_decision university-admissions-obe:admissions \
+                   hospital-care-coordination:er_triage citizen-services-desk:welfare_check; do
+            app=${p%%:*}; prog=${p##*:}
+            cd "enterprise-apps/$app"
+            python ../../algoc.py evidence export "programs/$prog.algo" --out "$RUNNER_TEMP/$prog.evidence.zip"
+            python ../../algoc.py evidence verify "$RUNNER_TEMP/$prog.evidence.zip"
+            python - "$RUNNER_TEMP/$prog.evidence.zip" <<'PY'
+          import sys, zipfile
+          src = sys.argv[1]; bad = src.replace(".zip", ".tampered.zip")
+          with zipfile.ZipFile(src) as zin, zipfile.ZipFile(bad, "w") as zout:
+              for n in zin.namelist():
+                  d = zin.read(n)
+                  zout.writestr(n, d.replace(b"require approvals 2", b"require approvals 1").replace(b"for always", b"when confidence < 0.1"))
+          PY
+            ! python ../../algoc.py evidence verify "${RUNNER_TEMP}/$prog.evidence.tampered.zip"
+            cd ../..
+          done
+      - uses: actions/upload-artifact@v4
+        with:
+          name: trust-reports
+          path: |
+            ${{ runner.temp }}/trust-*.html
+            ${{ runner.temp }}/*.evidence.zip
 
   quantum:
     name: Quantum tools · cross-checked against Qiskit

@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────
-//  AlgoLang v0.3.3 grammar  —  AlgoProfessor AI R&D Solutions
+//  AlgoLang v0.4 grammar  —  AlgoProfessor AI R&D Solutions
 //  Core rule: there are no functions. Every unit of work is an
 //  `agent`; a `flow` only orchestrates agents.
 // ─────────────────────────────────────────────────────────────
@@ -15,6 +15,8 @@ start: item*
      | eval_decl
      | stream_decl
      | circuit_decl
+     | risk_decl
+     | disclose_decl
 
 // use "shared/agents.algo"           import another file's models, tools and agents
 // use pack insurance.claims_triage    import a domain pack from the library
@@ -30,7 +32,12 @@ model_decl: "model" NAME "=" STRING
 
 // tool web.search                              (declares a tool agents may be granted)
 // tool kb.search_policies from mcp "company-kb"  (binds it to a tool on an MCP server)
-tool_decl: "tool" DOTTED ["from" "mcp" STRING]
+tool_decl: "tool" DOTTED ["from" "mcp" STRING] [untrusted]
+untrusted: "untrusted"                          // v0.4: output is fenced as data and scanned for injected instructions
+
+// v0.4 Trustworthy AI: the program's risk level and the notice shown to people who use it
+risk_decl: "risk" NAME [STRING]                 // risk minimal | limited | high "purpose"
+disclose_decl: "disclose" STRING                // "You are talking to an AI assistant …"
 
 // agent Name(p: type, q: type = "x") -> type { ... }
 agent_decl: "agent" NAME "(" [params] ")" "->" type "{" agent_clause* "}"
@@ -59,6 +66,12 @@ param: NAME ":" type ["=" literal]
             | "forbid" NAME ("," NAME)*                      -> forbid
             | "timeout" NUMBER                               -> timeout
             | "cache"                                        -> cache
+            | "explain" "with" "evidence"                    -> explain_evidence   // v0.4: reasons + cited evidence
+            | "explain"                                      -> explain            // v0.4: reasons
+            | "redact" "pii"                                 -> redact_pii         // v0.4: mask personal data before any model call
+            | "retain" NAME NUMBER "days"                    -> retain             // v0.4: retain audit|traces N days
+            | "require" "human" "for" "always"               -> human_always       // v0.4: every result is reviewed
+            | "require" "approvals" NUMBER                   -> approvals          // v0.4: N different reviewers (four-eyes = 2)
 
 // flow main(topic: text) { ... }
 flow_decl: "flow" NAME "(" [params] ")" "{" stmt* "}"
@@ -115,6 +128,9 @@ eval_case: "case" STRING "(" [args] ")" "{" expectation* "}"
             | "expect" "energy" COMPARE NUMBER             -> exp_energy
             | "expect" "escalated" COMPARE NUMBER          -> exp_escalated
             | "expect" "confidence" COMPARE NUMBER         -> exp_confidence
+            | "expect" "fair" "across" NAME "[" STRING ("," STRING)* "]"            -> exp_fair      // v0.4: counterfactual fairness
+            | "expect" "robust" ["(" NAME ("," NAME)* ")"] "consistency" COMPARE NUMBER -> exp_robust // v0.4: perturbation robustness
+            | "expect" "explained"                         -> exp_explained                         // v0.4: every explanation grounded
 // Real-time events (v0.3.1; AlgoPulse™ since v0.3.4): bind a flow to a topic on an AlgoPulse bus. Every event runs the flow once.
 // stream order_flow on main {
 //     from pulse "market" topic "orders.intent" group "risk-gate"

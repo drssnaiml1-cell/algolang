@@ -561,7 +561,7 @@ function renderReviews(rv){
   const items = rv.items || [];
   $("#rlist").innerHTML = items.length ? `<div style="overflow:auto"><table><tr><th>Program / agent</th><th>Confidence</th><th>Output</th><th>Status</th><th></th></tr>` +
     items.map(i => `<tr><td><b>${esc(i.agent)}</b><br><span class="muted">${esc(i.program)} · ${esc(i.ts || "")}</span></td>
-      <td>${i.confidence.toFixed(2)} &lt; ${i.threshold.toFixed(2)}</td><td>${esc(String(i.output).slice(0, 160))}</td>
+      <td>${i.confidence.toFixed(2)}${i.threshold != null ? ` &lt; ${i.threshold.toFixed(2)}` : ""}<br><span class="muted">${esc(i.reason || "")}</span>${(i.approvals_required || 1) > 1 ? `<br><b>${(i.approvals || []).length}/${i.approvals_required} approvals</b>` : ""}</td><td>${esc(String(i.output).slice(0, 160))}</td>
       <td class="${i.status === "pending" ? "warn" : i.status === "approved" ? "ok" : "bad"}">${i.status}${i.reviewer ? `<br><span class="muted">${esc(i.reviewer)}</span>` : ""}</td>
       <td style="white-space:nowrap">${i.status === "pending" ? `<button class="btn small" data-a="${i.id}">Approve</button> <button class="btn small light" data-r="${i.id}">Reject</button>` : ""}</td></tr>`).join("") + `</table></div>`
     : `<div class="empty">Nothing waiting for review.</div>`;

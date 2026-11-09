@@ -1,0 +1,288 @@
+{
+  "card": "AlgoLang AI system card",
+  "card_version": 1,
+  "algolang": "0.4.0",
+  "program": "alert_to_incident",
+  "source": "alert_to_incident.algo",
+  "source_sha256": "08b68af1a4ebd641295cc7644387508cd6444c2d9bd505c540716c47acda2d90",
+  "purpose": "Security alert triage for SOC analysts",
+  "risk_level": "minimal",
+  "disclosure": null,
+  "flows": [
+    {
+      "name": "main",
+      "inputs": [
+        "alerts"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "Enrich",
+      "role": "SOC enrichment analyst",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "cmdb.lookup"
+      ],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "ThreatCheck",
+      "role": "Threat-intelligence analyst",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "ioc.check"
+      ],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "ops.Classifier",
+      "role": "Classifier specialist, it incident triage",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "kb.search"
+      ],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack itops.incident_triage"
+    },
+    {
+      "name": "ops.Diagnosis",
+      "role": "Diagnosis specialist, it incident triage",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack itops.incident_triage"
+    },
+    {
+      "name": "ops.Priority",
+      "role": "Priority specialist, it incident triage",
+      "returns": "score",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.9",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack itops.incident_triage"
+    },
+    {
+      "name": "ops.Runbook",
+      "role": "Runbook specialist, it incident triage",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack itops.incident_triage"
+    },
+    {
+      "name": "soc.Analyst",
+      "role": "Analyst specialist, soc alert triage",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack cyber.soc_triage"
+    },
+    {
+      "name": "soc.Batcher",
+      "role": "Batcher specialist, soc alert triage",
+      "returns": "list",
+      "model": "fast",
+      "tools": [
+        "kb.search"
+      ],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack cyber.soc_triage"
+    },
+    {
+      "name": "soc.Incident",
+      "role": "Incident specialist, soc alert triage",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack cyber.soc_triage"
+    },
+    {
+      "name": "soc.Severity",
+      "role": "Severity specialist, soc alert triage",
+      "returns": "score",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.9",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 6000
+      },
+      "imported_from": "pack cyber.soc_triage"
+    }
+  ],
+  "tools": [
+    {
+      "name": "cmdb.lookup",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Owner, tier and dependencies of a host or service named in the request"
+    },
+    {
+      "name": "ioc.check",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Check IPs, domains and hashes against the threat-intel blocklist"
+    },
+    {
+      "name": "kb.search",
+      "kind": "built-in",
+      "trusted": true,
+      "description": "Search the organisation's knowledge base of .txt and .md documents"
+    }
+  ],
+  "streams": [
+    {
+      "name": "siem_alerts",
+      "flow": "main",
+      "source": "soc.alerts",
+      "bus": "soc"
+    }
+  ],
+  "circuits": [],
+  "human_oversight": [
+    "Enrich: reviewed when confidence < 0.8",
+    "ThreatCheck: reviewed when confidence < 0.8",
+    "ops.Classifier: reviewed when confidence < 0.8",
+    "ops.Diagnosis: reviewed when confidence < 0.8",
+    "ops.Priority: reviewed when confidence < 0.9",
+    "ops.Runbook: reviewed when confidence < 0.8",
+    "soc.Analyst: reviewed when confidence < 0.8",
+    "soc.Batcher: reviewed when confidence < 0.8",
+    "soc.Incident: reviewed when confidence < 0.8",
+    "soc.Severity: reviewed when confidence < 0.9"
+  ],
+  "data_protection": {
+    "redact_pii": "no agents",
+    "forbidden_attributes": [
+      "caste",
+      "gender",
+      "religion"
+    ],
+    "retention_days": {}
+  },
+  "evaluation": {
+    "cases": 0,
+    "fairness": [],
+    "robustness": [],
+    "explanations_checked": false
+  },
+  "limitations": [
+    "Generated from the source code: it documents design-time safeguards and test coverage, not measured real-world performance.",
+    "Offline evals use a deterministic mock model; repeat them with `algo eval --live` before deployment.",
+    "Protected attributes are withheld by keyword. Proxies such as names, postcodes or schools can still carry them; counterfactual fairness tests measure the effect.",
+    "Fairness has not been tested (no `expect fair` case).",
+    "Robustness has not been tested (no `expect robust` case)."
+  ]
+}

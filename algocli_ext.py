@@ -234,26 +234,32 @@ def cmd_batch(program, input_csv, out=None, workers=8, live=False):
 
 
 # ─────────────────────────────── review ───────────────────────────────
-def cmd_review(action=None, item=None, reviewer="", note="", show_all=False):
+def cmd_review(action=None, item=None, reviewer="", note="", show_all=False, override=None):
     if action in ("approve", "reject"):
         if not item:
             print("  usage: algo review approve <id> --reviewer \"Name\" --note \"why\"")
             return 1
         try:
-            full = al.review.approve(item, reviewer, note) if action == "approve" else al.review.reject(item, reviewer, note)
-        except KeyError as e:
+            full = al.review.approve(item, reviewer, note, override=override) if action == "approve" \
+                else al.review.reject(item, reviewer, note)
+        except (KeyError, ValueError) as e:
             print(f"✗ {e.args[0]}")
             return 1
-        print(f"✓ {action}d {full}" + (f" by {reviewer}" if reviewer else ""))
+        it = next((i for i in al.review.all() if i["id"] == full), {})
+        left = it.get("approvals_required", 1) - len(it.get("approvals", []))
+        more = f"  ({left} more approval(s) from a different reviewer needed)" if it.get("status") == "pending" else ""
+        print(f"✓ {action}d {full}" + (f" by {reviewer}" if reviewer else "") + (" with an override" if override else "") + more)
         return 0
     items = al.review.all() if show_all else al.review.pending()
     if not items:
         print("  review queue is empty" if not show_all else "  no review items yet")
         return 0
     print(f"  {len(items)} item(s){' (all)' if show_all else ' waiting for a human decision'}\n")
-    _table([(i["id"][:8], i["program"], i["agent"], f"{i['confidence']:.2f}<{i['threshold']:.2f}",
-             i["status"], i["output"][:40]) for i in items[-30:]],
-           ["id", "program", "agent", "confidence", "status", "output"])
+    _table([(i["id"][:8], i["program"], i["agent"], f"{i['confidence']:.2f}",
+             f"{len(i.get('approvals', []))}/{i.get('approvals_required', 1)}", i["status"],
+             (i.get("reason") or (f"< {i['threshold']:.2f}" if i.get("threshold") is not None else ""))[:28],
+             i["output"][:36]) for i in items[-30:]],
+           ["id", "program", "agent", "conf", "approvals", "status", "why", "output"])
     if len(items) > 30:
         print(f"  … {len(items) - 30} older item(s) not shown")
     print('\n  algo review approve <id> --reviewer "Name" --note "checked"   ·   algo review reject <id>')
@@ -271,7 +277,9 @@ def cmd_audit_verify(target):
     for f in files:
         r = al.audit.verify(f)
         if r["ok"]:
-            print(f"  ✓ {f.name:<36} {r['records']} records, chain intact")
+            sig = (f", {r['signed']} signed ({'pinned key' if r.get('pinned') else 'local key'})" if r.get("signed") else "")
+            drop = f", {r['dropped']} older record(s) removed by retention" if r.get("dropped") else ""
+            print(f"  ✓ {f.name:<36} {r['records']} records, chain intact{sig}{drop}")
         else:
             bad += 1
             print(f"  ✗ {f.name:<36} line {r['first_bad_line']}: {r['reason']}")

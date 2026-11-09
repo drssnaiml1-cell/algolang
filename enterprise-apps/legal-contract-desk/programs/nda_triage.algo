@@ -1,4 +1,5 @@
 // Meridian NDA triage — extract terms, compare with the playbook, score deviation, suggest redlines.
+risk minimal "NDA deviation triage for the legal team"
 use pack legal.nda_triage as nt
 tool clause.library
 

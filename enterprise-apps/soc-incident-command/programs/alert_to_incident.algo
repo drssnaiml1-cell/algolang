@@ -1,4 +1,5 @@
 // Helix SOC — alerts to an incident: batch & analyse, enrich (CMDB, IOC), severity, IT incident runbook.
+risk minimal "Security alert triage for SOC analysts"
 use pack cyber.soc_triage as soc
 use pack itops.incident_triage as ops
 tool cmdb.lookup

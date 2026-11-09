@@ -1,4 +1,5 @@
 // QuantOracle end-of-day report — book, stress test, risk level and trade surveillance in one run.
+risk minimal "Internal end-of-day risk and surveillance report for the trading desk"
 use pack markets.portfolio_risk as pr
 use pack markets.trade_surveillance as ts
 tool book.positions

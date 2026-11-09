@@ -99,6 +99,17 @@ class StdioClient(_Base):
         if not cwd.is_absolute():
             cwd = base_dir / cwd
         env = dict(os.environ, **{k: str(v) for k, v in (cfg.get("env") or {}).items()})
+        pin = cfg.get("sha256")                   # v0.4: refuse to start a server whose code has changed
+        if pin:
+            script = next((cwd / a for a in cmd[1:] if (cwd / a).is_file()), None) or \
+                (Path(cmd[0]) if Path(cmd[0]).is_file() else None)
+            if script is None:
+                raise MCPError(f"MCP server '{name}' is pinned (sha256) but its program file was not found")
+            import hashlib
+            digest = hashlib.sha256(script.read_bytes()).hexdigest()
+            if digest != str(pin).lower():
+                raise MCPError(f"MCP server '{name}': {script.name} does not match its pinned sha256 "
+                               f"(expected {str(pin)[:12]}…, found {digest[:12]}…); refusing to start it")
         self.proc = subprocess.Popen(cmd, cwd=str(cwd), env=env, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
                                      stderr=subprocess.DEVNULL, text=True, encoding="utf-8", bufsize=1)
         self.waiting: dict[int, queue.Queue] = {}

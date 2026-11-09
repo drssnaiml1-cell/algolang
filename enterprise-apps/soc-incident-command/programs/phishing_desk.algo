@@ -1,4 +1,6 @@
 // Helix phishing desk — staff forward a suspicious email, the desk checks indicators and advises.
+risk limited "Advice to staff about suspicious emails"
+disclose "This advice comes from the SOC's AI assistant; analysts review reported emails."
 use pack cyber.phishing as ph
 tool ioc.check
 

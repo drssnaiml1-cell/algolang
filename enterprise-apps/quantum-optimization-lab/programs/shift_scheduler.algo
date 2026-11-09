@@ -1,6 +1,7 @@
 // Quantum shift scheduler — split clashing plant jobs across two shifts with QAOA max-cut.
 // clashes (scheduling system) → max-cut on the clash graph (quantum.maxcut) → VERIFIED?
 //   yes → shift plan for the supervisor to confirm · no → manual planning request
+risk minimal "Splitting clashing plant maintenance jobs across shifts"
 tool ops.clashes
 tool quantum.maxcut
 tool kb.search

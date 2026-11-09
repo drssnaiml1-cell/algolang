@@ -16,7 +16,7 @@
 AlgoProfessor AI R&D Solutions, Hyderabad. Designed by Dr. S. Satyanarayana.
 🌐 **[www.algoprofessor.com](https://www.algoprofessor.com)**
 
-**Current version: 0.3.4** (AlgoPulse™ real-time engine · live figures · quantum circuits) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md) · [50 Sample Programs (PDF)](docs/AlgoLang_50_Sample_Programs.pdf) · [Language manual (PDF)](docs/AlgoLang_Documentation_v0.3.pdf)
+**Current version: 0.4.0** (Trustworthy AI: risk levels · fairness and robustness tests · signed audit · system cards · trust reports) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md) · [50 Sample Programs (PDF)](docs/AlgoLang_50_Sample_Programs.pdf) · [Language manual (PDF)](docs/AlgoLang_Documentation_v0.4.pdf)
 
 AlgoLang has **no functions**. Every unit of work is an `agent` with a role, a goal, explicit tools, a model and a policy. A `flow` is the only other construct, and it can do just four things:
 
@@ -35,7 +35,7 @@ flowchart TB
     end
     subgraph COMPILER["② Compiler · algoc.py — unsafe programs never run"]
         direction LR
-        SRC[".algo source"] --> PARSE["Lark grammar"] --> AST["AST"] --> CHK{{"Checker · E100–E124"}} --> GEN["Python code"]
+        SRC[".algo source"] --> PARSE["Lark grammar"] --> AST["AST"] --> CHK{{"Checker · E100–E130"}} --> GEN["Python code"]
     end
     subgraph RUNTIME["③ Runtime · algoruntime.py — every call governed"]
         direction LR
@@ -66,7 +66,7 @@ flowchart TB
 
 1. [Objective](#1-objective)
 2. [Design principles](#2-design-principles)
-3. [What's new in v0.3](#3-whats-new-in-v03)
+3. [What's new in v0.4: Trustworthy AI](#3-whats-new-in-v04-trustworthy-ai)
 4. [Get started](#4-get-started)
 5. [Learn by example: 50 sample programs](#5-learn-by-example-50-sample-programs)
 6. [Enterprise applications](#6-enterprise-applications)
@@ -76,7 +76,7 @@ flowchart TB
 10. [Governance and runtime guarantees](#10-governance-and-runtime-guarantees)
 11. [Python SDK](#11-python-sdk)
 12. [For developers](#12-for-developers)
-13. [Roadmap: v0.4 Trustworthy AI, v0.5 Quantum AI](#13-roadmap-v04-trustworthy-ai-v05-quantum-ai)
+13. [Roadmap: v0.5 Quantum AI, v0.6 Interoperability, v1.0](#13-roadmap-v05-quantum-ai-v06-interoperability-v10)
 14. [Repository layout](#14-repository-layout)
 15. [Author and licence](#15-author-and-licence)
 
@@ -114,9 +114,60 @@ flowchart TB
 - **People stay in the loop.** A low-confidence call goes to a human review queue instead of going out.
 - **One engine, many doors.** The command line, Studio, Prompt UI, SDK and language server all run the same compiler and runtime.
 
-## 3. What's new in v0.3
+## 3. What's new in v0.4: Trustworthy AI
 
-<p align="center"><img src="docs/images/sections/03-whats-new.svg" alt="What's new from v0.3 to v0.3.4" width="100%"></p>
+<p align="center"><img src="docs/images/sections/03-whats-new.svg" alt="Ten trustworthy-AI properties in v0.4, each enforced in code" width="100%"></p>
+
+**v0.4 makes trustworthiness something a program can prove, not just claim.** The compiler checks that each safeguard a system needs is present; the runtime enforces it; `eval` blocks measure it; and the toolchain writes the evidence an auditor reads.
+
+```algo
+risk high "Credit decisions about individual loan applicants"          // stricter rules for higher risk
+disclose "An AI system helped assess your application. Two credit officers decide, and you can ask why."
+policy { redact pii  explain with evidence  retain audit 2555 days }    // privacy, explanations, retention
+tool web.rates from mcp "market" untrusted                              // fenced: its text can never give orders
+
+agent CreditDecision(verdict: text, memo: text) -> text {
+    goal   "Record the committee recommendation {verdict} for officer sign-off"
+    policy { require approvals 2 }                                      // four-eyes: two different people approve
+}
+
+eval trust on main {
+    case "salaried applicant" (application = "APP-3101 home loan …, a married woman") {
+        expect fair across gender ["woman", "man", "non-binary"]        // same decision for every value
+        expect robust (typos, paraphrase, reorder) consistency >= 0.9   // harmless rewording changes nothing
+        expect explained                                                // every explanation is grounded
+    }
+}
+```
+
+| Property | How AlgoLang enforces it | Evidence |
+|---|---|---|
+| **Fairness** | `forbid gender` withholds protected values (female, Hindu, married, aged 45 …, even misspelt) before any prompt; `expect fair across` reruns the case once per value | same decision, score gap ≤ `fairness_tolerance` |
+| **Robustness** | `expect robust` reruns the case with typos, paraphrases, reordering, case and spacing changes | consistency score; the input that broke it |
+| **Transparency** | `algo card` writes an AI system card from the source: purpose, risk level, agents, tools, oversight, data protection, tests and known limitations; `disclose` is required for limited and high risk | `*.card.md` / `*.card.json`, checked for staleness in CI |
+| **Explainability** | `explain with evidence`: the agent must give reasons and quotes; quotes not found in its inputs or tool results are asked again, then sent to a person | reasons and evidence in the audit log |
+| **Privacy** | `redact pii` masks names, emails, phone, Aadhaar, PAN, account and card numbers before any model call; trusted tools still get the real values; `retain` limits how long logs live | masked counts per call; no personal data in prompts (tested) |
+| **Security** | `tool … untrusted` fences tool output: instruction-like lines removed, size limited, wrapped as data; MCP servers can be pinned by `sha256` | removed lines recorded per call; red-team tests |
+| **Human oversight** | `require human for always`, `require approvals N` (different named reviewers), overrides recorded | review decisions written into the run's own audit chain |
+| **Accountability** | `"audit": {"sign": true}`: every record signed with Ed25519; `algo evidence export` builds a signed pack | `algo audit verify`, `algo evidence verify` detect any change |
+| **Risk-based governance** | `risk high` makes the compiler require oversight, explanations, PII masking, fairness and robustness tests and signed logs (**E125–E130**) | the program compiles under its level |
+| **Assurance** | `algo trust report` scores all ten properties, with evidence, mapped to NIST AI RMF functions and EU AI Act articles | HTML / JSON report |
+
+```bash
+algo eval programs/loan_decision.algo                 # fairness, robustness and explanation tests
+algo card programs/*.algo --out cards                 # AI system cards
+algo trust report programs --html trust.html          # ten properties with evidence
+algo evidence export programs/loan_decision.algo --out loan.evidence.zip
+algo evidence verify loan.evidence.zip                # every file, the signature and the audit chains
+algo review approve <id> --reviewer "Priya" --override "approve INR 30 lakh instead"
+algo keys init                                        # create and pin the Ed25519 audit key
+```
+
+**Risk levels in the ten enterprise applications.** Four programs are high risk and meet every rule: credit decisions, university admissions, ER triage and welfare eligibility. Six are limited risk and disclose AI use. The other fifteen are internal minimal-risk tools. Every program ships a generated system card in its app's `cards/` folder.
+
+> These features **produce evidence** for frameworks such as the NIST AI RMF, the EU AI Act and ISO/IEC 42001. Using AlgoLang does not by itself make a system compliant: that still needs your organisation's own risk management, legal review and, where required, a conformity assessment. Offline tests use an ideal mock model, so they test the program (its guards, tools and masking); run `algo eval --live` to test the real model.
+
+### Earlier releases: v0.3 to v0.3.4
 
 ```algo
 tool kb.search_policies from mcp "company-kb"        // 1. tools from any MCP server
@@ -157,7 +208,7 @@ eval regression on main {                                    // 4. tests next to
 
 A runnable tour lives in [`examples/v03/`](examples/v03/): an expense desk that uses an MCP server, an `uncertain<score>` reviewer, budgets and an eval block.
 
-### Also in v0.2 Enterprise
+### Earlier: v0.2 Enterprise
 
 - **120 ready-made domain packs** cover 20 sectors: healthcare, pharma, banking, insurance, capital markets, education, research, government, legal, HR, manufacturing, supply chain, retail, IT operations, cybersecurity, energy, agriculture, media, real estate and hospitality. Each pack is a governed multi-agent program built from one of four patterns: pipeline, fan-out, committee or router.
 - **Modules.** `use "file.algo" as x` and `use pack insurance.claims_triage as claims` let you compose large systems from smaller ones (`claims.Intake(...)`).
@@ -230,23 +281,24 @@ The runnable source of every program is in [`examples/50-programs/`](examples/50
 
 <p align="center"><img src="docs/images/sections/06-enterprise-apps.svg" alt="Ten enterprise applications" width="100%"></p>
 
-[`enterprise-apps/`](enterprise-apps/) holds ten complete, governed multi-agent applications. Each has its own org policy, company tools over its own data, a knowledge base, programs, batch data and behaviour tests:
+[`enterprise-apps/`](enterprise-apps/) holds ten complete, governed multi-agent applications. Each has its own org policy, company tools over its own data, a knowledge base, programs, batch data, behaviour tests and (v0.4) a risk level and a generated AI system card for every program:
 
-| Application | Sector | What it automates |
-|---|---|---|
-| [Claims Operations Center](enterprise-apps/claims-ops-center/) | Insurance | FNOL → policy check → fraud panel → SIU referral, or routing and payout |
-| [Hospital Care Coordination](enterprise-apps/hospital-care-coordination/) | Healthcare | ER triage with the bed board, and discharge summaries (decision support) |
-| [Bank Credit & Onboarding](enterprise-apps/bank-credit-onboarding/) | Banking | Bureau + DTI + credit committee; KYC with sanctions screening |
-| [University Admissions & OBE](enterprise-apps/university-admissions-obe/) | Education | Fair admissions panel; NBA/NAAC CO-PO matrix and question papers |
-| [SOC Incident Command](enterprise-apps/soc-incident-command/) | Cybersecurity | Alert enrichment (CMDB, threat intel) → severity → incident → runbook; real-time SIEM alerts on AlgoPulse™ |
-| [Supply Chain Control Tower](enterprise-apps/supply-chain-control-tower/) | Logistics | Shipment exceptions → tracking + stock cover → recovery plan |
-| [Citizen Services Desk](enterprise-apps/citizen-services-desk/) | Government | Grievance routing with service-level targets; welfare pre-checks |
-| [Legal Contract Desk](enterprise-apps/legal-contract-desk/) | Legal | NDA triage against the playbook; clause-by-clause contract review |
-| [Algo Trading Desk (QuantOracle™)](enterprise-apps/algo-trading-desk/) | Capital markets | Strategy review board → pre-trade risk gate with hard limits → end-of-day risk and surveillance (paper trading, human approval of every order) |
-| [Quantum Optimization Lab](enterprise-apps/quantum-optimization-lab/) | Quantum computing | QAOA portfolio selection and max-cut shift planning, each VERIFIED against the exact optimum, then risk review and human approval; quantum-random audit sampling |
+| Application | Sector | What it automates | Risk (v0.4) |
+|---|---|---|---|
+| [Claims Operations Center](enterprise-apps/claims-ops-center/) | Insurance | FNOL → policy check → fraud panel → SIU referral, or routing and payout | limited |
+| [Hospital Care Coordination](enterprise-apps/hospital-care-coordination/) | Healthcare | ER triage with the bed board, and discharge summaries (decision support) | **high** (ER triage) · limited |
+| [Bank Credit & Onboarding](enterprise-apps/bank-credit-onboarding/) | Banking | Bureau + DTI + credit committee; KYC with sanctions screening | **high** (credit) · limited |
+| [University Admissions & OBE](enterprise-apps/university-admissions-obe/) | Education | Fair admissions panel; NBA/NAAC CO-PO matrix and question papers | **high** (admissions) · minimal |
+| [SOC Incident Command](enterprise-apps/soc-incident-command/) | Cybersecurity | Alert enrichment (CMDB, threat intel) → severity → incident → runbook; real-time SIEM alerts on AlgoPulse™ | limited · minimal |
+| [Supply Chain Control Tower](enterprise-apps/supply-chain-control-tower/) | Logistics | Shipment exceptions → tracking + stock cover → recovery plan | minimal |
+| [Citizen Services Desk](enterprise-apps/citizen-services-desk/) | Government | Grievance routing with service-level targets; welfare pre-checks | **high** (welfare) · limited |
+| [Legal Contract Desk](enterprise-apps/legal-contract-desk/) | Legal | NDA triage against the playbook; clause-by-clause contract review | minimal |
+| [Algo Trading Desk (QuantOracle™)](enterprise-apps/algo-trading-desk/) | Capital markets | Strategy review board → pre-trade risk gate with hard limits → end-of-day risk and surveillance (paper trading, human approval of every order) | minimal |
+| [Quantum Optimization Lab](enterprise-apps/quantum-optimization-lab/) | Quantum computing | QAOA portfolio selection and max-cut shift planning, each VERIFIED against the exact optimum, then risk review and human approval; quantum-random audit sampling | minimal |
 
 ```bash
-python enterprise-apps/run_all.py --batch      # run every app's tests and sample batch job
+python enterprise-apps/run_all.py --batch      # every app's tests, batch job, streams and system cards
+cd enterprise-apps/bank-credit-onboarding && algo trust report programs --html trust.html
 cd enterprise-apps/claims-ops-center && algo batch programs/claims_intake.algo --input data/claims_batch.csv
 ```
 
@@ -490,6 +542,12 @@ flow main(topic: text) {
 | E122 | `stream` block error: unknown flow or input, mapping not read from `event`, a result topic equal to the source topic, or `max in flight` outside 1–256 |
 | E123 | Quantum policy or tool error: `shots` outside 1–100000, or `max qubits` outside 1–24 |
 | E124 | `circuit` block error: no or too many qubits, unknown gate, wrong number of qubits or angles, a qubit that does not exist, a bad angle, or a duplicate circuit |
+| E125 | High-risk flow without human oversight (`require human when …`, `require human for always` or `require approvals N`) |
+| E126 | High-risk program without a fairness test (`expect fair across …`) or a robustness test (`expect robust …`) |
+| E127 | High-risk program: an agent does not mask personal data (`redact pii`), or a reviewed decision is not explained (`explain with evidence`) |
+| E128 | A forbidden attribute reaches an agent through one of its tools |
+| E129 | Risk declaration error: unknown level, no `disclose` for limited or high risk, no purpose, or high risk without signed audit logs |
+| E130 | Trust value error: `require approvals` outside 1–5, `retain` outside 1–3650 days or not audit/traces, `expect fair` with fewer than two values, unknown perturbation or consistency outside 0–1 |
 
 Errors from imported modules are reported with the file name, and the org config is enforced at compile time: a forbidden attribute or an ungranted tool is an error before anything runs.
 
@@ -578,29 +636,15 @@ pip install -e ".[dev]"
 make check        # ruff + pytest + lint of every .algo file
 ```
 
-## 13. Roadmap: v0.4 Trustworthy AI, v0.5 Quantum AI
+## 13. Roadmap: v0.5 Quantum AI, v0.6 Interoperability, v1.0
 
 <p align="center"><img src="docs/images/sections/13-roadmap.svg" alt="Roadmap timeline" width="100%"></p>
 
-The next release puts **trustworthy AI** at the centre. Its aim is that every AlgoLang system can show, with evidence produced by the compiler and runtime, that it is lawful, fair, robust, transparent, private, secure and under human control. The full plan, with syntax sketches and how each item maps to the NIST AI Risk Management Framework, the EU AI Act and ISO/IEC 42001, is in **[ROADMAP.md](ROADMAP.md)**.
+**v0.4 Trustworthy AI is released** (see [§3](#3-whats-new-in-v04-trustworthy-ai)). The releases below are built one at a time, each with tests, CI, documentation and figures. The full plan is in **[ROADMAP.md](ROADMAP.md)**.
 
-| Trustworthy-AI property | Planned in v0.4 |
-|---|---|
-| Fairness | `expect fair across …` counterfactual tests in `eval` blocks: swap protected attributes in the input, and the decision must not change |
-| Robustness | `expect robust` perturbation tests (typos, paraphrases, reordering), plus consistency thresholds built on `uncertain<T>` |
-| Transparency and explainability | `explain` policy: agents must return reasons and cite the evidence; `algo card` generates an AI system card for every program |
-| Privacy | `redact pii` policy: personal data is masked before it reaches a model; retention limits on audit and traces |
-| Security | Untrusted-tool mode: tool and MCP outputs are fenced and screened for prompt injection; deny-by-default network for tools |
-| Human oversight | `require human for <agent>` (always), four-eyes approval, and logged overrides |
-| Accountability | Signed audit chains (Ed25519), reviewer identity, exportable evidence packs |
-| Risk-based governance | `risk high` program header: the compiler demands human oversight, eval coverage and fairness tests for high-risk systems (new E124–E127) |
-| Assurance reporting | `algo trust report`: a scorecard against NIST AI RMF functions and EU AI Act duties, as evidence for auditors (not a certification) |
+**v0.5 — Quantum AI (next).** The quantum preview becomes a full release: real quantum hardware (IBM Quantum, Amazon Braket, Azure Quantum) behind the same tool interface, with QPU-time and cost budgets; noise models and error mitigation; quantum results as `uncertain<T>` values whose confidence comes from shot statistics; VQE for chemistry and materials, quantum kernels for classification, amplitude estimation for financial risk; verified bounds beyond the simulator's reach; and post-quantum signatures for the audit chain. Details in [ROADMAP.md](ROADMAP.md#5-v05-quantum-ai).
 
-Already shipped toward this goal: hash-chained audit logs, human review queues, forbidden attributes (E108), `uncertain<T>` with confidence guards (E117), deterministic `contains` guards, replayable traces, and cost/energy budgets.
-
-**v0.5 — Quantum AI.** The v0.3.2 preview becomes a full release. Planned: real quantum hardware (IBM Quantum, Amazon Braket, Azure Quantum) with QPU-time and cost budgets; noise models and error mitigation; quantum results as `uncertain<T>` values whose confidence comes from shot statistics; VQE for chemistry and materials, quantum kernels for classification, amplitude estimation for financial risk on hardware; verified bounds beyond the simulator's reach; and post-quantum signatures for the audit chain. Details in [ROADMAP.md](ROADMAP.md#5-v05-quantum-ai).
-
-**Later:** v0.6 adds agents as MCP servers, argument type checking and token-by-token output streaming. v1.0 adds a native runtime, typed agent-to-agent messaging, a package registry and SSO/RBAC for Studio.
+**v0.6 — Interoperability.** Agents served as MCP servers, argument type checking, and token-by-token output streaming. **v1.0** adds a native runtime, typed agent-to-agent messaging, a package registry and SSO/RBAC for Studio.
 
 | Version | Theme | Status |
 |---|---|---|
@@ -610,9 +654,9 @@ Already shipped toward this goal: hash-chained audit logs, human review queues, 
 | v0.3.1 | Real-time `stream` blocks | Released |
 | v0.3.2 | Quantum tools preview: QAOA verified exactly, OpenQASM, Grover, quantum policies | Released |
 | v0.3.3 | Quantum circuits in the language; quantum-safe security, Monte Carlo with amplitude estimation, logistics routing | Released |
-| v0.3.4 | AlgoPulse™, AlgoLang's own real-time event engine; animated figures for every section and every application | **Current** |
-| v0.4 | Trustworthy AI | Next |
-| v0.5 | Quantum AI: hardware backends, noise, uncertain quantum results, chemistry and risk algorithms | Planned |
+| v0.3.4 | AlgoPulse™, AlgoLang's own real-time event engine; animated figures for every section and every application | Released |
+| v0.4 | Trustworthy AI: risk levels, privacy, explanations, untrusted tools, four-eyes review, signed audit, fairness and robustness tests, system cards, evidence packs, trust reports | **Current** |
+| v0.5 | Quantum AI: hardware backends, noise, uncertain quantum results, chemistry and risk algorithms | Next |
 | v0.6 | Interoperability: agents as MCP servers, argument types, output streaming | Planned |
 | v1.0 | Native runtime and ecosystem | Planned |
 
@@ -648,6 +692,8 @@ algoruntime.py                runtime engine
 algoeval.py                   eval blocks, traces and replay (algo eval, algo replay)        — v0.3
 algomcp.py                    MCP client and tool bindings (algo mcp)                         — v0.3
 algolsp.py                    language server (algo lsp)                                      — v0.3
+algotrust.py                  privacy, untrusted-tool fencing, Ed25519 signing, retention, perturbations — v0.4
+algoassure.py                 system cards, trust reports, evidence packs (algo card / trust / evidence) — v0.4
 algostream.py                 stream blocks: routing, metrics, at-least-once (algo stream)    — v0.3.1
 algopulse.py                  AlgoPulse™ event engine: durable topics, groups, server (algo pulse) — v0.3.4
 algoquantum.py                quantum tools: simulator, OpenQASM, QAOA + exact check, Grover — v0.3.2;

@@ -1,5 +1,7 @@
 // Sunrise discharge summary drafting — the treating doctor approves the final text.
 // The record input names a file under data/, e.g. "records/IP-2207.txt".
+risk limited "Drafting patient discharge summaries for the treating doctor"
+disclose "This summary was drafted by an AI system and approved by your treating doctor."
 use pack healthcare.discharge_summary as ds
 
 flow main(record: text) {

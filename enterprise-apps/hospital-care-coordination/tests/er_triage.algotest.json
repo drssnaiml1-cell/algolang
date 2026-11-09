@@ -11,7 +11,8 @@
         "agents_called": [
           "triage.UrgencyScorer",
           "BedManager",
-          "triage.Referral"
+          "triage.Referral",
+          "ClinicianSignOff"
         ],
         "agents_not_called": [
           "appt.RoutineDesk"
@@ -20,7 +21,7 @@
           "beds.availability"
         ],
         "output_contains": "Cardiac: 3 free",
-        "emits": 4,
+        "emits": 5,
         "max_tokens": 900
       }
     },
@@ -33,12 +34,13 @@
         "status": "ok",
         "agents_called": [
           "triage.UrgencyScorer",
-          "appt.RoutineDesk"
+          "appt.RoutineDesk",
+          "ClinicianSignOff"
         ],
         "agents_not_called": [
           "BedManager"
         ],
-        "emits": 3,
+        "emits": 4,
         "max_tokens": 700
       }
     }

@@ -1,5 +1,7 @@
 // NovaShield Claims Operations Center — first notice of loss to a governed decision.
 // intake → policy check → three-way fraud panel → (referral | complexity triage → routing → payout)
+risk limited "First notice of loss to a reviewed insurance claim decision"
+disclose "Your claim was first assessed by an AI system; a claims handler reviews the decision."
 use pack insurance.claims_triage as triage
 use pack insurance.fraud_screening as fraud
 tool policydb.lookup

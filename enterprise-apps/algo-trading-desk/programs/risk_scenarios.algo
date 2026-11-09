@@ -2,6 +2,7 @@
 // book → quantum.scenarios (one-factor Monte Carlo, VaR / expected shortfall, QAE estimate of the tail probability)
 //   → deterministic guard: a VaR above the desk limit goes to the risk committee (a person decides)
 // Research and paper trading only. Not investment advice. All data is synthetic.
+risk minimal "Internal value-at-risk scenarios for the desk's risk book"
 tool quantum.scenarios
 tool kb.search
 

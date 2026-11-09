@@ -1,0 +1,160 @@
+{
+  "card": "AlgoLang AI system card",
+  "card_version": 1,
+  "algolang": "0.4.0",
+  "program": "phishing_desk",
+  "source": "phishing_desk.algo",
+  "source_sha256": "b48a472c9793add44174196d51ed0094844329466f0a0e65013d638404f1b412",
+  "purpose": "Advice to staff about suspicious emails",
+  "risk_level": "limited",
+  "disclosure": "This advice comes from the SOC's AI assistant; analysts review reported emails.",
+  "flows": [
+    {
+      "name": "main",
+      "inputs": [
+        "email"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "LinkCheck",
+      "role": "Email security analyst",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "ioc.check"
+      ],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "ph.Advice",
+      "role": "Advice specialist, phishing email analysis",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 4000
+      },
+      "imported_from": "pack cyber.phishing"
+    },
+    {
+      "name": "ph.Assessment",
+      "role": "Assessment specialist, phishing email analysis",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 4000
+      },
+      "imported_from": "pack cyber.phishing"
+    },
+    {
+      "name": "ph.Indicators",
+      "role": "Indicators specialist, phishing email analysis",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 4000
+      },
+      "imported_from": "pack cyber.phishing"
+    },
+    {
+      "name": "ph.Likelihood",
+      "role": "Likelihood specialist, phishing email analysis",
+      "returns": "score",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_tokens": 4000
+      },
+      "imported_from": "pack cyber.phishing"
+    }
+  ],
+  "tools": [
+    {
+      "name": "ioc.check",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Check IPs, domains and hashes against the threat-intel blocklist"
+    }
+  ],
+  "streams": [],
+  "circuits": [],
+  "human_oversight": [
+    "LinkCheck: reviewed when confidence < 0.8",
+    "ph.Advice: reviewed when confidence < 0.8",
+    "ph.Assessment: reviewed when confidence < 0.8",
+    "ph.Indicators: reviewed when confidence < 0.8",
+    "ph.Likelihood: reviewed when confidence < 0.8"
+  ],
+  "data_protection": {
+    "redact_pii": "no agents",
+    "forbidden_attributes": [
+      "caste",
+      "gender",
+      "religion"
+    ],
+    "retention_days": {}
+  },
+  "evaluation": {
+    "cases": 0,
+    "fairness": [],
+    "robustness": [],
+    "explanations_checked": false
+  },
+  "limitations": [
+    "Generated from the source code: it documents design-time safeguards and test coverage, not measured real-world performance.",
+    "Offline evals use a deterministic mock model; repeat them with `algo eval --live` before deployment.",
+    "Protected attributes are withheld by keyword. Proxies such as names, postcodes or schools can still carry them; counterfactual fairness tests measure the effect.",
+    "Fairness has not been tested (no `expect fair` case).",
+    "Robustness has not been tested (no `expect robust` case)."
+  ]
+}

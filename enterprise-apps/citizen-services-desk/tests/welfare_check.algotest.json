@@ -11,12 +11,13 @@
         "agents_called": [
           "wf.Extractor",
           "wf.Eligibility",
-          "wf.Notice"
+          "wf.Notice",
+          "OfficerDecision"
         ],
         "tools_used": [
           "kb.search"
         ],
-        "emits": 2,
+        "emits": 3,
         "max_tokens": 700
       }
     }

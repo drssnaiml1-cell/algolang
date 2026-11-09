@@ -73,7 +73,7 @@
         },
         {
           "name": "keyword.other.algolang",
-          "match": "\\b(tool|role|goal|uses|model|policy|use|pack|as|from|mcp|eval|on|case|expect|called|contains|status|output|emits|escalated|stream|pulse|topic|group|map|key|to|escalate|dead|letter|max|flight|event|circuit|qubits|measure)\\b"
+          "match": "\\b(tool|role|goal|uses|model|policy|use|pack|as|from|mcp|eval|on|case|expect|called|contains|status|output|emits|escalated|stream|pulse|topic|group|map|key|to|escalate|dead|letter|max|flight|event|circuit|qubits|measure|risk|disclose|explain|evidence|redact|pii|retain|days|approvals|always|untrusted|fair|across|robust|consistency|explained)\\b"
         },
         {
           "name": "constant.language.algolang",

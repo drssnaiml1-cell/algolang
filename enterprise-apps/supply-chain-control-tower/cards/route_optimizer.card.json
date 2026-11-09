@@ -1,0 +1,125 @@
+{
+  "card": "AlgoLang AI system card",
+  "card_version": 1,
+  "algolang": "0.4.0",
+  "program": "route_optimizer",
+  "source": "route_optimizer.algo",
+  "source_sha256": "2e33187c07f0ed7206d31dd5e6517321d49de7da95c8b51c6d73724f5223ba80",
+  "purpose": "Route planning for shipments",
+  "risk_level": "minimal",
+  "disclosure": null,
+  "flows": [
+    {
+      "name": "main",
+      "inputs": [
+        "request"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "Dispatch",
+      "role": "Dispatch planner",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "shipment.track"
+      ],
+      "human_oversight": "reviewed when confidence < 0.9",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Fallback",
+      "role": "Logistics analyst",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.7",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Router",
+      "role": "Logistics optimisation engineer",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "quantum.routes"
+      ],
+      "human_oversight": "reviewed when confidence < 0.7",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {
+        "budget_cost_usd": 0.01
+      },
+      "imported_from": null
+    }
+  ],
+  "tools": [
+    {
+      "name": "quantum.routes",
+      "kind": "built-in quantum",
+      "trusted": true,
+      "description": "Logistics: one route per shipment at the lowest cost (QAOA, verified)"
+    },
+    {
+      "name": "shipment.track",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Status, location and ETA of a shipment (SHP-#####)"
+    }
+  ],
+  "streams": [],
+  "circuits": [],
+  "human_oversight": [
+    "Dispatch: reviewed when confidence < 0.9",
+    "Fallback: reviewed when confidence < 0.7",
+    "Router: reviewed when confidence < 0.7"
+  ],
+  "data_protection": {
+    "redact_pii": "no agents",
+    "forbidden_attributes": [
+      "caste",
+      "gender",
+      "religion"
+    ],
+    "retention_days": {}
+  },
+  "evaluation": {
+    "cases": 1,
+    "fairness": [],
+    "robustness": [],
+    "explanations_checked": false
+  },
+  "limitations": [
+    "Generated from the source code: it documents design-time safeguards and test coverage, not measured real-world performance.",
+    "Offline evals use a deterministic mock model; repeat them with `algo eval --live` before deployment.",
+    "Protected attributes are withheld by keyword. Proxies such as names, postcodes or schools can still carry them; counterfactual fairness tests measure the effect.",
+    "Fairness has not been tested (no `expect fair` case).",
+    "Robustness has not been tested (no `expect robust` case).",
+    "Quantum results come from a simulator unless a hardware backend is configured."
+  ]
+}

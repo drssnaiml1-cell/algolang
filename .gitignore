@@ -39,3 +39,4 @@ node_modules/
 
 # AlgoPulse event logs (algo pulse / algo stream --pulse)
 pulse/
+.algo-keys/

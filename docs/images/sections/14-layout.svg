@@ -44,46 +44,46 @@
 <rect x="446.0" y="124" width="388.0" height="122" rx="12" class="card"/>
 <rect x="446.0" y="124" width="388.0" height="122" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.12s"/>
 <circle cx="472.0" cy="152" r="15" fill="url(#gold)"/><text x="472.0" y="157" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">2</text>
-<text x="496.0" y="157" fill="#f4f1e8" font-size="16" font-weight="700">Engines</text>
-<text x="464.0" y="186" fill="#c9b98a" font-size="13.5">algopulse.py (events), algostream.py</text>
-<text x="464.0" y="205" fill="#c9b98a" font-size="13.5">(streams), algoquantum.py, algomcp.py</text>
-<text x="820.0" y="234" fill="#e9c75a" font-size="12" text-anchor="end" class="mono">engines</text>
+<text x="496.0" y="157" fill="#f4f1e8" font-size="16" font-weight="700">Trust layer</text>
+<text x="464.0" y="186" fill="#c9b98a" font-size="13.5">algotrust.py (privacy, fencing, signing),</text>
+<text x="464.0" y="205" fill="#c9b98a" font-size="13.5">algoassure.py (cards, reports, evidence)</text>
+<text x="820.0" y="234" fill="#e9c75a" font-size="12" text-anchor="end" class="mono">v0.4</text>
 </g>
 <g class="rise" style="animation-delay:0.16s">
 <rect x="852.0" y="124" width="388.0" height="122" rx="12" class="card"/>
 <rect x="852.0" y="124" width="388.0" height="122" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.24s"/>
 <circle cx="878.0" cy="152" r="15" fill="url(#gold)"/><text x="878.0" y="157" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">3</text>
-<text x="902.0" y="157" fill="#f4f1e8" font-size="16" font-weight="700">Modes</text>
-<text x="870.0" y="186" fill="#c9b98a" font-size="13.5">algoshell, algostudio, algoprompt.html,</text>
-<text x="870.0" y="205" fill="#c9b98a" font-size="13.5">algoagent, the algo command</text>
-<text x="1226.0" y="234" fill="#e9c75a" font-size="12" text-anchor="end" class="mono">doors</text>
+<text x="902.0" y="157" fill="#f4f1e8" font-size="16" font-weight="700">Engines</text>
+<text x="870.0" y="186" fill="#c9b98a" font-size="13.5">algopulse.py (events), algostream.py</text>
+<text x="870.0" y="205" fill="#c9b98a" font-size="13.5">(streams), algoquantum.py, algomcp.py</text>
+<text x="1226.0" y="234" fill="#e9c75a" font-size="12" text-anchor="end" class="mono">engines</text>
 </g>
 <g class="rise" style="animation-delay:0.24s">
 <rect x="40.0" y="264" width="388.0" height="122" rx="12" class="card"/>
 <rect x="40.0" y="264" width="388.0" height="122" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.36s"/>
 <circle cx="66.0" cy="292" r="15" fill="url(#gold)"/><text x="66.0" y="297" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">4</text>
-<text x="90.0" y="297" fill="#f4f1e8" font-size="16" font-weight="700">Libraries</text>
-<text x="58.0" y="326" fill="#c9b98a" font-size="13.5">packs/ (120 domain packs), examples/,</text>
-<text x="58.0" y="345" fill="#c9b98a" font-size="13.5">examples/50-programs/</text>
-<text x="414.0" y="374" fill="#e9c75a" font-size="12" text-anchor="end" class="mono">reuse</text>
+<text x="90.0" y="297" fill="#f4f1e8" font-size="16" font-weight="700">Modes</text>
+<text x="58.0" y="326" fill="#c9b98a" font-size="13.5">algoshell, algostudio, algoprompt.html,</text>
+<text x="58.0" y="345" fill="#c9b98a" font-size="13.5">algoagent, the algo command</text>
+<text x="414.0" y="374" fill="#e9c75a" font-size="12" text-anchor="end" class="mono">doors</text>
 </g>
 <g class="rise" style="animation-delay:0.32s">
 <rect x="446.0" y="264" width="388.0" height="122" rx="12" class="card"/>
 <rect x="446.0" y="264" width="388.0" height="122" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.48s"/>
 <circle cx="472.0" cy="292" r="15" fill="url(#gold)"/><text x="472.0" y="297" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">5</text>
-<text x="496.0" y="297" fill="#f4f1e8" font-size="16" font-weight="700">Applications</text>
-<text x="464.0" y="326" fill="#c9b98a" font-size="13.5">enterprise-apps/: ten governed apps with</text>
-<text x="464.0" y="345" fill="#c9b98a" font-size="13.5">tools, data and tests</text>
-<text x="820.0" y="374" fill="#e9c75a" font-size="12" text-anchor="end" class="mono">apps</text>
+<text x="496.0" y="297" fill="#f4f1e8" font-size="16" font-weight="700">Libraries &amp; docs</text>
+<text x="464.0" y="326" fill="#c9b98a" font-size="13.5">packs/ (120 domain packs), examples/, docs/,</text>
+<text x="464.0" y="345" fill="#c9b98a" font-size="13.5">guides, tests/, tools/, CI</text>
+<text x="820.0" y="374" fill="#e9c75a" font-size="12" text-anchor="end" class="mono">reuse</text>
 </g>
 <g class="rise" style="animation-delay:0.40s">
 <rect x="852.0" y="264" width="388.0" height="122" rx="12" class="card"/>
 <rect x="852.0" y="264" width="388.0" height="122" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.60s"/>
 <circle cx="878.0" cy="292" r="15" fill="url(#gold)"/><text x="878.0" y="297" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">6</text>
-<text x="902.0" y="297" fill="#f4f1e8" font-size="16" font-weight="700">Docs &amp; tooling</text>
-<text x="870.0" y="326" fill="#c9b98a" font-size="13.5">docs/, ROADMAP.md, guides, tests/, tools/,</text>
-<text x="870.0" y="345" fill="#c9b98a" font-size="13.5">vscode-algolang/, CI</text>
-<text x="1226.0" y="374" fill="#e9c75a" font-size="12" text-anchor="end" class="mono">docs</text>
+<text x="902.0" y="297" fill="#f4f1e8" font-size="16" font-weight="700">Applications</text>
+<text x="870.0" y="326" fill="#c9b98a" font-size="13.5">enterprise-apps/: ten governed apps with</text>
+<text x="870.0" y="345" fill="#c9b98a" font-size="13.5">tools, data, tests and system cards</text>
+<text x="1226.0" y="374" fill="#e9c75a" font-size="12" text-anchor="end" class="mono">apps</text>
 </g>
   <text x="1240" y="420" fill="#9aa6c2" fill-opacity=".7" font-size="11" text-anchor="end">AlgoLang · AlgoProfessor AI R&amp;D Solutions</text>
 </svg>

@@ -31,11 +31,12 @@
   <text x="40" y="72" fill="#f4f1e8" font-size="26" font-weight="700">QuantOracle strategy review board</text>
   <text x="40" y="96" fill="#c9b98a" font-size="16">can a strategy go to paper trading?</text>
   
-<rect x="40" y="110" width="118" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".55"/><text x="99" y="127" fill="#f1dc94" font-size="12.5" text-anchor="middle">10 agent calls</text>
-<rect x="168" y="110" width="67" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".55"/><text x="202" y="127" fill="#f1dc94" font-size="12.5" text-anchor="middle">2 tools</text>
-<rect x="245" y="110" width="96" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".55"/><text x="293" y="127" fill="#f1dc94" font-size="12.5" text-anchor="middle">2 decisions</text>
-<rect x="352" y="110" width="96" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".55"/><text x="400" y="127" fill="#f1dc94" font-size="12.5" text-anchor="middle">1 uncertain</text>
-<rect x="458" y="110" width="111" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".55"/><text x="513" y="127" fill="#f1dc94" font-size="12.5" text-anchor="middle">2 human gates</text>
+<rect x="40" y="110" width="104" height="24" rx="12" fill="#6cc28a" fill-opacity=".13" stroke="#6cc28a" stroke-opacity=".75"/><text x="92" y="127" fill="#6cc28a" font-size="12.5" font-weight="700" text-anchor="middle">minimal risk</text>
+<rect x="154" y="110" width="118" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".75"/><text x="213" y="127" fill="#f1dc94" font-size="12.5" font-weight="400" text-anchor="middle">10 agent calls</text>
+<rect x="282" y="110" width="67" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".75"/><text x="315" y="127" fill="#f1dc94" font-size="12.5" font-weight="400" text-anchor="middle">2 tools</text>
+<rect x="359" y="110" width="96" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".75"/><text x="407" y="127" fill="#f1dc94" font-size="12.5" font-weight="400" text-anchor="middle">2 decisions</text>
+<rect x="465" y="110" width="96" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".75"/><text x="513" y="127" fill="#f1dc94" font-size="12.5" font-weight="400" text-anchor="middle">1 uncertain</text>
+<rect x="572" y="110" width="111" height="24" rx="12" fill="#c9a227" fill-opacity=".13" stroke="#c9a227" stroke-opacity=".75"/><text x="627" y="127" fill="#f1dc94" font-size="12.5" font-weight="400" text-anchor="middle">2 human gates</text>
 <path id="e0" d="M194.4 350.0 C 211.4 350.0, 211.4 182.0, 228.4 182.0" class="wire"/>
 <path id="e1" d="M194.4 350.0 C 211.4 350.0, 211.4 266.0, 228.4 266.0" class="wire"/>
 <path id="e2" d="M194.4 350.0 C 211.4 350.0, 211.4 350.0, 228.4 350.0" class="wire"/>

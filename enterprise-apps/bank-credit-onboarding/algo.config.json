@@ -38,5 +38,8 @@
   },
   "plugins": [
     "plugins/deccan_tools.py"
-  ]
+  ],
+  "audit": {
+    "sign": true
+  }
 }
