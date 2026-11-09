@@ -160,7 +160,8 @@ class CompileError(Exception):
 
 
 def _s(tok: Token) -> str:  # unquote STRING
-    return bytes(str(tok)[1:-1], "utf-8").decode("unicode_escape")
+    # escapes such as \n and \" are decoded; every other character (₹, →, —, हिन्दी) is kept exactly as written
+    return str(tok)[1:-1].encode("latin-1", "backslashreplace").decode("unicode_escape")
 
 
 def _line(node) -> int:

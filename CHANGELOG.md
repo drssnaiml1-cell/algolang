@@ -4,6 +4,9 @@ All notable changes to AlgoLang are documented here. The format follows [Keep a 
 
 ## [Unreleased]
 
+### Fixed
+- String literals with non-ASCII characters (₹, →, —, Hindi and other scripts) were garbled by the compiler: escapes were decoded as Latin-1. They now keep every character exactly as written; `\n`, `\"` and other escapes still work. Regression test in `tests/test_trust.py`.
+
 ## [0.4.1] — 2026-11-09 · LLM & SLM graph optimisation
 
 ### Added

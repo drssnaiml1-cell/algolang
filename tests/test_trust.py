@@ -415,3 +415,9 @@ def test_enterprise_high_risk_programs_declare_and_pass(root, project, monkeypat
         assert p._prog.risk[0] == "high"
         results = algoeval.run_evals(p, audit_dir=str(project / app))
         assert results and all(r["passed"] for r in results), (app, [r["failures"] for r in results])
+
+
+def test_string_literals_keep_unicode(project):
+    p = al.compile('agent A(x: text) -> text { goal "Price {x} in ₹ → report — नमस्ते \\"quoted\\"" }\n'
+                   'flow main(x: text) { emit A(x) }', "u")
+    assert p._prog.agents["A"].goal == 'Price {x} in ₹ → report — नमस्ते "quoted"'
