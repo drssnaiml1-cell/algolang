@@ -1,7 +1,6 @@
 {
   "card": "AlgoLang AI system card",
   "card_version": 1,
-  "algolang": "0.4.0",
   "program": "er_triage",
   "source": "er_triage.algo",
   "source_sha256": "5558b6473499c367e6d07751f6a58dcb91d628bd3dcf0b8fb24d7bbd0643250d",

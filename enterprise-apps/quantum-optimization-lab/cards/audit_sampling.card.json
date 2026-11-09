@@ -1,7 +1,6 @@
 {
   "card": "AlgoLang AI system card",
   "card_version": 1,
-  "algolang": "0.4.0",
   "program": "audit_sampling",
   "source": "audit_sampling.algo",
   "source_sha256": "276e1bda56b484a90f91ba4d81c5146fa015258ebe08267073f15450a5887f5d",

@@ -1,7 +1,6 @@
 {
   "card": "AlgoLang AI system card",
   "card_version": 1,
-  "algolang": "0.4.0",
   "program": "claims_intake",
   "source": "claims_intake.algo",
   "source_sha256": "43f6cf492532c1df5014d47c3d4579476936ef6790d5f8f45991144d47093fa2",

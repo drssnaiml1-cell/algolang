@@ -1,7 +1,6 @@
 {
   "card": "AlgoLang AI system card",
   "card_version": 1,
-  "algolang": "0.4.0",
   "program": "welfare_check",
   "source": "welfare_check.algo",
   "source_sha256": "4c1370684da7bdd4f589ec4f75c7703dcd7cc72f55eb3f2b61384f42174a6a17",

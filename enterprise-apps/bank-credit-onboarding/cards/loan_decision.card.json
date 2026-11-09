@@ -1,7 +1,6 @@
 {
   "card": "AlgoLang AI system card",
   "card_version": 1,
-  "algolang": "0.4.0",
   "program": "loan_decision",
   "source": "loan_decision.algo",
   "source_sha256": "bcd0aa2b940d7d69fa65f36069bf045c421250be34f941b7f10f3ac82c605296",

@@ -1,7 +1,6 @@
 {
   "card": "AlgoLang AI system card",
   "card_version": 1,
-  "algolang": "0.4.0",
   "program": "shift_scheduler",
   "source": "shift_scheduler.algo",
   "source_sha256": "21bacb0ba56b9327ceb483abc0f123d0b39ad32bce1d4ac3e98ec1ab031b8878",

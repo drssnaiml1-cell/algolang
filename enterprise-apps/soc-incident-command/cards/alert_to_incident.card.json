@@ -1,7 +1,6 @@
 {
   "card": "AlgoLang AI system card",
   "card_version": 1,
-  "algolang": "0.4.0",
   "program": "alert_to_incident",
   "source": "alert_to_incident.algo",
   "source_sha256": "08b68af1a4ebd641295cc7644387508cd6444c2d9bd505c540716c47acda2d90",

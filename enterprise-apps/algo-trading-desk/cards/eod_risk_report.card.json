@@ -1,7 +1,6 @@
 {
   "card": "AlgoLang AI system card",
   "card_version": 1,
-  "algolang": "0.4.0",
   "program": "eod_risk_report",
   "source": "eod_risk_report.algo",
   "source_sha256": "b78f271b4ba9316b653b4e6bbcd318bbf95132c22ae5f805ce2f5e477bf69040",

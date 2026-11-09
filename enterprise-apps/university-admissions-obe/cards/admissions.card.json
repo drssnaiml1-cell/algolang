@@ -1,7 +1,6 @@
 {
   "card": "AlgoLang AI system card",
   "card_version": 1,
-  "algolang": "0.4.0",
   "program": "admissions",
   "source": "admissions.algo",
   "source_sha256": "803ff8b8408aebd65096ff7467c38563d142727492bdc5cdcce5dd15e2e57cec",

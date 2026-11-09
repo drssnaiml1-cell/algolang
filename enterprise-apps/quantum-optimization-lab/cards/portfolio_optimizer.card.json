@@ -1,7 +1,6 @@
 {
   "card": "AlgoLang AI system card",
   "card_version": 1,
-  "algolang": "0.4.0",
   "program": "portfolio_optimizer",
   "source": "portfolio_optimizer.algo",
   "source_sha256": "895f0e969eb9aeb853b95a9261db74a0c55d2cce85d5be04310f865b7c195384",

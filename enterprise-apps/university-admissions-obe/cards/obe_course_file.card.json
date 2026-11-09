@@ -1,7 +1,6 @@
 {
   "card": "AlgoLang AI system card",
   "card_version": 1,
-  "algolang": "0.4.0",
   "program": "obe_course_file",
   "source": "obe_course_file.algo",
   "source_sha256": "6b942a48e70dc31ca0767665ed8de65f5c378939690400cdd4ee6121d4b7ce5e",

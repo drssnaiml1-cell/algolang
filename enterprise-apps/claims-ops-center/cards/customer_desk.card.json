@@ -1,7 +1,6 @@
 {
   "card": "AlgoLang AI system card",
   "card_version": 1,
-  "algolang": "0.4.0",
   "program": "customer_desk",
   "source": "customer_desk.algo",
   "source_sha256": "3b72344371b4fca401fb33ceb6d26ef31fe9d8fee7d89882bdf0f1d9bad59a70",

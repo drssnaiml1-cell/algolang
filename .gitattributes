@@ -1,0 +1,7 @@
+# Keep LF line endings everywhere, so hashes in system cards and audit records match on every OS
+* text=auto eol=lf
+*.bat text eol=crlf
+*.pdf binary
+*.png binary
+*.zip binary
+*.ipynb text eol=lf

@@ -1,7 +1,6 @@
 {
   "card": "AlgoLang AI system card",
   "card_version": 1,
-  "algolang": "0.4.0",
   "program": "kyc_onboarding",
   "source": "kyc_onboarding.algo",
   "source_sha256": "2f7cfce9a890ff0ac74af69b85038a29ece91b147bf3899e41242de9e253f68e",

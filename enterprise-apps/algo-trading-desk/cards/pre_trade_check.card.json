@@ -1,7 +1,6 @@
 {
   "card": "AlgoLang AI system card",
   "card_version": 1,
-  "algolang": "0.4.0",
   "program": "pre_trade_check",
   "source": "pre_trade_check.algo",
   "source_sha256": "e9ba8691341d3a52a7d993ec9006269fb9f1751a6fa5df67a95c092af1eb1dbb",

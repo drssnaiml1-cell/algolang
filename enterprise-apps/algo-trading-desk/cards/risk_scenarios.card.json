@@ -1,7 +1,6 @@
 {
   "card": "AlgoLang AI system card",
   "card_version": 1,
-  "algolang": "0.4.0",
   "program": "risk_scenarios",
   "source": "risk_scenarios.algo",
   "source_sha256": "871174800af7c4acdaf8f2ed898414c172768e2ff15e69b297187d9647d52340",

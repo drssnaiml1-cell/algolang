@@ -1,7 +1,6 @@
 {
   "card": "AlgoLang AI system card",
   "card_version": 1,
-  "algolang": "0.4.0",
   "program": "route_optimizer",
   "source": "route_optimizer.algo",
   "source_sha256": "2e33187c07f0ed7206d31dd5e6517321d49de7da95c8b51c6d73724f5223ba80",

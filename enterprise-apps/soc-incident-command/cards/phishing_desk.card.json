@@ -1,7 +1,6 @@
 {
   "card": "AlgoLang AI system card",
   "card_version": 1,
-  "algolang": "0.4.0",
   "program": "phishing_desk",
   "source": "phishing_desk.algo",
   "source_sha256": "b48a472c9793add44174196d51ed0094844329466f0a0e65013d638404f1b412",

@@ -1,7 +1,6 @@
 {
   "card": "AlgoLang AI system card",
   "card_version": 1,
-  "algolang": "0.4.0",
   "program": "grievance_desk",
   "source": "grievance_desk.algo",
   "source_sha256": "a3715b45926008b36f1377021c4d2820be6f567e5a71dcf8f50d05e982152daf",

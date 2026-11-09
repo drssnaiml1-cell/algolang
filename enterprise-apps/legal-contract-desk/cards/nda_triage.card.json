@@ -1,7 +1,6 @@
 {
   "card": "AlgoLang AI system card",
   "card_version": 1,
-  "algolang": "0.4.0",
   "program": "nda_triage",
   "source": "nda_triage.algo",
   "source_sha256": "b12cf89bb97329faf2b8ee2cf719c335e2aae534dceb45d88849b2d7a6cf5bab",

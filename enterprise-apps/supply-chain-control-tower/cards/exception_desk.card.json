@@ -1,7 +1,6 @@
 {
   "card": "AlgoLang AI system card",
   "card_version": 1,
-  "algolang": "0.4.0",
   "program": "exception_desk",
   "source": "exception_desk.algo",
   "source_sha256": "0412a1706f1abc67485575636665fa2f0c9e0f5496fc262050ce576f060cb0d3",

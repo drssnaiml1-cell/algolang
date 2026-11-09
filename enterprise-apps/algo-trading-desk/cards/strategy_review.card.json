@@ -1,7 +1,6 @@
 {
   "card": "AlgoLang AI system card",
   "card_version": 1,
-  "algolang": "0.4.0",
   "program": "strategy_review",
   "source": "strategy_review.algo",
   "source_sha256": "4ea962f1128d71289e4f2584f606640ee93c76c56f85802d3b2303d171abf89a",

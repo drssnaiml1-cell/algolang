@@ -1,7 +1,6 @@
 {
   "card": "AlgoLang AI system card",
   "card_version": 1,
-  "algolang": "0.4.0",
   "program": "circuit_lab",
   "source": "circuit_lab.algo",
   "source_sha256": "f05e5c9eec5c5d49b159524d08edaa45124006f50088ac9c87c5ac07c22b6ade",

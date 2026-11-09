@@ -1,7 +1,6 @@
 {
   "card": "AlgoLang AI system card",
   "card_version": 1,
-  "algolang": "0.4.0",
   "program": "pqc_readiness",
   "source": "pqc_readiness.algo",
   "source_sha256": "7850bf43d1b75d9febc8f1af97fc99828e39e4a2632241fd436c899036c344ea",

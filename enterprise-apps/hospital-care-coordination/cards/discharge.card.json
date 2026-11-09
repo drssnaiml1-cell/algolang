@@ -1,7 +1,6 @@
 {
   "card": "AlgoLang AI system card",
   "card_version": 1,
-  "algolang": "0.4.0",
   "program": "discharge",
   "source": "discharge.algo",
   "source_sha256": "12642f6a8cfd2181b16b3a164ca3576905885c7b963b9f41532ed39d094873d4",
