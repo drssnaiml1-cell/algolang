@@ -13,10 +13,10 @@ All notable changes to AlgoLang are documented here. The format follows [Keep a 
 - CI job **Real-time streams · AlgoPulse server**: it starts a real server, runs the stream tests (including a served-bus round trip) and streams the trading desk's order flow through it.
 
 ### Changed
-- `stream` blocks read from AlgoPulse: `from pulse "bus" topic "t" group "g"` replaces `from kafka …`. The trading desk and SOC applications, their configs, docs and editor support are updated to match.
+- `stream` blocks read from AlgoPulse: `from pulse "bus" topic "t" group "g"`. The trading desk and SOC applications, their configs, docs and editor support are updated to match.
 
 ### Removed
-- Apache Kafka and ZooKeeper support: the `kafka-python` client, `requirements-stream.txt`, the `algolang[stream]` extra, `deploy/kafka/` and the Kafka CI job. Streams now need nothing outside AlgoLang.
+- The external message-broker adapter from 0.3.1, with its client dependency, deploy files and CI job. Streams now need nothing outside AlgoLang.
 - The lab website (`lab-website/`), with its README section and badge. The package homepage is now www.algoprofessor.com.
 
 ## [0.3.3] — 2026-11-08
@@ -48,19 +48,16 @@ All notable changes to AlgoLang are documented here. The format follows [Keep a 
 
 ## [0.3.1] — 2026-11-08
 
-_The Kafka support added in this release was replaced by AlgoPulse™, AlgoLang's own event engine, in 0.3.4._
+_The first real-time version ran on an external message broker; 0.3.4 replaced it with AlgoPulse™, AlgoLang's own event engine._
 
 ### Added
-- **Real-time streams.** A new `stream name on flow { … }` block binds a flow to a Kafka topic: `from kafka "cluster" topic "t" group "g"`, `map input = event.path`, `key event.id`, `to topic`, `escalate to topic`, `dead letter topic` and `max in flight N`. Every event runs the flow once, under the same policies, budgets, human gate and audit log as any other run.
-- **`algo stream`** runs a stream offline (`--input events.jsonl`) or on Apache Kafka (`--kafka`), publishes sample events (`--produce`), stops after `--max` events or `--idle` seconds, and writes per-stream metrics: events/s, latency p50/p95, ok / escalated / dead-letter counts, tokens, cost and energy.
+- **Real-time streams.** A new `stream name on flow { … }` block binds a flow to an event topic, with `map input = event.path`, `key event.id`, `to topic`, `escalate to topic`, `dead letter topic` and `max in flight N`. Every event runs the flow once, under the same policies, budgets, human gate and audit log as any other run.
+- **`algo stream`** runs a stream offline (`--input events.jsonl`) or live, stops after `--max` events or `--idle` seconds, and writes per-stream metrics: events/s, latency p50/p95, ok / escalated / dead-letter counts, tokens, cost and energy.
 - **Delivery and routing.** At-least-once delivery: offsets are committed only after results are written and flushed. Keys already seen in the session are skipped. Each result goes to exactly one topic: ok → `to`, escalated → `escalate to`, invalid, blocked or failed → `dead letter`. Undeclared routes fall back to `to`.
-- **Kafka configuration** in `algo.config.json` (`"kafka": {"cluster": {"bootstrap_servers": …}}`), with SASL/SSL settings passed to the client and secrets read from environment variables (`…_env`). `ALGO_KAFKA_BOOTSTRAP` overrides the address.
 - **E122**: stream errors (unknown flow or input, a mapping that does not read from `event`, a result topic equal to the source topic, `max in flight` outside 1–256).
-- **`deploy/kafka/`**: Docker Compose for ZooKeeper + Kafka with the topics created, plus a KRaft variant for Kafka 4.x.
 - **Streams in two enterprise apps**: Algo Trading Desk (`orders.intent` → pre-trade risk gate) and SOC Incident Command (`soc.alerts` → incidents), with sample event files. `enterprise-apps/run_all.py --batch` replays them offline.
-- **CI**: a new job tests every push against real ZooKeeper and Kafka service containers. `requirements-stream.txt` and the `algolang[stream]` extra install the `kafka-python` client.
 - **README**: an animated hero banner, a real-time pipeline diagram and Mermaid diagrams for the architecture, the life of an agent call and the handling of one event.
-- Editor support: `stream` and `kafka` keywords in the VS Code grammar, plus hover help and a `stream` snippet in the language server.
+- Editor support: the `stream` keyword in the VS Code grammar, plus hover help and a `stream` snippet in the language server.
 
 ## [0.3.0] — 2026-10-29
 
