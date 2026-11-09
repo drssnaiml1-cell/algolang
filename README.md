@@ -36,7 +36,7 @@
   <a href="https://www.algoprofessor.com"><img src="docs/images/algolang-hero.svg" alt="AlgoLang: an order event from AlgoPulse flows through parallel Quote and Limits agents, a deterministic BREACH guard, and an uncertain RiskGate agent with a human gate; every call is written to a hash-chained audit log" width="100%"></a>
 </p>
 
-**Current version: 0.4.0** (Trustworthy AI: risk levels · fairness and robustness tests · signed audit · system cards · trust reports) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md) · [50 Sample Programs (PDF)](docs/AlgoLang_50_Sample_Programs.pdf) · [Language manual (PDF)](docs/AlgoLang_Documentation_v0.4.pdf)
+**Current version: 0.4.1** (Trustworthy AI: risk levels · fairness and robustness tests · signed audit · system cards · trust reports · LLM & SLM graph optimisation) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md) · [50 Sample Programs (PDF)](docs/AlgoLang_50_Sample_Programs.pdf) · [Language manual (PDF)](docs/AlgoLang_Documentation_v0.4.pdf)
 
 AlgoLang has **no functions**. Every unit of work is an `agent` with a role, a goal, explicit tools, a model and a policy. A `flow` is the only other construct, and it can do just four things:
 
@@ -119,7 +119,7 @@ flowchart TB
 | 5 | Accountability | Every agent call returns a value with its confidence and provenance, and is written to a hash-chained audit log that can be verified. Traces can be replayed. |
 | 6 | Honest uncertainty | `uncertain<T>` agents are sampled several times. Their confidence reflects how much the samples agree, and decisions must check it. |
 | 7 | Cost, speed and sustainability | Cheap models for easy steps, strong models where needed, caching, parallelism, and every call priced in money, watt-hours and CO₂. |
-| 8 | Reuse at scale | 120 domain packs in 20 sectors, modules, MCP tools, AlgoPulse™ streams, quantum tools, ten enterprise applications, and batch processing of thousands of records. |
+| 8 | Reuse at scale | 120 domain packs in 20 sectors, modules, MCP tools, AlgoPulse™ streams, quantum tools, eleven enterprise applications, and batch processing of thousands of records. |
 | 9 | Access for everyone | Command line, graphical Studio, a plain-English Prompt UI, a Python SDK and editor support through a language server. |
 | 10 | Teachable and testable | An offline backend runs without an API key. `eval` blocks and behaviour tests run in CI; live mode uses real Claude models. |
 
@@ -183,9 +183,11 @@ algo review approve <id> --reviewer "Priya" --override "approve INR 30 lakh inst
 algo keys init                                        # create and pin the Ed25519 audit key
 ```
 
-**Risk levels in the ten enterprise applications.** Four programs are high risk and meet every rule: credit decisions, university admissions, ER triage and welfare eligibility. Six are limited risk and disclose AI use. The other fifteen are internal minimal-risk tools. Every program ships a generated system card in its app's `cards/` folder.
+**Risk levels in the eleven enterprise applications.** Four programs are high risk and meet every rule: credit decisions, university admissions, ER triage and welfare eligibility. Seven are limited risk and disclose AI use. The other sixteen are internal minimal-risk tools. Every program ships a generated system card in its app's `cards/` folder.
 
 > These features **produce evidence** for frameworks such as the NIST AI RMF, the EU AI Act and ISO/IEC 42001. Using AlgoLang does not by itself make a system compliant: that still needs your organisation's own risk management, legal review and, where required, a conformity assessment. Offline tests use an ideal mock model, so they test the program (its guards, tools and masking); run `algo eval --live` to test the real model.
+
+**v0.4.1 adds LLM & SLM graph optimisation:** small models on your own GPUs (`model slm = "local:phi-4-mini"`, any OpenAI-compatible server), SLM-first cascades written with `uncertain<T>` and guards, and an exact optimiser that picks the cheapest model for every agent of a program within quality floors and a latency limit, then applies it with `"agent_models"`. See the [AlgoGraph™ LLM & SLM Optimizer](enterprise-apps/llm-graph-optimizer/).
 
 ### Earlier releases: v0.3 to v0.3.4
 
@@ -299,9 +301,9 @@ The runnable source of every program is in [`examples/50-programs/`](examples/50
 
 ## 6. Enterprise applications
 
-<p align="center"><img src="docs/images/sections/06-enterprise-apps.svg" alt="Ten enterprise applications" width="100%"></p>
+<p align="center"><img src="docs/images/sections/06-enterprise-apps.svg" alt="Eleven enterprise applications" width="100%"></p>
 
-[`enterprise-apps/`](enterprise-apps/) holds ten complete, governed multi-agent applications. Each has its own org policy, company tools over its own data, a knowledge base, programs, batch data, behaviour tests and (v0.4) a risk level and a generated AI system card for every program:
+[`enterprise-apps/`](enterprise-apps/) holds eleven complete, governed multi-agent applications. Each has its own org policy, company tools over its own data, a knowledge base, programs, batch data, behaviour tests and (v0.4) a risk level and a generated AI system card for every program:
 
 | Application | Sector | What it automates | Risk (v0.4) |
 |---|---|---|---|
@@ -315,6 +317,7 @@ The runnable source of every program is in [`examples/50-programs/`](examples/50
 | [Legal Contract Desk](enterprise-apps/legal-contract-desk/) | Legal | NDA triage against the playbook; clause-by-clause contract review | minimal |
 | [Algo Trading Desk (QuantOracle™)](enterprise-apps/algo-trading-desk/) | Capital markets | Strategy review board → pre-trade risk gate with hard limits → end-of-day risk and surveillance (paper trading, human approval of every order) | minimal |
 | [Quantum Optimization Lab](enterprise-apps/quantum-optimization-lab/) | Quantum computing | QAOA portfolio selection and max-cut shift planning, each VERIFIED against the exact optimum, then risk review and human approval; quantum-random audit sampling | minimal |
+| [AlgoGraph™ LLM & SLM Optimizer](enterprise-apps/llm-graph-optimizer/) | AI platform · MLOps | SLM-first cascades (small model first, large model when unsure); exact graph optimisation of every agent's model within quality floors and a latency limit, VERIFIED by brute force; two-person rollout | limited · minimal |
 
 ```bash
 python enterprise-apps/run_all.py --batch      # every app's tests, batch job, streams and system cards
@@ -675,7 +678,8 @@ make check        # ruff + pytest + lint of every .algo file
 | v0.3.2 | Quantum tools preview: QAOA verified exactly, OpenQASM, Grover, quantum policies | Released |
 | v0.3.3 | Quantum circuits in the language; quantum-safe security, Monte Carlo with amplitude estimation, logistics routing | Released |
 | v0.3.4 | AlgoPulse™, AlgoLang's own real-time event engine; animated figures for every section and every application | Released |
-| v0.4 | Trustworthy AI: risk levels, privacy, explanations, untrusted tools, four-eyes review, signed audit, fairness and robustness tests, system cards, evidence packs, trust reports | **Current** |
+| v0.4 | Trustworthy AI: risk levels, privacy, explanations, untrusted tools, four-eyes review, signed audit, fairness and robustness tests, system cards, evidence packs, trust reports | Released |
+| v0.4.1 | LLM & SLM graph optimisation: SLM-first cascades, exact model assignment over the agent graph, local small models, `agent_models` routing | **Current** |
 | v0.5 | Quantum AI: hardware backends, noise, uncertain quantum results, chemistry and risk algorithms | Next |
 | v0.6 | Interoperability: agents as MCP servers, argument types, output streaming | Planned |
 | v1.0 | Native runtime and ecosystem | Planned |
@@ -723,7 +727,7 @@ tools/make_figures.py         regenerates every figure (CI checks they match the
 examples/v03/                 tour of v0.3: MCP demo server, uncertain<T>, budgets, eval
 examples/50-programs/          the 50 programs from "AlgoLang: 50 Sample Programs" + inputs.json
 docs/                         language manual (LaTeX + PDF) and AlgoLang_50_Sample_Programs.pdf
-enterprise-apps/              ten governed enterprise applications (incl. Algo Trading Desk, Quantum Optimization Lab)
+enterprise-apps/              eleven governed enterprise applications (incl. Algo Trading Desk, Quantum Optimization Lab, AlgoGraph™ LLM & SLM Optimizer)
 ROADMAP.md                    v0.4 Trustworthy AI and v0.5 Quantum AI plans, later releases
 examples/*.algo               source programs (bad_example.algo shows every error)
 vscode-algolang/              VS Code extension: highlighting + the language server

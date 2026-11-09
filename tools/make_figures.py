@@ -552,9 +552,9 @@ SECTIONS = {
               ("par for", 5, "P24 Literature Review"), ("single", 4, "P01 Hello Greeter"), ("committee", 4, "P14 Credit Committee")],
         note="AlgoLang: 50 Sample Programs (PDF, 106 pages): input, code and output in CLI, Studio and Prompt UI.")),
     "06-enterprise-apps": (cards, dict(
-        caption="6 · Enterprise applications", title="Ten governed applications, ready to run",
+        caption="6 · Enterprise applications", title="Eleven governed applications, ready to run",
         subtitle="Each has its own org policy, company tools, knowledge base, programs, batch data and behaviour tests.",
-        cols=5, lines=2, card_h=104,
+        cols=4, lines=2, card_h=104,
         items=[dict(t="Claims Operations", d="Insurance · FNOL to payout or SIU"),
                dict(t="Hospital Care", d="Healthcare · ER triage, discharge"),
                dict(t="Bank Credit & KYC", d="Banking · committee, sanctions"),
@@ -564,7 +564,8 @@ SECTIONS = {
                dict(t="Citizen Services", d="Government · grievances, welfare"),
                dict(t="Legal Contract Desk", d="Legal · NDA triage, clause review"),
                dict(t="Algo Trading Desk", d="Markets · risk gate, VaR, streams"),
-               dict(t="Quantum Optimization", d="Quantum · QAOA verified, circuits")])),
+               dict(t="Quantum Optimization", d="Quantum · QAOA verified, circuits"),
+               dict(t="LLM & SLM Optimizer", d="AI platform · cascades, graph optimisation")])),
     "09-language": (pipeline, dict(
         caption="9 · The language", title="From .algo source to a governed run",
         subtitle="One small grammar; the compiler proves the rules before the runtime executes them.",
@@ -614,7 +615,7 @@ SECTIONS = {
                dict(t="Engines", d="algopulse.py (events), algostream.py (streams), algoquantum.py, algomcp.py", tag="engines"),
                dict(t="Modes", d="algoshell, algostudio, algoprompt.html, algoagent, the algo command", tag="doors"),
                dict(t="Libraries & docs", d="packs/ (120 domain packs), examples/, docs/, guides, tests/, tools/, CI", tag="reuse"),
-               dict(t="Applications", d="enterprise-apps/: ten governed apps with tools, data, tests and system cards", tag="apps")])),
+               dict(t="Applications", d="enterprise-apps/: eleven governed apps with tools, data, tests and system cards", tag="apps")])),
     "15-author": (cards, dict(
         caption="15 · Author and licence", title="Designed in Hyderabad by AlgoProfessor AI R&D Solutions",
         cols=3, lines=3, card_h=118,

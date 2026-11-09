@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 398" width="1280" height="398" role="img" aria-label="Ten governed applications, ready to run">
-  <title>Ten governed applications, ready to run</title>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 520" width="1280" height="520" role="img" aria-label="Eleven governed applications, ready to run">
+  <title>Eleven governed applications, ready to run</title>
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#081428"/><stop offset=".6" stop-color="#0e2140"/><stop offset="1" stop-color="#132c55"/></linearGradient>
     <linearGradient id="gold" x1="0" x2="1"><stop offset="0" stop-color="#e9c75a"/><stop offset="1" stop-color="#c9a227"/></linearGradient>
@@ -24,92 +24,91 @@
     
     @media (prefers-reduced-motion: reduce) { * { animation: none !important; } .fade { opacity: 1; } }
   </style>
-  <rect width="1280" height="398" fill="url(#bg)"/>
-  <rect width="1280" height="398" fill="url(#grid)"/>
+  <rect width="1280" height="520" fill="url(#bg)"/>
+  <rect width="1280" height="520" fill="url(#grid)"/>
   <rect width="1280" height="4" fill="url(#gold)"/>
   <text x="40" y="40" fill="#c9a227" font-size="13" letter-spacing="2.6" font-weight="700">6 · ENTERPRISE APPLICATIONS</text>
-  <text x="40" y="72" fill="#f4f1e8" font-size="26" font-weight="700">Ten governed applications, ready to run</text>
+  <text x="40" y="72" fill="#f4f1e8" font-size="26" font-weight="700">Eleven governed applications, ready to run</text>
   <text x="40" y="96" fill="#c9b98a" font-size="16">Each has its own org policy, company tools, knowledge base, programs, batch data and behaviour tests.</text>
   
 <g class="rise" style="animation-delay:0.00s">
-<rect x="40.0" y="124" width="225.6" height="104" rx="12" class="card"/>
-<rect x="40.0" y="124" width="225.6" height="104" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.00s"/>
+<rect x="40.0" y="124" width="286.5" height="104" rx="12" class="card"/>
+<rect x="40.0" y="124" width="286.5" height="104" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.00s"/>
 <circle cx="66.0" cy="152" r="15" fill="url(#gold)"/><text x="66.0" y="157" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">1</text>
 <text x="90.0" y="157" fill="#f4f1e8" font-size="16" font-weight="700">Claims Operations</text>
-<text x="58.0" y="186" fill="#c9b98a" font-size="13.5">Insurance · FNOL to</text>
-<text x="58.0" y="205" fill="#c9b98a" font-size="13.5">payout or SIU</text>
+<text x="58.0" y="186" fill="#c9b98a" font-size="13.5">Insurance · FNOL to payout or SIU</text>
 </g>
 <g class="rise" style="animation-delay:0.08s">
-<rect x="283.6" y="124" width="225.6" height="104" rx="12" class="card"/>
-<rect x="283.6" y="124" width="225.6" height="104" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.12s"/>
-<circle cx="309.6" cy="152" r="15" fill="url(#gold)"/><text x="309.6" y="157" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">2</text>
-<text x="333.6" y="157" fill="#f4f1e8" font-size="16" font-weight="700">Hospital Care</text>
-<text x="301.6" y="186" fill="#c9b98a" font-size="13.5">Healthcare · ER triage,</text>
-<text x="301.6" y="205" fill="#c9b98a" font-size="13.5">discharge</text>
+<rect x="344.5" y="124" width="286.5" height="104" rx="12" class="card"/>
+<rect x="344.5" y="124" width="286.5" height="104" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.12s"/>
+<circle cx="370.5" cy="152" r="15" fill="url(#gold)"/><text x="370.5" y="157" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">2</text>
+<text x="394.5" y="157" fill="#f4f1e8" font-size="16" font-weight="700">Hospital Care</text>
+<text x="362.5" y="186" fill="#c9b98a" font-size="13.5">Healthcare · ER triage, discharge</text>
 </g>
 <g class="rise" style="animation-delay:0.16s">
-<rect x="527.2" y="124" width="225.6" height="104" rx="12" class="card"/>
-<rect x="527.2" y="124" width="225.6" height="104" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.24s"/>
-<circle cx="553.2" cy="152" r="15" fill="url(#gold)"/><text x="553.2" y="157" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">3</text>
-<text x="577.2" y="157" fill="#f4f1e8" font-size="16" font-weight="700">Bank Credit &amp; KYC</text>
-<text x="545.2" y="186" fill="#c9b98a" font-size="13.5">Banking · committee,</text>
-<text x="545.2" y="205" fill="#c9b98a" font-size="13.5">sanctions</text>
+<rect x="649.0" y="124" width="286.5" height="104" rx="12" class="card"/>
+<rect x="649.0" y="124" width="286.5" height="104" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.24s"/>
+<circle cx="675.0" cy="152" r="15" fill="url(#gold)"/><text x="675.0" y="157" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">3</text>
+<text x="699.0" y="157" fill="#f4f1e8" font-size="16" font-weight="700">Bank Credit &amp; KYC</text>
+<text x="667.0" y="186" fill="#c9b98a" font-size="13.5">Banking · committee, sanctions</text>
 </g>
 <g class="rise" style="animation-delay:0.24s">
-<rect x="770.8" y="124" width="225.6" height="104" rx="12" class="card"/>
-<rect x="770.8" y="124" width="225.6" height="104" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.36s"/>
-<circle cx="796.8" cy="152" r="15" fill="url(#gold)"/><text x="796.8" y="157" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">4</text>
-<text x="820.8" y="157" fill="#f4f1e8" font-size="16" font-weight="700">Admissions &amp; OBE</text>
-<text x="788.8" y="186" fill="#c9b98a" font-size="13.5">Education · fair panel,</text>
-<text x="788.8" y="205" fill="#c9b98a" font-size="13.5">CO-PO</text>
+<rect x="953.5" y="124" width="286.5" height="104" rx="12" class="card"/>
+<rect x="953.5" y="124" width="286.5" height="104" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.36s"/>
+<circle cx="979.5" cy="152" r="15" fill="url(#gold)"/><text x="979.5" y="157" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">4</text>
+<text x="1003.5" y="157" fill="#f4f1e8" font-size="16" font-weight="700">Admissions &amp; OBE</text>
+<text x="971.5" y="186" fill="#c9b98a" font-size="13.5">Education · fair panel, CO-PO</text>
 </g>
 <g class="rise" style="animation-delay:0.32s">
-<rect x="1014.4" y="124" width="225.6" height="104" rx="12" class="card"/>
-<rect x="1014.4" y="124" width="225.6" height="104" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.48s"/>
-<circle cx="1040.4" cy="152" r="15" fill="url(#gold)"/><text x="1040.4" y="157" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">5</text>
-<text x="1064.4" y="157" fill="#f4f1e8" font-size="16" font-weight="700">SOC Incident Comma…</text>
-<text x="1032.4" y="186" fill="#c9b98a" font-size="13.5">Cybersecurity · alerts,</text>
-<text x="1032.4" y="205" fill="#c9b98a" font-size="13.5">PQC, streams</text>
+<rect x="40.0" y="246" width="286.5" height="104" rx="12" class="card"/>
+<rect x="40.0" y="246" width="286.5" height="104" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.48s"/>
+<circle cx="66.0" cy="274" r="15" fill="url(#gold)"/><text x="66.0" y="279" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">5</text>
+<text x="90.0" y="279" fill="#f4f1e8" font-size="16" font-weight="700">SOC Incident Command</text>
+<text x="58.0" y="308" fill="#c9b98a" font-size="13.5">Cybersecurity · alerts, PQC,</text>
+<text x="58.0" y="327" fill="#c9b98a" font-size="13.5">streams</text>
 </g>
 <g class="rise" style="animation-delay:0.40s">
-<rect x="40.0" y="246" width="225.6" height="104" rx="12" class="card"/>
-<rect x="40.0" y="246" width="225.6" height="104" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.60s"/>
-<circle cx="66.0" cy="274" r="15" fill="url(#gold)"/><text x="66.0" y="279" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">6</text>
-<text x="90.0" y="279" fill="#f4f1e8" font-size="16" font-weight="700">Supply Chain Tower</text>
-<text x="58.0" y="308" fill="#c9b98a" font-size="13.5">Logistics · exceptions,</text>
-<text x="58.0" y="327" fill="#c9b98a" font-size="13.5">routes</text>
+<rect x="344.5" y="246" width="286.5" height="104" rx="12" class="card"/>
+<rect x="344.5" y="246" width="286.5" height="104" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.60s"/>
+<circle cx="370.5" cy="274" r="15" fill="url(#gold)"/><text x="370.5" y="279" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">6</text>
+<text x="394.5" y="279" fill="#f4f1e8" font-size="16" font-weight="700">Supply Chain Tower</text>
+<text x="362.5" y="308" fill="#c9b98a" font-size="13.5">Logistics · exceptions, routes</text>
 </g>
 <g class="rise" style="animation-delay:0.48s">
-<rect x="283.6" y="246" width="225.6" height="104" rx="12" class="card"/>
-<rect x="283.6" y="246" width="225.6" height="104" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.72s"/>
-<circle cx="309.6" cy="274" r="15" fill="url(#gold)"/><text x="309.6" y="279" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">7</text>
-<text x="333.6" y="279" fill="#f4f1e8" font-size="16" font-weight="700">Citizen Services</text>
-<text x="301.6" y="308" fill="#c9b98a" font-size="13.5">Government · grievances,</text>
-<text x="301.6" y="327" fill="#c9b98a" font-size="13.5">welfare</text>
+<rect x="649.0" y="246" width="286.5" height="104" rx="12" class="card"/>
+<rect x="649.0" y="246" width="286.5" height="104" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.72s"/>
+<circle cx="675.0" cy="274" r="15" fill="url(#gold)"/><text x="675.0" y="279" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">7</text>
+<text x="699.0" y="279" fill="#f4f1e8" font-size="16" font-weight="700">Citizen Services</text>
+<text x="667.0" y="308" fill="#c9b98a" font-size="13.5">Government · grievances, welfare</text>
 </g>
 <g class="rise" style="animation-delay:0.56s">
-<rect x="527.2" y="246" width="225.6" height="104" rx="12" class="card"/>
-<rect x="527.2" y="246" width="225.6" height="104" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.84s"/>
-<circle cx="553.2" cy="274" r="15" fill="url(#gold)"/><text x="553.2" y="279" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">8</text>
-<text x="577.2" y="279" fill="#f4f1e8" font-size="16" font-weight="700">Legal Contract Desk</text>
-<text x="545.2" y="308" fill="#c9b98a" font-size="13.5">Legal · NDA triage,</text>
-<text x="545.2" y="327" fill="#c9b98a" font-size="13.5">clause review</text>
+<rect x="953.5" y="246" width="286.5" height="104" rx="12" class="card"/>
+<rect x="953.5" y="246" width="286.5" height="104" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.84s"/>
+<circle cx="979.5" cy="274" r="15" fill="url(#gold)"/><text x="979.5" y="279" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">8</text>
+<text x="1003.5" y="279" fill="#f4f1e8" font-size="16" font-weight="700">Legal Contract Desk</text>
+<text x="971.5" y="308" fill="#c9b98a" font-size="13.5">Legal · NDA triage, clause review</text>
 </g>
 <g class="rise" style="animation-delay:0.64s">
-<rect x="770.8" y="246" width="225.6" height="104" rx="12" class="card"/>
-<rect x="770.8" y="246" width="225.6" height="104" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.96s"/>
-<circle cx="796.8" cy="274" r="15" fill="url(#gold)"/><text x="796.8" y="279" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">9</text>
-<text x="820.8" y="279" fill="#f4f1e8" font-size="16" font-weight="700">Algo Trading Desk</text>
-<text x="788.8" y="308" fill="#c9b98a" font-size="13.5">Markets · risk gate, VaR,</text>
-<text x="788.8" y="327" fill="#c9b98a" font-size="13.5">streams</text>
+<rect x="40.0" y="368" width="286.5" height="104" rx="12" class="card"/>
+<rect x="40.0" y="368" width="286.5" height="104" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:0.96s"/>
+<circle cx="66.0" cy="396" r="15" fill="url(#gold)"/><text x="66.0" y="401" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">9</text>
+<text x="90.0" y="401" fill="#f4f1e8" font-size="16" font-weight="700">Algo Trading Desk</text>
+<text x="58.0" y="430" fill="#c9b98a" font-size="13.5">Markets · risk gate, VaR, streams</text>
 </g>
 <g class="rise" style="animation-delay:0.72s">
-<rect x="1014.4" y="246" width="225.6" height="104" rx="12" class="card"/>
-<rect x="1014.4" y="246" width="225.6" height="104" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:1.08s"/>
-<circle cx="1040.4" cy="274" r="15" fill="url(#gold)"/><text x="1040.4" y="279" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">10</text>
-<text x="1064.4" y="279" fill="#f4f1e8" font-size="16" font-weight="700">Quantum Optimizati…</text>
-<text x="1032.4" y="308" fill="#c9b98a" font-size="13.5">Quantum · QAOA verified,</text>
-<text x="1032.4" y="327" fill="#c9b98a" font-size="13.5">circuits</text>
+<rect x="344.5" y="368" width="286.5" height="104" rx="12" class="card"/>
+<rect x="344.5" y="368" width="286.5" height="104" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:1.08s"/>
+<circle cx="370.5" cy="396" r="15" fill="url(#gold)"/><text x="370.5" y="401" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">10</text>
+<text x="394.5" y="401" fill="#f4f1e8" font-size="16" font-weight="700">Quantum Optimization</text>
+<text x="362.5" y="430" fill="#c9b98a" font-size="13.5">Quantum · QAOA verified, circuits</text>
 </g>
-  <text x="1240" y="384" fill="#9aa6c2" fill-opacity=".7" font-size="11" text-anchor="end">AlgoLang · AlgoProfessor AI R&amp;D Solutions</text>
+<g class="rise" style="animation-delay:0.80s">
+<rect x="649.0" y="368" width="286.5" height="104" rx="12" class="card"/>
+<rect x="649.0" y="368" width="286.5" height="104" rx="12" fill="none" stroke="#e9c75a" stroke-width="1.6" class="glow" style="animation-delay:1.20s"/>
+<circle cx="675.0" cy="396" r="15" fill="url(#gold)"/><text x="675.0" y="401" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">11</text>
+<text x="699.0" y="401" fill="#f4f1e8" font-size="16" font-weight="700">LLM &amp; SLM Optimizer</text>
+<text x="667.0" y="430" fill="#c9b98a" font-size="13.5">AI platform · cascades, graph</text>
+<text x="667.0" y="449" fill="#c9b98a" font-size="13.5">optimisation</text>
+</g>
+  <text x="1240" y="506" fill="#9aa6c2" fill-opacity=".7" font-size="11" text-anchor="end">AlgoLang · AlgoProfessor AI R&amp;D Solutions</text>
 </svg>

@@ -4,6 +4,22 @@ All notable changes to AlgoLang are documented here. The format follows [Keep a 
 
 ## [Unreleased]
 
+## [0.4.1] — 2026-11-09 · LLM & SLM graph optimisation
+
+### Added
+- **AlgoGraph™ LLM & SLM Optimizer**, the eleventh enterprise application (`enterprise-apps/llm-graph-optimizer/`):
+  - `cascade_router.algo`: an SLM-first cascade written with the language's own features. A deterministic guard sends clearly complex requests to a large model; otherwise a small model answers, sampled as `uncertain<text>`, and only answers it is unsure of go to the large model.
+  - `graph_optimizer.algo`: reads any AlgoLang program's data-flow graph from the compiler and chooses the cheapest model for every agent that meets its quality floor (by task class) and the end-to-end latency limit (parallel agents overlap, branches at worst case). Exact branch and bound, cross-checked by brute force when the search space is small; the result says `VERIFIED` or `INFEASIBLE`. Only verified plans are reviewed, and rollout needs two approvals.
+  - Tools `slm.triage`, `graph.analyze` and `graph.optimize`; an illustrative model catalog of large and small models; behaviour tests, evals, batch data, system cards and figures.
+- **Small language models on your own GPUs.** `LocalBackend` talks to any OpenAI-compatible server (Ollama, vLLM, llama.cpp server, LM Studio): model ids start with `local:`, configured under `"local_models"` in `algo.config.json`. With `--live`, `local:` agents go to that server and the others to Claude; programs that use only local models run live without `ANTHROPIC_API_KEY`. Declared tools run first and their results are given to the model as context.
+- **`"agent_models"`** in `algo.config.json` routes any agent to another model without editing the program (this is how an optimiser plan is applied).
+- Prefix entries such as `"local:*"` in the `pricing` and `energy` tables (local models default to no API cost and lower energy).
+- `tests/test_llm_graph.py`: branch and bound against brute force on 150 random graphs, the optimiser on real programs, path safety, triage, model routing, prefix pricing, and the local backend against a fake OpenAI-compatible server.
+
+### Fixed
+- Windows: LF line endings are pinned in `.gitattributes`, system-card hashes ignore line endings, and evidence packs always use forward slashes.
+- System cards no longer embed the AlgoLang version, so a release does not make committed cards stale.
+
 ## [0.4.0] — 2026-11-09 · Trustworthy AI
 
 v0.4 makes trustworthiness something a program can prove. The compiler checks that each safeguard a system needs is present, the runtime enforces it, `eval` blocks measure it, and the toolchain writes the evidence an auditor reads.

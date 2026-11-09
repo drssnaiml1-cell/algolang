@@ -1,0 +1,168 @@
+{
+  "card": "AlgoLang AI system card",
+  "card_version": 1,
+  "program": "graph_optimizer",
+  "source": "graph_optimizer.algo",
+  "source_sha256": "53f4daf234982aaaacbd2f1b2ca822f277bdd47b537ce7cc436cc75e6bccd5da",
+  "purpose": "Internal engineering: choosing models for AlgoLang programs",
+  "risk_level": "minimal",
+  "disclosure": null,
+  "flows": [
+    {
+      "name": "main",
+      "inputs": [
+        "target",
+        "constraints"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "GraphAnalyst",
+      "role": "Agent-graph analyst",
+      "returns": "text",
+      "model": "mid",
+      "tools": [
+        "graph.analyze"
+      ],
+      "human_oversight": "reviewed when confidence < 0.6",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Optimizer",
+      "role": "Model-assignment optimiser",
+      "returns": "text",
+      "model": "mid",
+      "tools": [
+        "graph.optimize"
+      ],
+      "human_oversight": "reviewed when confidence < 0.6",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "ReliabilityReview",
+      "role": "ML reliability reviewer",
+      "returns": "uncertain<score>",
+      "model": "llm",
+      "tools": [
+        "kb.search"
+      ],
+      "human_oversight": "reviewed when confidence < 0.6",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": 3,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Report",
+      "role": "Platform engineer",
+      "returns": "text",
+      "model": "mid",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.6",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Rollout",
+      "role": "Change record for the platform team",
+      "returns": "text",
+      "model": "mid",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.6 by 2 different people",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    }
+  ],
+  "tools": [
+    {
+      "name": "graph.analyze",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Data-flow graph of an AlgoLang program: agents, parallel stages, critical path, tokens"
+    },
+    {
+      "name": "graph.optimize",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Cheapest LLM/SLM model for every agent of a program within quality floors and a latency limit"
+    },
+    {
+      "name": "kb.search",
+      "kind": "built-in",
+      "trusted": true,
+      "description": "Search the organisation's knowledge base of .txt and .md documents"
+    }
+  ],
+  "streams": [],
+  "circuits": [],
+  "human_oversight": [
+    "GraphAnalyst: reviewed when confidence < 0.6",
+    "Optimizer: reviewed when confidence < 0.6",
+    "ReliabilityReview: reviewed when confidence < 0.6",
+    "Report: reviewed when confidence < 0.6",
+    "Rollout: reviewed when confidence < 0.6 by 2 different people"
+  ],
+  "data_protection": {
+    "redact_pii": "no agents",
+    "forbidden_attributes": [
+      "caste",
+      "gender",
+      "religion"
+    ],
+    "retention_days": {}
+  },
+  "evaluation": {
+    "cases": 2,
+    "fairness": [],
+    "robustness": [],
+    "explanations_checked": false
+  },
+  "limitations": [
+    "Generated from the source code: it documents design-time safeguards and test coverage, not measured real-world performance.",
+    "Offline evals use a deterministic mock model; repeat them with `algo eval --live` before deployment.",
+    "Protected attributes are withheld by keyword. Proxies such as names, postcodes or schools can still carry them; counterfactual fairness tests measure the effect.",
+    "Fairness has not been tested (no `expect fair` case).",
+    "Robustness has not been tested (no `expect robust` case)."
+  ]
+}

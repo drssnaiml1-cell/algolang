@@ -1,6 +1,6 @@
 # AlgoLang roadmap
 
-**Current release: v0.4.0 — Trustworthy AI** · **Next: v0.5 — Quantum AI** · **Then: v0.6 — Interoperability, v1.0 — native runtime**
+**Current release: v0.4.1 — Trustworthy AI, plus LLM & SLM graph optimisation** · **Next: v0.5 — Quantum AI** · **Then: v0.6 — Interoperability, v1.0 — native runtime**
 
 AlgoProfessor AI R&D Solutions, Hyderabad. Designed by Dr. S. Satyanarayana. [www.algoprofessor.com](https://www.algoprofessor.com)
 

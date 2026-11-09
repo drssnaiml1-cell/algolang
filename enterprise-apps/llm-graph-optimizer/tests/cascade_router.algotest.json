@@ -1,0 +1,16 @@
+{
+  "program": "../programs/cascade_router.algo",
+  "cases": [
+    {
+      "name": "Simple question: answered by the small model, no large-model call",
+      "inputs": {"request": "Reset my password, I am locked out of the mobile app"},
+      "expect": {"status": "ok", "agents_called": ["Triage", "SmallAnswer"], "tools_used": ["slm.triage"],
+                 "output_contains": "SIMPLE", "max_tokens": 600}
+    },
+    {
+      "name": "Complex contract question: routed straight to the large model",
+      "inputs": {"request": "Analyse this supplier contract for liability caps, termination rights and data-protection obligations, then plan the negotiation strategy and assess the regulatory risk under the DPDP Act"},
+      "expect": {"status": "ok", "agents_called": ["Triage", "LargeAnswer"], "output_contains": "COMPLEX", "emits": 2}
+    }
+  ]
+}

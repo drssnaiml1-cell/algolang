@@ -1,0 +1,58 @@
+// SLM-first cascade — a small language model answers first; a large model takes over when it should.
+// request → complexity triage (deterministic) → small model, sampled 3× → confident? emit : large model
+risk limited "Answering customer and staff questions with small and large language models"
+disclose "You are chatting with an AI assistant. A person reviews answers the assistant is unsure about."
+policy { redact pii }
+
+model slm = "local:phi-4-mini"         // a small model on our own GPUs (algo.config.json → local_models)
+model llm = "claude-opus-5-5"          // a large model for hard requests
+tool slm.triage
+
+agent Triage(request: text) -> text {
+    role  "Request triage"
+    goal  "Decide whether a small model can answer this request: {request}"
+    uses  slm.triage
+    model slm
+}
+
+agent SmallAnswer(request: text) -> uncertain<text> {
+    role   "Support assistant (small model)"
+    goal   "Answer briefly and accurately: {request}"
+    model  slm
+    policy { samples 3 }               // agreement between samples is the cascade signal
+}
+
+agent LargeAnswer(request: text, context: text) -> text {
+    role   "Senior assistant (large model)"
+    goal   "Answer {request} carefully, step by step, using {context}"
+    model  llm
+}
+
+flow main(request: text) {
+    t = Triage(request)
+    if t contains "COMPLEX" {                          // decided in code: no model guesses the route
+        emit t, LargeAnswer(request, t)
+    } else {
+        draft = SmallAnswer(request)
+        if draft.confidence >= 0.88 {                  // the small model agrees with itself: done
+            emit t, draft
+        } else {                                       // not sure: escalate, with the draft as context
+            emit t, draft, LargeAnswer(request, draft)
+        }
+    }
+}
+
+eval cascade on main {
+    case "simple question stays on the small model" (request = "What are your branch opening hours on Saturday?") {
+        expect status ok
+        expect called SmallAnswer
+        expect not called LargeAnswer
+        expect tool slm.triage
+    }
+    case "complex request goes straight to the large model" (request = "Compare the tax treatment of a home loan and a top-up loan under the old and new regimes, and explain which is better for a salaried person with INR 18 lakh income. Why would the answer change if the loan were refinanced at 8.6%?") {
+        expect status ok
+        expect called LargeAnswer
+        expect not called SmallAnswer
+        expect output contains "COMPLEX"
+    }
+}

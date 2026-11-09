@@ -1,8 +1,8 @@
 # AlgoLang enterprise applications
 
-<p align="center"><img src="../docs/images/sections/06-enterprise-apps.svg" alt="Ten governed enterprise applications" width="100%"></p>
+<p align="center"><img src="../docs/images/sections/06-enterprise-apps.svg" alt="Eleven governed enterprise applications" width="100%"></p>
 
-Ten complete, governed multi-agent applications, one per industry. Each is a real AlgoLang project with:
+Eleven complete, governed multi-agent applications, one per industry. Each is a real AlgoLang project with:
 - organisation policy;
 - company tools over its own data;
 - a knowledge base;
@@ -24,6 +24,7 @@ They all run offline as they are, and with real Claude models when you add `--li
 | [Algo Trading Desk (QuantOracle™)](algo-trading-desk/) | Capital markets | 4 | `backtest.stats`, `market.quote`, `risk.limits`, `book.positions` + built-in `quantum.scenarios` | 7 |
 | [Legal Contract Desk](legal-contract-desk/) | Legal & compliance | 2 | `clause.library` | 2 |
 | [Quantum Optimization Lab](quantum-optimization-lab/) | Quantum computing · finance & operations | 4 | `market.universe`, `quantum.portfolio`, `ops.clashes` + built-in `quantum.maxcut`, `quantum.random`, `circuit` blocks | 5 |
+| [AlgoGraph™ LLM & SLM Optimizer](llm-graph-optimizer/) | AI platform · MLOps | 2 | `slm.triage`, `graph.analyze`, `graph.optimize` + local SLM backend | 4 |
 
 **10 applications · 25 programs · 34 behaviour tests**, all run in CI on every push.
 
@@ -34,8 +35,8 @@ Every program declares a risk level, and every app has a `cards/` folder with a 
 | Risk | Programs | What the compiler requires |
 |---|---|---|
 | **High** | `loan_decision` (credit), `admissions`, `er_triage`, `welfare_check` | human oversight (four-eyes or always-on review), `explain with evidence`, `redact pii`, fairness and robustness tests, signed audit logs, a disclosure |
-| **Limited** | `kyc_onboarding`, `grievance_desk`, `claims_intake`, `customer_desk`, `discharge`, `phishing_desk` | a disclosure that people are dealing with AI |
-| **Minimal** | the other 15 internal tools | nothing extra |
+| **Limited** | `kyc_onboarding`, `grievance_desk`, `claims_intake`, `customer_desk`, `discharge`, `phishing_desk`, `cascade_router` | a disclosure that people are dealing with AI |
+| **Minimal** | the other 16 internal tools | nothing extra |
 
 ```bash
 cd bank-credit-onboarding && algo trust report programs --html trust.html
@@ -44,7 +45,7 @@ cd bank-credit-onboarding && algo trust report programs --html trust.html
 ## Run every application
 
 ```bash
-python enterprise-apps/run_all.py            # behaviour tests for all ten apps
+python enterprise-apps/run_all.py            # behaviour tests for all eleven apps
 python enterprise-apps/run_all.py --batch    # also batch-process each app's sample CSV and verify the audit chain
 ```
 

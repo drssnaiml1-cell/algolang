@@ -1,0 +1,74 @@
+// AlgoGraph optimiser — the cheapest LLM/SLM model for every agent of a program, proven optimal, then reviewed.
+// target program → graph analysis + exact optimisation (branch and bound, brute-force check) → VERIFIED?
+//   → reliability review (sampled) → two-person rollout approval | report
+risk minimal "Internal engineering: choosing models for AlgoLang programs"
+model mid = "claude-haiku-5-5"
+model llm = "claude-opus-5-5"
+tool graph.analyze
+tool graph.optimize
+tool kb.search
+
+agent GraphAnalyst(target: text) -> text {
+    role  "Agent-graph analyst"
+    goal  "Describe the data-flow graph of {target}"
+    uses  graph.analyze
+    model mid
+}
+
+agent Optimizer(target: text, constraints: text) -> text {
+    role  "Model-assignment optimiser"
+    goal  "Find the cheapest model for every agent of {target} with {constraints}"
+    uses  graph.optimize
+    model mid
+}
+
+agent ReliabilityReview(plan: text) -> uncertain<score> {
+    role   "ML reliability reviewer"
+    goal   "Score from 0 to 1 how safe it is to roll out this model plan, given the model selection policy: {plan}"
+    uses   kb.search
+    model  llm
+    policy { samples 3 }
+}
+
+agent Rollout(plan: text, fit: score) -> text {
+    role   "Change record for the platform team"
+    goal   "Prepare the algo.config.json agent_models change for {plan} (review score {fit}) with a rollback note"
+    model  mid
+    policy { require approvals 2 }     // an ML engineer and the system owner approve production model changes
+}
+
+agent Report(plan: text) -> text {
+    role  "Platform engineer"
+    goal  "Explain why {plan} cannot be rolled out yet and what to change"
+    model mid
+}
+
+flow main(target: text, constraints: text) {
+    shape = GraphAnalyst(target)
+    plan  = Optimizer(target, constraints)
+    if plan contains "VERIFIED" {                     // only a proven optimum is considered
+        fit = ReliabilityReview(plan)
+        if fit > 0.6 and fit.confidence >= 0.7 {
+            emit shape, plan, fit, Rollout(plan, fit)
+        } else {
+            emit shape, plan, fit, Report(plan)
+        }
+    } else {
+        emit shape, plan, Report(plan)
+    }
+}
+
+eval optimiser on main {
+    case "claims pipeline within 12 s" (target = "../claims-ops-center/programs/claims_intake.algo", constraints = "quality >= 0.8 and latency <= 12 s") {
+        expect status ok
+        expect output contains "VERIFIED"
+        expect tool graph.optimize
+        expect called ReliabilityReview
+    }
+    case "an impossible latency is reported, never rolled out" (target = "../bank-credit-onboarding/programs/loan_decision.algo", constraints = "latency <= 3 s") {
+        expect status ok
+        expect output contains "INFEASIBLE"
+        expect called Report
+        expect not called Rollout
+    }
+}

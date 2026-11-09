@@ -1,0 +1,113 @@
+{
+  "card": "AlgoLang AI system card",
+  "card_version": 1,
+  "program": "cascade_router",
+  "source": "cascade_router.algo",
+  "source_sha256": "1fbbdb0eea4548e270723476884b85bff1eb8f44950d22110f4e651fa4a6a4ae",
+  "purpose": "Answering customer and staff questions with small and large language models",
+  "risk_level": "limited",
+  "disclosure": "You are chatting with an AI assistant. A person reviews answers the assistant is unsure about.",
+  "flows": [
+    {
+      "name": "main",
+      "inputs": [
+        "request"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "LargeAnswer",
+      "role": "Senior assistant (large model)",
+      "returns": "text",
+      "model": "llm",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.6",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "SmallAnswer",
+      "role": "Support assistant (small model)",
+      "returns": "uncertain<text>",
+      "model": "slm",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.6",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": 3,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Triage",
+      "role": "Request triage",
+      "returns": "text",
+      "model": "slm",
+      "tools": [
+        "slm.triage"
+      ],
+      "human_oversight": "reviewed when confidence < 0.6",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    }
+  ],
+  "tools": [
+    {
+      "name": "slm.triage",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Complexity of a request: SIMPLE (a small model can answer) or COMPLEX (route to a large model)"
+    }
+  ],
+  "streams": [],
+  "circuits": [],
+  "human_oversight": [
+    "LargeAnswer: reviewed when confidence < 0.6",
+    "SmallAnswer: reviewed when confidence < 0.6",
+    "Triage: reviewed when confidence < 0.6"
+  ],
+  "data_protection": {
+    "redact_pii": "all agents",
+    "forbidden_attributes": [
+      "caste",
+      "gender",
+      "religion"
+    ],
+    "retention_days": {}
+  },
+  "evaluation": {
+    "cases": 2,
+    "fairness": [],
+    "robustness": [],
+    "explanations_checked": false
+  },
+  "limitations": [
+    "Generated from the source code: it documents design-time safeguards and test coverage, not measured real-world performance.",
+    "Offline evals use a deterministic mock model; repeat them with `algo eval --live` before deployment.",
+    "Protected attributes are withheld by keyword. Proxies such as names, postcodes or schools can still carry them; counterfactual fairness tests measure the effect.",
+    "Fairness has not been tested (no `expect fair` case).",
+    "Robustness has not been tested (no `expect robust` case)."
+  ]
+}

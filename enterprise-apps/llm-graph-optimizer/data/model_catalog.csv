@@ -1,0 +1,7 @@
+model,tier,price_in_usd_per_m,price_out_usd_per_m,latency_s,energy_wh_per_1k,extraction,classification,reasoning,writing,review
+claude-opus-5-5,llm,15.0,75.0,4.2,0.60,0.97,0.97,0.97,0.96,0.97
+claude-sonnet-5-5,llm,3.0,15.0,2.4,0.30,0.95,0.95,0.92,0.93,0.93
+claude-haiku-5-5,llm,1.0,5.0,1.1,0.10,0.92,0.92,0.84,0.87,0.86
+local:qwen2.5-7b-instruct,slm,0.0,0.0,1.6,0.05,0.88,0.89,0.76,0.80,0.78
+local:llama-3.2-3b-instruct,slm,0.0,0.0,0.9,0.03,0.83,0.86,0.66,0.74,0.70
+local:phi-4-mini,slm,0.0,0.0,0.8,0.03,0.86,0.87,0.72,0.75,0.74

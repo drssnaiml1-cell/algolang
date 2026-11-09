@@ -335,6 +335,24 @@ algo evidence verify loan.evidence.zip
 
 In `algo.config.json`: `"audit": {"sign": true, "public_keys": ["…"]}` (run `algo keys init` once), `"retention": {"audit_days": 180, "traces_days": 30}`, `"fairness_tolerance": 0.05`, `"protected_values": {"caste": ["…"]}`, and `"sha256"` on an MCP server to pin it.
 
+## Step 4h. Large and small language models (v0.4.1)
+
+```bash
+cd enterprise-apps/llm-graph-optimizer
+algo eval programs/cascade_router.algo          # small model first, large model when unsure
+algo run programs/graph_optimizer.algo --arg "target=../claims-ops-center/programs/claims_intake.algo" \
+    --arg "constraints=quality >= 0.8 and latency <= 12 s"   # VERIFIED cheapest model per agent
+```
+
+To run small models on your own machine, start any OpenAI-compatible server (for example `ollama serve` and `ollama pull phi4-mini`), then in `algo.config.json`:
+
+```json
+"models": {"slm": "local:phi4-mini"},
+"local_models": {"base_url": "http://localhost:11434/v1"}
+```
+
+A program then says `model slm = "local:phi4-mini"`, and `algo run … --live` sends those agents to your server. Apply an optimiser plan without editing the program: `"agent_models": {"triage.Intake": "local:phi4-mini", …}`.
+
 ## Step 5. Live mode with real Claude (optional)
 
 By default agents are offline test agents, which give the same answer for the same input. To call real Claude models:

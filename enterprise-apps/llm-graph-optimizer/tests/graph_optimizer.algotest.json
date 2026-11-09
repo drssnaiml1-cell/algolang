@@ -1,0 +1,16 @@
+{
+  "program": "../programs/graph_optimizer.algo",
+  "cases": [
+    {
+      "name": "Supply-chain exception desk: verified optimum within 10 s",
+      "inputs": {"target": "../supply-chain-control-tower/programs/exception_desk.algo", "constraints": "quality >= 0.8 and latency <= 10 s"},
+      "expect": {"status": "ok", "agents_called": ["GraphAnalyst", "Optimizer", "ReliabilityReview"],
+                 "tools_used": ["graph.analyze", "graph.optimize"], "output_contains": "VERIFIED"}
+    },
+    {
+      "name": "Unreachable latency: INFEASIBLE, reported and never rolled out",
+      "inputs": {"target": "../bank-credit-onboarding/programs/loan_decision.algo", "constraints": "latency <= 3 s"},
+      "expect": {"status": "ok", "agents_called": ["GraphAnalyst", "Optimizer", "Report"], "output_contains": "INFEASIBLE", "emits": 3}
+    }
+  ]
+}
