@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240" role="img" aria-labelledby="t">
+  <title id="t">AlgoLang logo: an A drawn from three connected agents</title>
+  <defs>
+    <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#f1ede2"/>
+    </linearGradient>
+    <linearGradient id="navy" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1b3a73"/>
+      <stop offset="1" stop-color="#0b1a33"/>
+    </linearGradient>
+    <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#f0d06a"/>
+      <stop offset="1" stop-color="#c49a1f"/>
+    </linearGradient>
+    <filter id="sh" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#0b1a33" flood-opacity=".18"/>
+    </filter>
+  </defs>
+  <rect x="8" y="8" width="224" height="224" rx="52" fill="url(#tile)" filter="url(#sh)"/>
+  <!-- the two legs of the A: data flowing down from the lead agent -->
+  <path d="M120 58 L64 182" stroke="url(#navy)" stroke-width="26" stroke-linecap="round" fill="none"/>
+  <path d="M120 58 L176 182" stroke="url(#navy)" stroke-width="26" stroke-linecap="round" fill="none"/>
+  <!-- the crossbar: a governed hand-off between two agents -->
+  <path d="M90 140 H150" stroke="#d9b23f" stroke-width="9" stroke-linecap="round" fill="none"/>
+  <circle cx="88" cy="140" r="13" fill="url(#gold)" stroke="#ffffff" stroke-width="4"/>
+  <circle cx="152" cy="140" r="13" fill="url(#gold)" stroke="#ffffff" stroke-width="4"/>
+  <!-- the lead agent -->
+  <circle cx="120" cy="56" r="27" fill="url(#gold)" stroke="#ffffff" stroke-width="6"/>
+  <circle cx="120" cy="56" r="9" fill="#0b1a33"/>
+</svg>

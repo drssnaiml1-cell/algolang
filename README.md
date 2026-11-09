@@ -1,20 +1,40 @@
-# AlgoLang — the agent-native programming language for trustworthy AI
+<p align="center">
+  <a href="https://www.algoprofessor.com"><img src="docs/images/algolang-logo.svg" alt="AlgoLang logo" width="132" height="132"></a>
+</p>
 
-[![CI](https://github.com/drssnaiml1-cell/algolang/actions/workflows/ci.yml/badge.svg)](https://github.com/drssnaiml1-cell/algolang/actions/workflows/ci.yml)
-[![Release](https://img.shields.io/github/v/release/drssnaiml1-cell/algolang?color=c9a227)](https://github.com/drssnaiml1-cell/algolang/releases/latest)
-[![License: Apache 2.0](https://img.shields.io/badge/license-Apache%202.0-0e2140)](LICENSE)
-[![AlgoProfessor](https://img.shields.io/badge/AlgoProfessor-www.algoprofessor.com-0e2140)](https://www.algoprofessor.com)
-[![AlgoProfessor](https://img.shields.io/badge/by-algoprofessor.com-c9a227)](https://www.algoprofessor.com)
-[![Website](https://img.shields.io/badge/website-playground%20%C2%B7%20library-0e2140)](https://drssnaiml1-cell.github.io/algolang/)
+<h1 align="center">AlgoLang</h1>
 
+<h3 align="center">Write AI systems as agents, not functions. Every decision governed, explained, signed and tested before it ships. Build AI you can prove is trustworthy.</h3>
+
+<p align="center">
+  <img src="https://skillicons.dev/icons?i=py,vscode,docker,githubactions,latex,sqlite,linux,windows,apple&perline=9" alt="Python, VS Code, Docker, GitHub Actions, LaTeX, SQLite, Linux, Windows, macOS">
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Claude-models-c9a227?style=for-the-badge&logo=anthropic&logoColor=white" alt="Claude models">
+  <img src="https://img.shields.io/badge/MCP-tools-0e2140?style=for-the-badge" alt="Model Context Protocol tools">
+  <img src="https://img.shields.io/badge/Qiskit-quantum-6929C4?style=for-the-badge&logo=qiskit&logoColor=white" alt="Qiskit">
+  <img src="https://img.shields.io/badge/OpenQASM-2.0-0e2140?style=for-the-badge" alt="OpenQASM 2.0">
+  <img src="https://img.shields.io/badge/Jupyter-Colab-F37626?style=for-the-badge&logo=jupyter&logoColor=white" alt="Jupyter and Colab">
+  <img src="https://img.shields.io/badge/Ed25519-signed%20audit-0e2140?style=for-the-badge" alt="Ed25519 signed audit">
+</p>
+
+<p align="center">
+  <a href="https://github.com/drssnaiml1-cell/algolang/actions/workflows/ci.yml"><img src="https://github.com/drssnaiml1-cell/algolang/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
+  <a href="https://github.com/drssnaiml1-cell/algolang/releases/latest"><img src="https://img.shields.io/github/v/release/drssnaiml1-cell/algolang?color=c9a227" alt="Release"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-0e2140" alt="License: Apache 2.0"></a>
+  <a href="https://drssnaiml1-cell.github.io/algolang/"><img src="https://img.shields.io/badge/website-playground%20%C2%B7%20library-0e2140" alt="Website"></a>
+  <a href="https://www.algoprofessor.com"><img src="https://img.shields.io/badge/by-algoprofessor.com-c9a227" alt="AlgoProfessor"></a>
+</p>
+
+<p align="center">
+  <b>The AlgoProfessor agent-native programming language</b><br>
+  AlgoProfessor AI R&amp;D Solutions, Hyderabad · Designed by Dr. S. Satyanarayana · <a href="https://www.algoprofessor.com">www.algoprofessor.com</a>
+</p>
 
 <p align="center">
   <a href="https://www.algoprofessor.com"><img src="docs/images/algolang-hero.svg" alt="AlgoLang: an order event from AlgoPulse flows through parallel Quote and Limits agents, a deterministic BREACH guard, and an uncertain RiskGate agent with a human gate; every call is written to a hash-chained audit log" width="100%"></a>
 </p>
-
-**The AlgoProfessor agent-native programming language.**
-AlgoProfessor AI R&D Solutions, Hyderabad. Designed by Dr. S. Satyanarayana.
-🌐 **[www.algoprofessor.com](https://www.algoprofessor.com)**
 
 **Current version: 0.4.0** (Trustworthy AI: risk levels · fairness and robustness tests · signed audit · system cards · trust reports) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md) · [50 Sample Programs (PDF)](docs/AlgoLang_50_Sample_Programs.pdf) · [Language manual (PDF)](docs/AlgoLang_Documentation_v0.4.pdf)
 
