@@ -1,0 +1,46 @@
+{
+  "organisation": "AlgoCare Remote Monitoring (example health service, synthetic data)",
+  "policy": {
+    "forbid": [
+      "caste",
+      "religion",
+      "income"
+    ],
+    "max_budget_tokens": 8000,
+    "min_human_below": 0.8,
+    "allowed_tools": [
+      "vitals.news2",
+      "ehr.patient",
+      "drug.check",
+      "cohort.watch",
+      "kb.search"
+    ]
+  },
+  "max_concurrency": 16,
+  "max_run_tokens": 80000,
+  "max_run_cost_usd": 0.5,
+  "cache": {
+    "enabled": true
+  },
+  "audit_dir": "runs",
+  "audit": {
+    "sign": true
+  },
+  "models": {
+    "smart": "claude-sonnet-5-5",
+    "fast": "claude-haiku-5-5"
+  },
+  "tools": {
+    "kb.search": {
+      "dir": "kb"
+    }
+  },
+  "plugins": [
+    "plugins/health_tools.py"
+  ],
+  "pulse": {
+    "ward": {
+      "dir": "pulse/ward"
+    }
+  }
+}

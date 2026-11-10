@@ -1,0 +1,83 @@
+// AlgoNLP Document Intelligence™ — read every customer message, route it, and watch the whole corpus.
+// classify + extract entities + summarise (in parallel) → corpus trends
+//   fraud report → investigations, reviewed by a person · otherwise → reply drafted for the right queue
+// The classifier, entity extractor and summariser are deterministic NLP; agents write and route.
+risk limited "Routing customers' messages and drafting replies for bank staff"
+disclose "Your message was read and routed with the help of an AI system; bank staff review every reply."
+policy { redact pii }
+tool nlp.classify
+tool nlp.entities
+tool nlp.summarize
+tool nlp.trends
+tool kb.search
+
+model fast = "claude-haiku-5-5"
+
+agent Classifier(message: text) -> text {
+    role  "Message classifier"
+    goal  "Classify the customer message: {message}"
+    uses  nlp.classify
+    model fast
+}
+
+agent EntityExtractor(message: text) -> text {
+    role  "Information extraction specialist"
+    goal  "Extract amounts, dates, card endings, places, banks and channels from: {message}"
+    uses  nlp.entities
+    model fast
+}
+
+agent Summariser(message: text) -> text {
+    role  "Analyst"
+    goal  "Summarise the customer message: {message}"
+    uses  nlp.summarize
+    model fast
+}
+
+agent TrendWatch(category: text) -> text {
+    role  "Customer insights analyst"
+    goal  "Report weekly volumes and emerging topics across the whole corpus, for context on {category}"
+    uses  nlp.trends
+    model fast
+}
+
+agent FraudCase(summary: text, entities: text, trends: text) -> text {
+    role   "Fraud investigations officer"
+    goal   "Open a fraud case from {summary} with {entities}, noting the trend {trends}: freeze steps, evidence, deadline"
+    uses   kb.search
+    policy { require human for always  explain with evidence }
+}
+
+agent ReplyDraft(category: text, summary: text, entities: text) -> text {
+    role   "Customer service officer"
+    goal   "Draft the reply and choose the queue for a {category} message: {summary} with {entities}"
+    uses   kb.search
+    policy { explain }
+}
+
+flow main(message: text) {
+    [category, entities, summary] = par { Classifier(message), EntityExtractor(message), Summariser(message) }
+    trends = TrendWatch(category)
+    if category contains "CATEGORY FRAUD REPORT" {
+        emit category, entities, summary, trends, FraudCase(summary, entities, trends)
+    } else {
+        emit category, entities, summary, trends, ReplyDraft(category, summary, entities)
+    }
+}
+
+eval triage on main {
+    case "unauthorised debit is a fraud case" (message = "Someone withdrew Rs 45,000 from my account on 3/11/2026 without my knowledge. A caller from Deccan Bank asked for my OTP first. Please reverse it urgently.") {
+        expect status ok
+        expect output contains "CATEGORY FRAUD REPORT"
+        expect output contains "EMERGING FRAUD REPORT"
+        expect called FraudCase
+        expect not called ReplyDraft
+        expect robust (typos, reorder) consistency >= 0.9
+    }
+    case "statement request gets a reply" (message = "Please send me the account statement from 1/4/2026 to today as a PDF. I need it for a visa application.") {
+        expect status ok
+        expect output contains "CATEGORY statement request"
+        expect called ReplyDraft
+        expect not called FraudCase
+    }
+}

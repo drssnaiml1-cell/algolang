@@ -930,10 +930,15 @@ class CodeGen:
             self.block(f.body, 1)
             self.w("return rt.end_flow()", 1)
             self.w()
-        main = p.flows.get("main")
-        if main:
+        if p.flows:                     # `algo run --flow NAME` picks the flow through ALGO_FLOW
             self.w('if __name__ == "__main__":')
-            self.w(f"rt.cli(flow_main, {[x.name for x in main.params]!r})", 1)
+            self.w("import os as _os", 1)
+            table = ", ".join(f"{f.name!r}: (flow_{f.name}, {[x.name for x in f.params]!r})" for f in p.flows.values())
+            self.w(f"_flows = {{{table}}}", 1)
+            self.w('_name = _os.environ.get("ALGO_FLOW", "main")', 1)
+            self.w("if _name not in _flows:", 1)
+            self.w('raise SystemExit(f"no flow named {_name}; flows: {\', \'.join(_flows)}")', 2)
+            self.w("rt.cli(*_flows[_name])", 1)
         return "\n".join(self.out) + "\n"
 
     def block(self, stmts, ind):
@@ -1052,7 +1057,7 @@ def flow_graph(prog: Program, flow: str = "main"):
     nodes: list of (id, label, kind, sub) with kind in
            input | agent | par | cond | branch | emit
     edges: list of (from_id, to_id, dashed)"""
-    f = prog.flows["main"]
+    f = prog.flows[flow]
     nodes, edges, src = [], [], {}
     count = [0]
 
@@ -1487,13 +1492,14 @@ def main(argv=None):
     ap.add_argument("--version", action="version", version=f"AlgoLang {VERSION}")
     sub = ap.add_subparsers(dest="cmd", metavar="command")
     for c, h in (("check", "check a program for errors"), ("build", "compile to Python"),
-                 ("run", "compile and run flow main")):
+                 ("run", "compile and run a flow (main unless --flow)")):
         s = sub.add_parser(c, help=h)
         s.add_argument("file")
         if c == "build":
             s.add_argument("-o", "--out")
         if c == "run":
             s.add_argument("--arg", action="append", default=[], help='flow input, e.g. --arg "topic=AI ethics"')
+            s.add_argument("--flow", default="main", help="which flow to run (default: main)")
             s.add_argument("--live", action="store_true", help="call real Claude models (needs ANTHROPIC_API_KEY)")
             s.add_argument("--interactive", action="store_true", help="ask a human to approve low-confidence results")
             s.add_argument("--audit-dir", default=None, help="where audit logs go (default: runs/ or algo.config.json)")
@@ -1757,7 +1763,12 @@ def main(argv=None):
         if "=" not in kv:
             print(f'✗ --arg needs name=value, e.g. --arg "topic=AI"; got: {kv}', file=sys.stderr)
             return 1
-    inputs = [p.name for p in prog.flows["main"].params]
+    flow = getattr(a, "flow", "main") or "main"
+    if flow not in prog.flows:
+        print(f"✗ {path.name} has no flow named {flow}. Its flows: {', '.join(prog.flows)}", file=sys.stderr)
+        return 1
+    env["ALGO_FLOW"] = flow
+    inputs = [p.name for p in prog.flows[flow].params]
     unknown = [kv.split("=", 1)[0] for kv in a.arg if kv.split("=", 1)[0] not in inputs]
     if unknown:
         hint = " ".join(f'--arg "{n}=..."' for n in inputs) or "(it takes no inputs)"

@@ -1,0 +1,213 @@
+{
+  "card": "AlgoLang AI system card",
+  "card_version": 1,
+  "program": "document_triage",
+  "source": "document_triage.algo",
+  "source_sha256": "d081c3721b8bd2efc90e08b0d95798becc918e8767d5255d3a2b1a99222078f2",
+  "purpose": "Routing customers' messages and drafting replies for bank staff",
+  "risk_level": "limited",
+  "disclosure": "Your message was read and routed with the help of an AI system; bank staff review every reply.",
+  "flows": [
+    {
+      "name": "main",
+      "inputs": [
+        "message"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "Classifier",
+      "role": "Message classifier",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "nlp.classify"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "EntityExtractor",
+      "role": "Information extraction specialist",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "nlp.entities"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "FraudCase",
+      "role": "Fraud investigations officer",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "kb.search"
+      ],
+      "human_oversight": "every result is reviewed",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "ReplyDraft",
+      "role": "Customer service officer",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "kb.search"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": "reasons",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Summariser",
+      "role": "Analyst",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "nlp.summarize"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "TrendWatch",
+      "role": "Customer insights analyst",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "nlp.trends"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    }
+  ],
+  "tools": [
+    {
+      "name": "kb.search",
+      "kind": "built-in",
+      "trusted": true,
+      "description": "Search the organisation's knowledge base of .txt and .md documents"
+    },
+    {
+      "name": "nlp.classify",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Classify a customer message with Naive Bayes (held-out macro-F1 reported)"
+    },
+    {
+      "name": "nlp.entities",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Named entities in a message: amounts, dates, card endings, places, banks, channels"
+    },
+    {
+      "name": "nlp.summarize",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Extractive TextRank summary of a message or document"
+    },
+    {
+      "name": "nlp.trends",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Corpus analytics: weekly volume per category, emerging topics, distinctive words"
+    }
+  ],
+  "streams": [],
+  "circuits": [],
+  "human_oversight": [
+    "Classifier: reviewed when confidence < 0.75",
+    "EntityExtractor: reviewed when confidence < 0.75",
+    "FraudCase: every result is reviewed",
+    "ReplyDraft: reviewed when confidence < 0.75",
+    "Summariser: reviewed when confidence < 0.75",
+    "TrendWatch: reviewed when confidence < 0.75"
+  ],
+  "data_protection": {
+    "redact_pii": "all agents",
+    "forbidden_attributes": [
+      "caste",
+      "gender",
+      "religion"
+    ],
+    "retention_days": {}
+  },
+  "evaluation": {
+    "cases": 2,
+    "fairness": [],
+    "robustness": [
+      {
+        "eval": "triage",
+        "case": "unauthorised debit is a fraud case",
+        "perturbations": [
+          "typos",
+          "reorder"
+        ],
+        "consistency": ">= 0.9"
+      }
+    ],
+    "explanations_checked": false
+  },
+  "limitations": [
+    "Generated from the source code: it documents design-time safeguards and test coverage, not measured real-world performance.",
+    "Offline evals use a deterministic mock model; repeat them with `algo eval --live` before deployment.",
+    "Protected attributes are withheld by keyword. Proxies such as names, postcodes or schools can still carry them; counterfactual fairness tests measure the effect.",
+    "Fairness has not been tested (no `expect fair` case)."
+  ]
+}

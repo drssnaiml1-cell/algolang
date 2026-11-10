@@ -1,0 +1,298 @@
+{
+  "card": "AlgoLang AI system card",
+  "card_version": 1,
+  "program": "remote_monitoring",
+  "source": "remote_monitoring.algo",
+  "source_sha256": "7122e64c6f7d8e81b9f806729bacdae977e651a27c3e87d51929b9975fe79cf7",
+  "purpose": "Early-warning decision support for patients monitored at home",
+  "risk_level": "high",
+  "disclosure": "Alerts come from an AI-supported early-warning system. A clinician reviews every alert and decides what to do.",
+  "flows": [
+    {
+      "name": "main",
+      "inputs": [
+        "reading"
+      ]
+    },
+    {
+      "name": "cohort",
+      "inputs": [
+        "request"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "CohortScan",
+      "role": "Population health analyst",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "cohort.watch"
+      ],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "income",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "EarlyWarning",
+      "role": "Early-warning scorer",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "vitals.news2"
+      ],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "income",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "EmergencyAlert",
+      "role": "Emergency alert for the duty clinician",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "kb.search"
+      ],
+      "human_oversight": "every result is reviewed",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "income",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "MedicationSafety",
+      "role": "Clinical pharmacist assistant",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "drug.check"
+      ],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "income",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "NurseWorklist",
+      "role": "Remote-monitoring lead nurse",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "every result is reviewed",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "income",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "RecordReview",
+      "role": "Clinical records assistant",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "ehr.patient"
+      ],
+      "human_oversight": "reviewed when confidence < 0.8",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "income",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "RoutineNote",
+      "role": "Remote-monitoring nurse note",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.85",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "income",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "UrgentReview",
+      "role": "Urgent clinical review",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "kb.search"
+      ],
+      "human_oversight": "every result is reviewed",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "income",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    }
+  ],
+  "tools": [
+    {
+      "name": "cohort.watch",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "NEWS2 across all home-monitored patients: bands, highest scores, rising trends"
+    },
+    {
+      "name": "drug.check",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Known interactions among a patient's medicines (PT-##### or a list of medicines)"
+    },
+    {
+      "name": "ehr.patient",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "A home-monitored patient's record (PT-#####): age, conditions, medicines, recent readings"
+    },
+    {
+      "name": "kb.search",
+      "kind": "built-in",
+      "trusted": true,
+      "description": "Search the organisation's knowledge base of .txt and .md documents"
+    },
+    {
+      "name": "vitals.news2",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "NEWS2 early-warning score and clinical response for a vital-signs reading"
+    }
+  ],
+  "streams": [
+    {
+      "name": "home_vitals",
+      "flow": "main",
+      "source": "vitals.readings",
+      "bus": "ward"
+    }
+  ],
+  "circuits": [],
+  "human_oversight": [
+    "CohortScan: reviewed when confidence < 0.8",
+    "EarlyWarning: reviewed when confidence < 0.8",
+    "EmergencyAlert: every result is reviewed",
+    "MedicationSafety: reviewed when confidence < 0.8",
+    "NurseWorklist: every result is reviewed",
+    "RecordReview: reviewed when confidence < 0.8",
+    "RoutineNote: reviewed when confidence < 0.85",
+    "UrgentReview: every result is reviewed"
+  ],
+  "data_protection": {
+    "redact_pii": "all agents",
+    "forbidden_attributes": [
+      "caste",
+      "income",
+      "religion"
+    ],
+    "retention_days": {
+      "audit": 3650,
+      "traces": 90
+    }
+  },
+  "evaluation": {
+    "cases": 4,
+    "fairness": [
+      {
+        "eval": "early_warning",
+        "case": "septic picture: emergency alert",
+        "attribute": "religion",
+        "values": [
+          "Hindu",
+          "Muslim",
+          "Christian",
+          "Sikh"
+        ]
+      },
+      {
+        "eval": "early_warning",
+        "case": "stable reading: routine note",
+        "attribute": "caste",
+        "values": [
+          "Dalit",
+          "Brahmin",
+          "OBC"
+        ]
+      }
+    ],
+    "robustness": [
+      {
+        "eval": "early_warning",
+        "case": "septic picture: emergency alert",
+        "perturbations": [
+          "typos",
+          "reorder"
+        ],
+        "consistency": ">= 0.9"
+      },
+      {
+        "eval": "early_warning",
+        "case": "stable reading: routine note",
+        "perturbations": [
+          "typos",
+          "paraphrase",
+          "reorder"
+        ],
+        "consistency": ">= 0.9"
+      }
+    ],
+    "explanations_checked": true
+  },
+  "limitations": [
+    "Generated from the source code: it documents design-time safeguards and test coverage, not measured real-world performance.",
+    "Offline evals use a deterministic mock model; repeat them with `algo eval --live` before deployment.",
+    "Protected attributes are withheld by keyword. Proxies such as names, postcodes or schools can still carry them; counterfactual fairness tests measure the effect."
+  ]
+}

@@ -1,0 +1,97 @@
+// AlgoBharat Bhasha Desk™ — every citizen is answered in their own language.
+// detect language → transliterate + find the need (in parallel) → coverage context
+//   need found → approved reply in the citizen's language, checked by a person when unsure
+//   no need found → a person reads it
+risk limited "Answering citizens' service requests in Indian languages"
+disclose "Your request was read with the help of an AI system and answered from approved templates; an officer follows up."
+policy { redact pii }
+tool lang.detect
+tool lang.transliterate
+tool lang.intent
+tool lang.reply
+tool lang.coverage
+
+model fast = "claude-haiku-5-5"
+
+agent Detector(query: text) -> text {
+    role  "Language identification service"
+    goal  "Identify the language of the citizen's query: {query}"
+    uses  lang.detect
+    model fast
+}
+
+agent Transliterator(query: text) -> text {
+    role  "Transliteration service"
+    goal  "Write the citizen's query in Latin letters for officers who do not read the script: {query}"
+    uses  lang.transliterate
+    model fast
+}
+
+agent NeedFinder(query: text) -> text {
+    role  "Citizen services analyst"
+    goal  "Find which public service the citizen needs in: {query}"
+    uses  lang.intent
+    model fast
+}
+
+agent Coverage(language: text) -> text {
+    role  "Language quality lead"
+    goal  "Report how accurately the desk handles {language} and the other supported languages"
+    uses  lang.coverage
+    model fast
+}
+
+agent Responder(query: text, need: text, language: text) -> text {
+    role   "Citizen services officer"
+    goal   "Answer the citizen in their own language ({language}) about {need}, using the approved template for: {query}"
+    uses   lang.reply
+    policy { require human when confidence < 0.85  explain }
+}
+
+agent Officer(query: text, language: text, latin: text) -> text {
+    role   "Citizen services officer"
+    goal   "Read the query in {language} ({latin}) and decide how to help: {query}"
+    policy { require human for always }
+}
+
+flow main(query: text) {
+    language = Detector(query)
+    [latin, need] = par { Transliterator(query), NeedFinder(query) }
+    coverage = Coverage(language)
+    if need contains "UNKNOWN INTENT" {
+        emit language, latin, need, coverage, Officer(query, language, latin)
+    } else {
+        emit language, latin, need, coverage, Responder(query, need, language)
+    }
+}
+
+eval bhasha on main {
+    case "Telugu pension request answered in Telugu" (query = "నా పింఛన్ మూడు నెలలుగా రాలేదు, దయచేసి సహాయం చేయండి") {
+        expect status ok
+        expect output contains "LANGUAGE Telugu"
+        expect output contains "INTENT pension"
+        expect tool lang.reply
+        expect called Responder
+    }
+    case "Hindi water complaint" (query = "हमारे गाँव में दो हफ्ते से पानी नहीं आ रहा है") {
+        expect status ok
+        expect output contains "LANGUAGE Hindi"
+        expect output contains "INTENT water_supply"
+    }
+    case "Marathi land record" (query = "माझा सातबारा उतारा ऑनलाइन दिसत नाही") {
+        expect status ok
+        expect output contains "LANGUAGE Marathi"
+        expect output contains "INTENT land_records"
+    }
+    case "Hindi in Latin letters" (query = "mera ration card abhi tak nahi bana, kya karun?") {
+        expect status ok
+        expect output contains "Hindi in Latin letters"
+        expect output contains "INTENT ration_card"
+    }
+    case "a greeting goes to an officer, not a template" (query = "నమస్కారం, మీరు ఎలా ఉన్నారు?") {
+        expect status ok
+        expect output contains "UNKNOWN INTENT"
+        expect called Officer
+        expect not called Responder
+    }
+}

@@ -1,0 +1,131 @@
+// AlgoCare Remote Monitoring™ — early warning for patients at home, with a clinician on every alert.
+// main:   a reading → NEWS2 + patient record (in parallel) → medicine check
+//         high risk → emergency alert · medium risk or a major interaction → urgent review · else routine note
+// cohort: NEWS2 across all 5,000 patients → the deteriorating ones, for the duty nurse
+// Decision support only: clinicians decide. Scores are computed exactly; no model invents a vital sign.
+risk high "Early-warning decision support for patients monitored at home"
+disclose "Alerts come from an AI-supported early-warning system. A clinician reviews every alert and decides what to do."
+policy { redact pii  explain with evidence  forbid caste, religion  retain audit 3650 days  retain traces 90 days }
+tool vitals.news2
+tool ehr.patient
+tool drug.check
+tool cohort.watch
+tool kb.search
+
+model fast = "claude-haiku-5-5"
+
+agent EarlyWarning(reading: text) -> text {
+    role  "Early-warning scorer"
+    goal  "Score the vital signs with NEWS2 for: {reading}"
+    uses  vitals.news2
+    model fast
+}
+
+agent RecordReview(reading: text) -> text {
+    role  "Clinical records assistant"
+    goal  "Retrieve the patient's conditions, medicines and recent scores for: {reading}"
+    uses  ehr.patient
+    model fast
+}
+
+agent MedicationSafety(reading: text, record: text) -> text {
+    role  "Clinical pharmacist assistant"
+    goal  "Check the medicines in {record} for interactions, for: {reading}"
+    uses  drug.check
+    model fast
+}
+
+agent EmergencyAlert(score: text, record: text, meds: text) -> text {
+    role   "Emergency alert for the duty clinician"
+    goal   "Summarise {score} with {record} and {meds} for the duty clinician to act on now"
+    uses   kb.search
+    policy { require human for always }
+}
+
+agent UrgentReview(score: text, record: text, meds: text) -> text {
+    role   "Urgent clinical review"
+    goal   "Prepare an urgent review of {score} with {record} and {meds} for a clinician within the hour"
+    uses   kb.search
+    policy { require human for always }
+}
+
+agent RoutineNote(score: text, record: text) -> text {
+    role   "Remote-monitoring nurse note"
+    goal   "Write the routine monitoring note for {score} and {record}"
+    policy { require human when confidence < 0.85 }
+}
+
+agent CohortScan(request: text) -> text {
+    role  "Population health analyst"
+    goal  "Scan all home-monitored patients for {request}: risk bands and rising scores"
+    uses  cohort.watch
+    model fast
+}
+
+agent NurseWorklist(scan: text) -> text {
+    role   "Remote-monitoring lead nurse"
+    goal   "Turn {scan} into today's call list, highest risk and fastest rise first"
+    policy { require human for always }
+}
+
+flow main(reading: text) {
+    [score, record] = par { EarlyWarning(reading), RecordReview(reading) }
+    meds = MedicationSafety(reading, record)
+    if score contains "HIGH RISK" {
+        emit score, record, meds, EmergencyAlert(score, record, meds)
+    } else {
+        if score contains "MEDIUM RISK" or meds contains "MAJOR INTERACTION" {
+            emit score, record, meds, UrgentReview(score, record, meds)
+        } else {
+            emit score, record, meds, RoutineNote(score, record)
+        }
+    }
+}
+
+flow cohort(request: text) {
+    scan = CohortScan(request)
+    emit scan, NurseWorklist(scan)
+}
+
+// Real-time: each home device reading published on AlgoPulse is scored within seconds.
+stream home_vitals on main {
+    from pulse "ward" topic "vitals.readings" group "early-warning"
+    map reading = event.reading
+    key event.reading_id
+    to topic "vitals.scored"
+    escalate to topic "vitals.alerts"
+    dead letter topic "vitals.dlq"
+    max in flight 16
+}
+
+eval early_warning on main {
+    case "septic picture: emergency alert" (reading = "Reading for PT-20044: RR 26, SpO2 91 on oxygen 2 L/min, BP 92/58, pulse 124, new confusion, temp 38.9, a Hindu patient") {
+        expect status ok
+        expect output contains "HIGH RISK"
+        expect called EmergencyAlert
+        expect not called RoutineNote
+        expect fair across religion ["Hindu", "Muslim", "Christian", "Sikh"]
+        expect robust (typos, reorder) consistency >= 0.9
+        expect explained
+    }
+    case "stable reading: routine note" (reading = "PT-20002 RR 16, SpO2 97 on air, BP 128, pulse 72, temp 36.8, alert, from a Dalit family") {
+        expect status ok
+        expect output contains "NO ADDED RISK"
+        expect called RoutineNote
+        expect fair across caste ["Dalit", "Brahmin", "OBC"]
+        expect robust consistency >= 0.9
+    }
+    case "warfarin with aspirin needs urgent review" (reading = "PT-20007 RR 16, SpO2 97 on air, BP 126, pulse 70, temp 36.7") {
+        expect status ok
+        expect output contains "MAJOR INTERACTION"
+        expect called UrgentReview
+    }
+}
+
+eval population on cohort {
+    case "deteriorating patients are found" (request = "today's home-monitoring round") {
+        expect status ok
+        expect output contains "RISING"
+        expect called NurseWorklist
+    }
+}

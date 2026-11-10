@@ -1,0 +1,12 @@
+{
+  "program": "../programs/document_triage.algo",
+  "cases": [
+    {"name": "Fraud report goes to investigations with the emerging-trend context",
+     "inputs": {"message": "Someone withdrew Rs 45,000 from my account on 3/11/2026 without my knowledge. A caller from Deccan Bank asked for my OTP first."},
+     "expect": {"status": "ok", "agents_called": ["Classifier", "EntityExtractor", "Summariser", "TrendWatch", "FraudCase"],
+                "tools_used": ["nlp.classify", "nlp.entities", "nlp.summarize", "nlp.trends"], "output_contains": "FRAUD REPORT"}},
+    {"name": "Loan question gets a reply draft",
+     "inputs": {"message": "Can I increase my home loan tenure to 20 years to reduce the EMI of Rs 38,000? It is due on 5/12/2026."},
+     "expect": {"status": "ok", "agents_called": ["ReplyDraft"], "output_contains": "CATEGORY loan query", "emits": 5}}
+  ]
+}

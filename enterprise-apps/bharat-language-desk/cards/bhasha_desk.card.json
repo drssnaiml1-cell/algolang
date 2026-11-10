@@ -1,0 +1,195 @@
+{
+  "card": "AlgoLang AI system card",
+  "card_version": 1,
+  "program": "bhasha_desk",
+  "source": "bhasha_desk.algo",
+  "source_sha256": "f31e3cf42b0677120fc72f6fbaa3e298c8dd548a2e1c8f5334be48dbdddc17a4",
+  "purpose": "Answering citizens' service requests in Indian languages",
+  "risk_level": "limited",
+  "disclosure": "Your request was read with the help of an AI system and answered from approved templates; an officer follows up.",
+  "flows": [
+    {
+      "name": "main",
+      "inputs": [
+        "query"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "Coverage",
+      "role": "Language quality lead",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "lang.coverage"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Detector",
+      "role": "Language identification service",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "lang.detect"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "NeedFinder",
+      "role": "Citizen services analyst",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "lang.intent"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Officer",
+      "role": "Citizen services officer",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "every result is reviewed",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Responder",
+      "role": "Citizen services officer",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "lang.reply"
+      ],
+      "human_oversight": "reviewed when confidence < 0.85",
+      "explain": "reasons",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Transliterator",
+      "role": "Transliteration service",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "lang.transliterate"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    }
+  ],
+  "tools": [
+    {
+      "name": "lang.coverage",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Accuracy of language and intent detection on a 4,800-query multilingual test set"
+    },
+    {
+      "name": "lang.detect",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Detect the Indian language of a citizen's query from its script and words"
+    },
+    {
+      "name": "lang.intent",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "What the citizen needs: pension, ration card, electricity, water, scholarship, land records"
+    },
+    {
+      "name": "lang.reply",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Approved acknowledgement in the citizen's own language"
+    },
+    {
+      "name": "lang.transliterate",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Transliterate Indian-script text to Latin letters (ISO 15919 style)"
+    }
+  ],
+  "streams": [],
+  "circuits": [],
+  "human_oversight": [
+    "Coverage: reviewed when confidence < 0.75",
+    "Detector: reviewed when confidence < 0.75",
+    "NeedFinder: reviewed when confidence < 0.75",
+    "Officer: every result is reviewed",
+    "Responder: reviewed when confidence < 0.85",
+    "Transliterator: reviewed when confidence < 0.75"
+  ],
+  "data_protection": {
+    "redact_pii": "all agents",
+    "forbidden_attributes": [
+      "caste",
+      "religion"
+    ],
+    "retention_days": {}
+  },
+  "evaluation": {
+    "cases": 5,
+    "fairness": [],
+    "robustness": [],
+    "explanations_checked": false
+  },
+  "limitations": [
+    "Generated from the source code: it documents design-time safeguards and test coverage, not measured real-world performance.",
+    "Offline evals use a deterministic mock model; repeat them with `algo eval --live` before deployment.",
+    "Protected attributes are withheld by keyword. Proxies such as names, postcodes or schools can still carry them; counterfactual fairness tests measure the effect.",
+    "Fairness has not been tested (no `expect fair` case).",
+    "Robustness has not been tested (no `expect robust` case)."
+  ]
+}

@@ -1,0 +1,38 @@
+{
+  "organisation": "AlgoBharat Bhasha Desk (example municipal desk, synthetic data)",
+  "policy": {
+    "forbid": [
+      "caste",
+      "religion"
+    ],
+    "max_budget_tokens": 8000,
+    "min_human_below": 0.75,
+    "allowed_tools": [
+      "lang.detect",
+      "lang.transliterate",
+      "lang.intent",
+      "lang.reply",
+      "lang.coverage",
+      "kb.search"
+    ]
+  },
+  "max_concurrency": 8,
+  "max_run_tokens": 80000,
+  "max_run_cost_usd": 0.5,
+  "cache": {
+    "enabled": true
+  },
+  "audit_dir": "runs",
+  "models": {
+    "smart": "claude-sonnet-5-5",
+    "fast": "claude-haiku-5-5"
+  },
+  "tools": {
+    "kb.search": {
+      "dir": "kb"
+    }
+  },
+  "plugins": [
+    "plugins/bhasha_tools.py"
+  ]
+}

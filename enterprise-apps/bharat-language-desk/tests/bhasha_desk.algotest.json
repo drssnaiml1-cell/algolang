@@ -1,0 +1,15 @@
+{
+  "program": "../programs/bhasha_desk.algo",
+  "cases": [
+    {"name": "Tamil water complaint: detected, transliterated, answered in Tamil",
+     "inputs": {"query": "எங்கள் தெருவில் குடிநீர் வரவில்லை, உதவுங்கள்"},
+     "expect": {"status": "ok", "agents_called": ["Detector", "Transliterator", "NeedFinder", "Coverage", "Responder"],
+                "tools_used": ["lang.detect", "lang.transliterate", "lang.intent", "lang.reply"], "output_contains": "LANGUAGE Tamil"}},
+    {"name": "Kannada electricity bill",
+     "inputs": {"query": "ನಮ್ಮ ಮನೆಯ ವಿದ್ಯುತ್ ಬಿಲ್ ತುಂಬಾ ಹೆಚ್ಚಾಗಿದೆ"},
+     "expect": {"status": "ok", "output_contains": "INTENT electricity_bill", "emits": 5}},
+    {"name": "Unknown need goes to an officer",
+     "inputs": {"query": "নমস্কার, আপনি কেমন আছেন?"},
+     "expect": {"status": "ok", "agents_called": ["Officer"], "output_contains": "UNKNOWN INTENT"}}
+  ]
+}

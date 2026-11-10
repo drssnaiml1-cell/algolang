@@ -30,11 +30,15 @@ BATCH = {
     "ml-model-factory": ("model_factory.algo", "model_requests.csv"),
     "rl-control-room": ("dispatch_policy.algo", "rl_requests.csv"),
     "responsible-xai-studio": ("model_audit.algo", "audit_requests.csv"),
+    "nlp-document-intelligence": ("document_triage.algo", "triage_requests.csv"),
+    "bharat-language-desk": ("bhasha_desk.algo", "citizen_queries.csv"),
+    "digital-health-monitor": ("remote_monitoring.algo", "readings.csv"),
 }
 # Real-time `stream` blocks, replayed offline from a JSON Lines file of events (v0.3.1)
 STREAM = {
     "algo-trading-desk": ("pre_trade_check.algo", "order_events.jsonl"),
     "soc-incident-command": ("alert_to_incident.algo", "alert_events.jsonl"),
+    "digital-health-monitor": ("remote_monitoring.algo", "vitals_events.jsonl"),
 }
 
 
