@@ -1,0 +1,273 @@
+{
+  "card": "AlgoLang AI system card",
+  "card_version": 1,
+  "program": "target_discovery",
+  "source": "target_discovery.algo",
+  "source_sha256": "35ea394288928912087dbc2ec22757c2333e96188ee0795b3741d47661225a25",
+  "purpose": "Research support for target discovery on a protein interaction network",
+  "risk_level": "minimal",
+  "disclosure": null,
+  "flows": [
+    {
+      "name": "main",
+      "inputs": [
+        "question"
+      ]
+    },
+    {
+      "name": "sequence",
+      "inputs": [
+        "sequence"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "Enrichment",
+      "role": "Bioinformatician",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "bio.enrich"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "ExperimentPlan",
+      "role": "Lab manager",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.75 by 2 different people",
+      "explain": "evidence",
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Hypothesis",
+      "role": "Principal investigator",
+      "returns": "uncertain<score>",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "kb.search"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": 5,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "ModuleFinder",
+      "role": "Systems biologist",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "net.modules"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "MoreAnalysis",
+      "role": "Principal investigator",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "every result is reviewed",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "NetworkAnalyst",
+      "role": "Network biologist",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "net.centrality"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Prioritiser",
+      "role": "Computational geneticist",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "net.propagate"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "RefineSeeds",
+      "role": "Computational geneticist",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "SequenceAnalyst",
+      "role": "Sequence analyst",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "bio.sequence"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    }
+  ],
+  "tools": [
+    {
+      "name": "bio.enrich",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Pathway enrichment of the top candidates (hypergeometric test, Benjamini–Hochberg FDR)"
+    },
+    {
+      "name": "bio.sequence",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "GC content, longest open reading frame (6 frames) and common 3-mers of a sequence (SEQ-##)"
+    },
+    {
+      "name": "kb.search",
+      "kind": "built-in",
+      "trusted": true,
+      "description": "Search the organisation's knowledge base of .txt and .md documents"
+    },
+    {
+      "name": "net.centrality",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Hubs and bottlenecks of the protein interaction network (degree, betweenness)"
+    },
+    {
+      "name": "net.modules",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Communities in the interaction network (label propagation) and the disease module"
+    },
+    {
+      "name": "net.propagate",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Prioritise candidate disease proteins by random walk with restart, with held-out validation"
+    }
+  ],
+  "streams": [],
+  "circuits": [],
+  "human_oversight": [
+    "Enrichment: reviewed when confidence < 0.75",
+    "ExperimentPlan: reviewed when confidence < 0.75 by 2 different people",
+    "Hypothesis: reviewed when confidence < 0.75",
+    "ModuleFinder: reviewed when confidence < 0.75",
+    "MoreAnalysis: every result is reviewed",
+    "NetworkAnalyst: reviewed when confidence < 0.75",
+    "Prioritiser: reviewed when confidence < 0.75",
+    "RefineSeeds: reviewed when confidence < 0.75",
+    "SequenceAnalyst: reviewed when confidence < 0.75"
+  ],
+  "data_protection": {
+    "redact_pii": "no agents",
+    "forbidden_attributes": [
+      "caste",
+      "gender",
+      "religion"
+    ],
+    "retention_days": {}
+  },
+  "evaluation": {
+    "cases": 4,
+    "fairness": [],
+    "robustness": [],
+    "explanations_checked": false
+  },
+  "limitations": [
+    "Generated from the source code: it documents design-time safeguards and test coverage, not measured real-world performance.",
+    "Offline evals use a deterministic mock model; repeat them with `algo eval --live` before deployment.",
+    "Protected attributes are withheld by keyword. Proxies such as names, postcodes or schools can still carry them; counterfactual fairness tests measure the effect.",
+    "Fairness has not been tested (no `expect fair` case).",
+    "Robustness has not been tested (no `expect robust` case)."
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "program": "../programs/network_operations.algo",
+  "cases": [
+    {"name": "Major closure: detour and signal timing in parallel, then a control plan a person approves",
+     "inputs": {"incident": "INC-03 flyover inspection"},
+     "expect": {"status": "ok", "agents_called": ["Router", "SignalEngineer", "ControlPlan"],
+                "tools_used": ["traffic.reroute", "signal.retime"], "output_contains": "OVERSATURATED"}},
+    {"name": "Minor closure ends with a public diversion notice",
+     "inputs": {"incident": "INC-02 water-main repair"},
+     "expect": {"status": "ok", "agents_called": ["DiversionNotice"], "output_contains": "MINOR DELAY", "emits": 3}}
+  ]
+}

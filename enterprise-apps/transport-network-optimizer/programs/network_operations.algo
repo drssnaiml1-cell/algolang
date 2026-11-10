@@ -1,0 +1,117 @@
+// AlgoMove Transport Network Optimizer™ — keep a city of 1,600 junctions moving through incidents and peaks.
+// main: road incident → detour (Dijkstra) + detour signal timing (Webster), in parallel
+//       oversaturated junctions → a police and turn-ban plan the control officer approves
+//       otherwise → retimed signals and a public diversion notice
+// plan: travel demand (gravity model) → bus headways and fleet → a shortfall needs two approvals
+risk limited "Traffic incident management, signal timing and public bus service planning"
+disclose "This diversion notice was prepared with the help of an AI system and checked by the traffic control room."
+policy { redact pii }
+tool traffic.reroute
+tool signal.retime
+tool demand.od
+tool transit.headway
+tool kb.search
+
+model fast = "claude-haiku-5-5"
+
+agent Router(incident: text) -> text {
+    role  "Traffic network engineer"
+    goal  "Find the fastest detour around {incident} and the delay it adds"
+    uses  traffic.reroute
+    model fast
+}
+
+agent SignalEngineer(incident: text) -> text {
+    role  "Signal timing engineer"
+    goal  "Retime the signals on the detour for {incident} after the diverted traffic is added"
+    uses  signal.retime
+    model fast
+}
+
+agent ControlPlan(incident: text, detour: text, signals: text) -> text {
+    role   "Traffic control room officer"
+    goal   "Plan police control, turn bans and upstream metering for {incident}: {detour}; {signals}"
+    uses   kb.search
+    policy { require human for always  explain with evidence }
+}
+
+agent DiversionNotice(incident: text, detour: text, signals: text) -> text {
+    role "Traveller information officer"
+    goal "Write the public diversion notice for {incident}: {detour}; {signals}"
+    uses kb.search
+}
+
+agent DemandModel(request: text) -> text {
+    role  "Transport planner"
+    goal  "Estimate morning-peak trips between the city's zones for {request}"
+    uses  demand.od
+    model fast
+}
+
+agent ServiceDesign(request: text, demand: text) -> text {
+    role  "Bus service planner"
+    goal  "Set route headways and the buses needed for {request} given {demand}"
+    uses  transit.headway
+    model fast
+}
+
+agent FleetRequest(request: text, service: text) -> text {
+    role   "Depot manager"
+    goal   "Request extra buses for {request}: {service}; maintenance rescheduling, standby hire, short-turns"
+    uses   kb.search
+    policy { require approvals 2  explain with evidence }
+}
+
+agent Timetable(request: text, service: text) -> text {
+    role "Scheduling officer"
+    goal "Publish the peak timetable for {request} from {service}"
+}
+
+flow main(incident: text) {
+    [detour, signals] = par { Router(incident), SignalEngineer(incident) }
+    if signals contains "OVERSATURATED" {
+        emit detour, signals, ControlPlan(incident, detour, signals)
+    } else {
+        emit detour, signals, DiversionNotice(incident, detour, signals)
+    }
+}
+
+flow plan(request: text) {
+    demand  = DemandModel(request)
+    service = ServiceDesign(request, demand)
+    if service contains "FLEET SHORTFALL" {
+        emit demand, service, FleetRequest(request, service)
+    } else {
+        emit demand, service, Timetable(request, service)
+    }
+}
+
+eval incidents on main {
+    case "ring-road closure overloads the detour: police control" (incident = "INC-01 reported by control room camera") {
+        expect status ok
+        expect output contains "MAJOR DELAY"
+        expect output contains "OVERSATURATED"
+        expect called ControlPlan
+        expect not called DiversionNotice
+    }
+    case "local repair: retimed signals and a notice" (incident = "INC-02 water-main repair") {
+        expect status ok
+        expect output contains "MINOR DELAY"
+        expect called DiversionNotice
+        expect not called ControlPlan
+    }
+}
+
+eval service on plan {
+    case "an ordinary weekday fits the fleet" (request = "weekday morning peak") {
+        expect status ok
+        expect output contains "SERVICE FEASIBLE"
+        expect called Timetable
+    }
+    case "metro disruption needs extra buses" (request = "metro disruption on Line 2, weekday peak") {
+        expect status ok
+        expect output contains "FLEET SHORTFALL"
+        expect called FleetRequest
+        expect not called Timetable
+    }
+}

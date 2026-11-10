@@ -1,0 +1,136 @@
+// AlgoCity Operations Centre™ — one view of the city's air, waste and power, with people in charge of every public action.
+// main:   air quality + waste routes + feeder load forecast (all in parallel)
+//         AQI very poor or severe → a public health advisory the duty officer approves
+//         feeder overload risk → a load-management plan two officers approve
+// sensor: one live air sensor reading → AQI; very poor or severe readings escalate (AlgoPulse stream below)
+risk limited "Smart-city operations: air-quality advisories, waste routing and electricity load planning"
+disclose "This advisory was drafted with the help of an AI system and approved by the city's duty officer."
+policy { redact pii }
+tool city.aqi
+tool city.waste
+tool city.energy
+tool city.reading
+tool kb.search
+
+model fast = "claude-haiku-5-5"
+
+agent AirQuality(situation: text) -> text {
+    role  "Air-quality analyst"
+    goal  "Compute the National AQI for every station and zone for {situation}"
+    uses  city.aqi
+    model fast
+}
+
+agent WasteRoutes(situation: text) -> text {
+    role  "Solid-waste operations planner"
+    goal  "Route the collection trucks to full smart bins for {situation}"
+    uses  city.waste
+    model fast
+}
+
+agent PowerForecast(situation: text) -> text {
+    role  "Distribution load forecaster"
+    goal  "Forecast tomorrow's feeder load and check it against the limit for {situation}"
+    uses  city.energy
+    model fast
+}
+
+agent HealthAdvisory(situation: text, air: text) -> text {
+    role   "Public health communications officer"
+    goal   "Draft a multilingual public health advisory for {situation} from {air}, following the city's graded response"
+    uses   kb.search
+    policy { require human for always  explain with evidence }
+}
+
+agent LoadPlan(situation: text, power: text) -> text {
+    role   "Distribution duty engineer"
+    goal   "Plan demand response, load transfer and, only if needed, rotational shedding for {power}; never shed hospitals, water pumping or signals"
+    uses   kb.search
+    policy { require approvals 2  explain with evidence }
+}
+
+agent DailyBrief(situation: text, air: text, waste: text, power: text) -> text {
+    role "City operations duty officer"
+    goal "Write the daily operations brief for {situation}: {air}; {waste}; {power}"
+}
+
+agent SensorCheck(reading: text) -> text {
+    role  "Air-quality sensor service"
+    goal  "Compute the AQI of the live reading {reading}"
+    uses  city.reading
+    model fast
+}
+
+agent SensorAlert(reading: text, aqi: text) -> text {
+    role   "Air-quality duty officer"
+    goal   "Verify the sensor alert {aqi} for {reading}: check the neighbouring stations and decide on local action"
+    policy { require human for always }
+}
+
+flow main(situation: text) {
+    [air, waste, power] = par { AirQuality(situation), WasteRoutes(situation), PowerForecast(situation) }
+    if air contains "AQI SEVERE" or air contains "AQI VERY POOR" {
+        if power contains "OVERLOAD RISK" {
+            emit air, waste, power, HealthAdvisory(situation, air), LoadPlan(situation, power)
+        } else {
+            emit air, waste, power, HealthAdvisory(situation, air)
+        }
+    } else {
+        if power contains "OVERLOAD RISK" {
+            emit air, waste, power, LoadPlan(situation, power)
+        } else {
+            emit air, waste, power, DailyBrief(situation, air, waste, power)
+        }
+    }
+}
+
+flow sensor(reading: text) {
+    aqi = SensorCheck(reading)
+    if aqi contains "AQI SEVERE" or aqi contains "AQI VERY POOR" {
+        emit aqi, SensorAlert(reading, aqi)
+    } else {
+        emit aqi
+    }
+}
+
+stream air_sensors on sensor {
+    from pulse "city" topic "air.readings" group "aqi-watch"
+    map reading = event.reading
+    key event.reading_id
+    to topic "air.aqi"
+    escalate to topic "air.alerts"
+    dead letter topic "air.dlq"
+    max in flight 16
+}
+
+eval operations on main {
+    case "post-Diwali smog: severe AQI gets an approved advisory" (situation = "post-Diwali morning, normal load") {
+        expect status ok
+        expect output contains "AQI SEVERE"
+        expect called HealthAdvisory
+        expect not called LoadPlan
+    }
+    case "heatwave evening: overload risk gets a two-officer load plan" (situation = "monsoon heatwave break, high demand") {
+        expect status ok
+        expect output contains "OVERLOAD RISK"
+        expect called LoadPlan
+        expect not called HealthAdvisory
+    }
+    case "an ordinary day: daily brief only" (situation = "monsoon weekday") {
+        expect status ok
+        expect output contains "AQI SATISFACTORY"
+        expect output contains "ROUTES"
+        expect called DailyBrief
+    }
+}
+
+eval sensors on sensor {
+    case "a very poor reading escalates" (reading = "AQ-12 PM2.5 140 PM10 220 NO2 60") {
+        expect output contains "AQI VERY POOR"
+        expect called SensorAlert
+    }
+    case "a clean reading does not" (reading = "AQ-03 PM2.5 22 PM10 40 NO2 18 O3 30") {
+        expect output contains "AQI GOOD"
+        expect not called SensorAlert
+    }
+}

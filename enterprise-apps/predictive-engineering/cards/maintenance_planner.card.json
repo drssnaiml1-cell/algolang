@@ -1,0 +1,248 @@
+{
+  "card": "AlgoLang AI system card",
+  "card_version": 1,
+  "program": "maintenance_planner",
+  "source": "maintenance_planner.algo",
+  "source_sha256": "0fc059bb8e3d97e628ede605424d3aea201ce70111c83783a54da8056776c01c",
+  "purpose": "Condition monitoring and maintenance planning for industrial pumps",
+  "risk_level": "minimal",
+  "disclosure": null,
+  "flows": [
+    {
+      "name": "main",
+      "inputs": [
+        "asset"
+      ]
+    },
+    {
+      "name": "fleet",
+      "inputs": [
+        "request"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "CrewSchedule",
+      "role": "Maintenance scheduler",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "maint.plan"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "FleetScan",
+      "role": "Reliability engineer",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "fleet.scan"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "ManagerApproval",
+      "role": "Maintenance manager",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.75 by 2 different people",
+      "explain": "evidence",
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Monitor",
+      "role": "Condition-monitoring engineer",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "PlannedRepair",
+      "role": "Maintenance planner",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "kb.search"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Prognostics",
+      "role": "Reliability engineer",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "rul.estimate"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "VibrationAnalyst",
+      "role": "Vibration analyst",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "vib.diagnose"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "WorkOrder",
+      "role": "Maintenance planner",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "kb.search"
+      ],
+      "human_oversight": "every result is reviewed",
+      "explain": "evidence",
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    }
+  ],
+  "tools": [
+    {
+      "name": "fleet.scan",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Scan all pumps: severity zones, fault types, accuracy, and the shortest remaining lives"
+    },
+    {
+      "name": "kb.search",
+      "kind": "built-in",
+      "trusted": true,
+      "description": "Search the organisation's knowledge base of .txt and .md documents"
+    },
+    {
+      "name": "maint.plan",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Schedule urgent pumps across 3 crews, earliest deadline first"
+    },
+    {
+      "name": "rul.estimate",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Remaining useful life of one pump (PMP-####) from its health-index trend"
+    },
+    {
+      "name": "vib.diagnose",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Vibration diagnosis of one pump (PMP-####): RMS velocity, zone, spectrum peaks, fault type"
+    }
+  ],
+  "streams": [],
+  "circuits": [],
+  "human_oversight": [
+    "CrewSchedule: reviewed when confidence < 0.75",
+    "FleetScan: reviewed when confidence < 0.75",
+    "ManagerApproval: reviewed when confidence < 0.75 by 2 different people",
+    "Monitor: reviewed when confidence < 0.75",
+    "PlannedRepair: reviewed when confidence < 0.75",
+    "Prognostics: reviewed when confidence < 0.75",
+    "VibrationAnalyst: reviewed when confidence < 0.75",
+    "WorkOrder: every result is reviewed"
+  ],
+  "data_protection": {
+    "redact_pii": "no agents",
+    "forbidden_attributes": [
+      "caste",
+      "gender",
+      "religion"
+    ],
+    "retention_days": {}
+  },
+  "evaluation": {
+    "cases": 4,
+    "fairness": [],
+    "robustness": [],
+    "explanations_checked": false
+  },
+  "limitations": [
+    "Generated from the source code: it documents design-time safeguards and test coverage, not measured real-world performance.",
+    "Offline evals use a deterministic mock model; repeat them with `algo eval --live` before deployment.",
+    "Protected attributes are withheld by keyword. Proxies such as names, postcodes or schools can still carry them; counterfactual fairness tests measure the effect.",
+    "Fairness has not been tested (no `expect fair` case).",
+    "Robustness has not been tested (no `expect robust` case)."
+  ]
+}

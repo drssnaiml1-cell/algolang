@@ -1,0 +1,12 @@
+{
+  "program": "../programs/maintenance_planner.algo",
+  "cases": [
+    {"name": "Failing bearing: diagnosis and prognosis in parallel, then an urgent work order",
+     "inputs": {"asset": "PMP-3460"},
+     "expect": {"status": "ok", "agents_called": ["VibrationAnalyst", "Prognostics", "WorkOrder"],
+                "tools_used": ["vib.diagnose", "rul.estimate"], "output_contains": "FAILURE WITHIN 4 WEEKS"}},
+    {"name": "Healthy pump stays on monitoring",
+     "inputs": {"asset": "PMP-3001"},
+     "expect": {"status": "ok", "agents_called": ["Monitor"], "output_contains": "HEALTHY", "emits": 3}}
+  ]
+}

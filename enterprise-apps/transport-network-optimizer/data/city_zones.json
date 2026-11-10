@@ -1,0 +1,442 @@
+{
+"zones": [
+{
+"zone": "Z01",
+"node": "N0302",
+"population": 44251,
+"jobs": 13609
+},
+{
+"zone": "Z02",
+"node": "N0307",
+"population": 54888,
+"jobs": 15456
+},
+{
+"zone": "Z03",
+"node": "N0312",
+"population": 41588,
+"jobs": 16740
+},
+{
+"zone": "Z04",
+"node": "N0317",
+"population": 33266,
+"jobs": 24254
+},
+{
+"zone": "Z05",
+"node": "N0322",
+"population": 56994,
+"jobs": 11825
+},
+{
+"zone": "Z06",
+"node": "N0327",
+"population": 34846,
+"jobs": 16482
+},
+{
+"zone": "Z07",
+"node": "N0332",
+"population": 53161,
+"jobs": 10349
+},
+{
+"zone": "Z08",
+"node": "N0337",
+"population": 68661,
+"jobs": 15782
+},
+{
+"zone": "Z09",
+"node": "N0902",
+"population": 48101,
+"jobs": 17480
+},
+{
+"zone": "Z10",
+"node": "N0907",
+"population": 39663,
+"jobs": 25473
+},
+{
+"zone": "Z11",
+"node": "N0912",
+"population": 52488,
+"jobs": 22989
+},
+{
+"zone": "Z12",
+"node": "N0917",
+"population": 36483,
+"jobs": 28535
+},
+{
+"zone": "Z13",
+"node": "N0922",
+"population": 48524,
+"jobs": 23633
+},
+{
+"zone": "Z14",
+"node": "N0927",
+"population": 44656,
+"jobs": 28922
+},
+{
+"zone": "Z15",
+"node": "N0932",
+"population": 37919,
+"jobs": 16456
+},
+{
+"zone": "Z16",
+"node": "N0937",
+"population": 56596,
+"jobs": 18982
+},
+{
+"zone": "Z17",
+"node": "N1502",
+"population": 46224,
+"jobs": 10215
+},
+{
+"zone": "Z18",
+"node": "N1507",
+"population": 55234,
+"jobs": 14517
+},
+{
+"zone": "Z19",
+"node": "N1512",
+"population": 31316,
+"jobs": 18318
+},
+{
+"zone": "Z20",
+"node": "N1517",
+"population": 27936,
+"jobs": 33385
+},
+{
+"zone": "Z21",
+"node": "N1522",
+"population": 35317,
+"jobs": 33145
+},
+{
+"zone": "Z22",
+"node": "N1527",
+"population": 35993,
+"jobs": 31930
+},
+{
+"zone": "Z23",
+"node": "N1532",
+"population": 39120,
+"jobs": 26760
+},
+{
+"zone": "Z24",
+"node": "N1537",
+"population": 63296,
+"jobs": 14569
+},
+{
+"zone": "Z25",
+"node": "N2102",
+"population": 55402,
+"jobs": 15960
+},
+{
+"zone": "Z26",
+"node": "N2107",
+"population": 39024,
+"jobs": 20274
+},
+{
+"zone": "Z27",
+"node": "N2112",
+"population": 28012,
+"jobs": 41868
+},
+{
+"zone": "Z28",
+"node": "N2117",
+"population": 16270,
+"jobs": 51758
+},
+{
+"zone": "Z29",
+"node": "N2122",
+"population": 25236,
+"jobs": 49037
+},
+{
+"zone": "Z30",
+"node": "N2127",
+"population": 34076,
+"jobs": 31867
+},
+{
+"zone": "Z31",
+"node": "N2132",
+"population": 39521,
+"jobs": 33368
+},
+{
+"zone": "Z32",
+"node": "N2137",
+"population": 36487,
+"jobs": 13287
+},
+{
+"zone": "Z33",
+"node": "N2702",
+"population": 52153,
+"jobs": 12790
+},
+{
+"zone": "Z34",
+"node": "N2707",
+"population": 56258,
+"jobs": 28713
+},
+{
+"zone": "Z35",
+"node": "N2712",
+"population": 27128,
+"jobs": 28994
+},
+{
+"zone": "Z36",
+"node": "N2717",
+"population": 25442,
+"jobs": 32533
+},
+{
+"zone": "Z37",
+"node": "N2722",
+"population": 32716,
+"jobs": 42699
+},
+{
+"zone": "Z38",
+"node": "N2727",
+"population": 24468,
+"jobs": 21794
+},
+{
+"zone": "Z39",
+"node": "N2732",
+"population": 50836,
+"jobs": 31225
+},
+{
+"zone": "Z40",
+"node": "N2737",
+"population": 46273,
+"jobs": 22032
+},
+{
+"zone": "Z41",
+"node": "N3302",
+"population": 44123,
+"jobs": 12446
+},
+{
+"zone": "Z42",
+"node": "N3307",
+"population": 49394,
+"jobs": 10908
+},
+{
+"zone": "Z43",
+"node": "N3312",
+"population": 48496,
+"jobs": 29059
+},
+{
+"zone": "Z44",
+"node": "N3317",
+"population": 39164,
+"jobs": 15735
+},
+{
+"zone": "Z45",
+"node": "N3322",
+"population": 42521,
+"jobs": 22340
+},
+{
+"zone": "Z46",
+"node": "N3327",
+"population": 39332,
+"jobs": 14264
+},
+{
+"zone": "Z47",
+"node": "N3332",
+"population": 57225,
+"jobs": 14429
+},
+{
+"zone": "Z48",
+"node": "N3337",
+"population": 73305,
+"jobs": 8325
+}
+],
+"routes": [
+{
+"route": "BUS-01",
+"zones": [
+"Z01",
+"Z02",
+"Z03",
+"Z04",
+"Z05",
+"Z06",
+"Z07",
+"Z08"
+]
+},
+{
+"route": "BUS-02",
+"zones": [
+"Z09",
+"Z10",
+"Z11",
+"Z12",
+"Z13",
+"Z14",
+"Z15",
+"Z16"
+]
+},
+{
+"route": "BUS-03",
+"zones": [
+"Z17",
+"Z18",
+"Z19",
+"Z20",
+"Z21",
+"Z22",
+"Z23",
+"Z24"
+]
+},
+{
+"route": "BUS-04",
+"zones": [
+"Z25",
+"Z26",
+"Z27",
+"Z28",
+"Z29",
+"Z30",
+"Z31",
+"Z32"
+]
+},
+{
+"route": "BUS-05",
+"zones": [
+"Z33",
+"Z34",
+"Z35",
+"Z36",
+"Z37",
+"Z38",
+"Z39",
+"Z40"
+]
+},
+{
+"route": "BUS-06",
+"zones": [
+"Z41",
+"Z42",
+"Z43",
+"Z44",
+"Z45",
+"Z46",
+"Z47",
+"Z48"
+]
+},
+{
+"route": "BUS-07",
+"zones": [
+"Z02",
+"Z10",
+"Z18",
+"Z26",
+"Z34",
+"Z42"
+]
+},
+{
+"route": "BUS-08",
+"zones": [
+"Z03",
+"Z11",
+"Z19",
+"Z27",
+"Z35",
+"Z43"
+]
+},
+{
+"route": "BUS-09",
+"zones": [
+"Z04",
+"Z12",
+"Z20",
+"Z28",
+"Z36",
+"Z44"
+]
+},
+{
+"route": "BUS-10",
+"zones": [
+"Z05",
+"Z13",
+"Z21",
+"Z29",
+"Z37",
+"Z45"
+]
+},
+{
+"route": "BUS-11",
+"zones": [
+"Z06",
+"Z14",
+"Z22",
+"Z30",
+"Z38",
+"Z46"
+]
+},
+{
+"route": "BUS-12",
+"zones": [
+"Z07",
+"Z15",
+"Z23",
+"Z31",
+"Z39",
+"Z47"
+]
+}
+],
+"fleet": 320,
+"bus_capacity": 70,
+"load_factor": 0.85,
+"transit_share": 0.12
+}

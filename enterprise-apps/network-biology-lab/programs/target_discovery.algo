@@ -1,0 +1,117 @@
+// AlgoBio Network Lab™ — from disease seed proteins to testable target hypotheses.
+// network hubs + communities (in parallel) → disease-gene prioritisation (validated on held-out genes)
+//   weak evidence → refine the seeds · strong → pathway enrichment → hypothesis review → experiment plan
+// Every statistic is computed from the network; agents only write and decide with people.
+risk minimal "Research support for target discovery on a protein interaction network"
+tool net.centrality
+tool net.modules
+tool net.propagate
+tool bio.enrich
+tool bio.sequence
+tool kb.search
+
+model fast = "claude-haiku-5-5"
+
+agent NetworkAnalyst(question: text) -> text {
+    role  "Network biologist"
+    goal  "Find the hubs and bottlenecks of the interaction network for {question}"
+    uses  net.centrality
+    model fast
+}
+
+agent ModuleFinder(question: text) -> text {
+    role  "Systems biologist"
+    goal  "Find the network communities and the disease module for {question}"
+    uses  net.modules
+    model fast
+}
+
+agent Prioritiser(question: text) -> text {
+    role  "Computational geneticist"
+    goal  "Rank candidate disease proteins by network propagation from the seeds for {question}, and validate"
+    uses  net.propagate
+    model fast
+}
+
+agent Enrichment(question: text, candidates: text) -> text {
+    role  "Bioinformatician"
+    goal  "Test pathway enrichment of {candidates} for {question}"
+    uses  bio.enrich
+    model fast
+}
+
+agent Hypothesis(question: text, candidates: text, pathways: text, modules: text) -> uncertain<score> {
+    role   "Principal investigator"
+    goal   "Score 0 to 1 how testable a target hypothesis is for {question}, from {candidates}, {pathways} and {modules}"
+    uses   kb.search
+    policy { samples 5 }
+}
+
+agent ExperimentPlan(question: text, candidates: text, pathways: text) -> text {
+    role   "Lab manager"
+    goal   "Plan validation experiments for the top candidates in {candidates} and pathways in {pathways} for {question}"
+    policy { require approvals 2  explain with evidence }     // lab time and reagents need two sign-offs
+}
+
+agent MoreAnalysis(question: text, candidates: text) -> text {
+    role "Principal investigator"
+    goal "List the extra analyses needed before experiments for {question}, given {candidates}"
+    policy { require human for always }
+}
+
+agent RefineSeeds(question: text, candidates: text) -> text {
+    role "Computational geneticist"
+    goal "Explain why the evidence is weak in {candidates} for {question} and how to choose better seed proteins"
+}
+
+agent SequenceAnalyst(sequence: text) -> text {
+    role "Sequence analyst"
+    goal "Analyse the sequence {sequence}: GC content, reading frames and composition"
+    uses bio.sequence
+    model fast
+}
+
+flow main(question: text) {
+    [hubs, modules] = par { NetworkAnalyst(question), ModuleFinder(question) }
+    candidates = Prioritiser(question)
+    if candidates contains "WEAK EVIDENCE" {
+        emit hubs, modules, candidates, RefineSeeds(question, candidates)
+    } else {
+        pathways = Enrichment(question, candidates)
+        h = Hypothesis(question, candidates, pathways, modules)
+        if h > 0.7 and h.confidence >= 0.75 {
+            emit hubs, modules, candidates, pathways, h, ExperimentPlan(question, candidates, pathways)
+        } else {
+            emit hubs, modules, candidates, pathways, h, MoreAnalysis(question, candidates)
+        }
+    }
+}
+
+flow sequence(sequence: text) {
+    emit SequenceAnalyst(sequence)
+}
+
+eval discovery on main {
+    case "known disease seeds give strong, validated evidence" (question = "Prioritise targets for the inflammatory disease from its known seed proteins") {
+        expect status ok
+        expect output contains "STRONG EVIDENCE"
+        expect tool bio.enrich
+        expect called Hypothesis
+        expect not called RefineSeeds
+    }
+    case "negative control: random seeds must not look convincing" (question = "Negative control: prioritise targets from random seeds") {
+        expect status ok
+        expect output contains "WEAK EVIDENCE"
+        expect called RefineSeeds
+        expect not called Enrichment
+    }
+}
+
+eval sequences on sequence {
+    case "a real reading frame" (sequence = "SEQ-01") {
+        expect output contains "LIKELY PROTEIN-CODING"
+    }
+    case "GC-rich noise is not called coding" (sequence = "SEQ-02") {
+        expect output contains "PROBABLY NON-CODING"
+    }
+}

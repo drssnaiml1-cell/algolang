@@ -1,0 +1,181 @@
+day,station,zone,pm25,pm10,no2,so2,co,o3,nh3
+post-diwali,AQ-01,Charminar,211.5,500.5,75.2,13.6,2.23,45.1,28.9
+post-diwali,AQ-02,Secunderabad,148.0,398.1,79.1,9.3,1.18,40.3,31.8
+post-diwali,AQ-03,Gachibowli,222.9,294.8,54.7,8.3,1.67,31.6,36.6
+post-diwali,AQ-04,Kukatpally,166.5,343.2,43.1,12.7,1.24,27.3,28.3
+post-diwali,AQ-05,LB Nagar,300.4,462.0,98.4,10.1,2.49,33.4,15.5
+post-diwali,AQ-06,Uppal,200.0,337.1,49.5,6.7,1.93,33.5,18.5
+post-diwali,AQ-07,Jubilee Hills,238.0,412.1,47.5,6.1,2.14,41.5,33.6
+post-diwali,AQ-08,Mehdipatnam,193.2,524.7,97.9,14.0,1.14,43.6,36.0
+post-diwali,AQ-09,Charminar,193.2,472.8,85.6,11.1,1.87,39.3,34.4
+post-diwali,AQ-10,Secunderabad,186.3,354.7,77.5,11.4,1.49,56.0,39.6
+post-diwali,AQ-11,Gachibowli,167.2,286.0,54.2,10.5,1.81,59.8,32.4
+post-diwali,AQ-12,Kukatpally,199.4,289.5,63.2,13.9,1.87,25.7,22.3
+post-diwali,AQ-13,LB Nagar,192.2,444.6,109.5,13.6,1.13,55.3,21.8
+post-diwali,AQ-14,Uppal,232.3,315.8,75.3,10.7,1.31,42.6,36.7
+post-diwali,AQ-15,Jubilee Hills,186.3,338.7,60.9,14.5,1.36,41.5,34.5
+post-diwali,AQ-16,Mehdipatnam,291.5,411.1,70.6,13.9,1.35,56.8,37.6
+post-diwali,AQ-17,Charminar,187.5,386.3,63.9,8.3,1.97,52.1,26.8
+post-diwali,AQ-18,Secunderabad,157.1,265.5,53.1,8.8,1.28,29.9,29.5
+post-diwali,AQ-19,Gachibowli,185.7,359.6,79.7,7.1,1.26,33.8,35.0
+post-diwali,AQ-20,Kukatpally,225.3,281.4,50.7,9.7,1.08,38.6,29.0
+post-diwali,AQ-21,LB Nagar,252.2,531.6,96.8,14.3,1.64,46.2,33.6
+post-diwali,AQ-22,Uppal,236.5,393.7,83.5,8.6,1.63,43.6,30.3
+post-diwali,AQ-23,Jubilee Hills,221.2,326.7,85.2,14.8,2.33,57.5,27.4
+post-diwali,AQ-24,Mehdipatnam,246.4,377.0,65.0,14.4,1.41,32.4,30.7
+post-diwali,AQ-25,Charminar,271.6,348.5,102.0,9.5,2.18,47.2,40.0
+post-diwali,AQ-26,Secunderabad,160.4,324.6,66.5,14.2,2.2,41.0,37.9
+post-diwali,AQ-27,Gachibowli,224.2,395.8,87.5,12.2,2.02,33.8,39.3
+post-diwali,AQ-28,Kukatpally,236.9,328.2,66.2,8.4,1.92,42.8,20.1
+post-diwali,AQ-29,LB Nagar,218.3,348.9,76.7,10.9,1.55,50.9,20.1
+post-diwali,AQ-30,Uppal,144.3,299.9,47.4,9.1,1.16,32.1,33.8
+post-diwali,AQ-31,Jubilee Hills,168.9,348.0,50.2,8.2,2.42,54.1,20.9
+post-diwali,AQ-32,Mehdipatnam,252.0,503.7,109.5,12.0,1.11,47.4,21.0
+post-diwali,AQ-33,Charminar,253.5,538.0,65.7,10.3,1.86,46.4,28.5
+post-diwali,AQ-34,Secunderabad,228.9,323.7,77.0,9.7,1.53,52.9,28.1
+post-diwali,AQ-35,Gachibowli,199.7,270.0,49.5,8.5,1.15,37.2,37.3
+post-diwali,AQ-36,Kukatpally,215.9,381.1,48.9,14.5,2.3,32.2,38.6
+post-diwali,AQ-37,LB Nagar,257.8,488.3,61.2,7.6,2.02,29.7,18.0
+post-diwali,AQ-38,Uppal,216.5,414.0,78.1,7.2,1.88,46.5,15.7
+post-diwali,AQ-39,Jubilee Hills,195.9,334.9,71.2,9.4,1.24,25.2,20.8
+post-diwali,AQ-40,Mehdipatnam,204.1,400.8,94.2,7.5,2.39,35.9,35.9
+post-diwali,AQ-41,Charminar,258.5,366.1,83.2,6.8,1.16,37.1,24.7
+post-diwali,AQ-42,Secunderabad,183.1,400.7,42.9,7.3,2.01,29.4,16.3
+post-diwali,AQ-43,Gachibowli,213.5,373.9,80.2,9.8,2.42,43.9,20.4
+post-diwali,AQ-44,Kukatpally,194.1,332.5,79.2,6.6,2.49,26.1,16.4
+post-diwali,AQ-45,LB Nagar,265.3,369.2,113.1,14.5,1.38,26.1,30.8
+post-diwali,AQ-46,Uppal,230.5,301.0,79.1,13.1,2.32,40.5,26.7
+post-diwali,AQ-47,Jubilee Hills,203.2,309.3,69.9,8.9,1.46,54.2,25.3
+post-diwali,AQ-48,Mehdipatnam,294.9,517.6,62.5,8.6,1.94,39.4,21.3
+post-diwali,AQ-49,Charminar,294.6,539.7,84.3,13.8,1.67,39.3,28.9
+post-diwali,AQ-50,Secunderabad,206.6,315.7,74.2,12.5,1.47,57.0,16.2
+post-diwali,AQ-51,Gachibowli,202.7,362.2,75.8,11.8,1.13,52.1,27.2
+post-diwali,AQ-52,Kukatpally,166.1,329.6,52.9,12.8,1.19,32.2,23.6
+post-diwali,AQ-53,LB Nagar,210.0,407.3,84.6,9.8,2.2,54.4,34.9
+post-diwali,AQ-54,Uppal,195.5,351.1,49.4,13.8,1.23,30.7,21.8
+post-diwali,AQ-55,Jubilee Hills,210.7,321.2,82.0,13.1,1.18,50.3,36.2
+post-diwali,AQ-56,Mehdipatnam,299.5,479.1,96.4,10.8,2.52,39.3,26.2
+post-diwali,AQ-57,Charminar,289.2,380.8,65.2,7.3,1.33,55.0,32.2
+post-diwali,AQ-58,Secunderabad,167.1,366.6,67.6,6.4,2.38,44.2,34.3
+post-diwali,AQ-59,Gachibowli,207.3,281.8,55.9,8.2,1.38,53.7,33.3
+post-diwali,AQ-60,Kukatpally,201.0,295.4,46.0,9.8,1.46,46.4,37.3
+monsoon,AQ-01,Charminar,43.4,53.6,19.9,10.2,0.55,58.4,29.2
+monsoon,AQ-02,Secunderabad,33.1,53.3,18.2,12.8,0.28,27.7,32.9
+monsoon,AQ-03,Gachibowli,32.3,37.9,19.0,7.2,0.54,58.3,15.8
+monsoon,AQ-04,Kukatpally,33.7,53.5,22.4,9.1,0.56,51.3,38.6
+monsoon,AQ-05,LB Nagar,38.1,54.4,26.7,13.9,0.51,52.4,32.0
+monsoon,AQ-06,Uppal,22.0,57.2,21.7,6.4,0.53,48.6,27.0
+monsoon,AQ-07,Jubilee Hills,27.3,55.9,13.3,9.1,0.52,28.4,17.4
+monsoon,AQ-08,Mehdipatnam,32.4,65.6,18.1,14.2,0.31,46.4,18.7
+monsoon,AQ-09,Charminar,26.6,74.1,15.5,14.7,0.36,56.8,16.7
+monsoon,AQ-10,Secunderabad,24.1,55.1,16.4,10.7,0.58,53.9,30.7
+monsoon,AQ-11,Gachibowli,26.0,40.9,13.6,11.5,0.31,55.8,36.7
+monsoon,AQ-12,Kukatpally,25.4,39.6,14.6,7.1,0.55,37.5,18.1
+monsoon,AQ-13,LB Nagar,38.1,63.8,23.3,7.5,0.39,40.6,35.3
+monsoon,AQ-14,Uppal,31.8,52.6,15.8,7.5,0.52,54.0,39.2
+monsoon,AQ-15,Jubilee Hills,21.8,41.1,20.3,6.9,0.57,45.0,16.2
+monsoon,AQ-16,Mehdipatnam,35.6,53.0,31.9,10.6,0.53,42.0,16.8
+monsoon,AQ-17,Charminar,32.6,65.4,14.7,13.7,0.41,45.8,36.4
+monsoon,AQ-18,Secunderabad,21.7,55.7,23.2,10.3,0.49,48.5,34.1
+monsoon,AQ-19,Gachibowli,22.9,39.8,24.0,12.9,0.46,47.5,35.1
+monsoon,AQ-20,Kukatpally,33.1,46.4,20.1,6.0,0.28,44.5,23.2
+monsoon,AQ-21,LB Nagar,33.2,61.4,31.0,11.6,0.62,32.4,21.7
+monsoon,AQ-22,Uppal,20.4,50.0,19.8,6.7,0.56,46.1,19.8
+monsoon,AQ-23,Jubilee Hills,23.7,55.4,18.0,9.2,0.54,43.0,33.3
+monsoon,AQ-24,Mehdipatnam,40.5,59.4,30.6,14.1,0.48,50.6,26.0
+monsoon,AQ-25,Charminar,41.0,72.6,17.2,12.1,0.47,36.8,35.6
+monsoon,AQ-26,Secunderabad,26.9,52.7,11.9,12.3,0.47,38.3,28.3
+monsoon,AQ-27,Gachibowli,26.0,41.1,15.5,12.2,0.32,31.6,33.2
+monsoon,AQ-28,Kukatpally,23.1,40.8,23.3,7.8,0.46,58.4,24.0
+monsoon,AQ-29,LB Nagar,31.6,70.7,24.7,8.8,0.4,32.6,15.5
+monsoon,AQ-30,Uppal,27.5,48.1,18.3,9.7,0.53,36.7,37.0
+monsoon,AQ-31,Jubilee Hills,31.6,42.6,16.2,7.4,0.42,30.4,29.6
+monsoon,AQ-32,Mehdipatnam,37.7,48.2,24.9,9.7,0.27,25.0,29.5
+monsoon,AQ-33,Charminar,27.5,66.5,20.3,13.6,0.37,48.5,24.3
+monsoon,AQ-34,Secunderabad,24.5,52.1,22.6,8.7,0.63,59.1,27.8
+monsoon,AQ-35,Gachibowli,28.3,48.0,19.5,8.7,0.47,35.6,29.7
+monsoon,AQ-36,Kukatpally,28.5,49.5,20.8,14.9,0.52,40.8,20.9
+monsoon,AQ-37,LB Nagar,35.6,55.2,21.8,11.2,0.35,54.2,34.6
+monsoon,AQ-38,Uppal,23.2,46.5,24.3,14.9,0.29,42.9,30.9
+monsoon,AQ-39,Jubilee Hills,22.6,55.8,14.7,8.9,0.48,44.9,25.7
+monsoon,AQ-40,Mehdipatnam,30.9,52.7,26.5,6.0,0.42,51.7,31.2
+monsoon,AQ-41,Charminar,42.9,66.9,19.8,12.1,0.35,30.3,19.8
+monsoon,AQ-42,Secunderabad,32.5,46.9,24.3,11.0,0.57,30.5,16.0
+monsoon,AQ-43,Gachibowli,22.6,48.2,21.7,14.4,0.57,49.9,33.6
+monsoon,AQ-44,Kukatpally,24.9,51.5,11.6,14.8,0.5,25.2,29.9
+monsoon,AQ-45,LB Nagar,27.1,58.3,25.6,6.3,0.52,43.0,39.8
+monsoon,AQ-46,Uppal,24.6,47.4,16.0,9.1,0.31,58.9,25.8
+monsoon,AQ-47,Jubilee Hills,32.6,50.5,12.1,7.8,0.6,42.6,34.3
+monsoon,AQ-48,Mehdipatnam,40.0,55.8,24.4,13.7,0.39,31.7,24.6
+monsoon,AQ-49,Charminar,42.2,52.0,16.0,14.5,0.48,46.5,18.2
+monsoon,AQ-50,Secunderabad,21.9,44.1,18.7,9.4,0.57,29.2,17.2
+monsoon,AQ-51,Gachibowli,23.7,43.0,22.4,13.2,0.43,37.6,18.3
+monsoon,AQ-52,Kukatpally,33.0,44.0,19.7,9.5,0.28,31.2,24.6
+monsoon,AQ-53,LB Nagar,34.8,53.0,17.0,14.3,0.37,36.5,20.6
+monsoon,AQ-54,Uppal,21.8,39.6,21.1,7.7,0.46,59.0,20.8
+monsoon,AQ-55,Jubilee Hills,21.1,48.2,13.8,7.8,0.44,50.9,30.3
+monsoon,AQ-56,Mehdipatnam,36.1,71.5,30.4,7.4,0.34,44.5,27.6
+monsoon,AQ-57,Charminar,31.9,49.3,29.5,10.1,0.44,42.8,16.1
+monsoon,AQ-58,Secunderabad,30.0,36.5,24.4,12.3,0.43,44.2,34.3
+monsoon,AQ-59,Gachibowli,23.3,37.1,17.8,14.9,0.57,36.7,20.8
+monsoon,AQ-60,Kukatpally,32.5,36.4,23.7,7.3,0.34,34.1,24.7
+winter-weekday,AQ-01,Charminar,79.6,139.3,80.9,12.8,1.52,53.6,15.7
+winter-weekday,AQ-02,Secunderabad,75.1,125.9,37.2,7.9,1.74,42.3,27.2
+winter-weekday,AQ-03,Gachibowli,87.4,163.5,59.0,6.1,1.29,44.3,24.0
+winter-weekday,AQ-04,Kukatpally,71.0,105.9,39.1,13.6,1.2,48.7,15.1
+winter-weekday,AQ-05,LB Nagar,77.4,181.1,72.4,8.2,1.26,28.8,19.2
+winter-weekday,AQ-06,Uppal,88.6,166.3,60.0,14.1,1.26,59.8,35.2
+winter-weekday,AQ-07,Jubilee Hills,66.5,161.3,40.4,8.9,1.81,28.6,25.6
+winter-weekday,AQ-08,Mehdipatnam,121.2,204.6,74.0,14.9,1.02,41.0,30.7
+winter-weekday,AQ-09,Charminar,94.8,216.1,60.7,7.5,1.0,38.7,32.5
+winter-weekday,AQ-10,Secunderabad,80.0,113.2,43.6,8.9,1.36,33.1,15.5
+winter-weekday,AQ-11,Gachibowli,60.8,143.9,44.3,8.0,1.44,53.9,33.1
+winter-weekday,AQ-12,Kukatpally,62.9,125.3,65.4,14.7,1.34,46.1,23.5
+winter-weekday,AQ-13,LB Nagar,118.2,216.1,66.6,11.4,1.69,26.4,27.4
+winter-weekday,AQ-14,Uppal,81.1,126.1,60.4,9.8,1.75,27.3,19.5
+winter-weekday,AQ-15,Jubilee Hills,80.5,104.8,71.1,6.8,1.17,27.6,30.0
+winter-weekday,AQ-16,Mehdipatnam,114.9,172.1,44.0,12.7,1.13,48.1,39.1
+winter-weekday,AQ-17,Charminar,111.4,186.9,70.9,8.8,1.28,26.4,24.4
+winter-weekday,AQ-18,Secunderabad,97.2,152.6,69.1,12.9,1.64,42.9,17.5
+winter-weekday,AQ-19,Gachibowli,61.1,157.4,68.3,11.2,1.54,27.2,24.9
+winter-weekday,AQ-20,Kukatpally,71.0,122.1,53.1,9.9,1.43,29.1,36.6
+winter-weekday,AQ-21,LB Nagar,114.6,199.6,66.5,7.3,1.19,55.5,22.7
+winter-weekday,AQ-22,Uppal,90.9,158.4,48.7,6.3,0.89,41.1,21.1
+winter-weekday,AQ-23,Jubilee Hills,80.3,159.4,67.3,13.7,1.8,46.8,23.9
+winter-weekday,AQ-24,Mehdipatnam,123.7,199.2,71.1,8.5,1.16,38.3,21.8
+winter-weekday,AQ-25,Charminar,85.9,164.8,69.9,13.3,1.55,53.1,25.3
+winter-weekday,AQ-26,Secunderabad,84.2,124.6,51.3,13.3,1.75,28.7,16.7
+winter-weekday,AQ-27,Gachibowli,61.0,123.4,40.6,7.5,1.53,38.7,20.1
+winter-weekday,AQ-28,Kukatpally,60.4,118.9,67.1,6.7,0.86,43.9,30.3
+winter-weekday,AQ-29,LB Nagar,103.2,188.4,90.2,6.1,1.31,54.0,22.9
+winter-weekday,AQ-30,Uppal,92.5,160.9,51.3,14.0,1.6,45.6,35.7
+winter-weekday,AQ-31,Jubilee Hills,78.5,137.7,41.6,12.1,1.63,42.4,21.3
+winter-weekday,AQ-32,Mehdipatnam,103.0,208.4,84.1,14.2,0.97,43.9,23.8
+winter-weekday,AQ-33,Charminar,111.4,209.3,64.0,8.6,0.91,50.8,19.8
+winter-weekday,AQ-34,Secunderabad,82.4,121.0,53.3,9.0,0.88,36.1,33.6
+winter-weekday,AQ-35,Gachibowli,87.0,157.2,44.9,13.9,1.68,41.5,27.7
+winter-weekday,AQ-36,Kukatpally,71.9,132.7,43.2,9.5,1.6,29.2,33.0
+winter-weekday,AQ-37,LB Nagar,113.0,173.8,84.6,12.6,1.43,46.1,33.1
+winter-weekday,AQ-38,Uppal,82.3,139.4,67.3,8.0,1.18,39.2,19.1
+winter-weekday,AQ-39,Jubilee Hills,61.0,156.8,39.6,7.3,1.47,44.4,21.6
+winter-weekday,AQ-40,Mehdipatnam,120.9,196.0,48.4,12.1,1.32,34.9,28.8
+winter-weekday,AQ-41,Charminar,120.4,144.0,77.1,14.2,1.4,25.9,32.8
+winter-weekday,AQ-42,Secunderabad,67.3,151.3,66.2,11.3,1.36,29.9,26.5
+winter-weekday,AQ-43,Gachibowli,58.8,132.8,62.2,8.7,1.29,56.6,21.1
+winter-weekday,AQ-44,Kukatpally,93.9,140.8,62.1,9.9,1.61,29.6,23.8
+winter-weekday,AQ-45,LB Nagar,83.1,180.6,79.1,13.0,1.37,27.3,16.8
+winter-weekday,AQ-46,Uppal,63.0,147.1,65.5,8.3,1.22,35.7,23.0
+winter-weekday,AQ-47,Jubilee Hills,97.0,163.4,70.7,8.8,1.08,51.6,28.6
+winter-weekday,AQ-48,Mehdipatnam,120.5,143.6,74.8,14.9,1.18,29.0,33.9
+winter-weekday,AQ-49,Charminar,122.3,147.4,57.1,9.0,1.69,59.9,31.0
+winter-weekday,AQ-50,Secunderabad,74.2,145.1,68.0,9.1,1.7,51.2,17.7
+winter-weekday,AQ-51,Gachibowli,77.1,107.9,36.9,11.4,1.34,52.6,17.3
+winter-weekday,AQ-52,Kukatpally,85.9,157.7,34.3,13.4,1.64,50.6,34.2
+winter-weekday,AQ-53,LB Nagar,113.0,186.2,69.2,9.8,1.41,40.6,27.9
+winter-weekday,AQ-54,Uppal,64.8,146.6,39.4,11.6,1.0,49.8,19.2
+winter-weekday,AQ-55,Jubilee Hills,90.6,139.8,54.7,13.9,1.26,30.7,24.8
+winter-weekday,AQ-56,Mehdipatnam,94.6,165.5,83.0,12.0,1.37,52.6,32.8
+winter-weekday,AQ-57,Charminar,96.3,178.6,71.4,6.7,1.39,51.2,37.2
+winter-weekday,AQ-58,Secunderabad,60.7,165.5,66.0,10.1,0.85,27.7,39.8
+winter-weekday,AQ-59,Gachibowli,72.6,123.1,68.3,13.7,0.86,30.0,18.3
+winter-weekday,AQ-60,Kukatpally,88.8,115.1,64.0,12.4,1.21,49.1,27.9

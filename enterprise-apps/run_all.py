@@ -33,12 +33,17 @@ BATCH = {
     "nlp-document-intelligence": ("document_triage.algo", "triage_requests.csv"),
     "bharat-language-desk": ("bhasha_desk.algo", "citizen_queries.csv"),
     "digital-health-monitor": ("remote_monitoring.algo", "readings.csv"),
+    "network-biology-lab": ("target_discovery.algo", "questions.csv"),
+    "predictive-engineering": ("maintenance_planner.algo", "assets.csv"),
+    "smart-city-operations": ("city_operations.algo", "situations.csv"),
+    "transport-network-optimizer": ("network_operations.algo", "incidents.csv"),
 }
 # Real-time `stream` blocks, replayed offline from a JSON Lines file of events (v0.3.1)
 STREAM = {
     "algo-trading-desk": ("pre_trade_check.algo", "order_events.jsonl"),
     "soc-incident-command": ("alert_to_incident.algo", "alert_events.jsonl"),
     "digital-health-monitor": ("remote_monitoring.algo", "vitals_events.jsonl"),
+    "smart-city-operations": ("city_operations.algo", "air_events.jsonl"),
 }
 
 

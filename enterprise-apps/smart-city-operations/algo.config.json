@@ -1,0 +1,42 @@
+{
+  "organisation": "AlgoCity Operations Centre (example municipal corporation, synthetic data)",
+  "policy": {
+    "forbid": [
+      "caste",
+      "religion"
+    ],
+    "max_budget_tokens": 8000,
+    "min_human_below": 0.6,
+    "allowed_tools": [
+      "city.aqi",
+      "city.waste",
+      "city.energy",
+      "city.reading",
+      "kb.search"
+    ]
+  },
+  "max_concurrency": 8,
+  "max_run_tokens": 80000,
+  "max_run_cost_usd": 0.5,
+  "cache": {
+    "enabled": true
+  },
+  "audit_dir": "runs",
+  "models": {
+    "smart": "claude-sonnet-5-5",
+    "fast": "claude-haiku-5-5"
+  },
+  "tools": {
+    "kb.search": {
+      "dir": "kb"
+    }
+  },
+  "plugins": [
+    "plugins/city_tools.py"
+  ],
+  "pulse": {
+    "city": {
+      "dir": "pulse/city"
+    }
+  }
+}

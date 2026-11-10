@@ -1,0 +1,12 @@
+{
+  "program": "../programs/target_discovery.algo",
+  "cases": [
+    {"name": "Known seeds: network analysis in parallel, validated prioritisation, enrichment, hypothesis",
+     "inputs": {"question": "Prioritise targets for the inflammatory disease from its known seed proteins"},
+     "expect": {"status": "ok", "agents_called": ["NetworkAnalyst", "ModuleFinder", "Prioritiser", "Enrichment", "Hypothesis"],
+                "tools_used": ["net.centrality", "net.modules", "net.propagate", "bio.enrich"], "output_contains": "STRONG EVIDENCE"}},
+    {"name": "Negative control with random seeds is flagged as weak",
+     "inputs": {"question": "Negative control: prioritise targets from random seeds"},
+     "expect": {"status": "ok", "agents_called": ["RefineSeeds"], "output_contains": "WEAK EVIDENCE", "emits": 4}}
+  ]
+}

@@ -1,0 +1,246 @@
+{
+  "card": "AlgoLang AI system card",
+  "card_version": 1,
+  "program": "city_operations",
+  "source": "city_operations.algo",
+  "source_sha256": "2771bf3c9ee71015e10ddff1c6a837be0c3346d27f6fa7f59cd45e3dea953403",
+  "purpose": "Smart-city operations: air-quality advisories, waste routing and electricity load planning",
+  "risk_level": "limited",
+  "disclosure": "This advisory was drafted with the help of an AI system and approved by the city's duty officer.",
+  "flows": [
+    {
+      "name": "main",
+      "inputs": [
+        "situation"
+      ]
+    },
+    {
+      "name": "sensor",
+      "inputs": [
+        "reading"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "AirQuality",
+      "role": "Air-quality analyst",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "city.aqi"
+      ],
+      "human_oversight": "reviewed when confidence < 0.6",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "DailyBrief",
+      "role": "City operations duty officer",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.6",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "HealthAdvisory",
+      "role": "Public health communications officer",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "kb.search"
+      ],
+      "human_oversight": "every result is reviewed",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "LoadPlan",
+      "role": "Distribution duty engineer",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "kb.search"
+      ],
+      "human_oversight": "reviewed when confidence < 0.6 by 2 different people",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "PowerForecast",
+      "role": "Distribution load forecaster",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "city.energy"
+      ],
+      "human_oversight": "reviewed when confidence < 0.6",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "SensorAlert",
+      "role": "Air-quality duty officer",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "every result is reviewed",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "SensorCheck",
+      "role": "Air-quality sensor service",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "city.reading"
+      ],
+      "human_oversight": "reviewed when confidence < 0.6",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "WasteRoutes",
+      "role": "Solid-waste operations planner",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "city.waste"
+      ],
+      "human_oversight": "reviewed when confidence < 0.6",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    }
+  ],
+  "tools": [
+    {
+      "name": "city.aqi",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "National Air Quality Index (CPCB method) for every station and zone on a given day"
+    },
+    {
+      "name": "city.energy",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Next-day feeder load forecast with back-test error and the 60 MW overload check"
+    },
+    {
+      "name": "city.reading",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "AQI of one live sensor reading (e.g. 'AQ-12 PM2.5 140 PM10 220 NO2 60')"
+    },
+    {
+      "name": "city.waste",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Route waste trucks to smart bins that are at least 75% full (nearest neighbour + 2-opt)"
+    },
+    {
+      "name": "kb.search",
+      "kind": "built-in",
+      "trusted": true,
+      "description": "Search the organisation's knowledge base of .txt and .md documents"
+    }
+  ],
+  "streams": [
+    {
+      "name": "air_sensors",
+      "flow": "sensor",
+      "source": "air.readings",
+      "bus": "city"
+    }
+  ],
+  "circuits": [],
+  "human_oversight": [
+    "AirQuality: reviewed when confidence < 0.6",
+    "DailyBrief: reviewed when confidence < 0.6",
+    "HealthAdvisory: every result is reviewed",
+    "LoadPlan: reviewed when confidence < 0.6 by 2 different people",
+    "PowerForecast: reviewed when confidence < 0.6",
+    "SensorAlert: every result is reviewed",
+    "SensorCheck: reviewed when confidence < 0.6",
+    "WasteRoutes: reviewed when confidence < 0.6"
+  ],
+  "data_protection": {
+    "redact_pii": "all agents",
+    "forbidden_attributes": [
+      "caste",
+      "religion"
+    ],
+    "retention_days": {}
+  },
+  "evaluation": {
+    "cases": 5,
+    "fairness": [],
+    "robustness": [],
+    "explanations_checked": false
+  },
+  "limitations": [
+    "Generated from the source code: it documents design-time safeguards and test coverage, not measured real-world performance.",
+    "Offline evals use a deterministic mock model; repeat them with `algo eval --live` before deployment.",
+    "Protected attributes are withheld by keyword. Proxies such as names, postcodes or schools can still carry them; counterfactual fairness tests measure the effect.",
+    "Fairness has not been tested (no `expect fair` case).",
+    "Robustness has not been tested (no `expect robust` case)."
+  ]
+}

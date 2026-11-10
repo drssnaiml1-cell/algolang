@@ -1,0 +1,112 @@
+// AlgoEng Predictive Maintenance™ — catch failing pumps before they fail, and get crews there in time.
+// main:  one pump → vibration diagnosis + remaining life (in parallel)
+//        failure within 4 weeks or zone D → work order (a person approves) · zone C or 12 weeks → planned repair
+//        · otherwise → keep monitoring
+// fleet: all 1,000 pumps → urgent list → crew schedule → the maintenance manager approves
+risk minimal "Condition monitoring and maintenance planning for industrial pumps"
+tool vib.diagnose
+tool rul.estimate
+tool fleet.scan
+tool maint.plan
+tool kb.search
+
+model fast = "claude-haiku-5-5"
+
+agent VibrationAnalyst(asset: text) -> text {
+    role  "Vibration analyst"
+    goal  "Diagnose the vibration of {asset}: severity zone, spectrum peaks and fault type"
+    uses  vib.diagnose
+    model fast
+}
+
+agent Prognostics(asset: text) -> text {
+    role  "Reliability engineer"
+    goal  "Estimate the remaining useful life of {asset} from its health-index trend"
+    uses  rul.estimate
+    model fast
+}
+
+agent WorkOrder(asset: text, diagnosis: text, life: text) -> text {
+    role   "Maintenance planner"
+    goal   "Raise an urgent work order for {asset}: {diagnosis}, {life}; parts, isolation steps and crew"
+    uses   kb.search
+    policy { require human for always  explain with evidence }
+}
+
+agent PlannedRepair(asset: text, diagnosis: text, life: text) -> text {
+    role "Maintenance planner"
+    goal "Schedule a planned repair for {asset} in the next shutdown window: {diagnosis}, {life}"
+    uses kb.search
+}
+
+agent Monitor(asset: text, diagnosis: text) -> text {
+    role "Condition-monitoring engineer"
+    goal "Set the next monitoring interval for {asset} given {diagnosis}"
+}
+
+agent FleetScan(request: text) -> text {
+    role  "Reliability engineer"
+    goal  "Scan the whole pump fleet for {request}: zones, faults and the shortest remaining lives"
+    uses  fleet.scan
+    model fast
+}
+
+agent CrewSchedule(scan: text) -> text {
+    role  "Maintenance scheduler"
+    goal  "Schedule the urgent pumps in {scan} across the crews, earliest deadline first"
+    uses  maint.plan
+    model fast
+}
+
+agent ManagerApproval(scan: text, schedule: text) -> text {
+    role   "Maintenance manager"
+    goal   "Approve or change the crew schedule {schedule} for the fleet status {scan}"
+    policy { require approvals 2  explain with evidence }
+}
+
+flow main(asset: text) {
+    [diagnosis, life] = par { VibrationAnalyst(asset), Prognostics(asset) }
+    if life contains "FAILURE WITHIN 4 WEEKS" or diagnosis contains "ZONE D" {
+        emit diagnosis, life, WorkOrder(asset, diagnosis, life)
+    } else {
+        if diagnosis contains "ZONE C" or life contains "FAILURE WITHIN 12 WEEKS" {
+            emit diagnosis, life, PlannedRepair(asset, diagnosis, life)
+        } else {
+            emit diagnosis, life, Monitor(asset, diagnosis)
+        }
+    }
+}
+
+flow fleet(request: text) {
+    scan     = FleetScan(request)
+    schedule = CrewSchedule(scan)
+    emit scan, schedule, ManagerApproval(scan, schedule)
+}
+
+eval pumps on main {
+    case "bearing fault close to failure gets a work order" (asset = "PMP-3460") {
+        expect status ok
+        expect output contains "FAILURE WITHIN 4 WEEKS"
+        expect called WorkOrder
+        expect not called Monitor
+    }
+    case "imbalance with months left is planned" (asset = "PMP-3011") {
+        expect status ok
+        expect output contains "IMBALANCE"
+        expect not called WorkOrder
+    }
+    case "a healthy pump is monitored" (asset = "PMP-3001") {
+        expect status ok
+        expect output contains "ZONE A · HEALTHY"
+        expect called Monitor
+    }
+}
+
+eval maintenance on fleet {
+    case "every urgent pump is scheduled in time" (request = "weekly reliability review") {
+        expect status ok
+        expect output contains "URGENT"
+        expect output contains "SCHEDULED"
+        expect called ManagerApproval
+    }
+}

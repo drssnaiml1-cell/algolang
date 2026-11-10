@@ -1,0 +1,12 @@
+{
+  "program": "../programs/city_operations.algo",
+  "cases": [
+    {"name": "Severe smog: air, waste and power checked in parallel, then an advisory a person approves",
+     "inputs": {"situation": "post-Diwali morning, normal load"},
+     "expect": {"status": "ok", "agents_called": ["AirQuality", "WasteRoutes", "PowerForecast", "HealthAdvisory"],
+                "tools_used": ["city.aqi", "city.waste", "city.energy"], "output_contains": "AQI SEVERE"}},
+    {"name": "Ordinary monsoon day ends with the daily brief",
+     "inputs": {"situation": "monsoon weekday"},
+     "expect": {"status": "ok", "agents_called": ["DailyBrief"], "output_contains": "WITHIN LIMIT", "emits": 4}}
+  ]
+}

@@ -1,0 +1,241 @@
+{
+  "card": "AlgoLang AI system card",
+  "card_version": 1,
+  "program": "network_operations",
+  "source": "network_operations.algo",
+  "source_sha256": "9cd753e951d01c60e5af9156935323ce866718f2e455700976ea065c2d502d80",
+  "purpose": "Traffic incident management, signal timing and public bus service planning",
+  "risk_level": "limited",
+  "disclosure": "This diversion notice was prepared with the help of an AI system and checked by the traffic control room.",
+  "flows": [
+    {
+      "name": "main",
+      "inputs": [
+        "incident"
+      ]
+    },
+    {
+      "name": "plan",
+      "inputs": [
+        "request"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "ControlPlan",
+      "role": "Traffic control room officer",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "kb.search"
+      ],
+      "human_oversight": "every result is reviewed",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "DemandModel",
+      "role": "Transport planner",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "demand.od"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "DiversionNotice",
+      "role": "Traveller information officer",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "kb.search"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "FleetRequest",
+      "role": "Depot manager",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "kb.search"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75 by 2 different people",
+      "explain": "evidence",
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Router",
+      "role": "Traffic network engineer",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "traffic.reroute"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "ServiceDesign",
+      "role": "Bus service planner",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "transit.headway"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "SignalEngineer",
+      "role": "Signal timing engineer",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "signal.retime"
+      ],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Timetable",
+      "role": "Scheduling officer",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.75",
+      "explain": null,
+      "redact_pii": true,
+      "forbidden_attributes": [
+        "caste",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    }
+  ],
+  "tools": [
+    {
+      "name": "demand.od",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Morning-peak trips between 48 zones (doubly constrained gravity model, Furness balancing)"
+    },
+    {
+      "name": "kb.search",
+      "kind": "built-in",
+      "trusted": true,
+      "description": "Search the organisation's knowledge base of .txt and .md documents"
+    },
+    {
+      "name": "signal.retime",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Webster signal timing for the junctions on an incident detour (INC-##), or city-wide"
+    },
+    {
+      "name": "traffic.reroute",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Shortest-time detour around a road incident (INC-##), Dijkstra on the city road network"
+    },
+    {
+      "name": "transit.headway",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "Bus headways and fleet needed for 12 routes from the trip matrix"
+    }
+  ],
+  "streams": [],
+  "circuits": [],
+  "human_oversight": [
+    "ControlPlan: every result is reviewed",
+    "DemandModel: reviewed when confidence < 0.75",
+    "DiversionNotice: reviewed when confidence < 0.75",
+    "FleetRequest: reviewed when confidence < 0.75 by 2 different people",
+    "Router: reviewed when confidence < 0.75",
+    "ServiceDesign: reviewed when confidence < 0.75",
+    "SignalEngineer: reviewed when confidence < 0.75",
+    "Timetable: reviewed when confidence < 0.75"
+  ],
+  "data_protection": {
+    "redact_pii": "all agents",
+    "forbidden_attributes": [
+      "caste",
+      "religion"
+    ],
+    "retention_days": {}
+  },
+  "evaluation": {
+    "cases": 4,
+    "fairness": [],
+    "robustness": [],
+    "explanations_checked": false
+  },
+  "limitations": [
+    "Generated from the source code: it documents design-time safeguards and test coverage, not measured real-world performance.",
+    "Offline evals use a deterministic mock model; repeat them with `algo eval --live` before deployment.",
+    "Protected attributes are withheld by keyword. Proxies such as names, postcodes or schools can still carry them; counterfactual fairness tests measure the effect.",
+    "Fairness has not been tested (no `expect fair` case).",
+    "Robustness has not been tested (no `expect robust` case)."
+  ]
+}
