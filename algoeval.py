@@ -132,7 +132,10 @@ def check(expects, res) -> list[str]:
     confs = [c["confidence"] for c in res.calls if c.get("confidence") is not None]
     measured = {"tokens": res.stats.get("tokens", 0), "cost": res.stats.get("cost_usd", 0.0),
                 "energy": res.stats.get("energy_wh", 0.0), "escalated": len(res.escalated),
-                "confidence": min(confs) if confs else 1.0}
+                "confidence": min(confs) if confs else 1.0,
+                "fidelity": min([q["fidelity"] for c in res.calls for q in (c.get("quantum") or [])
+                                 if q.get("fidelity") is not None] or [1.0]),
+                "qpu": res.stats.get("qpu_seconds", 0.0)}
     for kind, op, val in expects:
         if kind == "status" and res.status != val:
             fails.append(f"status is {res.status}, expected {val}" + (f" ({res.problem})" if res.problem else ""))

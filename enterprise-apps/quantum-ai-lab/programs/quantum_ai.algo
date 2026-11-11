@@ -1,0 +1,169 @@
+// AlgoQ Quantum AI Lab™ — quantum computing used only where it is checked, budgeted and accountable (v0.6).
+// main:     molecule or material → VQE energy (uncertain: confidence from shot statistics) → report or more shots
+// capital:  project selection as a knapsack QUBO → accepted only when VERIFIED or BOUNDED → two approvals
+// spectrum: cell-tower frequency assignment as graph colouring → plan or escalation
+// classify: quantum kernel vs a classical kernel → deploy the better one (no quantum hype)
+// tail:     tail-risk probability by amplitude estimation → risk note
+risk minimal "Quantum chemistry, planning and classification research on noisy simulators and quantum processors"
+tool quantum.vqe
+tool quantum.knapsack
+tool quantum.colouring
+tool quantum.kernel
+tool quantum.amplitude
+tool kb.search
+
+model fast = "claude-haiku-5-5"
+
+agent Energy(molecule: text) -> uncertain<text> {
+    role   "Computational chemist"
+    goal   "Compute the ground-state energy of {molecule} with VQE and check it against exact diagonalisation"
+    uses   quantum.vqe
+    model  fast
+    policy { samples 3  shots 8192  max qubits 8  budget qpu 120 seconds  budget qpu 25 usd }
+}
+
+agent ChemistryReport(molecule: text, energy: text) -> text {
+    role "Principal scientist"
+    goal "Write the screening note for {molecule} from {energy}, with the error against the exact energy"
+    uses kb.search
+}
+
+agent MoreShots(molecule: text, energy: text) -> text {
+    role "Quantum engineer"
+    goal "Plan a re-run of {molecule} with more shots or a deeper ansatz because {energy} is not accurate enough"
+}
+
+agent CapitalPlan(projects: text) -> text {
+    role   "Portfolio analyst"
+    goal   "Select projects within the capital limit for {projects}"
+    uses   quantum.knapsack
+    model  fast
+    policy { shots 4096  max qubits 12  budget qpu 60 seconds }
+}
+
+agent InvestmentCommittee(projects: text, plan: text) -> text {
+    role   "Investment committee"
+    goal   "Approve or change the project selection {plan} for {projects}"
+    policy { require approvals 2  explain with evidence }
+}
+
+agent ClassicalFallback(projects: text, plan: text) -> text {
+    role "Portfolio analyst"
+    goal "Use the classical optimum because the quantum answer to {projects} could not be checked: {plan}"
+}
+
+agent Spectrum(cells: text) -> text {
+    role   "Radio network planner"
+    goal   "Assign frequencies to neighbouring cells so that no two neighbours share one: {cells}"
+    uses   quantum.colouring
+    model  fast
+    policy { shots 4096  max qubits 12 }
+}
+
+agent SpectrumEscalation(cells: text, plan: text) -> text {
+    role   "Spectrum manager"
+    goal   "Decide how to add a frequency or split cells because {plan} for {cells}"
+    policy { require human for always }
+}
+
+agent KernelStudy(dataset: text) -> text {
+    role   "Machine-learning scientist"
+    goal   "Compare a quantum kernel with a classical kernel on {dataset}"
+    uses   quantum.kernel
+    model  fast
+}
+
+agent DeployModel(dataset: text, study: text) -> text {
+    role "ML engineer"
+    goal "Deploy the kernel that won the cross-validated comparison for {dataset}: {study}"
+}
+
+agent TailRisk(question: text) -> text {
+    role   "Risk quant"
+    goal   "Estimate {question} by amplitude estimation and compare with Monte Carlo"
+    uses   quantum.amplitude
+    model  fast
+}
+
+flow main(molecule: text) {
+    energy = Energy(molecule)
+    if energy contains "CHEMICAL ACCURACY" or energy contains "WITHIN TOLERANCE" {
+        emit energy, ChemistryReport(molecule, energy)
+    } else {
+        emit energy, MoreShots(molecule, energy)
+    }
+}
+
+flow capital(projects: text) {
+    plan = CapitalPlan(projects)
+    if plan contains "KNAPSACK OPTIMAL" {
+        emit plan, InvestmentCommittee(projects, plan)
+    } else {
+        emit plan, ClassicalFallback(projects, plan)
+    }
+}
+
+flow spectrum(cells: text) {
+    plan = Spectrum(cells)
+    if plan contains "PROPER COLOURING" {
+        emit plan
+    } else {
+        emit plan, SpectrumEscalation(cells, plan)
+    }
+}
+
+flow classify(dataset: text) {
+    study = KernelStudy(dataset)
+    emit study, DeployModel(dataset, study)
+}
+
+flow tail(question: text) {
+    emit TailRisk(question)
+}
+
+eval chemistry on main {
+    case "H2 reaches chemical accuracy on a noisy device" (molecule = "H2 at equilibrium bond length") {
+        expect status ok
+        expect output contains "CHEMICAL ACCURACY"
+        expect called ChemistryReport
+        expect fidelity > 0.85
+        expect qpu < 1
+    }
+    case "a 6-spin Ising material model" (molecule = "ising n=6 h=1.0 magnet") {
+        expect output contains "WITHIN TOLERANCE"
+        expect not called MoreShots
+    }
+}
+
+eval planning on capital {
+    case "capital budgeting is verified before the committee sees it" (projects = "capacity 10: Solar=6/5, Grid=5/4, Storage=4/3, Fleet=3/2") {
+        expect output contains "KNAPSACK OPTIMAL"
+        expect called InvestmentCommittee
+        expect not called ClassicalFallback
+    }
+}
+
+eval spectrum on spectrum {
+    case "four cells, three frequencies" (cells = "3 colours: C1-C2, C2-C3, C3-C1, C3-C4") {
+        expect output contains "PROPER COLOURING"
+        expect not called SpectrumEscalation
+    }
+    case "a triangle with two frequencies cannot work" (cells = "2 colours: C1-C2, C2-C3, C3-C1") {
+        expect output contains "COLOURING FAILED"
+        expect called SpectrumEscalation
+    }
+}
+
+eval kernels on classify {
+    case "moons: an honest comparison" (dataset = "moons 24 points") {
+        expect output contains "QUANTUM"
+        expect tool quantum.kernel
+        expect called DeployModel
+    }
+}
+
+eval risk on tail {
+    case "tail probability" (question = "P(X below -0.25) for mean 0.05 sd 0.2") {
+        expect output contains "ESTIMATE VERIFIED"
+    }
+}

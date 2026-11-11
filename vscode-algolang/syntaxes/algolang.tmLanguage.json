@@ -83,7 +83,7 @@
     },
     "policy": {
       "name": "keyword.other.policy.algolang",
-      "match": "\\b(budget|tokens|cost|energy|usd|inr|wh|kwh|samples|shots|qubits|retry|timeout|require|human|when|confidence|forbid|cache)\\b"
+      "match": "\\b(budget|tokens|cost|energy|usd|inr|wh|kwh|samples|shots|qubits|qpu|fidelity|seconds|minutes|retry|timeout|require|human|when|confidence|forbid|cache)\\b"
     },
     "type": {
       "name": "support.type.algolang",

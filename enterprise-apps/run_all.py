@@ -37,6 +37,7 @@ BATCH = {
     "predictive-engineering": ("maintenance_planner.algo", "assets.csv"),
     "smart-city-operations": ("city_operations.algo", "situations.csv"),
     "transport-network-optimizer": ("network_operations.algo", "incidents.csv"),
+    "quantum-ai-lab": ("quantum_ai.algo", "molecules.csv"),
 }
 # Real-time `stream` blocks, replayed offline from a JSON Lines file of events (v0.3.1)
 STREAM = {

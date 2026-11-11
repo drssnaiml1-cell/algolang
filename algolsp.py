@@ -66,7 +66,14 @@ KEYWORDS = {
               "`quantum.max_qubits` in algo.config.json applies. Bigger circuits are BLOCKED.",
     "quantum": "**quantum.*** tools: `quantum.run` (OpenQASM 2.0), `quantum.qubo`, `quantum.maxcut` and `quantum.routes` "
                "(QAOA, VERIFIED against the exact optimum), `quantum.scenarios` (Monte Carlo VaR with a QAE check), "
-               "`quantum.grover`, `quantum.random`; `pqc.scan` for quantum-safe readiness. Guard on `contains \"VERIFIED\"`.",
+               "`quantum.grover`, `quantum.random`; `pqc.scan` for quantum-safe readiness. v0.6: `quantum.vqe`, "
+               "`quantum.kernel`, `quantum.amplitude`, `quantum.knapsack`, `quantum.colouring`, `quantum.backend`, on a "
+               "simulator, a noisy simulator or IBM, Braket and Azure hardware. Guard on `contains \"VERIFIED\"` "
+               "(or `\"BOUNDED\"` beyond exact checks).",
+    "qpu": "**budget qpu N seconds | minutes | usd** (v0.6) — the most QPU time or money this agent's quantum tools may "
+           "use; checked before a job is submitted. `expect qpu < N` in an eval checks the run's QPU seconds.",
+    "fidelity": "**expect fidelity > x** (v0.6) — the lowest Hellinger fidelity of the run's quantum jobs against the "
+                "ideal result (1.0 on the exact simulator).",
     "circuit": "**circuit** — a quantum circuit written gate by gate: `circuit Bell { qubits 2  h q0  cx q0, q1  measure }`. "
                "It becomes the tool `circuit.Bell`; agents run it with `uses circuit.Bell` under their `shots` policy. "
                "`algo quantum export file.algo` prints the OpenQASM 2.0.",

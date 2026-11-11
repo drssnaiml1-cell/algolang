@@ -133,7 +133,7 @@ def test_agent_policy_is_applied_inside_a_flow(tmp_path):
 def test_compile_checks_for_quantum_policies():
     base = 'tool quantum.run\nflow main(x: text) { emit A(x) }\n'
     assert "E123" in codes(base + 'agent A(x: text) -> text { goal "run {x}" uses quantum.run policy { shots 0 } }')
-    assert "E123" in codes(base + 'agent A(x: text) -> text { goal "run {x}" uses quantum.run policy { max qubits 99 } }')
+    assert "E123" in codes(base + 'agent A(x: text) -> text { goal "run {x}" uses quantum.run policy { max qubits 5000 } }')
     compile_source(base + 'agent A(x: text) -> text { goal "run {x}" uses quantum.run policy { shots 4096 max qubits 8 } }',
                    "t.algo")
 

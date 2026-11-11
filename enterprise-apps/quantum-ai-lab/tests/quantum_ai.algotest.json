@@ -1,0 +1,12 @@
+{
+  "program": "../programs/quantum_ai.algo",
+  "cases": [
+    {"name": "H2 energy on a noisy device: VQE checked exactly, then the screening note",
+     "inputs": {"molecule": "H2 at equilibrium bond length"},
+     "expect": {"status": "ok", "agents_called": ["Energy", "ChemistryReport"], "tools_used": ["quantum.vqe"],
+                "output_contains": "CHEMICAL ACCURACY"}},
+    {"name": "A heisenberg chain is also solved within tolerance",
+     "inputs": {"molecule": "heisenberg n=4 chain"},
+     "expect": {"status": "ok", "agents_called": ["ChemistryReport"], "output_contains": "WITHIN TOLERANCE", "emits": 2}}
+  ]
+}

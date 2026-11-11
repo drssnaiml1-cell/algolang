@@ -1,6 +1,6 @@
 # AlgoLang roadmap
 
-**Current release: v0.5.0 — ten large-scale domain applications** (on v0.4 Trustworthy AI) · **Next: v0.6 — Quantum AI** · **Then: v0.7 — Interoperability, v1.0 — native runtime**
+**Current release: v0.6.0 — Quantum AI** (after v0.5 domain applications and v0.4 Trustworthy AI) · **Next: v0.7 — Interoperability** · **Then: v1.0 — native runtime**
 
 AlgoProfessor AI R&D Solutions, Hyderabad. Designed by Dr. S. Satyanarayana. [www.algoprofessor.com](https://www.algoprofessor.com)
 
@@ -198,9 +198,11 @@ Every application validates its own numbers (cross-validation, held-out genes wi
 
 ---
 
-## 6. v0.6 Quantum AI
+## 6. v0.6 Quantum AI (released in 0.6.0)
 
 **Objective: let agents use real quantum computers for real business problems, with results that are verified, bounded and accountable.**
+
+> **Status: released in v0.6.0.** All eight work packages shipped in `algoqpu.py`, with `tests/test_quantum_ai.py`, a CI job that checks the hardware-path circuits against Qiskit, and the AlgoQ Quantum AI Lab application. Hardware backends are exercised in CI with stand-in SDKs (no credentials or QPU time are used); run `pip install "algolang[ibm]"` (or `[braket]`, `[azure]`) and set the provider's credentials to use a real device. Prices in the budget table are illustrative defaults to replace with your provider's.
 
 The v0.3.2 preview already gives agents five quantum tools (`quantum.run`, `quantum.qubo`, `quantum.maxcut`, `quantum.grover`, `quantum.random`) on an exact simulator. Every optimisation is VERIFIED against the exact optimum, `shots` and `max qubits` live in the policy, and the Quantum Optimization Lab enterprise application uses them in governed flows. v0.6 takes this to quantum hardware without giving up any of those guarantees.
 
@@ -247,7 +249,7 @@ As in the rest of AlgoLang, the guarantees come from the language and runtime, n
 
 | Version | Theme | Highlights |
 |---|---|---|
-| **v0.7** | Interoperability | Publish a flow as an MCP server; argument type checking; token-by-token output streaming; cost and energy dashboards in Studio |
+| **v0.7** | Interoperability (next) | Publish a flow as an MCP server; argument type checking; token-by-token output streaming; cost and energy dashboards in Studio |
 | **v1.0** | Platform | Native runtime; typed agent-to-agent messaging; package registry for domain packs; SSO and role-based access for Studio |
 
 ---

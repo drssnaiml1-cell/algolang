@@ -4,6 +4,29 @@ All notable changes to AlgoLang are documented here. The format follows [Keep a 
 
 ## [Unreleased]
 
+## [0.6.0] — 2026-11-11 · Quantum AI
+
+v0.6 lets agents use real quantum computers with answers that are checked, budgeted and accountable. The same program runs on the exact simulator, a noisy simulator, IBM Quantum, Amazon Braket or Azure Quantum by changing one line of `algo.config.json`.
+
+### Added
+- **`algoqpu.py`**, the v0.6 quantum layer:
+  - **Q1 Backends:** `noisy:<profile>` (superconducting, trapped-ion, low, high, or a custom `"noise"`), `ibm:<device>` (Qiskit Runtime Sampler), `braket:<device>` (Amazon Braket) and `azure:<target>` (Azure Quantum). Credentials are read only from environment variables; a missing SDK or credential is reported as BLOCKED.
+  - **Q2 QPU budgets:** `budget qpu N seconds | minutes | usd` in a policy, and per-run caps `quantum.max_qpu_seconds` and `quantum.max_qpu_usd`, checked before a job is submitted. QPU seconds and cost appear in run statistics (`qpu_seconds`, `qpu_usd`). The price table is illustrative and configurable (`quantum.pricing`).
+  - **Q3 Uncertain results:** every quantum tool reports a confidence from its shot statistics and verification status; an agent returning `uncertain<T>` carries the lower of the model's and the quantum result's confidence.
+  - **Q4 Noise:** exact density-matrix simulation of depolarising and readout noise (Pauli trajectories above 8 qubits), readout-error mitigation from calibration circuits, zero-noise extrapolation by gate folding, and the Hellinger fidelity of every noisy run.
+  - **Q5 Verification:** results are `VERIFIED`, `GAP`, `BOUNDED` (within `bound_pct` of a proven block-decomposition lower bound) or `UNCHECKED`; QAOA on noisy and hardware backends samples the real circuit (angles optimised on the simulator).
+  - **Q6 Algorithms:** `quantum.vqe` (H₂ to chemical accuracy, Ising and Heisenberg chains, custom Pauli Hamiltonians; Rotosolve), `quantum.kernel` (ZZ feature-map fidelity kernel against a tuned RBF kernel, 5-fold cross-validated, PSD-projected shot estimates), `quantum.amplitude`, `quantum.knapsack` (checked against dynamic programming), `quantum.colouring`, `quantum.backend`.
+  - **Q7 Provenance and replay:** backend, device, calibration, depth, shots, job id, QPU seconds, cost, fidelity and a replay key in every audit record (`"quantum"`); counts of non-simulator runs are recorded under `runs/quantum/` and `"replay": "prefer" | "only"` reuses them with no QPU time.
+- **Q8 Post-quantum audit signatures** (`algotrust.py`): `"audit": {"algorithm": "ml-dsa-44" | "ml-dsa-65" | "ml-dsa-87" | "hybrid"}`. Hybrid signs every record with Ed25519 and ML-DSA-65; evidence packs carry a post-quantum manifest signature; `algo audit verify` and `algo evidence verify` check both. Needs `pip install "algolang[pq]"`.
+- Eval expectations `expect fidelity > x` and `expect qpu < N`.
+- **AlgoQ Quantum AI Lab™** (`enterprise-apps/quantum-ai-lab/`): VQE chemistry, capital budgeting with two approvals, spectrum planning, a quantum-kernel study and tail risk on a noisy simulator; 7 evals, behaviour tests, system card and figure.
+- Optional extras `pq`, `ibm`, `braket`, `azure`; CI checks the hardware path's QAOA and VQE circuits against Qiskit statevectors.
+
+### Changed
+- `max qubits` may now be up to 1,000 (for hardware backends); the simulator's own ceiling (24) is still enforced at run time.
+- `quantum.qubo`, `quantum.maxcut` and `quantum.routes` run on whichever backend is configured and add a confidence line.
+
+
 ## [0.5.0] — 2026-11-11 · Ten large-scale domain applications
 
 v0.5 applies AlgoLang to ten demanding domains, one application each. Every application runs real, deterministic algorithms over large synthetic datasets as company tools; the AlgoLang program around them adds parallel agents, deterministic guards, human gates, four-eyes approvals, risk levels, evals, behaviour tests, system cards and an animated flow figure. Quantum AI, previously planned as v0.5, moves to v0.6, and Interoperability to v0.7.

@@ -432,6 +432,10 @@ def export(file, out, run_evals=True):
         z.writestr("manifest.json", mbytes)
         if s:
             z.writestr("manifest.sig", json.dumps({"kid": s[2], "sig": algotrust.ed25519_sign(s[0], mbytes).hex()}))
+            pq = algotrust.pq_sign(mbytes)                           # v0.6: post-quantum signature of the manifest
+            if pq:
+                z.writestr("manifest.pqsig", json.dumps({"algorithm": pq[0], "kid": pq[1], "sig": pq[2],
+                                                         "public": algotrust.pq_signer()[1].hex()}))
     return manifest
 
 
@@ -452,7 +456,7 @@ def verify(pack):
             elif _sha(z.read(name)) != digest:
                 ok = False
                 findings.append(f"✗ {name} was changed after the pack was made")
-        extra = names - set(man["files"]) - {"manifest.json", "manifest.sig"}
+        extra = names - set(man["files"]) - {"manifest.json", "manifest.sig", "manifest.pqsig"}
         for name in sorted(extra):
             ok = False
             findings.append(f"✗ {name} was added after the pack was made")
@@ -473,6 +477,18 @@ def verify(pack):
                 findings.append(f"✓ manifest signed by key {sig['kid']}" + (" (pinned)" if is_pinned else ""))
         else:
             findings.append("! pack is not signed (turn on \"audit\": {\"sign\": true})")
+        if "manifest.pqsig" in names:                                  # v0.6: post-quantum manifest signature
+            pq = json.loads(z.read("manifest.pqsig"))
+            pins = algotrust.trusted_pq_keys() if is_pinned else {}
+            name, pub = pins.get(pq["kid"], (pq["algorithm"], bytes.fromhex(pq["public"]))) if not is_pinned else \
+                pins.get(pq["kid"], (None, None))
+            good = pub is not None and algotrust.key_id(pub) == pq["kid"] and \
+                algotrust.pq_verify(name, pub, mbytes, bytes.fromhex(pq["sig"]))
+            if good:
+                findings.append(f"✓ manifest post-quantum signature ({name}) by key {pq['kid']}")
+            else:
+                ok = False
+                findings.append("✗ manifest post-quantum signature is not valid")
         for name in sorted(n for n in names if n.endswith(".jsonl") and n.startswith("audit/")):
             data = z.read(name)
             import tempfile
@@ -522,6 +538,9 @@ def cli_keys(action="show"):
         return 1
     for kid, pub in keys.items():
         print(f"  {kid}  {pub.hex()}  {'(pinned in algo.config.json)' if pinned else '(local key file)'}")
+    for kid, (name, pub) in algotrust.trusted_pq_keys().items():          # v0.6: post-quantum key
+        print(f"  {kid}  {name.upper()} public key ({len(pub)} bytes): pin it as\n"
+              f'    "pq_public_keys": [{{"algorithm": "{name}", "public": "{pub.hex()[:32]}…"}}]  (full hex in the evidence pack)')
     return 0
 
 

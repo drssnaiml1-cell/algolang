@@ -9,7 +9,8 @@
     Robustness     perturb() makes meaning-preserving variants of an input; canonical() lets the offline
                    mock behave like an ideal model that is unaffected by them, so offline robustness tests
                    measure the program (guards, tools, parsing) and `--live` tests measure the model.
-    Accountability Ed25519 signatures on every audit record (`"audit": {"sign": true}`), key handling.
+    Accountability Ed25519 signatures on every audit record (`"audit": {"sign": true}`), key handling;
+                   v0.6: post-quantum ML-DSA (FIPS 204) or hybrid signatures (`"algorithm": "hybrid"`).
     Retention      apply_retention(): drops audit records and traces older than the policy allows,
                    leaving a signed checkpoint so the remaining hash chain still verifies.
 
@@ -483,23 +484,134 @@ def trusted_keys():
     return ({key_id(s): s} if s else {}), False
 
 
+# ═══════════════════════════════ v0.6: post-quantum audit signatures (ML-DSA, FIPS 204) ═══════════════════════
+# "audit": {"sign": true, "algorithm": "ed25519" | "ml-dsa-44" | "ml-dsa-65" | "ml-dsa-87" | "hybrid"}
+# hybrid = Ed25519 and ML-DSA-65 on every record: secure while either scheme stands. The ML-DSA key is derived
+# from the same secret seed (key file or ALGO_AUDIT_KEY), so there is still one secret to protect.
+PQ_ALGORITHMS = {"ml-dsa-44": "ML_DSA_44", "ml-dsa-65": "ML_DSA_65", "ml-dsa-87": "ML_DSA_87"}
+
+
+def sig_algorithm():
+    cfg, _ = _cfg()
+    a = str((cfg.get("audit") or {}).get("algorithm") or "ed25519").lower()
+    if a not in ("ed25519", "hybrid", *PQ_ALGORITHMS):
+        raise ValueError(f"unknown audit signature algorithm '{a}': use ed25519, ml-dsa-44, ml-dsa-65, ml-dsa-87 or hybrid")
+    return a
+
+
+def _pq_name(alg):
+    return "ml-dsa-65" if alg == "hybrid" else alg
+
+
+def _ml_dsa(name):
+    try:
+        from dilithium_py import ml_dsa
+    except ImportError:
+        raise RuntimeError("post-quantum audit signatures need: pip install dilithium-py   (or \"algolang[pq]\")")
+    return getattr(ml_dsa, PQ_ALGORITHMS[name])
+
+
+def pq_keypair(seed: bytes, name: str):
+    """(public, secret) ML-DSA keys derived deterministically from the audit seed."""
+    return _ml_dsa(name).key_derive(hashlib.sha256(b"algolang-" + name.encode() + b"|" + seed).digest())
+
+
+_PQ: dict = {}
+
+
+def pq_signer():
+    """(name, public, secret, kid) when ML-DSA signing is on, else None."""
+    s = signer()
+    if s is None:
+        return None
+    alg = sig_algorithm()
+    if alg == "ed25519":
+        return None
+    name = _pq_name(alg)
+    key = (s[0], name)
+    if key not in _PQ:
+        pk, sk = pq_keypair(s[0], name)
+        _PQ[key] = (name, pk, sk, key_id(pk))
+    return _PQ[key]
+
+
+def pq_sign(msg: bytes):
+    p = pq_signer()
+    return None if p is None else (p[0], p[3], _ml_dsa(p[0]).sign(p[2], msg).hex())
+
+
+def pq_verify(name: str, public: bytes, msg: bytes, sig: bytes) -> bool:
+    try:
+        return bool(_ml_dsa(name).verify(public, msg, sig))
+    except Exception:  # noqa
+        return False
+
+
+def trusted_pq_keys():
+    """ML-DSA public keys allowed to sign: audit.pq_public_keys (pinned, [{"algorithm", "public"}]) else the local key."""
+    cfg, _ = _cfg()
+    pinned = (cfg.get("audit") or {}).get("pq_public_keys") or []
+    keys = {}
+    for k in pinned:
+        pub = bytes.fromhex(k["public"])
+        keys[key_id(pub)] = (str(k.get("algorithm", "ml-dsa-65")).lower(), pub)
+    if keys:
+        return keys
+    try:
+        seed = None
+        if os.environ.get("ALGO_AUDIT_KEY"):
+            seed = bytes.fromhex(os.environ["ALGO_AUDIT_KEY"].strip())
+        elif key_path().exists():
+            seed = bytes.fromhex(json.loads(key_path().read_text())["private"])
+        alg = sig_algorithm()
+        if seed is not None and alg != "ed25519":
+            name = _pq_name(alg)
+            pk, _sk = pq_keypair(seed, name)
+            keys[key_id(pk)] = (name, pk)
+    except Exception:  # noqa
+        pass
+    return keys
+
+
 def sign_record(rec: dict) -> dict:
     s = signer()
     if s is None:
         return rec
     seed, _pub, kid = s
-    return dict(rec, kid=kid, sig=ed25519_sign(seed, rec["hash"].encode()).hex())
+    alg = sig_algorithm()
+    out = dict(rec)
+    if alg in ("ed25519", "hybrid"):
+        out.update(kid=kid, sig=ed25519_sign(seed, rec["hash"].encode()).hex())
+    if alg != "ed25519":
+        name, pkid, sig = pq_sign(rec["hash"].encode())
+        out.update(palg=name, pkid=pkid, pqsig=sig)
+    return out
 
 
 def check_signature(rec: dict, keys: dict) -> str | None:
-    """None if the record's signature is valid; otherwise the reason."""
-    if "sig" not in rec:
-        return "record is not signed"
-    pub = keys.get(rec.get("kid"))
-    if pub is None:
-        return f"signed by an unknown key ({rec.get('kid')})"
-    if not ed25519_verify(pub, rec["hash"].encode(), bytes.fromhex(rec["sig"])):
-        return "signature does not match the record"
+    """None if the record's signature(s) are valid; otherwise the reason. The configured algorithm decides
+    which signatures a record must carry; every signature present is checked."""
+    try:
+        alg = sig_algorithm()
+    except ValueError as e:
+        return str(e)
+    need_ed, need_pq = alg in ("ed25519", "hybrid"), alg != "ed25519"
+    if need_ed and "sig" not in rec:
+        return "record is not signed" if "pqsig" not in rec else "record has no Ed25519 signature (the config asks for one)"
+    if need_pq and "pqsig" not in rec:
+        return "record has no post-quantum (ML-DSA) signature"
+    if "sig" in rec:
+        pub = keys.get(rec.get("kid"))
+        if pub is None:
+            return f"signed by an unknown key ({rec.get('kid')})"
+        if not ed25519_verify(pub, rec["hash"].encode(), bytes.fromhex(rec["sig"])):
+            return "signature does not match the record"
+    if "pqsig" in rec:
+        pq = trusted_pq_keys().get(rec.get("pkid"))
+        if pq is None:
+            return f"post-quantum signature by an unknown key ({rec.get('pkid')})"
+        if pq[0] != rec.get("palg") or not pq_verify(pq[0], pq[1], rec["hash"].encode(), bytes.fromhex(rec["pqsig"])):
+            return "post-quantum (ML-DSA) signature does not match the record"
     return None
 
 

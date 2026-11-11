@@ -36,7 +36,7 @@ Trustworthy by design
 Backends ("quantum": {"backend": …} in algo.config.json)
     simulator    built-in NumPy state-vector simulator (default, exact, up to about 20 qubits)
     qiskit-aer   Qiskit Aer, for quantum.run (pip install qiskit qiskit-aer)
-Real quantum hardware (IBM Quantum, Amazon Braket, Azure Quantum) is planned for v0.5; see ROADMAP.md.
+v0.6 adds noisy simulators and real quantum hardware (IBM Quantum, Amazon Braket, Azure Quantum): see algoqpu.py.
 """
 from __future__ import annotations
 
@@ -72,7 +72,8 @@ def settings():
     except Exception:  # noqa
         pass
     pol = POLICY.get() or {}
-    max_q = min(int(cfg.get("max_qubits", 20)), SIM_LIMIT)
+    hardware = str(cfg.get("backend") or "").startswith(("ibm:", "braket:", "azure:"))
+    max_q = int(cfg.get("max_qubits", 127)) if hardware else min(int(cfg.get("max_qubits", 20)), SIM_LIMIT)
     if pol.get("max_qubits"):
         max_q = min(max_q, int(pol["max_qubits"]))
     shots = int(pol.get("shots") or cfg.get("shots", 1024))
@@ -252,6 +253,14 @@ def run_qasm(text, shots=None, seed=None):
     seed = s["seed"] if seed is None else seed
     nq, nc, ops, measures = parse_qasm(text)
     _check_qubits(nq, s)
+    if s["backend"] not in ("simulator", "qiskit-aer"):            # v0.6: noisy simulators and quantum hardware
+        import algoqpu
+        order = [q for q, _ in sorted(measures, key=lambda m: m[1])] if measures else list(range(nq))
+        out = algoqpu.execute(nq, ops, order, shots, seed, tool="quantum.run")
+        algoqpu.provenance("quantum.run", out, status="UNCHECKED" if out.get("fidelity") is None else None,
+                           confidence=out.get("fidelity"))
+        return dict(qubits=nq, depth=out["depth"], shots=shots, counts=out["counts"], backend=out["backend"],
+                    fidelity=out.get("fidelity"))
     if s["backend"] == "qiskit-aer":
         try:
             from qiskit import QuantumCircuit, transpile
@@ -271,7 +280,28 @@ def run_qasm(text, shots=None, seed=None):
     else:
         order = list(range(nq))
     counts = sv.sample(shots, seed, measured=order)
+    _note(dict(tool="quantum.run", backend="simulator (exact state vector)", device="simulator", qubits=nq,
+               depth=len(ops), shots=shots, qpu_seconds=0.0, fidelity=1.0))
     return dict(qubits=nq, depth=len(ops), shots=shots, counts=counts, backend="simulator (exact state vector)")
+
+
+def _note(rec):
+    """v0.6: provenance of a simulator run in the current agent call."""
+    try:
+        import algoqpu
+        algoqpu.note(rec)
+    except ImportError:
+        pass
+
+
+def _solve(Q, offset, labels, what):
+    """(text, status, selection) on the configured backend (v0.6), verified."""
+    try:
+        import algoqpu
+    except ImportError:
+        r = solve_qubo(Q, offset, labels)
+        return format_solution(r, what), "VERIFIED" if r["verified"] else "GAP", r["selection"]
+    return algoqpu.solve(Q, offset, labels, what)
 
 
 # ═══════════════════════════════ QAOA for QUBO problems ═══════════════════════════════
@@ -484,7 +514,7 @@ def tool_qubo(query: str) -> str:
             Q[pos[a], pos[b]] += float(w) / 2
             Q[pos[b], pos[a]] += float(w) / 2
         labels = names
-    return format_solution(solve_qubo(Q, float(data.get("offset", 0.0)), labels), "selected")
+    return _solve(Q, float(data.get("offset", 0.0)), labels, "selected")[0]
 
 
 def tool_maxcut(query: str) -> str:
@@ -494,10 +524,10 @@ def tool_maxcut(query: str) -> str:
     if not edges:
         return 'no edges found: write them like "A-B:3, B-C:1, A-C"'
     nodes = sorted({v for a, b, _ in edges for v in (a, b)})
-    r = solve_qubo(maxcut_qubo(nodes, edges), 0.0, nodes)
-    side_b = [v for v in nodes if v not in r["selection"]]
-    text = format_solution(r, "group A")
-    return text + f"\ngroup B: {', '.join(side_b)} · cut weight {-r['cost']:g} of total {sum(w for *_, w in edges):g}"
+    text, _status, sel = _solve(maxcut_qubo(nodes, edges), 0.0, nodes, "group A")
+    side_b = [v for v in nodes if v not in sel]
+    cut = sum(w for a, b, w in edges if (a in sel) != (b in sel))
+    return text + f"\ngroup B: {', '.join(side_b)} · cut weight {cut:g} of total {sum(w for *_, w in edges):g}"
 
 
 def tool_grover(query: str) -> str:
@@ -537,7 +567,7 @@ def tool_random(query: str) -> str:
             if z < n and z + 1 not in chosen:
                 chosen.append(z + 1)
         return (f"SAMPLE: {', '.join(map(str, sorted(chosen)))} (pick {k} of {n}, {q}-qubit uniform superposition, "
-                f"rejection sampling) · backend: simulator — for certified randomness use a hardware backend (v0.5)")
+                f"rejection sampling) · backend: simulator — for certified randomness use a hardware backend (v0.6)")
     b = re.search(r"(\d+)\s*bits?", query.lower())
     nbits = min(int(b.group(1)) if b else 32, 4096)
     rng = np.random.default_rng(_seed(s, query))
@@ -641,13 +671,13 @@ def tool_routes(query: str) -> str:
         return 'no route options found: write "S1: R1=120, R2=95; S2: R1=80, R2=110" or name a CSV file'
     Q, offset = routes_qubo(options, clashes)
     labels = [f"{sh}→{r}" for sh, r, _ in options]
-    res = solve_qubo(Q, offset, labels)
-    chosen = {lab.split("→")[0]: lab.split("→")[1] for lab in res["selection"]}
-    feasible = sorted(chosen) == sorted({o[0] for o in options}) and len(res["selection"]) == len(chosen)
+    text, _status, selection = _solve(Q, offset, labels, "routes")
+    chosen = {lab.split("→")[0]: lab.split("→")[1] for lab in selection}
+    feasible = sorted(chosen) == sorted({o[0] for o in options}) and len(selection) == len(chosen)
     base = sum(c for sh, r, c in options if chosen.get(sh) == r)
     pos = {f"{sh}→{r}": i for i, (sh, r, _) in enumerate(options)}
-    hit = [w for i, j, w in clashes if labels[i] in res["selection"] and labels[j] in res["selection"]]
-    lines = [format_solution(res, "routes"),
+    hit = [w for i, j, w in clashes if labels[i] in selection and labels[j] in selection]
+    lines = [text,
              ("FEASIBLE: every shipment has exactly one route" if feasible else
               "INFEASIBLE: a shipment has no route or two routes — use the classical optimum above"),
              "plan: " + "; ".join(f"{sh} via {chosen[sh]}" for sh in sorted(chosen)) +

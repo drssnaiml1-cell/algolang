@@ -1,0 +1,4 @@
+molecule
+H2 at equilibrium bond length
+ising n=6 h=1.0 magnet
+heisenberg n=4 chain

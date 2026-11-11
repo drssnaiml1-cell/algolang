@@ -146,7 +146,30 @@ jobs:
         with: {python-version: "3.12", cache: pip}
       - run: pip install -e ".[dev,quantum]" qiskit qiskit-aer
       - name: Simulator, QAOA verification, Grover and policies (with the Qiskit cross-check enabled)
-        run: python -m pytest tests/test_quantum.py tests/test_quantum_apps.py -v
+        run: python -m pytest tests/test_quantum.py tests/test_quantum_apps.py tests/test_quantum_ai.py -v
+      - name: Quantum AI Lab evals (v0.6, noisy simulator)
+        working-directory: enterprise-apps/quantum-ai-lab
+        run: python ../../algoc.py eval programs/quantum_ai.algo
+      - name: The hardware path's QAOA and VQE circuits give the same state on Qiskit Aer (v0.6)
+        run: |
+          python - <<'PY'
+          import numpy as np, algoqpu as Q, algoquantum as aq
+          from qiskit import QuantumCircuit
+          from qiskit.quantum_info import Statevector
+          rng = np.random.default_rng(3)
+          for n in (3, 4, 5):
+              Qm = rng.normal(size=(n, n))
+              costs, _ = aq.qubo_costs(Qm)
+              ops = Q.qaoa_ops(Qm, [0.3, 0.7], [0.45, 0.2], costs.max() - costs.min(), np)
+              ours = Q.statevector(n, ops).probabilities()
+              qc = QuantumCircuit.from_qasm_str(Q.ops_to_qasm(n, ops, measure=False))
+              aer = Statevector.from_instruction(qc).probabilities()
+              assert np.allclose(ours, aer, atol=1e-9), n
+              ans = Q.ansatz_ops(n, list(rng.uniform(-1, 1, n * 3)), 2)
+              qc2 = QuantumCircuit.from_qasm_str(Q.ops_to_qasm(n, ans, measure=False))
+              assert np.allclose(Q.statevector(n, ans).probabilities(), Statevector.from_instruction(qc2).probabilities())
+          print("QAOA and VQE circuits agree with Qiskit")
+          PY
       - name: Quantum Optimization Lab evals
         working-directory: enterprise-apps/quantum-optimization-lab
         run: |

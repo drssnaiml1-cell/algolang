@@ -1,8 +1,8 @@
 # AlgoLang enterprise applications
 
-<p align="center"><img src="../docs/images/sections/06-enterprise-apps.svg" alt="Twenty-one governed enterprise applications" width="100%"></p>
+<p align="center"><img src="../docs/images/sections/06-enterprise-apps.svg" alt="Twenty-two governed enterprise applications" width="100%"></p>
 
-Twenty-one complete, governed multi-agent applications. Ten of them (v0.5) are large-scale domain applications built on real algorithms. Each is a real AlgoLang project with:
+Twenty-two complete, governed multi-agent applications. Ten of them (v0.5) are large-scale domain applications built on real algorithms, and the Quantum AI Lab (v0.6) runs on noisy simulators and quantum hardware. Each is a real AlgoLang project with:
 - organisation policy;
 - company tools over its own data;
 - a knowledge base;
@@ -35,8 +35,9 @@ They all run offline as they are, and with real Claude models when you add `--li
 | [AlgoEng Predictive Maintenance™](predictive-engineering/) | Data-driven engineering | 1 | `vib.diagnose`, `rul.estimate`, `fleet.scan`, `maint.plan` | 2 |
 | [AlgoCity Operations Centre™](smart-city-operations/) | Smart cities | 1 | `city.aqi`, `city.waste`, `city.energy`, `city.reading` | 2 |
 | [AlgoMove Transport Network Optimizer™](transport-network-optimizer/) | Transportation systems | 1 | `traffic.reroute`, `signal.retime`, `demand.od`, `transit.headway` | 2 |
+| [AlgoQ Quantum AI Lab™](quantum-ai-lab/) | Quantum computing (v0.6) | 1 | built-in `quantum.vqe`, `quantum.knapsack`, `quantum.colouring`, `quantum.kernel`, `quantum.amplitude` | 2 |
 
-**21 applications · 37 programs · 61 behaviour tests**, all run in CI on every push.
+**22 applications · 38 programs · 63 behaviour tests**, all run in CI on every push.
 
 ## Risk levels and system cards (v0.4)
 
@@ -46,7 +47,7 @@ Every program declares a risk level, and every app has a `cards/` folder with a 
 |---|---|---|
 | **High** | `loan_decision` (credit), `admissions`, `er_triage`, `welfare_check`, `remote_monitoring` (digital health) | human oversight (four-eyes or always-on review), `explain with evidence`, `redact pii`, fairness and robustness tests, signed audit logs, a disclosure |
 | **Limited** | `kyc_onboarding`, `grievance_desk`, `claims_intake`, `customer_desk`, `discharge`, `phishing_desk`, `cascade_router`, `model_factory`, `model_audit`, `document_triage`, `bhasha_desk`, `city_operations`, `network_operations` | a disclosure that people are dealing with AI |
-| **Minimal** | the other 19 internal tools | nothing extra |
+| **Minimal** | the other 20 internal tools | nothing extra |
 
 ```bash
 cd bank-credit-onboarding && algo trust report programs --html trust.html
@@ -55,7 +56,7 @@ cd bank-credit-onboarding && algo trust report programs --html trust.html
 ## Run every application
 
 ```bash
-python enterprise-apps/run_all.py            # behaviour tests for all 21 apps
+python enterprise-apps/run_all.py            # behaviour tests for all 22 apps
 python enterprise-apps/run_all.py --batch    # also batch-process each app's sample CSV and verify the audit chain
 ```
 

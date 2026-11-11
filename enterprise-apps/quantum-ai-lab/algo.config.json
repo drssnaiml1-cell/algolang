@@ -1,0 +1,29 @@
+{
+  "organisation": "AlgoQ Quantum AI Lab (example research organisation, synthetic data)",
+  "policy": {
+    "forbid": ["gender", "caste", "religion"],
+    "max_budget_tokens": 8000,
+    "min_human_below": 0.05,
+    "allowed_tools": ["quantum.vqe", "quantum.knapsack", "quantum.colouring", "quantum.kernel", "quantum.amplitude",
+                      "quantum.backend", "kb.search"]
+  },
+  "quantum": {
+    "backend": "noisy:superconducting",
+    "max_qubits": 12,
+    "shots": 4096,
+    "seed": 11,
+    "qaoa_layers": 2,
+    "max_qpu_seconds": 600,
+    "max_qpu_usd": 200,
+    "verify_exact_max": 20,
+    "bound_pct": 5
+  },
+  "max_concurrency": 8,
+  "max_run_tokens": 60000,
+  "max_run_cost_usd": 0.5,
+  "cache": {"enabled": true},
+  "audit_dir": "runs",
+  "models": {"smart": "claude-sonnet-5-5", "fast": "claude-haiku-5-5"},
+  "tools": {"kb.search": {"dir": "kb"}},
+  "plugins": []
+}

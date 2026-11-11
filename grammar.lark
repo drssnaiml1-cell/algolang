@@ -58,6 +58,7 @@ param: NAME ":" type ["=" literal]
 ?policy_rule: "budget" "tokens" NUMBER                       -> budget
             | "budget" "cost" NUMBER [NAME]                  -> budget_cost     // usd (default) or inr
             | "budget" "energy" NUMBER NAME                  -> budget_energy   // wh or kwh
+            | "budget" "qpu" NUMBER NAME                     -> budget_qpu      // v0.6: seconds | minutes | usd
             | "samples" NUMBER                               -> samples         // for uncertain<T> agents
             | "shots" NUMBER                                 -> shots           // quantum.* tools: measurements per circuit
             | "max" "qubits" NUMBER                          -> max_qubits      // quantum.* tools: largest circuit allowed
@@ -128,6 +129,8 @@ eval_case: "case" STRING "(" [args] ")" "{" expectation* "}"
             | "expect" "energy" COMPARE NUMBER             -> exp_energy
             | "expect" "escalated" COMPARE NUMBER          -> exp_escalated
             | "expect" "confidence" COMPARE NUMBER         -> exp_confidence
+            | "expect" "fidelity" COMPARE NUMBER           -> exp_fidelity     // v0.6: lowest fidelity of quantum runs
+            | "expect" "qpu" COMPARE NUMBER                -> exp_qpu          // v0.6: QPU seconds used by the run
             | "expect" "fair" "across" NAME "[" STRING ("," STRING)* "]"            -> exp_fair      // v0.4: counterfactual fairness
             | "expect" "robust" ["(" NAME ("," NAME)* ")"] "consistency" COMPARE NUMBER -> exp_robust // v0.4: perturbation robustness
             | "expect" "explained"                         -> exp_explained                         // v0.4: every explanation grounded

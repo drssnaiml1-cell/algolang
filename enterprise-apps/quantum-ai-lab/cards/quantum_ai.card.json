@@ -1,0 +1,330 @@
+{
+  "card": "AlgoLang AI system card",
+  "card_version": 1,
+  "program": "quantum_ai",
+  "source": "quantum_ai.algo",
+  "source_sha256": "b284507c27b8aae11068160a11967e678ca75f92181a3ce5c9c595b135d481b9",
+  "purpose": "Quantum chemistry, planning and classification research on noisy simulators and quantum processors",
+  "risk_level": "minimal",
+  "disclosure": null,
+  "flows": [
+    {
+      "name": "main",
+      "inputs": [
+        "molecule"
+      ]
+    },
+    {
+      "name": "capital",
+      "inputs": [
+        "projects"
+      ]
+    },
+    {
+      "name": "spectrum",
+      "inputs": [
+        "cells"
+      ]
+    },
+    {
+      "name": "classify",
+      "inputs": [
+        "dataset"
+      ]
+    },
+    {
+      "name": "tail",
+      "inputs": [
+        "question"
+      ]
+    }
+  ],
+  "agents": [
+    {
+      "name": "CapitalPlan",
+      "role": "Portfolio analyst",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "quantum.knapsack"
+      ],
+      "human_oversight": "reviewed when confidence < 0.05",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "ChemistryReport",
+      "role": "Principal scientist",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [
+        "kb.search"
+      ],
+      "human_oversight": "reviewed when confidence < 0.05",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "ClassicalFallback",
+      "role": "Portfolio analyst",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.05",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "DeployModel",
+      "role": "ML engineer",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.05",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Energy",
+      "role": "Computational chemist",
+      "returns": "uncertain<text>",
+      "model": "fast",
+      "tools": [
+        "quantum.vqe"
+      ],
+      "human_oversight": "reviewed when confidence < 0.05",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": 3,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "InvestmentCommittee",
+      "role": "Investment committee",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.05 by 2 different people",
+      "explain": "evidence",
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "KernelStudy",
+      "role": "Machine-learning scientist",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "quantum.kernel"
+      ],
+      "human_oversight": "reviewed when confidence < 0.05",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "MoreShots",
+      "role": "Quantum engineer",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "reviewed when confidence < 0.05",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "Spectrum",
+      "role": "Radio network planner",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "quantum.colouring"
+      ],
+      "human_oversight": "reviewed when confidence < 0.05",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "SpectrumEscalation",
+      "role": "Spectrum manager",
+      "returns": "text",
+      "model": "default (algo.config.json)",
+      "tools": [],
+      "human_oversight": "every result is reviewed",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    },
+    {
+      "name": "TailRisk",
+      "role": "Risk quant",
+      "returns": "text",
+      "model": "fast",
+      "tools": [
+        "quantum.amplitude"
+      ],
+      "human_oversight": "reviewed when confidence < 0.05",
+      "explain": null,
+      "redact_pii": false,
+      "forbidden_attributes": [
+        "caste",
+        "gender",
+        "religion"
+      ],
+      "samples": null,
+      "budgets": {},
+      "imported_from": null
+    }
+  ],
+  "tools": [
+    {
+      "name": "kb.search",
+      "kind": "built-in",
+      "trusted": true,
+      "description": "Search the organisation's knowledge base of .txt and .md documents"
+    },
+    {
+      "name": "quantum.amplitude",
+      "kind": "built-in quantum",
+      "trusted": true,
+      "description": "Tail probability by quantum amplitude estimation, against Monte Carlo"
+    },
+    {
+      "name": "quantum.colouring",
+      "kind": "built-in quantum",
+      "trusted": true,
+      "description": "Graph colouring as a QUBO: \"3 colours: A-B, B-C, C-A\", verified"
+    },
+    {
+      "name": "quantum.kernel",
+      "kind": "built-in quantum",
+      "trusted": true,
+      "description": "Quantum-kernel classification against a classical RBF kernel (cross-validated)"
+    },
+    {
+      "name": "quantum.knapsack",
+      "kind": "built-in quantum",
+      "trusted": true,
+      "description": "Knapsack as a QUBO: \"capacity 10: A=6/5, B=5/4\" (value/weight), verified"
+    },
+    {
+      "name": "quantum.vqe",
+      "kind": "built-in quantum",
+      "trusted": true,
+      "description": "Ground-state energy of a molecule (H2) or spin model with VQE, checked exactly"
+    }
+  ],
+  "streams": [],
+  "circuits": [],
+  "human_oversight": [
+    "CapitalPlan: reviewed when confidence < 0.05",
+    "ChemistryReport: reviewed when confidence < 0.05",
+    "ClassicalFallback: reviewed when confidence < 0.05",
+    "DeployModel: reviewed when confidence < 0.05",
+    "Energy: reviewed when confidence < 0.05",
+    "InvestmentCommittee: reviewed when confidence < 0.05 by 2 different people",
+    "KernelStudy: reviewed when confidence < 0.05",
+    "MoreShots: reviewed when confidence < 0.05",
+    "Spectrum: reviewed when confidence < 0.05",
+    "SpectrumEscalation: every result is reviewed",
+    "TailRisk: reviewed when confidence < 0.05"
+  ],
+  "data_protection": {
+    "redact_pii": "no agents",
+    "forbidden_attributes": [
+      "caste",
+      "gender",
+      "religion"
+    ],
+    "retention_days": {}
+  },
+  "evaluation": {
+    "cases": 7,
+    "fairness": [],
+    "robustness": [],
+    "explanations_checked": false
+  },
+  "limitations": [
+    "Generated from the source code: it documents design-time safeguards and test coverage, not measured real-world performance.",
+    "Offline evals use a deterministic mock model; repeat them with `algo eval --live` before deployment.",
+    "Protected attributes are withheld by keyword. Proxies such as names, postcodes or schools can still carry them; counterfactual fairness tests measure the effect.",
+    "Fairness has not been tested (no `expect fair` case).",
+    "Robustness has not been tested (no `expect robust` case).",
+    "Quantum results come from a simulator unless a hardware backend is configured."
+  ]
+}

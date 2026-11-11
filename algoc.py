@@ -254,6 +254,16 @@ def parse_policy(rules) -> dict:
                 pol[f"budget_cost_{cur}"] = amount
             else:
                 pol.setdefault("_errors", []).append(f"unknown currency '{cur}' in `budget cost` (use usd or inr)")
+        elif r.data == "budget_qpu":                              # v0.6: QPU time or money for quantum tools
+            amount, unit = float(str(r.children[0])), str(r.children[1]).lower()
+            if unit in ("s", "sec", "secs", "second", "seconds"):
+                pol["budget_qpu_s"] = amount
+            elif unit in ("min", "mins", "minute", "minutes"):
+                pol["budget_qpu_s"] = amount * 60
+            elif unit == "usd":
+                pol["budget_qpu_usd"] = amount
+            else:
+                pol.setdefault("_errors", []).append(f"unknown unit '{unit}' in `budget qpu` (use seconds, minutes or usd)")
         elif r.data == "budget_energy":
             amount, unit = float(str(r.children[0])), str(r.children[1]).lower()
             if unit in ("wh", "kwh"):
@@ -273,7 +283,7 @@ def merge_policy(base: dict, own: dict) -> dict:
         if k not in out:
             out[k] = v
         elif k in ("budget_tokens", "timeout_s", "budget_cost_usd", "budget_cost_inr", "budget_energy_wh",
-                   "max_qubits", "retain_audit_days", "retain_traces_days"):
+                   "max_qubits", "retain_audit_days", "retain_traces_days", "budget_qpu_s", "budget_qpu_usd"):
             out[k] = min(out[k], v)
         elif k == "approvals":
             out[k] = max(out[k], v)
@@ -337,7 +347,7 @@ def to_ast(tree: Tree) -> tuple[Program, list[Diag]]:
                 expects = []
                 for e in exps:
                     kind = e.data[4:]
-                    if kind in ("tokens", "cost", "energy", "escalated", "confidence"):
+                    if kind in ("tokens", "cost", "energy", "escalated", "confidence", "fidelity", "qpu"):
                         op, num = e.children
                         expects.append((kind, str(op), float(str(num))))
                     elif kind == "contains":
@@ -725,16 +735,17 @@ class Checker:
         self.check_quantum(a)
 
     def check_quantum(self, a):
-        """quantum.* tools (v0.3.2): sane shot counts and qubit limits."""
-        try:
-            from algoquantum import SIM_LIMIT
-        except ImportError:                       # e.g. a minimal embedding without the quantum module
-            SIM_LIMIT = 24
+        """quantum.* tools (v0.3.2): sane shot counts and qubit limits (v0.6: up to 1,000 qubits for hardware
+        backends; the simulator's own ceiling is enforced at run time). QPU budgets must be positive."""
+        HW_LIMIT = 1000
         shots, maxq = a.policy.get("shots"), a.policy.get("max_qubits")
         if shots is not None and not 1 <= shots <= 100_000:
             self.err("E123", a.line, f"agent {a.name}: shots must be between 1 and 100000")
-        if maxq is not None and not 1 <= maxq <= SIM_LIMIT:
-            self.err("E123", a.line, f"agent {a.name}: max qubits must be between 1 and {SIM_LIMIT}")
+        if maxq is not None and not 1 <= maxq <= HW_LIMIT:
+            self.err("E123", a.line, f"agent {a.name}: max qubits must be between 1 and {HW_LIMIT}")
+        for k in ("budget_qpu_s", "budget_qpu_usd"):
+            if a.policy.get(k) is not None and a.policy[k] <= 0:
+                self.err("E123", a.line, f"agent {a.name}: `budget qpu` must be greater than 0")
 
     # statements ---------------------------------------------------
     def check_block(self, stmts, env):
@@ -1261,7 +1272,7 @@ def compile_source(src: str, name: str, base_dir: Path | str | None = None):
     return CodeGen(prog, name).gen(), prog
 
 
-VERSION = "0.5.0"
+VERSION = "0.6.0"
 
 TEMPLATE = '''// {name}.algo — created by `algo new`
 // Run it:  algo run {name}.algo --arg "topic=Your topic here"

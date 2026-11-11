@@ -296,7 +296,7 @@ def main():
         (out / sector).mkdir(parents=True, exist_ok=True)
         (out / sector / f"{pid}.algo").write_text(src, encoding="utf-8")
         catalog.append(meta)
-    (out / "catalog.json").write_text(json.dumps({"version": "0.5.0", "sectors": SECTORS, "packs": catalog},
+    (out / "catalog.json").write_text(json.dumps({"version": "0.6.0", "sectors": SECTORS, "packs": catalog},
                                                  indent=1, ensure_ascii=False), encoding="utf-8")
     print(f"✓ wrote {len(catalog)} domain packs in {len({m['sector'] for m in catalog})} sectors → {out}"
           + (f"  ({errors} failed)" if errors else ""))

@@ -41,7 +41,7 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from pathlib import Path
 
-VERSION = "0.5.0"
+VERSION = "0.6.0"
 # WebAssembly builds of Python (Pyodide, used by the web playground) cannot start threads:
 # `par` then runs its branches one after another, with identical results.
 CAN_THREAD = sys.platform not in ("emscripten", "wasi")
@@ -334,6 +334,12 @@ try:                                     # quantum.* tools (v0.3.2); NumPy is on
     _algoquantum.register(register_tool)
 except ImportError:  # noqa
     _algoquantum = None
+
+try:                                     # v0.6 Quantum AI: backends, budgets, noise, verification, provenance
+    import algoqpu as _algoqpu
+    _algoqpu.register(register_tool)
+except ImportError:  # noqa
+    _algoqpu = None
 
 
 def run_tool(name, query):
@@ -715,16 +721,16 @@ def verify_audit(path, keys=None):
         if rec.get("type") == "retention":            # v0.4: older records were dropped by a retention policy
             if n != 1:
                 return bad(n, "a retention checkpoint can only be the first line")
-            body = {k: v for k, v in rec.items() if k not in ("hash", "sig", "kid")}
+            body = {k: v for k, v in rec.items() if k not in ("hash", "sig", "kid", "pqsig", "pkid", "palg")}
             if hashlib.sha256(json.dumps(body, sort_keys=True).encode()).hexdigest() != rec.get("hash"):
                 return bad(n, "retention checkpoint was modified")
-            if "sig" in rec or require:
+            if "sig" in rec or "pqsig" in rec or require:
                 why = algotrust.check_signature(rec, keys) if algotrust else "cannot check signatures"
                 if why:
                     return bad(n, f"retention checkpoint: {why}")
             prev, dropped = rec["resume_prev"], int(rec.get("dropped", 0))
             continue
-        if "sig" in rec or require:
+        if "sig" in rec or "pqsig" in rec or require:
             why = algotrust.check_signature(rec, keys) if algotrust else "cannot check signatures"
             if why:
                 return bad(n, why)
@@ -733,7 +739,7 @@ def verify_audit(path, keys=None):
             return bad(n, "record has no hash (v0.1 log?)")
         if rec.get("prev") != prev:
             return bad(n, "chain broken: a record was removed or reordered")
-        if _record_hash(prev, {k: v for k, v in rec.items() if k not in ("hash", "sig", "kid")}) != rec["hash"]:
+        if _record_hash(prev, {k: v for k, v in rec.items() if k not in ("hash", "sig", "kid", "pqsig", "pkid", "palg")}) != rec["hash"]:
             return bad(n, "record was modified")
         prev = rec["hash"]
     return {"ok": True, "records": n - (1 if dropped else 0), "first_bad_line": None, "reason": "", "signed": signed,
@@ -853,7 +859,8 @@ class Runtime:
         self.calls = []
         self.lock = threading.Lock()
         self.stats = {"calls": 0, "tokens": 0, "escalations": 0, "retries": 0, "blocked": 0, "cache_hits": 0,
-                      "tool_calls": 0, "cost_usd": 0.0, "energy_wh": 0.0, "co2_g": 0.0}
+                      "tool_calls": 0, "cost_usd": 0.0, "energy_wh": 0.0, "co2_g": 0.0, "qpu_seconds": 0.0, "qpu_usd": 0.0}
+        self.qledger = {"qpu_seconds": 0.0, "qpu_usd": 0.0}          # v0.6: QPU time and cost of this run
         self.run_id = uuid.uuid4().hex[:8]
         adir = Path(audit_dir_override) if audit_dir_override else audit_dir()
         # a run with its own audit folder (evals, tests, notebooks) keeps its own review queue too
@@ -1048,13 +1055,14 @@ class Runtime:
         use_cache = (self.cache_all or pol.get("cache")) and not (algotrust and algotrust.MOCK_CANONICAL[0])
         ckey = Cache.key("v3", self.backend.name, model_id, spec.returns, spec.role, prompt, k) if use_cache else None
         hit = self.cache.get(ckey) if use_cache else None
-        tool_calls, cached, t_in, t_out, samples = [], False, 0, 0, None
+        tool_calls, cached, t_in, t_out, samples, quantum = [], False, 0, 0, None, []
         explanation, problems = None, []
         if hit is not None:
             val, conf = hit
             tokens, cached = 0, True
             if isinstance(val, dict) and "__entry__" in val:          # v0.3 entry: keeps samples and tool results
                 explanation = val.get("explanation")
+                quantum = list(val.get("quantum") or [])
                 samples, tool_calls, val = val.get("samples"), list(val.get("tool_calls") or []), val["value"]
             elif isinstance(val, dict) and "__uncertain__" in val:
                 samples, val = val["samples"], val["value"]
@@ -1066,6 +1074,7 @@ class Runtime:
                 t_in += d["t_in"]
                 t_out += d["t_out"]
                 tool_calls += d["tool_calls"]
+                quantum += d.get("quantum") or []
             if k == 1:
                 val, conf = draws[0]["value"], draws[0]["confidence"]
             else:
@@ -1087,7 +1096,10 @@ class Runtime:
             tokens = t_in + t_out
             if use_cache and not problems:
                 self.cache.put(ckey, {"__entry__": 3, "value": val, "samples": samples, "tool_calls": tool_calls,
-                                      "explanation": explanation}, conf)
+                                      "explanation": explanation, "quantum": quantum}, conf)
+        qconf = [q["confidence"] for q in quantum if q.get("confidence") is not None]
+        if qconf and spec.returns.startswith("uncertain<"):      # v0.6: a quantum answer is a distribution, not a fact
+            conf = round(min(conf, min(qconf)), 3)
         res = Result(val, conf, spec.name, call_id)
         res.tool_text = "\n".join(t.get("text", "") for t in tool_calls)
         if explanation:
@@ -1133,6 +1145,9 @@ class Runtime:
             self.stats["cost_usd"] = round(self.stats["cost_usd"] + cost, 6)
             self.stats["energy_wh"] = round(self.stats["energy_wh"] + wh, 4)
             self.stats["co2_g"] = round(co2_grams(self.stats["energy_wh"], self.cfg), 4)
+            if quantum and not cached:
+                self.stats["qpu_seconds"] = round(self.stats["qpu_seconds"] + sum(float(q.get("qpu_seconds") or 0) for q in quantum), 4)
+                self.stats["qpu_usd"] = round(self.stats["qpu_usd"] + sum(float(q.get("cost_usd") or 0) for q in quantum), 4)
         shown = val if not isinstance(val, list) else f"[{len(val)} items]"
         flag = {"ok": "", "escalated": f"  ⚠ ESCALATED to human ({review_reason})",
                 "approved": "  ✔ human-approved"}[res.status]
@@ -1157,6 +1172,8 @@ class Runtime:
             rec["explanation"] = explanation
         if injections:
             rec["injections"] = injections
+        if quantum:
+            rec["quantum"] = quantum                                # v0.6: what ran where, for auditors
         self._audit(rec, output=val)
         if self.trace_calls is not None:
             with self.lock:
@@ -1192,6 +1209,8 @@ class Runtime:
             try:
                 t0 = time.time()
                 qtok = _algoquantum.POLICY.set(pol) if _algoquantum else None    # shots / max qubits for quantum tools
+                qctx = {"records": [], "ledger": self.qledger}
+                ctok = _algoqpu.QCTX.set(qctx) if _algoqpu else None             # v0.6: quantum provenance
                 gtok = algotrust.GUARD.set(dict(guard)) if (algotrust and guard) else None
                 try:
                     with _semaphore():
@@ -1200,6 +1219,8 @@ class Runtime:
                 finally:
                     if qtok is not None:
                         _algoquantum.POLICY.reset(qtok)
+                    if ctok is not None:
+                        _algoqpu.QCTX.reset(ctok)
                     if gtok is not None:
                         g_now = algotrust.GUARD.get()
                         algotrust.GUARD.reset(gtok)
@@ -1216,7 +1237,7 @@ class Runtime:
                     t_in = min(int(tokens), len(prompt) // 4)
                     t_out = int(tokens) - t_in
                 return dict(value=val, confidence=float(conf), t_in=t_in, t_out=t_out, tool_calls=list(tool_calls or []),
-                            extra=extra)
+                            extra=extra, quantum=qctx["records"])
             except (PolicyViolation, ReplayMiss):
                 raise
             except Exception as e:  # noqa

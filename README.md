@@ -36,7 +36,7 @@
   <a href="https://www.algoprofessor.com"><img src="docs/images/algolang-hero.svg" alt="AlgoLang: an order event from AlgoPulse flows through parallel Quote and Limits agents, a deterministic BREACH guard, and an uncertain RiskGate agent with a human gate; every call is written to a hash-chained audit log" width="100%"></a>
 </p>
 
-**Current version: 0.5.0** (ten large-scale domain applications, from machine learning to transport, on v0.4 Trustworthy AI: risk levels · fairness and robustness tests · signed audit · system cards · LLM & SLM graph optimisation) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md) · [50 Sample Programs (PDF)](docs/AlgoLang_50_Sample_Programs.pdf) · [Language manual (PDF)](docs/AlgoLang_Documentation_v0.4.pdf)
+**Current version: 0.6.0** (Quantum AI: IBM, Braket and Azure hardware · noise and mitigation · QPU budgets · verified and bounded answers · VQE, quantum kernels, amplitude estimation · post-quantum audit signatures; plus ten large-scale domain applications and v0.4 Trustworthy AI) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md) · [50 Sample Programs (PDF)](docs/AlgoLang_50_Sample_Programs.pdf) · [Language manual (PDF)](docs/AlgoLang_Documentation_v0.4.pdf)
 
 AlgoLang has **no functions**. Every unit of work is an `agent` with a role, a goal, explicit tools, a model and a policy. A `flow` is the only other construct, and it can do just four things:
 
@@ -86,7 +86,7 @@ flowchart TB
 
 1. [Objective](#1-objective)
 2. [Design principles](#2-design-principles)
-3. [What's new in v0.5: ten large-scale applications](#3-whats-new-in-v05-ten-large-scale-applications)
+3. [What's new in v0.6: Quantum AI](#3-whats-new-in-v06-quantum-ai)
 4. [Get started](#4-get-started)
 5. [Learn by example: 50 sample programs](#5-learn-by-example-50-sample-programs)
 6. [Enterprise applications](#6-enterprise-applications)
@@ -96,7 +96,7 @@ flowchart TB
 10. [Governance and runtime guarantees](#10-governance-and-runtime-guarantees)
 11. [Python SDK](#11-python-sdk)
 12. [For developers](#12-for-developers)
-13. [Roadmap: v0.6 Quantum AI, v0.7 Interoperability, v1.0](#13-roadmap-v06-quantum-ai-v07-interoperability-v10)
+13. [Roadmap: v0.7 Interoperability, v1.0](#13-roadmap-v07-interoperability-v10)
 14. [Repository layout](#14-repository-layout)
 15. [Author and licence](#15-author-and-licence)
 
@@ -119,7 +119,7 @@ flowchart TB
 | 5 | Accountability | Every agent call returns a value with its confidence and provenance, and is written to a hash-chained audit log that can be verified. Traces can be replayed. |
 | 6 | Honest uncertainty | `uncertain<T>` agents are sampled several times. Their confidence reflects how much the samples agree, and decisions must check it. |
 | 7 | Cost, speed and sustainability | Cheap models for easy steps, strong models where needed, caching, parallelism, and every call priced in money, watt-hours and CO₂. |
-| 8 | Reuse at scale | 120 domain packs in 20 sectors, modules, MCP tools, AlgoPulse™ streams, quantum tools, twenty-one enterprise applications, and batch processing of thousands of records. |
+| 8 | Reuse at scale | 120 domain packs in 20 sectors, modules, MCP tools, AlgoPulse™ streams, quantum tools, twenty-two enterprise applications, and batch processing of thousands of records. |
 | 9 | Access for everyone | Command line, graphical Studio, a plain-English Prompt UI, a Python SDK and editor support through a language server. |
 | 10 | Teachable and testable | An offline backend runs without an API key. `eval` blocks and behaviour tests run in CI; live mode uses real Claude models. |
 
@@ -134,9 +134,42 @@ flowchart TB
 - **People stay in the loop.** A low-confidence call goes to a human review queue instead of going out.
 - **One engine, many doors.** The command line, Studio, Prompt UI, SDK and language server all run the same compiler and runtime.
 
-## 3. What's new in v0.5: ten large-scale applications
+## 3. What's new in v0.6: Quantum AI
 
-<p align="center"><img src="docs/images/sections/03-whats-new.svg" alt="Ten large-scale domain applications in v0.5" width="100%"></p>
+<p align="center"><img src="docs/images/sections/03-whats-new.svg" alt="Eight Quantum AI work packages in v0.6" width="100%"></p>
+
+**v0.6 lets agents use real quantum computers, with answers that are checked, budgeted and accountable.** The same program runs on the exact simulator, a noisy simulator, IBM Quantum, Amazon Braket or Azure Quantum by changing one line of `algo.config.json`. Nothing about the language's guarantees changes on hardware.
+
+```algo
+agent Energy(molecule: text) -> uncertain<text> {             // a quantum answer is a distribution, not a fact
+    goal   "Compute the ground-state energy of {molecule} with VQE and check it against exact diagonalisation"
+    uses   quantum.vqe
+    policy { shots 8192  budget qpu 120 seconds  budget qpu 25 usd }   // checked before any job is submitted
+}
+flow main(molecule: text) {
+    energy = Energy(molecule)
+    if energy contains "CHEMICAL ACCURACY" { emit energy, ChemistryReport(molecule, energy) }
+    else { emit energy, MoreShots(molecule, energy) }
+}
+eval chemistry on main {
+    case "H2" (molecule = "H2") { expect output contains "CHEMICAL ACCURACY"  expect fidelity > 0.85  expect qpu < 1 }
+}
+```
+
+| Work package | What v0.6 adds |
+|---|---|
+| **Q1 Hardware backends** | `"backend": "ibm:<device>" \| "braket:<device>" \| "azure:<target>"`, plus `noisy:<profile>` simulators; credentials only from environment variables |
+| **Q2 QPU budgets** | `budget qpu N seconds \| minutes \| usd` per agent and per-run caps (`max_qpu_seconds`, `max_qpu_usd`), checked before submission; QPU time and cost in run statistics |
+| **Q3 Uncertain quantum results** | every quantum tool reports a confidence from shot statistics and verification; `uncertain<T>` agents carry it, so confidence guards apply |
+| **Q4 Noise and mitigation** | exact density-matrix noise (depolarising and readout), readout-error mitigation, zero-noise extrapolation by gate folding, Hellinger fidelity; `expect fidelity > x` |
+| **Q5 Bounded verification** | answers are `VERIFIED`, `BOUNDED` (within x% of a proven lower bound), `UNCHECKED` or `GAP` beyond the exact-check limit |
+| **Q6 Algorithm library** | `quantum.vqe` (H₂ to chemical accuracy, spin models), `quantum.kernel` (against a tuned classical kernel), `quantum.amplitude`, `quantum.knapsack`, `quantum.colouring`, `quantum.backend` |
+| **Q7 Provenance and replay** | backend, device, calibration, depth, shots, job id, QPU seconds, cost and fidelity in every audit record; recorded counts replay with no QPU time |
+| **Q8 Post-quantum audit** | ML-DSA (FIPS 204) or hybrid Ed25519 + ML-DSA-65 signatures on audit records and evidence packs (`"audit": {"algorithm": "hybrid"}`) |
+
+The new [**AlgoQ Quantum AI Lab™**](enterprise-apps/quantum-ai-lab/) uses all of it on a noisy superconducting-class simulator: VQE chemistry, capital budgeting with two approvals, spectrum planning, a quantum-kernel study and tail risk. CI checks that the circuits sent to hardware give exactly the same quantum states as Qiskit.
+
+### v0.5: ten large-scale applications
 
 **v0.5 puts AlgoLang to work on ten hard domains, one application each.** Every application runs real, deterministic algorithms over large synthetic datasets as company tools. The AlgoLang program around them adds parallel agents, deterministic guards, `uncertain<T>` scores, human gates, four-eyes approvals, risk levels, evals, behaviour tests and system cards. Each tool reports its own accuracy, validation or back-test, so a flow never acts on an unchecked number.
 
@@ -320,9 +353,9 @@ The runnable source of every program is in [`examples/50-programs/`](examples/50
 
 ## 6. Enterprise applications
 
-<p align="center"><img src="docs/images/sections/06-enterprise-apps.svg" alt="Twenty-one enterprise applications" width="100%"></p>
+<p align="center"><img src="docs/images/sections/06-enterprise-apps.svg" alt="Twenty-two enterprise applications" width="100%"></p>
 
-[`enterprise-apps/`](enterprise-apps/) holds twenty-one complete, governed multi-agent applications: the eleven below and the ten large-scale domain applications of [v0.5](#3-whats-new-in-v05-ten-large-scale-applications). Each has its own org policy, company tools over its own data, a knowledge base, programs, batch data, behaviour tests and (v0.4) a risk level and a generated AI system card for every program:
+[`enterprise-apps/`](enterprise-apps/) holds twenty-two complete, governed multi-agent applications: the eleven below, the ten large-scale domain applications of [v0.5](#v05-ten-large-scale-applications) and the [Quantum AI Lab](enterprise-apps/quantum-ai-lab/) of v0.6. Each has its own org policy, company tools over its own data, a knowledge base, programs, batch data, behaviour tests and (v0.4) a risk level and a generated AI system card for every program:
 
 | Application | Sector | What it automates | Risk (v0.4) |
 |---|---|---|---|
@@ -453,6 +486,10 @@ flow main(request: text) {
 | `quantum.scenarios` *(v0.3.3)* | Monte Carlo value at risk and expected shortfall, plus a quantum amplitude estimation (QAE) of the tail probability with its error bound and oracle-call count | Market and credit risk, limit monitoring |
 | `pqc.scan` *(v0.3.3)* | Reads a cryptography inventory and flags what Shor's and Grover's algorithms would break or weaken, with Mosca's harvest-now-decrypt-later test and the NIST FIPS 203/204/205 replacement | Quantum-safe migration planning |
 | `circuit.Name` *(v0.3.3)* | Every `circuit` block in the program | Your own algorithms, teaching, OpenQASM export |
+| `quantum.vqe` *(v0.6)* | Ground-state energy by VQE (Rotosolve), checked against exact diagonalisation; readout mitigation and zero-noise extrapolation on noisy devices | Chemistry (H₂), materials (Ising, Heisenberg) |
+| `quantum.kernel` *(v0.6)* | Quantum-kernel classification against a tuned classical RBF kernel, 5-fold cross-validated | Honest quantum machine learning studies |
+| `quantum.amplitude` *(v0.6)* | Tail probability by amplitude estimation within its guaranteed bound, against Monte Carlo | Financial and operational risk |
+| `quantum.knapsack` · `quantum.colouring` *(v0.6)* | QUBO builders checked against dynamic programming or a proper colouring | Capital budgeting, frequency and timetable assignment |
 
 ### Write circuits in AlgoLang (v0.3.3)
 
@@ -517,7 +554,7 @@ Each program has an `eval` block and behaviour tests that run in CI.
 - **Exact verification.** The simulator holds every amplitude, so the true optimum is known up to the qubit limit. The tool reports `VERIFIED`, or `GAP: … % worse`, plus P(optimal) and the approximation ratio.
 - **Limits in the policy.** `shots N` and `max qubits N` per agent, `"quantum": {"max_qubits": …}` for the whole organisation; the stricter limit wins. Bigger circuits are `BLOCKED`.
 - **Reproducible.** Runs are seeded, so the same request gives the same answer, as audit and `algo replay` require.
-- **Honest about the hardware.** Every answer names its backend. The built-in simulator is checked against Qiskit on every CI run (fidelity error below 10⁻¹²). It computes what an ideal quantum computer would return, on a classical computer, so it is correct but not faster. Amplitude estimation is simulated exactly from its phase-estimation statistics; its quadratic speed-up over Monte Carlo needs fault-tolerant hardware. `pqc.scan` applies published rules (it is not a penetration test), and its time-to-quantum-threat is an assumption you set. Real quantum hardware arrives in v0.5.
+- **Honest about the hardware.** Every answer names its backend. The built-in simulator is checked against Qiskit on every CI run (fidelity error below 10⁻¹²). It computes what an ideal quantum computer would return, on a classical computer, so it is correct but not faster. Amplitude estimation is simulated exactly from its phase-estimation statistics; its quadratic speed-up over Monte Carlo needs fault-tolerant hardware. `pqc.scan` applies published rules (it is not a penetration test), and its time-to-quantum-threat is an assumption you set. Since v0.6 the same tools run on noisy simulators and on IBM, Braket and Azure hardware (see [§3](#3-whats-new-in-v06-quantum-ai)).
 
 The [**Quantum Optimization Lab**](enterprise-apps/quantum-optimization-lab/) also has a max-cut shift scheduler and quantum-random audit sampling. Install with `pip install "algolang[quantum]"` (NumPy). For Qiskit Aer, also `pip install qiskit qiskit-aer` and set `"backend": "qiskit-aer"`.
 
@@ -678,15 +715,13 @@ pip install -e ".[dev]"
 make check        # ruff + pytest + lint of every .algo file
 ```
 
-## 13. Roadmap: v0.6 Quantum AI, v0.7 Interoperability, v1.0
+## 13. Roadmap: v0.7 Interoperability, v1.0
 
 <p align="center"><img src="docs/images/sections/13-roadmap.svg" alt="Roadmap timeline" width="100%"></p>
 
-**v0.5 large-scale domain applications is released** (see [§3](#3-whats-new-in-v05-ten-large-scale-applications)), on top of v0.4 Trustworthy AI. The releases below are built one at a time, each with tests, CI, documentation and figures. The full plan is in **[ROADMAP.md](ROADMAP.md)**.
+**v0.6 Quantum AI is released** (see [§3](#3-whats-new-in-v06-quantum-ai)), after v0.5's ten large-scale domain applications and v0.4 Trustworthy AI. The releases below are built one at a time, each with tests, CI, documentation and figures. The full plan is in **[ROADMAP.md](ROADMAP.md)**.
 
-**v0.6 — Quantum AI (next).** The quantum preview becomes a full release: real quantum hardware (IBM Quantum, Amazon Braket, Azure Quantum) behind the same tool interface, with QPU-time and cost budgets; noise models and error mitigation; quantum results as `uncertain<T>` values whose confidence comes from shot statistics; VQE for chemistry and materials, quantum kernels for classification, amplitude estimation for financial risk; verified bounds beyond the simulator's reach; and post-quantum signatures for the audit chain. Details in [ROADMAP.md](ROADMAP.md#6-v06-quantum-ai).
-
-**v0.7 — Interoperability.** Agents served as MCP servers, argument type checking, and token-by-token output streaming. **v1.0** adds a native runtime, typed agent-to-agent messaging, a package registry and SSO/RBAC for Studio.
+**v0.7 — Interoperability (next).** Agents and flows served as MCP servers, argument type checking, and token-by-token output streaming. **v1.0** adds a native runtime, typed agent-to-agent messaging, a package registry and SSO/RBAC for Studio.
 
 | Version | Theme | Status |
 |---|---|---|
@@ -699,9 +734,9 @@ make check        # ruff + pytest + lint of every .algo file
 | v0.3.4 | AlgoPulse™, AlgoLang's own real-time event engine; animated figures for every section and every application | Released |
 | v0.4 | Trustworthy AI: risk levels, privacy, explanations, untrusted tools, four-eyes review, signed audit, fairness and robustness tests, system cards, evidence packs, trust reports | Released |
 | v0.4.1 | LLM & SLM graph optimisation: SLM-first cascades, exact model assignment over the agent graph, local small models, `agent_models` routing | Released |
-| v0.5 | Ten large-scale domain applications: ML & DL, RL, responsible & explainable AI, NLP, Indian languages, digital health, network biology, engineering, smart cities, transport | **Current** |
-| v0.6 | Quantum AI: hardware backends, noise, uncertain quantum results, chemistry and risk algorithms | Next |
-| v0.7 | Interoperability: agents as MCP servers, argument types, output streaming | Planned |
+| v0.5 | Ten large-scale domain applications: ML & DL, RL, responsible & explainable AI, NLP, Indian languages, digital health, network biology, engineering, smart cities, transport | Released |
+| v0.6 | Quantum AI: IBM, Braket and Azure backends, noise and mitigation, QPU budgets, uncertain and bounded quantum results, VQE, kernels, amplitude estimation, post-quantum audit | **Current** |
+| v0.7 | Interoperability: agents as MCP servers, argument types, output streaming | Next |
 | v1.0 | Native runtime and ecosystem | Planned |
 
 ## 14. Repository layout
@@ -742,13 +777,15 @@ algostream.py                 stream blocks: routing, metrics, at-least-once (al
 algopulse.py                  AlgoPulse™ event engine: durable topics, groups, server (algo pulse) — v0.3.4
 algoquantum.py                quantum tools: simulator, OpenQASM, QAOA + exact check, Grover — v0.3.2;
                               circuit blocks, routing, Monte Carlo + QAE, PQC readiness — v0.3.3
+algoqpu.py                    Quantum AI: hardware backends, noise, budgets, bounded checks, VQE,
+                              kernels, amplitude estimation, provenance and replay — v0.6
 docs/images/                  animated SVG figures: sections/, apps/ (drawn from the programs), Studio screenshots
 tools/make_figures.py         regenerates every figure (CI checks they match the code)
 examples/v03/                 tour of v0.3: MCP demo server, uncertain<T>, budgets, eval
 examples/50-programs/          the 50 programs from "AlgoLang: 50 Sample Programs" + inputs.json
 docs/                         language manual (LaTeX + PDF) and AlgoLang_50_Sample_Programs.pdf
-enterprise-apps/              21 governed enterprise applications (incl. Algo Trading Desk, Quantum Optimization Lab, AlgoGraph™, and the ten v0.5 domain apps)
-ROADMAP.md                    v0.4 Trustworthy AI, v0.5 domain applications, v0.6 Quantum AI plan, later releases
+enterprise-apps/              22 governed enterprise applications (incl. Algo Trading Desk, Quantum Optimization Lab, AlgoGraph™, the ten v0.5 domain apps and the v0.6 Quantum AI Lab)
+ROADMAP.md                    v0.4 Trustworthy AI, v0.5 domain applications, v0.6 Quantum AI, later releases
 examples/*.algo               source programs (bad_example.algo shows every error)
 vscode-algolang/              VS Code extension: highlighting + the language server
 .vscode/tasks.json            Ctrl+Shift+B to run the open .algo file
