@@ -13,6 +13,7 @@ The generated Python imports `algoruntime`, which executes agents.
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import re
 import subprocess
@@ -27,7 +28,7 @@ HERE = Path(__file__).resolve().parent
 GRAMMAR = (HERE / "grammar.lark").read_text()
 PARSER = Lark(GRAMMAR, start="start", parser="earley", propagate_positions=True)
 
-TYPES = {"text", "score", "list", "json", "bool"}
+TYPES = {"text", "score", "list", "json", "bool", "number"}   # number: v1.0
 PACK_DIRS = [HERE / "packs"] + [Path(p) for p in os.environ.get("ALGO_PACKS", "").split(os.pathsep) if p]
 BUILTIN_TOOLS = {"web.search", "file.read", "calc.eval"}
 DEFAULT_MODEL = "claude-sonnet-5-5"
@@ -82,6 +83,8 @@ class Program:
     default_policy: dict = field(default_factory=dict)
     disclosure: str | None = None                 # `disclose "…"` (v0.4)
     untrusted: set = field(default_factory=set)   # tools declared `untrusted` (v0.4)
+    records: dict = field(default_factory=dict)   # v1.0 typed messages: name → {field: type}
+    record_lines: dict = field(default_factory=dict)
 
 
 @dataclass
@@ -332,6 +335,21 @@ def to_ast(tree: Tree) -> tuple[Program, list[Diag]]:
             prog.risk = (str(level).lower(), _s(purpose) if purpose is not None else "", _line(item))
         elif item.data == "disclose_decl":
             prog.disclosure = _s(item.children[0])
+        elif item.data == "type_decl":                       # v1.0: typed messages between agents
+            tname, *fields = [c for c in item.children if c is not None]
+            if str(tname) in prog.records:
+                diags.append(Diag("E132", _line(item), f"type '{tname}' is defined twice"))
+            rec = {}
+            for fd in fields:
+                fname, ftype = str(fd.children[0]), str(fd.children[1])
+                if fname in rec:
+                    diags.append(Diag("E132", _line(item), f"type {tname}: field '{fname}' is defined twice"))
+                if fname == "confidence":
+                    diags.append(Diag("E132", _line(item), f"type {tname}: 'confidence' is reserved (every result "
+                                                           f"already has a .confidence)"))
+                rec[fname] = ftype
+            prog.records[str(tname)] = rec
+            prog.record_lines[str(tname)] = _line(item)
         elif item.data == "eval_decl":
             ename, flow, *cases = item.children
             ev = Eval(str(ename), str(flow) if flow is not None else "main", [], _line(item))
@@ -454,6 +472,7 @@ class Checker:
                 self.check_agent(a)
         self.check_org()
         self.check_mcp()
+        self.check_records()
         if "main" not in self.p.flows and not library:
             self.err("E111", 1, "program has no `flow main(...)` entry point")
         for f in self.p.flows.values():
@@ -705,8 +724,31 @@ class Checker:
                                                  f"policy does not allow (allowed_tools in algo.config.json)")
 
     def check_type(self, t, line):
-        if base_type(t) not in TYPES:
-            self.err("E105", line, f"unknown type '{t}' (use: {', '.join(sorted(TYPES))}, or uncertain<T>)")
+        if base_type(t) not in TYPES and base_type(t) not in self.p.records:
+            self.err("E105", line, f"unknown type '{t}' (use: {', '.join(sorted(TYPES))}, a declared `type`, "
+                                   f"or uncertain<T>)")
+        elif t.startswith("uncertain<") and base_type(t) in self.p.records:
+            self.err("E132", line, f"'{t}': typed messages cannot be uncertain; return {base_type(t)} and check "
+                                   f"its .confidence")
+
+    def check_records(self):
+        """v1.0: field types are text, number, score, bool, list, json or another declared type (no cycles)."""
+        for name, rec in self.p.records.items():
+            line = self.p.record_lines.get(name, 1)
+            for f, t in rec.items():
+                if t not in TYPES | {"number"} and t not in self.p.records:
+                    self.err("E132", line, f"type {name}: field '{f}' has unknown type '{t}'")
+
+        def reach(n, seen):
+            for t in self.p.records.get(n, {}).values():
+                if t == name:
+                    return True
+                if t in self.p.records and t not in seen and reach(t, seen | {t}):
+                    return True
+            return False
+        for name in self.p.records:
+            if reach(name, {name}):
+                self.err("E132", self.p.record_lines.get(name, 1), f"type {name} contains itself")
 
     def check_agent(self, a: Agent):
         self.check_type(a.returns, a.line)
@@ -789,7 +831,7 @@ class Checker:
     def check_condition(self, cond, env):
         """Check an if-condition. An uncertain<T> value may only be compared together with a check of its
         confidence somewhere in the same condition (E117): `if risk > 0.8 and risk.confidence >= 0.7`."""
-        guarded = {str(a.children[0]).split(".")[0] for a in cond.iter_subtrees() if a.data == "attr"}
+        guarded = {str(a.children[0]).split(".")[0] for a in cond.iter_subtrees() if a.data == "attr" and str(a.children[0]).endswith(".confidence")}
         for c in cond.iter_subtrees():
             if c.data == "cond":
                 self.check_cond(c, env, guarded)
@@ -799,12 +841,15 @@ class Checker:
     def check_cond(self, cond, env, guarded=()):
         left, op, right = cond.children
         for side in (left, right):
+            if isinstance(side, Tree) and side.data == "attr" and not str(side.children[0]).endswith(".confidence"):
+                t = self.expr_type(side, env)                 # v1.0: a field of a typed message
+                if base_type(t) not in ("score", "number", "bool", "any"):
+                    self.err("E110", _line(cond), f"'{side.children[0]}' is {t}, not a number — only scores and "
+                                                  f"numbers can be compared")
+                continue
             if isinstance(side, Tree) and side.data == "attr":
                 var, _, attr = str(side.children[0]).partition(".")
-                if attr != "confidence":
-                    self.err("E118", _line(cond), f"'{side.children[0]}': only `<result>.confidence` can be read "
-                                                  f"in a condition")
-                elif var not in env:
+                if var not in env:
                     self.err("E103", _line(cond), f"undefined variable '{var}'")
                 elif var in getattr(self, "inputs", set()):
                     self.err("E118", _line(cond), f"'{var}' is a flow input, not an agent result — it has no confidence")
@@ -826,6 +871,28 @@ class Checker:
             return "any"
         if e.data == "call":
             return self.call_type(e, env)
+        if e.data == "attr":                                  # x.confidence, or a field of a typed message
+            path = str(e.children[0]).split(".")
+            if path[0] not in env:
+                self.err("E103", _line(e), f"undefined variable '{path[0]}'")
+                return "any"
+            if path[1:] == ["confidence"]:
+                return "number"
+            t = base_type(env[path[0]])
+            for f in path[1:]:
+                if t == "any":
+                    return "any"
+                rec = self.p.records.get(t)
+                if rec is None:
+                    self.err("E118", _line(e), f"'{'.'.join(path)}': only `.confidence`, or a field of a typed message, "
+                                               f"can be read ({path[0]} is {env[path[0]]})")
+                    return "any"
+                if f not in rec:
+                    self.err("E132", _line(e), f"'{'.'.join(path)}': type {t} has no field '{f}' "
+                                               f"(fields: {', '.join(rec)})")
+                    return "any"
+                t = rec[f]
+            return t
         if e.data == "var":
             n = str(e.children[0])
             if n in ("true", "false"):      # boolean literals can parse as names
@@ -892,7 +959,7 @@ class Checker:
             t = self.expr_type(a, env)
             pname = str(a.children[0]) if isinstance(a, Tree) and a.data == "kwarg" else \
                 (pnames[i] if i < len(pnames) else None)
-            if pname in ptypes and not arg_compatible(ptypes[pname], t):          # v0.7: argument types
+            if pname in ptypes and not arg_compatible(ptypes[pname], t, self.p.records):   # v0.7: argument types
                 self.err("E131", line, f"{name}: argument '{pname}' expects {ptypes[pname]}, but gets {t}"
                          + (" (a text value cannot become a number; pass a score from an agent)" if
                             base_of(ptypes[pname]) == "score" else ""))
@@ -903,13 +970,16 @@ def base_of(t: str) -> str:
     return t[10:-1] if t.startswith("uncertain<") else t
 
 
-def arg_compatible(param: str, arg: str) -> bool:
+def arg_compatible(param: str, arg: str, records=()) -> bool:
     """v0.7: can a value of type `arg` be passed where `param` is declared? Text accepts everything (values are
-    shown to the model as text); numbers, lists, JSON and booleans must match."""
+    shown to the model as text); numbers, lists, JSON and booleans must match; v1.0: a typed message only where
+    its own type (or json) is declared."""
     p, a = base_of(param), base_of(arg)
     if p == "text" or a == "any" or p == a:
         return True
-    return {"score": {"number"}, "list": {"json"}, "json": {"list"}}.get(p, set()).__contains__(a)
+    if p == "json" and a in records:
+        return True
+    return {"score": {"number"}, "number": {"score"}, "list": {"json"}, "json": {"list"}}.get(p, set()).__contains__(a)
 
 
 # ───────────────────────── code generation ─────────────────────
@@ -942,6 +1012,8 @@ class CodeGen:
                 self.w(f"rt.mcp_tool({t!r}, {p.mcp_tools[t]!r})")
             else:
                 self.w(f"rt.tool({t!r})")
+        if p.records:                    # v1.0: typed messages are validated at run time too
+            self.w(f"rt.types({p.records!r})")
         if p.untrusted or p.risk or p.disclosure:
             self.w(f"rt.trust(untrusted={sorted(p.untrusted)!r}, risk={(p.risk[0] if p.risk else None)!r}, "
                    f"disclosure={p.disclosure!r})")
@@ -1015,8 +1087,6 @@ class CodeGen:
         return f"{self.operand(l)} {op} {self.operand(r)}"
 
     def operand(self, e):
-        if isinstance(e, Tree) and e.data == "attr":
-            return f"rt.conf({str(e.children[0]).split('.')[0]})"
         return f"rt.value({self.expr(e)})"
 
     def expr(self, e):
@@ -1035,6 +1105,11 @@ class CodeGen:
         if e.data == "var":
             n = str(e.children[0])
             return {"true": "True", "false": "False"}.get(n, n)
+        if e.data == "attr":                     # x.confidence, or v1.0 fields of a typed message
+            var, *path = str(e.children[0]).split(".")
+            if path == ["confidence"]:
+                return f"rt.conf({var})"
+            return f"rt.field({var}, {path!r})"
         if e.data == "par_block":
             return "rt.par(" + ", ".join(f"lambda: {self.expr(c)}" for c in e.children) + ")"
         if e.data == "par_for":
@@ -1102,7 +1177,7 @@ def flow_graph(prog: Program, flow: str = "main"):
         return nid
 
     def vars_in(tree):
-        return [str(t.children[0]) for t in tree.iter_subtrees() if t.data == "var"]
+        return [str(t.children[0]).split(".")[0] for t in tree.iter_subtrees() if t.data in ("var", "attr")]
 
     def link(names, nid, exclude=(), dashed=False):
         for v in names:
@@ -1239,7 +1314,14 @@ def load_program(src, name, base_dir: Path, stack=(), file_label=None, library=F
     for d in diags:
         d.file = file_label
     for kind, target, alias, line in prog.uses:
-        path = resolve_use(kind, target, base_dir)
+        if kind == "use_file" and target.startswith("pkg:"):       # v1.0: an installed, locked package
+            import algopkg
+            path, why = algopkg.resolve_pkg_use(target, Path(base_dir))
+            if path is None:
+                diags.append(Diag("E133", line, why, file_label))
+                continue
+        else:
+            path = resolve_use(kind, target, base_dir)
         shown = f'"{target}"' if kind == "use_file" else f"pack {target}"
         if path is None:
             hint = "check the path" if kind == "use_file" else "see `algo domains` for available packs"
@@ -1266,6 +1348,11 @@ def load_program(src, name, base_dir: Path, stack=(), file_label=None, library=F
         for t, srv in sub.mcp_tools.items():
             prog.mcp_tools.setdefault(t, srv)
         prog.untrusted |= sub.untrusted                  # an imported untrusted tool stays untrusted
+        for tname, rec in sub.records.items():            # v1.0: typed messages travel with their agents
+            if tname in prog.records and prog.records[tname] != rec:
+                diags.append(Diag("E132", line, f"type '{tname}' is defined differently in {shown}", file_label))
+            prog.records.setdefault(tname, rec)
+            prog.record_lines.setdefault(tname, 1)
         for a in sub.agents.values():
             new_name = f"{alias}.{a.name}" if alias else a.name
             if new_name in prog.agents:
@@ -1286,6 +1373,21 @@ def load_program(src, name, base_dir: Path, stack=(), file_label=None, library=F
     return prog, diags
 
 
+def _run_vm(a, ir_path):
+    """Run AlgoIR on the AlgoVM in this process, with the same switches as a compiled run."""
+    import algoir
+    for k, on in (("ALGO_LIVE", a.live), ("ALGO_INTERACTIVE", a.interactive), ("ALGO_STREAM", getattr(a, "stream", False))):
+        if on:
+            os.environ[k] = "1"
+    if a.audit_dir:
+        os.environ["ALGO_AUDIT_DIR"] = a.audit_dir
+    for kv in a.arg:
+        if "=" not in kv:
+            print(f'✗ --arg needs name=value, e.g. --arg "topic=AI"; got: {kv}', file=sys.stderr)
+            return 1
+    return algoir.cli_run(ir_path, a.arg, getattr(a, "flow", "main") or "main")
+
+
 def compile_source(src: str, name: str, base_dir: Path | str | None = None):
     base = Path(base_dir) if base_dir else Path.cwd()
     me = (base / name).resolve()
@@ -1295,7 +1397,7 @@ def compile_source(src: str, name: str, base_dir: Path | str | None = None):
     return CodeGen(prog, name).gen(), prog
 
 
-VERSION = "0.7.0"
+VERSION = "1.0.0"
 
 TEMPLATE = '''// {name}.algo — created by `algo new`
 // Run it:  algo run {name}.algo --arg "topic=Your topic here"
@@ -1531,10 +1633,14 @@ def main(argv=None):
         s.add_argument("file")
         if c == "build":
             s.add_argument("-o", "--out")
+            s.add_argument("--ir", action="store_true", help="build AlgoIR for the AlgoVM instead of Python (v1.0)")
+            s.add_argument("--sign", action="store_true", help="sign the AlgoIR with the audit key (v1.0)")
         if c == "run":
             s.add_argument("--arg", action="append", default=[], help='flow input, e.g. --arg "topic=AI ethics"')
             s.add_argument("--flow", default="main", help="which flow to run (default: main)")
             s.add_argument("--stream", action="store_true", help="show each agent's output token by token (v0.7)")
+            s.add_argument("--engine", choices=["python", "vm"], default="python",
+                           help="vm: run on the AlgoVM, AlgoLang's native virtual machine (v1.0)")
             s.add_argument("--live", action="store_true", help="call real Claude models (needs ANTHROPIC_API_KEY)")
             s.add_argument("--interactive", action="store_true", help="ask a human to approve low-confidence results")
             s.add_argument("--audit-dir", default=None, help="where audit logs go (default: runs/ or algo.config.json)")
@@ -1601,6 +1707,13 @@ def main(argv=None):
     s.add_argument("--program", default=None, help="the .algo file to replay (default: the one in the trace)")
     s.add_argument("--lenient", action="store_true", help="answer changed calls offline instead of stopping")
     s.add_argument("--json", action="store_true")
+    s = sub.add_parser("pkg", help="packages: init, build, publish, search, install, list, verify (v1.0)")
+    s.add_argument("action", choices=["init", "build", "publish", "search", "install", "list", "verify"])
+    s.add_argument("rest", nargs="*")
+    s.add_argument("--registry", default=None, help="registry folder or URL (default: algo.config.json registry.url)")
+    s.add_argument("--out", default="dist")
+    s.add_argument("--name", default=None)
+    s.add_argument("--version", dest="pkg_version", default="1.0.0")
     s = sub.add_parser("mcp", help="MCP: list or call a server's tools, or serve your flows as an MCP server (v0.7)")
     s.add_argument("action", choices=["servers", "list", "call", "serve"])
     s.add_argument("rest", nargs="*", help="list/call: SERVER [TOOL] [JSON]; serve: FILE.algo …")
@@ -1660,6 +1773,9 @@ def main(argv=None):
         if a.cmd == "eval":
             return algoeval.cli_eval(a.file, live=a.live, replay=a.replay, record=a.record, only=a.only, as_json=a.json)
         return algoeval.cli_replay(a.trace, program=a.program, strict=not a.lenient, as_json=a.json)
+    if a.cmd == "pkg":
+        import algopkg
+        return algopkg.cli(a.action, a.rest, registry=a.registry, out=a.out, name=a.name, version=a.pkg_version)
     if a.cmd == "mcp":
         if a.action == "serve":
             import algoserve
@@ -1761,6 +1877,8 @@ def main(argv=None):
 
     path = Path(a.file)
     from_pack = False
+    if a.cmd == "run" and path.name.endswith(".algoir.json"):      # v1.0: run a built program on the AlgoVM
+        return _run_vm(a, path)
     if not path.exists():
         import algocli_ext
         found = algocli_ext.resolve_program(a.file)
@@ -1783,6 +1901,23 @@ def main(argv=None):
         return 0
 
     build_dir = (Path.cwd() if from_pack else path.resolve().parent) / "build"
+    if a.cmd == "build" and getattr(a, "ir", False):                # v1.0: AlgoIR, the portable program format
+        import algoir
+        doc = algoir.to_ir(prog, path.stem, src)
+        if a.sign:
+            doc = algoir.sign(doc)
+        out = Path(a.out or (build_dir / (path.stem + ".algoir.json")))
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps(doc, indent=1, ensure_ascii=False), encoding="utf-8")
+        print(f"✓ built {path.name} → {out}  (AlgoIR v{algoir.IR_VERSION}, sha256 {doc['sha256'][:16]}…"
+              f"{', signed ' + doc['signature']['kid'] if a.sign else ''})")
+        return 0
+    if a.cmd == "run" and getattr(a, "engine", "python") == "vm":
+        import algoir
+        tmp = build_dir / (path.stem + ".algoir.json")
+        tmp.parent.mkdir(parents=True, exist_ok=True)
+        tmp.write_text(json.dumps(algoir.to_ir(prog, path.stem, src), ensure_ascii=False), encoding="utf-8")
+        return _run_vm(a, tmp)
     out = Path(getattr(a, "out", None) or (build_dir / (path.stem + ".py")))
     out.parent.mkdir(parents=True, exist_ok=True)
     out.write_text(code, encoding="utf-8")

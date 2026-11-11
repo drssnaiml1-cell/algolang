@@ -211,6 +211,21 @@ jobs:
           assert set(a) == set(b) == {"00", "11"}
           PY
 
+  algovm:
+    name: AlgoVM gives the same results as compiled Python (every program)
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with: {python-version: "3.12", cache: pip}
+      - run: pip install -e ".[dev]"
+      - run: python tools/check_vm.py
+      - name: Public package registry builds reproducibly
+        run: |
+          python tools/make_registry.py "$RUNNER_TEMP/r1" && python tools/make_registry.py "$RUNNER_TEMP/r2"
+          diff -r "$RUNNER_TEMP/r1" "$RUNNER_TEMP/r2"
+
   package:
     name: Wheel builds and installs cleanly
     needs: lint

@@ -1,6 +1,6 @@
 # AlgoLang roadmap
 
-**Current release: v0.7.0 — Interoperability** (after v0.6 Quantum AI, v0.5 domain applications and v0.4 Trustworthy AI) · **Next: v1.0 — native runtime and ecosystem**
+**Current release: v1.0.0 — native runtime and ecosystem** · every release planned since v0.1 has shipped · **Next: [after 1.0](#after-10)**
 
 AlgoProfessor AI R&D Solutions, Hyderabad. Designed by Dr. S. Satyanarayana. [www.algoprofessor.com](https://www.algoprofessor.com)
 
@@ -258,15 +258,39 @@ As in the rest of AlgoLang, the guarantees come from the language and runtime, n
 
 ---
 
-## 8. Later releases
+## 8. v1.0 Native runtime and ecosystem (released in 1.0.0)
+
+**Objective: make AlgoLang a platform teams can build on, share and deploy with confidence.**
+
+| No. | Objective | Delivered |
+|---|---|---|
+| 1 | **Typed agent-to-agent messaging** | `type` declarations with nested fields; compile-time checks (E131, E132); run-time validation of every answer; JSON shapes given to live models; field-by-field PII masking |
+| 2 | **Native runtime** | AlgoIR, a versioned, hashed, signable program format, and the AlgoVM that runs it with no generated code; `require_signed_ir`; all 222 shipped programs identical on both engines in CI |
+| 3 | **Package registry** | `algo pkg` with reproducible signed archives, semver ranges, dependencies, `algo.lock`, `use "pkg:…"`, E133 for changed files, trusted publishers; the public registry of 20 domain-pack packages |
+| 4 | **Studio SSO and RBAC** | OpenID Connect with PKCE and RS256 verification, API tokens, viewer · reviewer · author · admin, reviewer identity in four-eyes approvals, an access log |
+
+---
+
+## After 1.0
+
+Ideas for the next releases, to be planned one at a time as before:
+
+- **AlgoVM everywhere:** a JavaScript AlgoVM for the browser and edge devices, reading the same AlgoIR.
+- **Organisation registries:** publisher certificates issued by an organisation key, revocation lists, and mirrors.
+- **Federated review:** review queues shared across teams and sites, with SSO identities and delegated approvals.
+- **Long-running agents:** durable flows that wait days for events or approvals and resume where they stopped.
+
+---
+
+## 9. Later releases
 
 | Version | Theme | Highlights |
 |---|---|---|
 | **v0.7** | Interoperability (released) | Publish a flow as an MCP server; argument type checking; token-by-token output streaming; cost and energy dashboards in Studio |
-| **v1.0** | Platform | Native runtime; typed agent-to-agent messaging; package registry for domain packs; SSO and role-based access for Studio |
+| **v1.0** | Platform (released) | Native runtime; typed agent-to-agent messaging; package registry for domain packs; SSO and role-based access for Studio |
 
 ---
 
-## 9. How to contribute
+## 10. How to contribute
 
 Pick a work package, open an issue titled `v0.4 WPn: …` (or `v0.6 Qn: …` for quantum), and read the [developer guide](DEVELOPER_GUIDE.md). Each package needs grammar changes (if any), compiler checks with error codes, runtime enforcement, tests, documentation, and an example in an enterprise application. Domain experts in law, finance, health and education are especially welcome to review the fairness and risk rules.

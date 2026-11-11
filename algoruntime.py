@@ -42,7 +42,7 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from pathlib import Path
 
-VERSION = "0.7.0"
+VERSION = "1.0.0"
 # WebAssembly builds of Python (Pyodide, used by the web playground) cannot start threads:
 # `par` then runs its branches one after another, with identical results.
 CAN_THREAD = sys.platform not in ("emscripten", "wasi")
@@ -66,6 +66,7 @@ class AgentSpec:
     uses: list = field(default_factory=list)
     model: str | None = None
     policy: dict = field(default_factory=dict)
+    schema: dict | None = None        # v1.0: fields of a typed message this agent returns
 
 
 @dataclass
@@ -88,6 +89,89 @@ class Result:
 
 def base_type(t: str) -> str:
     return t[10:-1] if t.startswith("uncertain<") else t
+
+
+# ═══════════════════════════════ v1.0: typed messages between agents ═══════════════════════════════
+class MessageTypeError(ValueError):
+    """An agent's answer (or an input) does not match its declared message type."""
+
+
+def record_format(name, records):
+    """JSON shape a model must reply with for a typed message (nested types expanded)."""
+    def shape(t, depth=0):
+        if t in records and depth < 4:
+            return "{" + ", ".join(f'"{f}": {shape(ft, depth + 1)}' for f, ft in records[t].items()) + "}"
+        return {"text": "<text>", "number": "<number>", "score": "<number 0-1>", "bool": "true|false",
+                "list": "[<strings>]", "json": "<object>"}.get(t, "<object>")
+    return f'Reply as JSON: {{"value": {shape(name)}, "confidence": <0-1>}} — every field is required'
+
+
+def check_record(value, name, records, path=None):
+    """Validate (and gently coerce) a typed message. Returns the clean value or raises MessageTypeError."""
+    path = path or name
+    if isinstance(value, str):
+        try:
+            value = json.loads(value)
+        except json.JSONDecodeError:
+            raise MessageTypeError(f"{path}: expected a {name} object, got text") from None
+    if not isinstance(value, dict):
+        raise MessageTypeError(f"{path}: expected a {name} object, got {type(value).__name__}")
+    out = {}
+    for f, t in records[name].items():
+        if f not in value:
+            raise MessageTypeError(f"{path}.{f}: missing (a {name} needs {', '.join(records[name])})")
+        v = value[f]
+        where = f"{path}.{f}"
+        if t in records:
+            out[f] = check_record(v, t, records, where)
+        elif t in ("number", "score"):
+            if isinstance(v, bool):
+                raise MessageTypeError(f"{where}: expected a {t}, got {v!r}")
+            try:
+                v = float(str(v).replace(",", "").strip().rstrip("%"))
+            except ValueError:
+                raise MessageTypeError(f"{where}: expected a {t}, got {str(v)[:40]!r}") from None
+            if t == "score" and not 0 <= v <= 1:
+                raise MessageTypeError(f"{where}: a score must be between 0 and 1, got {v:g}")
+            out[f] = int(v) if t == "number" and v.is_integer() else v
+        elif t == "bool":
+            if isinstance(v, bool):
+                out[f] = v
+            elif str(v).strip().lower() in ("true", "yes", "1", "false", "no", "0"):
+                out[f] = str(v).strip().lower() in ("true", "yes", "1")
+            else:
+                raise MessageTypeError(f"{where}: expected true or false, got {str(v)[:40]!r}")
+        elif t == "list":
+            if not isinstance(v, list):
+                raise MessageTypeError(f"{where}: expected a list, got {type(v).__name__}")
+            out[f] = v
+        elif t == "json":
+            out[f] = v
+        else:
+            out[f] = v if isinstance(v, str) else json.dumps(v, ensure_ascii=False)
+    return out
+
+
+def mock_record(name, records, seed, short, depth=0):
+    """A deterministic, valid instance of a typed message for the offline mock model."""
+    out = {}
+    for i, (f, t) in enumerate(records[name].items()):
+        h = (seed // (7 + i)) % 10000
+        if t in records and depth < 4:
+            out[f] = mock_record(t, records, seed + i + 1, short, depth + 1)
+        elif t == "number":
+            out[f] = 1000 + h * 10
+        elif t == "score":
+            out[f] = round(0.55 + h / 25000, 2)
+        elif t == "bool":
+            out[f] = bool(h % 2)
+        elif t == "list":
+            out[f] = [f"{f} {k + 1} for: {short[:40]}" for k in range(2 + h % 2)]
+        elif t == "json":
+            out[f] = {"note": short[:40]}
+        else:
+            out[f] = f"{f} for {short[:50]}"
+    return out
 
 
 def _stdev(xs):
@@ -455,6 +539,12 @@ def coerce_input(flow, name, typ, val):
     where = f"flow {flow}: input '{name}' must be"
     if t == "text":
         return val if isinstance(val, str) else (json.dumps(val, ensure_ascii=False) if isinstance(val, (list, dict)) else str(val))
+    if t == "number":
+        try:
+            x = float(str(val).replace(",", "").strip())
+        except ValueError:
+            raise InputTypeError(f"{where} a number, got {str(val)[:60]!r}") from None
+        return int(x) if x.is_integer() else x
     if t == "score":
         if isinstance(val, bool):
             raise InputTypeError(f"{where} a score between 0 and 1, got {val!r}")
@@ -522,7 +612,11 @@ class MockBackend:
         if canon:                                    # an ideal model answers the meaning, not the wording
             short = f"answer {seed % 100000:05d}"
         returns = base_type(spec.returns)
-        if returns == "score":
+        if spec.schema is not None:                                  # v1.0: a typed message
+            val = mock_record(returns, spec.schema, seed, short)
+        elif returns == "number":
+            val = 100 + seed // 11 % 9900
+        elif returns == "score":
             val = round(0.55 + (seed // 7 % 4000) / 10000, 2)      # 0.55 – 0.95
             if sample:                                              # repeated samples disagree a little
                 jitter = ((_h(spec.name, gkey, sample) % 1600) - 800) / 10000      # ±0.08
@@ -571,6 +665,7 @@ class ClaudeBackend:
     name = "live"
     FORMATS = {
         "score": 'Reply as JSON: {"value": <number 0-1>, "confidence": <0-1>}',
+        "number": 'Reply as JSON: {"value": <number>, "confidence": <0-1>}',
         "list": 'Reply as JSON: {"value": [<strings>], "confidence": <0-1>}',
         "bool": 'Reply as JSON: {"value": true|false, "confidence": <0-1>}',
         "json": 'Reply as JSON: {"value": <object>, "confidence": <0-1>}',
@@ -591,7 +686,8 @@ class ClaudeBackend:
                  for t in spec.uses if t in TOOLS]
         by_api_name = {t.replace(".", "_"): t for t in spec.uses}
         messages = [{"role": "user", "content": prompt}]
-        system = f"You are {spec.role or spec.name}. {self.FORMATS[base_type(spec.returns)]}. Output JSON only."
+        fmt = record_format(spec.returns, spec.schema) if spec.schema else self.FORMATS[base_type(spec.returns)]
+        system = f"You are {spec.role or spec.name}. {fmt}. Output JSON only."
         if spec.policy.get("explain"):
             system += (' Also include "reasons": [short strings explaining the decision]'
                        + (' and "evidence": [exact quotes copied from the input or tool results that support it]'
@@ -662,7 +758,8 @@ class LocalBackend:
             if out is not None:
                 tool_calls.append({"tool": t, "chars": len(out), "text": out[:4000]})
                 context.append(f"[{t}]\n{out[:4000]}")
-        system = f"You are {spec.role or spec.name}. {ClaudeBackend.FORMATS[base_type(spec.returns)]}. Output JSON only."
+        fmt = record_format(spec.returns, spec.schema) if spec.schema else ClaudeBackend.FORMATS[base_type(spec.returns)]
+        system = f"You are {spec.role or spec.name}. {fmt}. Output JSON only."
         if spec.policy.get("explain"):
             system += (' Also include "reasons": [short strings]'
                        + (' and "evidence": [exact quotes from the input or tool results]'
@@ -1065,6 +1162,19 @@ class Runtime:
             import algomcp
             algomcp.bind_tool(name, server, (self.cfg.get("mcp_servers") or {}).get(server))
 
+    def types(self, records):
+        """v1.0: declared message types; agents returning one are validated against it."""
+        self.records = dict(records)
+
+    def field(self, x, path):
+        """`claim.amount`: a field of a typed message (the confidence of the whole message is kept)."""
+        v = self.value(x)
+        for f in path:
+            if not isinstance(v, dict) or f not in v:
+                raise MessageTypeError(f"'{'.'.join(path)}' is not available in {str(v)[:60]}")
+            v = v[f]
+        return v
+
     def trust(self, untrusted=(), risk=None, disclosure=None):
         """v0.4: tools whose output is fenced, the program's risk level and its AI disclosure."""
         self.untrusted, self.risk, self.disclosure = set(untrusted), risk, disclosure
@@ -1074,6 +1184,9 @@ class Runtime:
 
     def agent(self, spec: AgentSpec):
         rt = self
+        records = getattr(self, "records", {}) or {}
+        if base_type(spec.returns) in records:
+            spec.schema = records                     # v1.0: validated against its message type
         self.specs.append(spec)
 
         def call(**kwargs):
@@ -1143,9 +1256,13 @@ class Runtime:
         # v0.4.1: the organisation can route an agent to another model without editing the program
         model_id = (self.cfg.get("agent_models") or {}).get(spec.name, model_id)
 
+        records = getattr(self, "records", {}) or {}
+
         def fmt(v):
             if isinstance(v, list):
                 return "; ".join(map(str, (self.value(x) for x in v)))
+            if isinstance(v, dict) and records:           # v1.0: a typed message is shown to the model as JSON
+                return json.dumps(v, ensure_ascii=False)
             return str(v)
         # v0.4 privacy: withhold protected-attribute values and mask personal data before any prompt exists
         privacy, red = {}, None
@@ -1157,6 +1274,8 @@ class Runtime:
             def scrub(v):
                 if isinstance(v, list):
                     return [scrub(self.value(x)) for x in v]
+                if isinstance(v, dict):                       # v1.0: typed messages are scrubbed field by field
+                    return {k: scrub(x) for k, x in v.items()}
                 if not isinstance(v, str):
                     return v
                 v, found = algotrust.withhold(v, withhold, extra_vocab)
@@ -1399,6 +1518,8 @@ class Runtime:
                             guard.setdefault("injections", []).extend(g_now["injections"])
                 extra = out[4] if len(out) > 4 else None
                 val, conf, tokens, tool_calls = out[:4]
+                if spec.schema is not None:                   # v1.0: the message must match its type
+                    val = check_record(val, spec.returns, spec.schema)
                 dt = time.time() - t0
                 if pol.get("timeout_s") and dt > pol["timeout_s"]:
                     raise TimeoutError(f"{spec.name} exceeded {pol['timeout_s']}s")
@@ -1464,10 +1585,20 @@ class Runtime:
             return [f.result() for f in [ex.submit(fn, it) for it in items]]
 
     # flow lifecycle -------------------------------------------------
-    @staticmethod
-    def typed_inputs(flow, params):
-        """v0.7: convert flow inputs to their declared types, or refuse them with a clear message."""
-        return [coerce_input(flow, name, typ, val) for name, typ, val in params]
+    def typed_inputs(self, flow, params):
+        """v0.7: convert flow inputs to their declared types, or refuse them with a clear message
+        (v1.0: typed messages are validated against their declared fields)."""
+        records = getattr(self, "records", {}) or {}
+        out = []
+        for name, typ, val in params:
+            if base_type(typ) in records:
+                try:
+                    out.append(check_record(val, base_type(typ), records, f"flow {flow}: input '{name}'"))
+                except MessageTypeError as e:
+                    raise InputTypeError(str(e)) from None
+            else:
+                out.append(coerce_input(flow, name, typ, val))
+        return out
 
     def begin_flow(self, name, args):
         self.flow_name, self.flow_inputs = name, dict(args)

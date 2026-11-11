@@ -36,7 +36,7 @@
   <a href="https://www.algoprofessor.com"><img src="docs/images/algolang-hero.svg" alt="AlgoLang: an order event from AlgoPulse flows through parallel Quote and Limits agents, a deterministic BREACH guard, and an uncertain RiskGate agent with a human gate; every call is written to a hash-chained audit log" width="100%"></a>
 </p>
 
-**Current version: 0.7.0** (Interoperability: flows and agents as MCP servers · typed arguments and inputs · token-by-token streaming · cost and energy dashboard; on v0.6 Quantum AI, v0.5 domain applications and v0.4 Trustworthy AI) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md) · [50 Sample Programs (PDF)](docs/AlgoLang_50_Sample_Programs.pdf) · [Language manual (PDF)](docs/AlgoLang_Documentation_v0.4.pdf)
+**Current version: 1.0.0** (typed agent-to-agent messages · AlgoIR and the AlgoVM native runtime · signed packages and a public registry · Studio single sign-on and roles; with v0.7 Interoperability, v0.6 Quantum AI, v0.5 domain applications and v0.4 Trustworthy AI) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md) · [50 Sample Programs (PDF)](docs/AlgoLang_50_Sample_Programs.pdf) · [Language manual (PDF)](docs/AlgoLang_Documentation_v0.4.pdf)
 
 AlgoLang has **no functions**. Every unit of work is an `agent` with a role, a goal, explicit tools, a model and a policy. A `flow` is the only other construct, and it can do just four things:
 
@@ -86,7 +86,7 @@ flowchart TB
 
 1. [Objective](#1-objective)
 2. [Design principles](#2-design-principles)
-3. [What's new in v0.7: Interoperability](#3-whats-new-in-v07-interoperability)
+3. [What's new in v1.0: native runtime and ecosystem](#3-whats-new-in-v10-native-runtime-and-ecosystem)
 4. [Get started](#4-get-started)
 5. [Learn by example: 50 sample programs](#5-learn-by-example-50-sample-programs)
 6. [Enterprise applications](#6-enterprise-applications)
@@ -96,7 +96,7 @@ flowchart TB
 10. [Governance and runtime guarantees](#10-governance-and-runtime-guarantees)
 11. [Python SDK](#11-python-sdk)
 12. [For developers](#12-for-developers)
-13. [Roadmap: v1.0 native runtime and ecosystem](#13-roadmap-v10-native-runtime-and-ecosystem)
+13. [Roadmap: from v0.1 to v1.0, and beyond](#13-roadmap-from-v01-to-v10-and-beyond)
 14. [Repository layout](#14-repository-layout)
 15. [Author and licence](#15-author-and-licence)
 
@@ -134,9 +134,42 @@ flowchart TB
 - **People stay in the loop.** A low-confidence call goes to a human review queue instead of going out.
 - **One engine, many doors.** The command line, Studio, Prompt UI, SDK and language server all run the same compiler and runtime.
 
-## 3. What's new in v0.7: Interoperability
+## 3. What's new in v1.0: native runtime and ecosystem
 
-<p align="center"><img src="docs/images/sections/03-whats-new.svg" alt="Four interoperability features in v0.7" width="100%"></p>
+<p align="center"><img src="docs/images/sections/03-whats-new.svg" alt="Four pillars of AlgoLang 1.0" width="100%"></p>
+
+**AlgoLang 1.0 is ready for production teams.** Agents exchange typed messages that the compiler and the runtime both check; programs ship as signed, portable artifacts that run on AlgoLang's own virtual machine; agents are shared as signed, versioned packages; and Studio becomes a multi-user workspace with single sign-on and roles.
+
+```algo
+type Party { name: text, phone_verified: bool }
+type Claim { policy: text, amount: number, urgent: bool, fraud_risk: score, claimant: Party, documents: list }
+
+agent Intake(note: text) -> Claim { goal "Read the claim note {note} and fill in every field of the claim" }
+
+flow main(note: text) {
+    claim = Intake(note)                                   // the answer is validated against Claim at run time
+    if claim.amount < 50000 and claim.fraud_risk < 0.7 { emit claim, FastTrack(claim) }
+    else { emit claim, Investigate(claim, claim.amount) }  // FastTrack(claim.policy) would not compile (E131)
+}
+```
+
+```bash
+algo build claims.algo --ir --sign                   # AlgoIR: one portable, hashed, signed JSON artifact
+algo run build/claims.algoir.json --arg "note=…"     # the AlgoVM runs it: no compiler, no generated code
+algo pkg install insurance@^1.0                       # signed packages from a registry, pinned in algo.lock
+algo studio --host 0.0.0.0                            # with "studio": {"auth": {"mode": "oidc", …}}: SSO and roles
+```
+
+| Pillar | What 1.0 adds |
+|---|---|
+| **Typed agent-to-agent messages** | `type Claim { … }` with text, number, score, bool, list, json and nested types. Agents return them, flows read their fields, and the compiler checks every field and argument (**E131**, **E132**). Every model answer is validated against its type at run time (missing or mistyped fields fail loudly); the live model is told the exact JSON shape; personal data in messages is masked field by field. |
+| **AlgoIR and the AlgoVM** | `algo build --ir` writes AlgoIR, a small versioned JSON format with a SHA-256 digest and optional Ed25519 (+ ML-DSA) signature. The AlgoVM runs it directly on the same governed runtime, with no Python generated or executed; `"runtime": {"require_signed_ir": true}` refuses unsigned or altered programs. CI checks that all 222 shipped programs give identical results on the AlgoVM and on compiled Python. |
+| **Packages and registry** | `algo pkg init · build · publish · search · install · list · verify`: reproducible `.algopkg` archives with a SHA-256 per file and a signed manifest, semantic-version ranges, dependencies, `algo.lock`, and `use "pkg:name/file.algo"`. A changed package file is refused at compile time (**E133**); `trusted_publishers` limits who can be installed. The 120 domain packs are published as 20 packages in the public registry on the website. |
+| **Studio SSO and roles** | OpenID Connect sign-in (authorization code with PKCE; RS256 ID tokens verified against the provider's keys), API tokens for automation, and four roles: viewer, reviewer, author and admin. The signed-in person is recorded as the reviewer, so four-eyes approval needs two real people, and every access decision is logged. |
+
+Examples: [`examples/v10/`](examples/v10/).
+
+### v0.7: Interoperability
 
 **v0.7 opens AlgoLang to other software, without opening a gap in its governance.** Any flow can now be called by Claude Desktop, an IDE, another agent framework or another AlgoLang program, over the Model Context Protocol, and every call still runs under the organisation's policies, budgets, human review and signed audit log.
 
@@ -648,6 +681,8 @@ flow main(topic: text) {
 | E129 | Risk declaration error: unknown level, no `disclose` for limited or high risk, no purpose, or high risk without signed audit logs |
 | E130 | Trust value error: `require approvals` outside 1–5, `retain` outside 1–3650 days or not audit/traces, `expect fair` with fewer than two values, unknown perturbation or consistency outside 0–1 |
 | E131 | Argument type mismatch (v0.7): a text value passed where an agent declares a `score`, `list`, `bool` or `json` parameter |
+| E132 | Typed message error (v1.0): unknown field or type, a field defined twice, a reserved field name, a type that contains itself, or an uncertain typed message |
+| E133 | Package error (v1.0): a `use "pkg:…"` file that is not installed, not in algo.lock, or changed since it was installed |
 
 Errors from imported modules are reported with the file name, and the org config is enforced at compile time: a forbidden attribute or an ungranted tool is an error before anything runs.
 
@@ -736,13 +771,11 @@ pip install -e ".[dev]"
 make check        # ruff + pytest + lint of every .algo file
 ```
 
-## 13. Roadmap: v1.0 native runtime and ecosystem
+## 13. Roadmap: from v0.1 to v1.0, and beyond
 
 <p align="center"><img src="docs/images/sections/13-roadmap.svg" alt="Roadmap timeline" width="100%"></p>
 
-**v0.7 Interoperability is released** (see [§3](#3-whats-new-in-v07-interoperability)), after v0.6 Quantum AI, v0.5's ten large-scale domain applications and v0.4 Trustworthy AI. The full plan is in **[ROADMAP.md](ROADMAP.md)**.
-
-**v1.0 — native runtime and ecosystem (next).** A native runtime, typed agent-to-agent messaging, a package registry for domain packs, and single sign-on with role-based access for Studio.
+**AlgoLang 1.0 is released** (see [§3](#3-whats-new-in-v10-native-runtime-and-ecosystem)): every release planned since v0.1 has shipped, one at a time, each with tests, CI, documentation and figures. What comes after 1.0 is in **[ROADMAP.md](ROADMAP.md#after-10)**: an AlgoVM for the browser and edge devices, organisation-wide registries with publisher certificates, and federated review across teams.
 
 | Version | Theme | Status |
 |---|---|---|
@@ -757,8 +790,8 @@ make check        # ruff + pytest + lint of every .algo file
 | v0.4.1 | LLM & SLM graph optimisation: SLM-first cascades, exact model assignment over the agent graph, local small models, `agent_models` routing | Released |
 | v0.5 | Ten large-scale domain applications: ML & DL, RL, responsible & explainable AI, NLP, Indian languages, digital health, network biology, engineering, smart cities, transport | Released |
 | v0.6 | Quantum AI: IBM, Braket and Azure backends, noise and mitigation, QPU budgets, uncertain and bounded quantum results, VQE, kernels, amplitude estimation, post-quantum audit | Released |
-| v0.7 | Interoperability: flows and agents as MCP servers, argument types (E131), typed inputs, token streaming, cost and energy dashboard | **Current** |
-| v1.0 | Native runtime and ecosystem | Next |
+| v0.7 | Interoperability: flows and agents as MCP servers, argument types (E131), typed inputs, token streaming, cost and energy dashboard | Released |
+| **v1.0** | Native runtime and ecosystem: typed agent-to-agent messages, AlgoIR and the AlgoVM, signed packages and a public registry, Studio single sign-on and roles | **Current** |
 
 ## 14. Repository layout
 
@@ -801,6 +834,9 @@ algoquantum.py                quantum tools: simulator, OpenQASM, QAOA + exact c
 algoqpu.py                    Quantum AI: hardware backends, noise, budgets, bounded checks, VQE,
                               kernels, amplitude estimation, provenance and replay — v0.6
 algoserve.py                  serve flows and agents as an MCP server (stdio, HTTP) — v0.7
+algoir.py                     AlgoIR (portable, signed programs) and the AlgoVM — v1.0
+algopkg.py                    packages, registries and algo.lock — v1.0
+algoauth.py                   Studio single sign-on (OIDC) and role-based access — v1.0
 docs/images/                  animated SVG figures: sections/, apps/ (drawn from the programs), Studio screenshots
 tools/make_figures.py         regenerates every figure (CI checks they match the code)
 examples/v03/                 tour of v0.3: MCP demo server, uncertain<T>, budgets, eval

@@ -70,6 +70,10 @@ KEYWORDS = {
                "`quantum.kernel`, `quantum.amplitude`, `quantum.knapsack`, `quantum.colouring`, `quantum.backend`, on a "
                "simulator, a noisy simulator or IBM, Braket and Azure hardware. Guard on `contains \"VERIFIED\"` "
                "(or `\"BOUNDED\"` beyond exact checks).",
+    "type": "**type** Name { field: type, … } (v1.0) — a typed message agents pass to each other. Field types: text, "
+            "number, score, bool, list, json or another type. Agents return it (`-> Claim`), flows read its fields "
+            "(`claim.amount`), and every model answer is validated against it at run time (E131, E132).",
+    "number": "**number** (v1.0) — any number, for flow inputs, agent parameters and fields of typed messages.",
     "qpu": "**budget qpu N seconds | minutes | usd** (v0.6) — the most QPU time or money this agent's quantum tools may "
            "use; checked before a job is submitted. `expect qpu < N` in an eval checks the run's QPU seconds.",
     "fidelity": "**expect fidelity > x** (v0.6) — the lowest Hellinger fidelity of the run's quantum jobs against the "

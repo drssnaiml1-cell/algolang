@@ -17,6 +17,7 @@ start: item*
      | circuit_decl
      | risk_decl
      | disclose_decl
+     | type_decl
 
 // use "shared/agents.algo"           import another file's models, tools and agents
 // use pack insurance.claims_triage    import a domain pack from the library
@@ -45,7 +46,11 @@ agent_decl: "agent" NAME "(" [params] ")" "->" type "{" agent_clause* "}"
 params: param ("," param)*
 param: NAME ":" type ["=" literal]
 
-// text | score | list | json | bool   — or uncertain<score>: sampled several times, carries its confidence
+// v1.0 typed messages between agents:  type Claim { policy: text, amount: number, urgent: bool }
+type_decl: "type" NAME "{" field_decl ("," field_decl)* [","] "}"
+field_decl: NAME ":" NAME
+
+// text | score | list | json | bool | a declared type — or uncertain<score>: sampled, carries its confidence
 ?type: NAME
      | "uncertain" "<" NAME ">"          -> uncertain_type
 
@@ -89,6 +94,7 @@ target: NAME                         -> single_target
      | par_block
      | par_for
      | NAME                          -> var
+     | DOTTED                        -> attr        // r.confidence, or a field of a typed message: claim.amount
      | literal
 
 call: (NAME | DOTTED) "(" [args] ")"
@@ -111,7 +117,6 @@ cond: operand COMPARE operand
     | operand "contains" STRING            -> contains_cond     // deterministic text guard (no model involved)
     | operand "not" "contains" STRING      -> not_contains_cond
 ?operand: expr
-        | DOTTED                           -> attr
 
 // eval regression on main {
 //     case "small claim" (claim = "…") { expect called Routing  expect tokens < 2000 }

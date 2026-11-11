@@ -472,6 +472,8 @@ def main():
                                                 .replace("<svg ", '<svg style="background:#0E2140;border-radius:6px" ', 1),
                                                 encoding="utf-8")
     shutil.copytree(ROOT / "packs", OUT / "packs")
+    import make_registry                                   # v1.0: the public package registry
+    make_registry.build(OUT / "registry")
     catalog = json.loads((ROOT / "packs" / "catalog.json").read_text(encoding="utf-8"))
     (OUT / "img").mkdir()
     for name in ("studio-domains", "prompt-answer", "studio-governance", "studio-run"):

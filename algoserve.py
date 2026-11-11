@@ -28,7 +28,7 @@ from pathlib import Path
 import algoruntime as rt
 
 PROTOCOL_VERSION = "2025-06-18"
-SCHEMAS = {"text": {"type": "string"}, "score": {"type": "number", "minimum": 0, "maximum": 1},
+SCHEMAS = {"text": {"type": "string"}, "number": {"type": "number"}, "score": {"type": "number", "minimum": 0, "maximum": 1},
            "bool": {"type": "boolean"}, "list": {"type": "array", "items": {"type": "string"}},
            "json": {"type": ["object", "array"]}}
 RESULT_SCHEMA = {"type": "object", "properties": {

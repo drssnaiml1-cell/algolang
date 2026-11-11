@@ -4,6 +4,25 @@ All notable changes to AlgoLang are documented here. The format follows [Keep a 
 
 ## [Unreleased]
 
+## [1.0.0] — 2026-11-11 · Native runtime and ecosystem
+
+AlgoLang 1.0: every release planned since v0.1 has shipped. Agents exchange typed messages, programs ship as signed artifacts that run on AlgoLang's own virtual machine, agents are shared as signed packages, and Studio is a multi-user workspace with single sign-on and roles.
+
+### Added
+- **Typed agent-to-agent messages:** `type Name { field: type, … }` with `text`, `number`, `score`, `bool`, `list`, `json` and nested types; agents return them (`-> Claim`), flows read fields (`claim.amount`, `claim.claimant.name`) in conditions and arguments, and imported files share their types.
+  - Compile time: E131 for wrong argument types, new **E132** for unknown or duplicate fields and types, reserved names, self-containing types and uncertain typed messages.
+  - Run time: every answer is validated against its type (numbers and booleans gently coerced; missing fields fail and are retried under `retry`); live models are told the exact JSON shape; typed flow inputs are validated; personal data in messages is masked field by field.
+  - New `number` type for parameters, inputs and fields.
+- **AlgoIR and the AlgoVM** (`algoir.py`): `algo build FILE --ir [--sign]`, `algo run FILE.algoir.json`, `algo run FILE --engine vm`, `algoir.load(…).run(…)`. AlgoIR is versioned JSON with a SHA-256 digest and an optional Ed25519 (+ ML-DSA) signature; `"runtime": {"require_signed_ir": true}` refuses unsigned or altered programs. `tools/check_vm.py` (a CI job) runs all 222 shipped programs on both engines and requires identical results.
+- **Packages and registries** (`algopkg.py`): `algo pkg init | build | publish | search | install | list | verify`, reproducible `.algopkg` archives with per-file SHA-256 and a signed manifest, semantic-version ranges (`^`, `~`, comparisons), dependencies with conflict detection, `algo.lock`, `use "pkg:name/file.algo"`, **E133** for missing or changed package files, and `"registry": {"url", "trusted_publishers"}`. `tools/make_registry.py` publishes the 120 domain packs as 20 packages in the public registry on the website.
+- **Studio single sign-on and roles** (`algoauth.py`): `"studio": {"auth": {"mode": "oidc" | "token"}, "roles", "default_role", "tokens"}`. OpenID Connect authorization code with PKCE, state and nonce; RS256 ID tokens verified against the provider's JWKS (issuer, audience, expiry); HMAC-signed HttpOnly session cookies; API tokens stored as hashes; roles viewer, reviewer, author and admin enforced on every route; the signed-in person recorded as the reviewer; `runs/studio_access.jsonl`; `/api/me`.
+- `examples/v10/`, `tests/test_v1.py`, CI job "AlgoVM gives the same results as compiled Python".
+
+### Changed
+- Package status: Production/Stable.
+- `x.field` may appear wherever an expression may (arguments, `emit`), not only in conditions.
+
+
 ## [0.7.0] — 2026-11-11 · Interoperability
 
 v0.7 lets any software use a governed AlgoLang flow, with no gap in its governance.

@@ -35,6 +35,8 @@ from algoc import VERSION, CompileError, compile_source, flow_graph  # noqa: E40
 
 RUN_LOCK = threading.Lock()
 WORKSPACE = Path.cwd()
+AUTH = None                                   # v1.0: algoauth.Auth when "studio": {"auth": …} is configured
+USER = threading.local()                      # the signed-in user of the current request
 
 
 def _diag_list(e: CompileError):
@@ -266,10 +268,20 @@ def api_reviews(body=None):
     return {"items": list(reversed(items))[:200], "pending": len(al.review.pending())}
 
 
+def api_me(body=None):
+    """v1.0: who is signed in, and what they may do."""
+    u = getattr(USER, "who", None) or {"user": "local", "role": "admin"}
+    import algoauth
+    return dict(u, permissions=sorted(algoauth.PERMS.get(u["role"], ())),
+                sso=bool(AUTH and AUTH.enabled), mode=AUTH.mode if AUTH else "none")
+
+
 def api_review(body):
     try:
         fn = al.review.approve if body.get("decision") == "approved" else al.review.reject
-        fn(body.get("id", ""), body.get("reviewer", ""), body.get("note", ""))
+        who = getattr(USER, "who", None) or {}
+        reviewer = who.get("user") if (AUTH and AUTH.enabled) else body.get("reviewer", "")   # v1.0: the signed-in person
+        fn(body.get("id", ""), reviewer, body.get("note", ""))
         return {"ok": True, "pending": len(al.review.pending())}
     except Exception as e:  # noqa
         return {"ok": False, "problem": str(e)}
@@ -322,7 +334,7 @@ ROUTES = {"/api/check": api_check, "/api/graph": api_graph, "/api/python": api_p
           "/api/templates": api_templates, "/api/template": api_template, "/api/ask": api_ask,
           "/api/status": api_status, "/api/domains": api_domains, "/api/pack": api_pack,
           "/api/batch": api_batch, "/api/reviews": api_reviews, "/api/review": api_review,
-          "/api/report": api_report, "/api/config": api_config, "/api/compose": api_compose}
+          "/api/report": api_report, "/api/config": api_config, "/api/compose": api_compose, "/api/me": api_me}
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -340,8 +352,54 @@ class Handler(BaseHTTPRequestHandler):
         self.end_headers()
         self.wfile.write(data)
 
+    def _gate(self, path):
+        """v1.0: SSO and role-based access. Returns True when the request may proceed."""
+        if AUTH is None or not AUTH.enabled:
+            USER.who = {"user": "local", "role": "admin"}
+            return True
+        who = AUTH.identify(self.headers)
+        route = "/" if path in ("/", "/index.html") else ("/prompt" if path.startswith("/prompt") else path)
+        if who is None:
+            if self.command == "GET" and AUTH.mode == "oidc" and not path.startswith("/api/"):
+                self.send_response(302)
+                self.send_header("Location", "/login")
+                self.end_headers()
+            else:
+                self._send(401, {"error": "sign in first"})
+            return False
+        ok = AUTH.allowed(who["role"], route)
+        AUTH.log(who["user"], who["role"], route, ok)
+        if not ok:
+            self._send(403, {"error": f"your role ({who['role']}) may not use {route}"})
+            return False
+        USER.who = who
+        return True
+
+    def _redirect_uri(self):
+        return (AUTH.conf.get("redirect_uri") or f"http://{self.headers.get('Host', '127.0.0.1')}/auth/callback")
+
     def do_GET(self):
         path = self.path.split("?")[0]
+        if AUTH is not None and AUTH.mode == "oidc" and path == "/login":
+            self.send_response(302)
+            self.send_header("Location", AUTH.login_url(self._redirect_uri()))
+            self.end_headers()
+            return
+        if AUTH is not None and AUTH.mode == "oidc" and path == "/auth/callback":
+            import urllib.parse
+            try:
+                who = AUTH.callback(urllib.parse.parse_qs(urllib.parse.urlparse(self.path).query), self._redirect_uri())
+            except Exception as e:  # noqa
+                return self._send(403, {"error": f"sign-in failed: {e}"})
+            AUTH.log(who["user"], who["role"], "/auth/callback", True)
+            self.send_response(302)
+            self.send_header("Set-Cookie", f"algo_session={AUTH.make_session(who['user'], who['role'])}; HttpOnly; "
+                                           f"SameSite=Lax; Path=/" + ("; Secure" if self._redirect_uri().startswith("https") else ""))
+            self.send_header("Location", "/")
+            self.end_headers()
+            return
+        if not self._gate(path):
+            return
         if path in ("/", "/index.html"):
             return self._send(200, (HERE / "algostudio.html").read_bytes(), "text/html")
         if path in ("/prompt", "/prompt.html"):
@@ -349,7 +407,7 @@ class Handler(BaseHTTPRequestHandler):
         if path == "/dashboard":                       # v0.7: cost and energy dashboard
             import algocli_ext
             return self._send(200, algocli_ext.dashboard_html(api_report()).encode("utf-8"), "text/html")
-        if path in ("/api/files", "/api/templates", "/api/status", "/api/reviews", "/api/report", "/api/config"):
+        if path in ("/api/files", "/api/templates", "/api/status", "/api/reviews", "/api/report", "/api/config", "/api/me"):
             return self._send(200, ROUTES[path]())
         self._send(404, {"error": "not found"})
 
@@ -359,8 +417,11 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(404, {"error": "not found"})
         # only accept requests from Studio's own page (protects against other websites calling it)
         origin = self.headers.get("Origin")
-        if origin and not re.match(r"^http://(127\.0\.0\.1|localhost):\d+$", origin):
+        allowed_origin = (AUTH.conf.get("origin") if AUTH and AUTH.enabled else None)
+        if origin and origin != allowed_origin and not re.match(r"^http://(127\.0\.0\.1|localhost):\d+$", origin):
             return self._send(403, {"error": "forbidden origin"})
+        if not self._gate(path):
+            return
         n = int(self.headers.get("Content-Length") or 0)
         try:
             body = json.loads(self.rfile.read(n) or b"{}")
@@ -381,14 +442,18 @@ def _free_port(start):
 
 
 def serve(port=8765, open_browser=True, page="", host="127.0.0.1"):
-    global WORKSPACE
+    global WORKSPACE, AUTH
     WORKSPACE = Path.cwd()
+    import algoauth
+    AUTH = algoauth.Auth(algoruntime.load_config(), algoruntime.audit_dir())
     port = _free_port(port)
     httpd = ThreadingHTTPServer((host, port), Handler)
     url = f"http://127.0.0.1:{port}"
-    if host not in ("127.0.0.1", "localhost"):
+    if host not in ("127.0.0.1", "localhost") and not AUTH.enabled:
         print(f"⚠ Studio is listening on {host}:{port}. It has no login: expose it only inside a container "
-              "or behind an authenticating proxy. Browsers must open it as http://localhost:PORT.")
+              "or behind an authenticating proxy, or turn on single sign-on (studio.auth in algo.config.json).")
+    elif AUTH.enabled:
+        print(f"🔒 Studio sign-in: {AUTH.mode} · roles: viewer, reviewer, author, admin · access log: {AUTH.audit}")
     for s in (sys.stdout, sys.stderr):
         try:
             s.reconfigure(encoding="utf-8", errors="replace")

@@ -1,0 +1,40 @@
+// Typed claims desk: agents pass typed messages, not loose text (AlgoLang v1.0).
+risk limited "Motor insurance claims triage"
+disclose "An AI system helped read your claim; a claims officer makes every payment decision."
+policy { redact pii }
+
+type Party { name: text, phone_verified: bool }
+type Claim { policy: text, amount: number, urgent: bool, fraud_risk: score, claimant: Party, documents: list }
+type Decision { route: text, reserve: number, reasons: list }
+
+agent Intake(note: text) -> Claim {
+    role "Claims intake officer"
+    goal "Read the claim note {note} and fill in every field of the claim"
+}
+
+agent FastTrack(claim: Claim) -> Decision {
+    role "Fast-track handler"
+    goal "Decide the fast-track route and reserve for {claim}"
+}
+
+agent Investigate(claim: Claim, amount: number) -> Decision {
+    role   "Special investigations"
+    goal   "Plan the investigation of {claim} with a reserve no higher than {amount}"
+    policy { require human for always }
+}
+
+flow main(note: text) {
+    claim = Intake(note)
+    if claim.amount < 50000 and claim.fraud_risk < 0.7 and claim.confidence >= 0.6 {
+        emit claim, FastTrack(claim)
+    } else {
+        emit claim, Investigate(claim, claim.amount)
+    }
+}
+
+eval typed on main {
+    case "small claim" (note = "Rear-end collision on 3 Nov, policy MOT-77812, repair estimate INR 38,000, photos attached") {
+        expect status ok
+        expect called Intake
+    }
+}

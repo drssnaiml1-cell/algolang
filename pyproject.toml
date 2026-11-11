@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "algolang"
-version = "0.7.0"
+version = "1.0.0"
 description = "AlgoLang: an agent-native programming language for governed, enterprise multi-agent AI systems"
 readme = "README.md"
 license = "Apache-2.0"
@@ -13,7 +13,7 @@ requires-python = ">=3.9"
 authors = [{ name = "Dr. S. Satyanarayana", email = "ceo@algoprofessor.com" }]
 keywords = ["agents", "multi-agent", "programming-language", "llm", "claude", "ai-governance", "compiler"]
 classifiers = [
-  "Development Status :: 4 - Beta",
+  "Development Status :: 5 - Production/Stable",
   "Intended Audience :: Developers",
   "Intended Audience :: Education",
   "Intended Audience :: Science/Research",
@@ -66,6 +66,9 @@ packages = ["algolang"]
 "algoqpu.py" = "algolang/_home/algoqpu.py"
 "algomcp.py" = "algolang/_home/algomcp.py"
 "algoserve.py" = "algolang/_home/algoserve.py"
+"algoir.py" = "algolang/_home/algoir.py"
+"algopkg.py" = "algolang/_home/algopkg.py"
+"algoauth.py" = "algolang/_home/algoauth.py"
 "algolsp.py" = "algolang/_home/algolsp.py"
 "grammar.lark" = "algolang/_home/grammar.lark"
 "algostudio.html" = "algolang/_home/algostudio.html"

@@ -40,7 +40,7 @@
       "match": "//.*$"
     },
     "declaration": {
-      "match": "\\b(agent|flow|model)\\s+([A-Za-z_][A-Za-z0-9_]*)",
+      "match": "\\b(agent|flow|model|type)\\s+([A-Za-z_][A-Za-z0-9_]*)",
       "captures": {
         "1": {
           "name": "storage.type.algolang"
