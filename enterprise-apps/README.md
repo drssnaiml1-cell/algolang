@@ -35,7 +35,7 @@ They all run offline as they are, and with real Claude models when you add `--li
 | [AlgoEng Predictive Maintenance™](predictive-engineering/) | Data-driven engineering | 1 | `vib.diagnose`, `rul.estimate`, `fleet.scan`, `maint.plan` | 2 |
 | [AlgoCity Operations Centre™](smart-city-operations/) | Smart cities | 1 | `city.aqi`, `city.waste`, `city.energy`, `city.reading` | 2 |
 | [AlgoMove Transport Network Optimizer™](transport-network-optimizer/) | Transportation systems | 1 | `traffic.reroute`, `signal.retime`, `demand.od`, `transit.headway` | 2 |
-| [AlgoQ Quantum AI Lab™](quantum-ai-lab/) | Quantum computing (v0.6) | 1 | built-in `quantum.vqe`, `quantum.knapsack`, `quantum.colouring`, `quantum.kernel`, `quantum.amplitude` | 2 |
+| [AlgoQ Quantum AI Lab™](quantum-ai-lab/) | Quantum computing (v0.6) | 1 | `lab.catalog` + built-in `quantum.vqe`, `quantum.knapsack`, `quantum.colouring`, `quantum.kernel`, `quantum.amplitude` | 2 |
 
 **22 applications · 38 programs · 63 behaviour tests**, all run in CI on every push.
 

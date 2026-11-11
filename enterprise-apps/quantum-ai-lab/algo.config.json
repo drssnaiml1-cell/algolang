@@ -1,11 +1,23 @@
 {
   "organisation": "AlgoQ Quantum AI Lab (example research organisation, synthetic data)",
   "policy": {
-    "forbid": ["gender", "caste", "religion"],
+    "forbid": [
+      "gender",
+      "caste",
+      "religion"
+    ],
     "max_budget_tokens": 8000,
     "min_human_below": 0.05,
-    "allowed_tools": ["quantum.vqe", "quantum.knapsack", "quantum.colouring", "quantum.kernel", "quantum.amplitude",
-                      "quantum.backend", "kb.search"]
+    "allowed_tools": [
+      "quantum.vqe",
+      "quantum.knapsack",
+      "quantum.colouring",
+      "quantum.kernel",
+      "quantum.amplitude",
+      "quantum.backend",
+      "kb.search",
+      "lab.catalog"
+    ]
   },
   "quantum": {
     "backend": "noisy:superconducting",
@@ -21,9 +33,20 @@
   "max_concurrency": 8,
   "max_run_tokens": 60000,
   "max_run_cost_usd": 0.5,
-  "cache": {"enabled": true},
+  "cache": {
+    "enabled": true
+  },
   "audit_dir": "runs",
-  "models": {"smart": "claude-sonnet-5-5", "fast": "claude-haiku-5-5"},
-  "tools": {"kb.search": {"dir": "kb"}},
-  "plugins": []
+  "models": {
+    "smart": "claude-sonnet-5-5",
+    "fast": "claude-haiku-5-5"
+  },
+  "tools": {
+    "kb.search": {
+      "dir": "kb"
+    }
+  },
+  "plugins": [
+    "plugins/lab_tools.py"
+  ]
 }

@@ -3,7 +3,7 @@
   "card_version": 1,
   "program": "quantum_ai",
   "source": "quantum_ai.algo",
-  "source_sha256": "b284507c27b8aae11068160a11967e678ca75f92181a3ce5c9c595b135d481b9",
+  "source_sha256": "906e58f92f55ab618663b62ed9d45977297873b2994e49a81ea5cb32b5fd309d",
   "purpose": "Quantum chemistry, planning and classification research on noisy simulators and quantum processors",
   "risk_level": "minimal",
   "disclosure": null,
@@ -66,7 +66,8 @@
       "returns": "text",
       "model": "default (algo.config.json)",
       "tools": [
-        "kb.search"
+        "kb.search",
+        "lab.catalog"
       ],
       "human_oversight": "reviewed when confidence < 0.05",
       "explain": null,
@@ -257,6 +258,12 @@
       "kind": "built-in",
       "trusted": true,
       "description": "Search the organisation's knowledge base of .txt and .md documents"
+    },
+    {
+      "name": "lab.catalog",
+      "kind": "organisation plugin",
+      "trusted": true,
+      "description": "The lab's benchmark molecules and spin models, and the accuracy each must reach"
     },
     {
       "name": "quantum.amplitude",
