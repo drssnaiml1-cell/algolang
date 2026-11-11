@@ -27,6 +27,7 @@ from __future__ import annotations
 import argparse
 import ast
 import contextlib
+import contextvars
 import hashlib
 import importlib.util
 import json
@@ -41,7 +42,7 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from pathlib import Path
 
-VERSION = "0.6.0"
+VERSION = "0.7.0"
 # WebAssembly builds of Python (Pyodide, used by the web playground) cannot start threads:
 # `par` then runs its branches one after another, with identical results.
 CAN_THREAD = sys.platform not in ("emscripten", "wasi")
@@ -371,6 +372,132 @@ def run_tool(name, query):
     return out
 
 
+# ═══════════════════════════════ v0.7: token-by-token output streaming ═══════════════════════════════
+# The runtime sets STREAM around each model call when someone listens (CLI --stream, SDK on_token, MCP progress).
+STREAM: contextvars.ContextVar = contextvars.ContextVar("algo_stream", default=None)
+
+
+class ValueStream:
+    """Turns the raw JSON a model streams ({"value": "...", "confidence": ...}) into the characters of the value
+    as they arrive. Non-text values (numbers, lists) are shown when the call ends instead."""
+    START = re.compile(r'"value"\s*:\s*"')
+    ESC = {"n": "\n", "t": "\t", "r": "", '"': '"', "\\": "\\", "/": "/", "b": "", "f": ""}
+
+    def __init__(self, emit):
+        self.emit, self.buf, self.state, self.esc, self.uni, self.sent = emit, "", 0, False, None, 0
+
+    def feed(self, chunk):
+        if self.state == 2 or not chunk:
+            return
+        if self.state == 0:
+            self.buf += chunk
+            m = self.START.search(self.buf)
+            if not m:
+                return
+            chunk, self.buf, self.state = self.buf[m.end():], "", 1
+        out = []
+        for ch in chunk:
+            if self.uni is not None:
+                self.uni += ch
+                if len(self.uni) == 4:
+                    try:
+                        out.append(chr(int(self.uni, 16)))
+                    except ValueError:
+                        pass
+                    self.uni = None
+            elif self.esc:
+                self.esc = False
+                if ch == "u":
+                    self.uni = ""
+                else:
+                    out.append(self.ESC.get(ch, ch))
+            elif ch == "\\":
+                self.esc = True
+            elif ch == '"':
+                self.state = 2
+                break
+            else:
+                out.append(ch)
+        if out:
+            text = "".join(out)
+            self.sent += len(text)
+            self.emit(text)
+
+
+_PRINT_LOCK = threading.Lock()
+_PRINT_LAST = [None]
+
+
+def _print_stream(ev):
+    """`algo run --stream`: print each agent's output as it is written."""
+    with _PRINT_LOCK:
+        key = (ev.get("call"), ev.get("sample"))
+        if ev["type"] == "delta":
+            if _PRINT_LAST[0] != key:
+                sys.stdout.write(f"\n  ✎ {ev['agent']}{'' if not ev.get('sample') else ' #' + str(ev['sample'] + 1)}: ")
+                _PRINT_LAST[0] = key
+            sys.stdout.write(ev["text"])
+            sys.stdout.flush()
+        elif ev["type"] == "end" and _PRINT_LAST[0] is not None:
+            sys.stdout.write("\n")
+            _PRINT_LAST[0] = None
+
+
+# ═══════════════════════════════ v0.7: typed flow inputs ═══════════════════════════════
+class InputTypeError(ValueError):
+    """A flow input does not match its declared type."""
+
+
+def coerce_input(flow, name, typ, val):
+    """text → str · score → number in [0, 1] ("0.8", "80%") · bool → true/false/yes/no/1/0 ·
+    list → a list (JSON array, or items separated by new lines, ";" or ",") · json → an object or array."""
+    t = typ[10:-1] if typ.startswith("uncertain<") else typ
+    where = f"flow {flow}: input '{name}' must be"
+    if t == "text":
+        return val if isinstance(val, str) else (json.dumps(val, ensure_ascii=False) if isinstance(val, (list, dict)) else str(val))
+    if t == "score":
+        if isinstance(val, bool):
+            raise InputTypeError(f"{where} a score between 0 and 1, got {val!r}")
+        try:
+            x = float(str(val).strip().rstrip("%")) / (100 if str(val).strip().endswith("%") else 1)
+        except ValueError:
+            raise InputTypeError(f"{where} a score between 0 and 1, got {str(val)[:60]!r}") from None
+        if not 0 <= x <= 1:
+            raise InputTypeError(f"{where} a score between 0 and 1, got {x:g}")
+        return x
+    if t == "bool":
+        if isinstance(val, bool):
+            return val
+        v = str(val).strip().lower()
+        if v in ("true", "yes", "y", "1"):
+            return True
+        if v in ("false", "no", "n", "0"):
+            return False
+        raise InputTypeError(f"{where} true or false, got {str(val)[:60]!r}")
+    if t == "list":
+        if isinstance(val, (list, tuple)):
+            return list(val)
+        v = str(val).strip()
+        if v.startswith("["):
+            try:
+                out = json.loads(v)
+                if isinstance(out, list):
+                    return out
+            except json.JSONDecodeError:
+                pass
+            raise InputTypeError(f"{where} a list (a JSON array, or items separated by ';'), got {v[:60]!r}")
+        sep = "\n" if "\n" in v else (";" if ";" in v else ",")
+        return [x.strip() for x in v.split(sep) if x.strip()]
+    if t == "json":
+        if isinstance(val, (dict, list)):
+            return val
+        try:
+            return json.loads(str(val))
+        except json.JSONDecodeError:
+            raise InputTypeError(f"{where} JSON, got {str(val)[:60]!r}") from None
+    return val
+
+
 # ═══════════════════════════════ backends ════════════════════════════════════
 def _h(*parts) -> int:
     return int(hashlib.sha256("|".join(map(str, parts)).encode()).hexdigest(), 16)
@@ -417,6 +544,11 @@ class MockBackend:
             if notes:
                 val += "  [" + " | ".join(notes) + "]"
         tokens = len(prompt) // 4 + 60
+        cb = STREAM.get()
+        if cb is not None and isinstance(val, str):    # v0.7: a mock stream, a few words at a time
+            words = re.split(r"(\s+)", val)
+            for i in range(0, len(words), 6):
+                cb("".join(words[i:i + 6]))
         if spec.policy.get("explain"):            # v0.4: reasons, and evidence quoted from inputs and tool results
             sources = [t["text"] for t in tool_calls if t.get("text")] + [goal]
             evidence = []
@@ -470,7 +602,15 @@ class ClaudeBackend:
             kw = dict(model=model, max_tokens=max_tok, system=system, messages=messages)
             if tools:
                 kw["tools"] = tools
-            msg = self.client.messages.create(**kw)
+            cb = STREAM.get()
+            if cb is not None and hasattr(self.client.messages, "stream"):     # v0.7: token-by-token output
+                vs = ValueStream(cb)
+                with self.client.messages.stream(**kw) as st:
+                    for text in st.text_stream:
+                        vs.feed(text)
+                    msg = st.get_final_message()
+            else:
+                msg = self.client.messages.create(**kw)
             t_in += msg.usage.input_tokens
             t_out += msg.usage.output_tokens
             if getattr(msg, "stop_reason", None) != "tool_use":
@@ -536,9 +676,26 @@ class LocalBackend:
         key = os.environ.get(self.cfg.get("api_key_env") or "", "") if self.cfg.get("api_key_env") else ""
         if key:
             headers["Authorization"] = f"Bearer {key}"
+        cb = STREAM.get()
+        if cb is not None:                                   # v0.7: server-sent events, token by token
+            body["stream"] = True
         req = urllib.request.Request(self.base + "/chat/completions", json.dumps(body).encode(), headers)
         with urllib.request.urlopen(req, timeout=float(self.cfg.get("timeout_s") or 60)) as r:
-            resp = json.loads(r.read().decode("utf-8"))
+            if cb is None:
+                resp = json.loads(r.read().decode("utf-8"))
+            else:
+                vs, parts, resp = ValueStream(cb), [], {}
+                for line in r:
+                    line = line.decode("utf-8").strip()
+                    if not line.startswith("data:") or line == "data: [DONE]":
+                        continue
+                    ev = json.loads(line[5:].strip())
+                    delta = ((ev.get("choices") or [{}])[0].get("delta") or {}).get("content") or ""
+                    parts.append(delta)
+                    vs.feed(delta)
+                    if ev.get("usage"):
+                        resp["usage"] = ev["usage"]
+                resp["choices"] = [{"message": {"content": "".join(parts)}}]
         raw = ((resp.get("choices") or [{}])[0].get("message") or {}).get("content") or ""
         usage = resp.get("usage") or {}
         t_in = int(usage.get("prompt_tokens") or len(user) // 4)
@@ -828,8 +985,12 @@ def decide_review(item_id, decision, reviewer="", note="", path=None, override=N
 # ═══════════════════════════════ runtime ═════════════════════════════════════
 class Runtime:
     def __init__(self, program: str, quiet: bool | None = None, backend=None, live: bool | None = None,
-                 audit_dir_override: str | None = None, trace: bool | str | None = None, source: str | None = None):
+                 audit_dir_override: str | None = None, trace: bool | str | None = None, source: str | None = None,
+                 on_token=None):
         self.program = program
+        self.on_token = on_token                     # v0.7: callback(event) for token-by-token output
+        if on_token is None and os.environ.get("ALGO_STREAM") == "1":
+            self.on_token = _print_stream
         self.source = source or os.environ.get("ALGO_SOURCE")
         self.cfg = load_config()
         self.models = {}
@@ -1155,6 +1316,9 @@ class Runtime:
             flag += f"  🛡 {sum(len(i['removed']) for i in injections)} injected instruction(s) removed"
         spread = f"  ±{res.spread:.2f} over {k} samples" if res.spread is not None else ""
         warn = f"  ⚠ OVER {'/'.join(over)} BUDGET" if over else ""
+        if self.on_token is not None:
+            self.on_token(dict(type="end", agent=spec.name, call=call_id, value=_jsonable(val), confidence=conf,
+                               status=res.status))
         self._log(f"  → {spec.name:<18} conf={conf:.2f}  {str(shown)[:72]}{spread}{flag}{warn}{'  (cached)' if cached else ''}")
         sha = hashlib.sha256(prompt.encode()).hexdigest()[:16]
         rec = dict(call=call_id, agent=spec.name, model=model_id, backend=self.backend.name, inputs_sha=sha,
@@ -1210,6 +1374,11 @@ class Runtime:
                 t0 = time.time()
                 qtok = _algoquantum.POLICY.set(pol) if _algoquantum else None    # shots / max qubits for quantum tools
                 qctx = {"records": [], "ledger": self.qledger}
+                stok = None
+                if self.on_token is not None:                                   # v0.7: stream this sample
+                    ev = dict(agent=spec.name, call=call_id, sample=i)
+                    self.on_token(dict(ev, type="start"))
+                    stok = STREAM.set(lambda text, _ev=ev: self.on_token(dict(_ev, type="delta", text=text)))
                 ctok = _algoqpu.QCTX.set(qctx) if _algoqpu else None             # v0.6: quantum provenance
                 gtok = algotrust.GUARD.set(dict(guard)) if (algotrust and guard) else None
                 try:
@@ -1221,6 +1390,8 @@ class Runtime:
                         _algoquantum.POLICY.reset(qtok)
                     if ctok is not None:
                         _algoqpu.QCTX.reset(ctok)
+                    if stok is not None:
+                        STREAM.reset(stok)
                     if gtok is not None:
                         g_now = algotrust.GUARD.get()
                         algotrust.GUARD.reset(gtok)
@@ -1293,6 +1464,11 @@ class Runtime:
             return [f.result() for f in [ex.submit(fn, it) for it in items]]
 
     # flow lifecycle -------------------------------------------------
+    @staticmethod
+    def typed_inputs(flow, params):
+        """v0.7: convert flow inputs to their declared types, or refuse them with a clear message."""
+        return [coerce_input(flow, name, typ, val) for name, typ, val in params]
+
     def begin_flow(self, name, args):
         self.flow_name, self.flow_inputs = name, dict(args)
         if getattr(self, "refuse", None):
@@ -1378,6 +1554,9 @@ class Runtime:
             vals[p] = v
         try:
             flow(**vals)
+        except InputTypeError as e:                       # v0.7: a typed input was refused at the door
+            self._log(f"✗ invalid input: {e}")
+            sys.exit(1)
         except PolicyViolation as e:
             self.write_trace(status="blocked", problem=str(e))
             self._log(f"✗ POLICY VIOLATION: {e}")

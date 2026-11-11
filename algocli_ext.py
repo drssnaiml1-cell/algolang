@@ -286,8 +286,55 @@ def cmd_audit_verify(target):
     return 0 if not bad else 4
 
 
-def cmd_report(directory="runs", as_json=False):
+def dashboard_html(rep, title="AlgoLang cost & energy dashboard"):
+    """v0.7: a self-contained navy-and-gold dashboard of cost, energy, tokens, QPU time and governance."""
+    import html as _h
+    t = rep["totals"]
+    progs = sorted(rep["programs"].items(), key=lambda kv: -kv[1]["cost_usd"])[:12]
+    agents = sorted(rep["agents"].items(), key=lambda kv: -kv[1]["tokens"])[:12]
+
+    def bars(rows, key, fmt, empty="no runs yet"):
+        top = max([v[key] for _, v in rows] + [1e-12])
+        return "".join(
+            f'<div class="row"><span class="lab">{_h.escape(k)}</span><span class="bar"><i style="width:'
+            f'{100 * v[key] / top:.1f}%"></i></span><span class="val">{fmt(v[key])}</span></div>' for k, v in rows) or \
+            f'<p class="muted">{empty}</p>'
+    broken = [k for k, ok in rep["chains"].items() if not ok]
+    kpis = [("Agent calls", f"{t['calls']:,}"), ("Tokens", f"{t['tokens']:,}"), ("Cost", f"${t['cost_usd']:.4f}"),
+            ("Energy", f"{t['energy_wh']:.3f} Wh"), ("CO₂", f"{t['co2_g']:.2f} g"),
+            ("QPU time", f"{t.get('qpu_seconds', 0):.1f} s"), ("Escalated", str(t["escalated"])),
+            ("Audit chains", f"{len(rep['chains']) - len(broken)} intact" + (f" · {len(broken)} broken" if broken else ""))]
+    tiles = "".join(f'<div class="kpi"><b>{v}</b><span>{k}</span></div>' for k, v in kpis)
+    return f"""<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{_h.escape(title)}</title><style>
+:root{{--navy:#0b1f3a;--navy2:#132b4f;--gold:#c9a227;--gold2:#f2d372;--ink:#e8ecf4;--muted:#9fb0c8}}
+*{{box-sizing:border-box}}body{{margin:0;background:var(--navy);color:var(--ink);font:15px/1.5 "Segoe UI",system-ui,sans-serif}}
+main{{max-width:1100px;margin:0 auto;padding:28px 16px}}h1{{margin:0 0 4px;font-size:26px}}h2{{color:var(--gold);font-size:13px;
+letter-spacing:3px;text-transform:uppercase;margin:28px 0 10px}}.muted{{color:var(--muted)}}
+.kpis{{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:18px}}
+.kpi{{background:var(--navy2);border:1px solid var(--gold);border-radius:12px;padding:14px}}.kpi b{{display:block;
+font-size:22px;color:var(--gold2)}}.kpi span{{color:var(--muted);font-size:13px}}
+.card{{background:var(--navy2);border-radius:12px;padding:16px;border:1px solid #23406d}}
+.row{{display:grid;grid-template-columns:minmax(120px,32%) 1fr 90px;gap:10px;align-items:center;margin:6px 0}}
+.lab{{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}.bar{{background:#0e2547;border-radius:6px;height:12px}}
+.bar i{{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,var(--gold),var(--gold2))}}
+.val{{text-align:right;font-variant-numeric:tabular-nums}}.grid{{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:14px}}
+footer{{margin-top:28px;color:var(--muted);font-size:12px}}</style></head><body><main>
+<h1>{_h.escape(title)}</h1><div class="muted">From the audit logs · offline runs show the estimated live cost</div>
+<div class="kpis">{tiles}</div>
+<div class="grid"><section><h2>Cost by program</h2><div class="card">{bars(progs, "cost_usd", lambda x: f"${x:.4f}")}</div></section>
+<section><h2>Energy by program</h2><div class="card">{bars(progs, "energy_wh", lambda x: f"{x:.3f} Wh")}</div></section>
+<section><h2>Tokens by agent</h2><div class="card">{bars(agents, "tokens", lambda x: f"{x:,}")}</div></section>
+<section><h2>QPU time by program</h2><div class="card">{bars([p for p in progs if p[1].get("qpu_seconds")], "qpu_seconds",
+                                                             lambda x: f"{x:.1f} s", "no QPU time used")}</div></section></div>
+<footer>AlgoLang {al.__version__} · AlgoProfessor AI R&amp;D Solutions</footer></main></body></html>"""
+
+
+def cmd_report(directory="runs", as_json=False, html_out=None):
     rep = al.audit.report(directory)
+    if html_out:
+        Path(html_out).write_text(dashboard_html(rep), encoding="utf-8")
+        print(f"  ✓ dashboard → {html_out}")
     if as_json:
         print(json.dumps(rep, indent=2))
         return 0

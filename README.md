@@ -36,7 +36,7 @@
   <a href="https://www.algoprofessor.com"><img src="docs/images/algolang-hero.svg" alt="AlgoLang: an order event from AlgoPulse flows through parallel Quote and Limits agents, a deterministic BREACH guard, and an uncertain RiskGate agent with a human gate; every call is written to a hash-chained audit log" width="100%"></a>
 </p>
 
-**Current version: 0.6.0** (Quantum AI: IBM, Braket and Azure hardware · noise and mitigation · QPU budgets · verified and bounded answers · VQE, quantum kernels, amplitude estimation · post-quantum audit signatures; plus ten large-scale domain applications and v0.4 Trustworthy AI) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md) · [50 Sample Programs (PDF)](docs/AlgoLang_50_Sample_Programs.pdf) · [Language manual (PDF)](docs/AlgoLang_Documentation_v0.4.pdf)
+**Current version: 0.7.0** (Interoperability: flows and agents as MCP servers · typed arguments and inputs · token-by-token streaming · cost and energy dashboard; on v0.6 Quantum AI, v0.5 domain applications and v0.4 Trustworthy AI) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md) · [50 Sample Programs (PDF)](docs/AlgoLang_50_Sample_Programs.pdf) · [Language manual (PDF)](docs/AlgoLang_Documentation_v0.4.pdf)
 
 AlgoLang has **no functions**. Every unit of work is an `agent` with a role, a goal, explicit tools, a model and a policy. A `flow` is the only other construct, and it can do just four things:
 
@@ -86,7 +86,7 @@ flowchart TB
 
 1. [Objective](#1-objective)
 2. [Design principles](#2-design-principles)
-3. [What's new in v0.6: Quantum AI](#3-whats-new-in-v06-quantum-ai)
+3. [What's new in v0.7: Interoperability](#3-whats-new-in-v07-interoperability)
 4. [Get started](#4-get-started)
 5. [Learn by example: 50 sample programs](#5-learn-by-example-50-sample-programs)
 6. [Enterprise applications](#6-enterprise-applications)
@@ -96,7 +96,7 @@ flowchart TB
 10. [Governance and runtime guarantees](#10-governance-and-runtime-guarantees)
 11. [Python SDK](#11-python-sdk)
 12. [For developers](#12-for-developers)
-13. [Roadmap: v0.7 Interoperability, v1.0](#13-roadmap-v07-interoperability-v10)
+13. [Roadmap: v1.0 native runtime and ecosystem](#13-roadmap-v10-native-runtime-and-ecosystem)
 14. [Repository layout](#14-repository-layout)
 15. [Author and licence](#15-author-and-licence)
 
@@ -134,9 +134,29 @@ flowchart TB
 - **People stay in the loop.** A low-confidence call goes to a human review queue instead of going out.
 - **One engine, many doors.** The command line, Studio, Prompt UI, SDK and language server all run the same compiler and runtime.
 
-## 3. What's new in v0.6: Quantum AI
+## 3. What's new in v0.7: Interoperability
 
-<p align="center"><img src="docs/images/sections/03-whats-new.svg" alt="Eight Quantum AI work packages in v0.6" width="100%"></p>
+<p align="center"><img src="docs/images/sections/03-whats-new.svg" alt="Four interoperability features in v0.7" width="100%"></p>
+
+**v0.7 opens AlgoLang to other software, without opening a gap in its governance.** Any flow can now be called by Claude Desktop, an IDE, another agent framework or another AlgoLang program, over the Model Context Protocol, and every call still runs under the organisation's policies, budgets, human review and signed audit log.
+
+```bash
+algo mcp serve programs/claims_intake.algo                 # stdio MCP server: one tool per flow
+algo mcp serve programs/*.algo --agents --http 8765        # every agent too, over Streamable HTTP
+algo run programs/claims_intake.algo --stream --arg "claim=Rear-end collision, INR 48,000"   # watch agents write
+algo report runs --html dashboard.html                     # cost, energy, tokens and QPU time
+```
+
+| Feature | What v0.7 adds |
+|---|---|
+| **Flows and agents as MCP servers** | `algo mcp serve FILE…` publishes each flow (and, with `--agents`, each agent) as an MCP tool over stdio or Streamable HTTP. Input schemas come from the declared types; results carry status, values, pending human reviews, cost and the audit file. HTTP listens on 127.0.0.1 and can require a bearer token (`ALGO_MCP_TOKEN`). AlgoLang programs can call each other through the same protocol. |
+| **Argument types** | The compiler checks every agent call: a text value cannot be passed where a `score`, `list`, `bool` or `json` is declared (**E131**). Flow inputs are converted to their declared types at the door (`"80%"` → 0.8, `"a; b"` → a list) or refused with a clear message, from the CLI, the SDK, batch files and MCP. |
+| **Token-by-token streaming** | `algo run --stream`, `program.run(on_token=…)` and MCP progress notifications show each agent's answer as the model writes it (Claude and OpenAI-compatible local models). |
+| **Cost and energy dashboard** | `algo report --html` and Studio's `/dashboard`: cost, energy, CO₂, tokens and QPU time by program and agent, escalations and audit-chain health, in one navy-and-gold page. |
+
+Examples: [`examples/v07/`](examples/v07/).
+
+### v0.6: Quantum AI
 
 **v0.6 lets agents use real quantum computers, with answers that are checked, budgeted and accountable.** The same program runs on the exact simulator, a noisy simulator, IBM Quantum, Amazon Braket or Azure Quantum by changing one line of `algo.config.json`. Nothing about the language's guarantees changes on hardware.
 
@@ -554,7 +574,7 @@ Each program has an `eval` block and behaviour tests that run in CI.
 - **Exact verification.** The simulator holds every amplitude, so the true optimum is known up to the qubit limit. The tool reports `VERIFIED`, or `GAP: … % worse`, plus P(optimal) and the approximation ratio.
 - **Limits in the policy.** `shots N` and `max qubits N` per agent, `"quantum": {"max_qubits": …}` for the whole organisation; the stricter limit wins. Bigger circuits are `BLOCKED`.
 - **Reproducible.** Runs are seeded, so the same request gives the same answer, as audit and `algo replay` require.
-- **Honest about the hardware.** Every answer names its backend. The built-in simulator is checked against Qiskit on every CI run (fidelity error below 10⁻¹²). It computes what an ideal quantum computer would return, on a classical computer, so it is correct but not faster. Amplitude estimation is simulated exactly from its phase-estimation statistics; its quadratic speed-up over Monte Carlo needs fault-tolerant hardware. `pqc.scan` applies published rules (it is not a penetration test), and its time-to-quantum-threat is an assumption you set. Since v0.6 the same tools run on noisy simulators and on IBM, Braket and Azure hardware (see [§3](#3-whats-new-in-v06-quantum-ai)).
+- **Honest about the hardware.** Every answer names its backend. The built-in simulator is checked against Qiskit on every CI run (fidelity error below 10⁻¹²). It computes what an ideal quantum computer would return, on a classical computer, so it is correct but not faster. Amplitude estimation is simulated exactly from its phase-estimation statistics; its quadratic speed-up over Monte Carlo needs fault-tolerant hardware. `pqc.scan` applies published rules (it is not a penetration test), and its time-to-quantum-threat is an assumption you set. Since v0.6 the same tools run on noisy simulators and on IBM, Braket and Azure hardware (see [§3](#v06-quantum-ai)).
 
 The [**Quantum Optimization Lab**](enterprise-apps/quantum-optimization-lab/) also has a max-cut shift scheduler and quantum-random audit sampling. Install with `pip install "algolang[quantum]"` (NumPy). For Qiskit Aer, also `pip install qiskit qiskit-aer` and set `"backend": "qiskit-aer"`.
 
@@ -627,6 +647,7 @@ flow main(topic: text) {
 | E128 | A forbidden attribute reaches an agent through one of its tools |
 | E129 | Risk declaration error: unknown level, no `disclose` for limited or high risk, no purpose, or high risk without signed audit logs |
 | E130 | Trust value error: `require approvals` outside 1–5, `retain` outside 1–3650 days or not audit/traces, `expect fair` with fewer than two values, unknown perturbation or consistency outside 0–1 |
+| E131 | Argument type mismatch (v0.7): a text value passed where an agent declares a `score`, `list`, `bool` or `json` parameter |
 
 Errors from imported modules are reported with the file name, and the org config is enforced at compile time: a forbidden attribute or an ungranted tool is an error before anything runs.
 
@@ -715,13 +736,13 @@ pip install -e ".[dev]"
 make check        # ruff + pytest + lint of every .algo file
 ```
 
-## 13. Roadmap: v0.7 Interoperability, v1.0
+## 13. Roadmap: v1.0 native runtime and ecosystem
 
 <p align="center"><img src="docs/images/sections/13-roadmap.svg" alt="Roadmap timeline" width="100%"></p>
 
-**v0.6 Quantum AI is released** (see [§3](#3-whats-new-in-v06-quantum-ai)), after v0.5's ten large-scale domain applications and v0.4 Trustworthy AI. The releases below are built one at a time, each with tests, CI, documentation and figures. The full plan is in **[ROADMAP.md](ROADMAP.md)**.
+**v0.7 Interoperability is released** (see [§3](#3-whats-new-in-v07-interoperability)), after v0.6 Quantum AI, v0.5's ten large-scale domain applications and v0.4 Trustworthy AI. The full plan is in **[ROADMAP.md](ROADMAP.md)**.
 
-**v0.7 — Interoperability (next).** Agents and flows served as MCP servers, argument type checking, and token-by-token output streaming. **v1.0** adds a native runtime, typed agent-to-agent messaging, a package registry and SSO/RBAC for Studio.
+**v1.0 — native runtime and ecosystem (next).** A native runtime, typed agent-to-agent messaging, a package registry for domain packs, and single sign-on with role-based access for Studio.
 
 | Version | Theme | Status |
 |---|---|---|
@@ -735,9 +756,9 @@ make check        # ruff + pytest + lint of every .algo file
 | v0.4 | Trustworthy AI: risk levels, privacy, explanations, untrusted tools, four-eyes review, signed audit, fairness and robustness tests, system cards, evidence packs, trust reports | Released |
 | v0.4.1 | LLM & SLM graph optimisation: SLM-first cascades, exact model assignment over the agent graph, local small models, `agent_models` routing | Released |
 | v0.5 | Ten large-scale domain applications: ML & DL, RL, responsible & explainable AI, NLP, Indian languages, digital health, network biology, engineering, smart cities, transport | Released |
-| v0.6 | Quantum AI: IBM, Braket and Azure backends, noise and mitigation, QPU budgets, uncertain and bounded quantum results, VQE, kernels, amplitude estimation, post-quantum audit | **Current** |
-| v0.7 | Interoperability: agents as MCP servers, argument types, output streaming | Next |
-| v1.0 | Native runtime and ecosystem | Planned |
+| v0.6 | Quantum AI: IBM, Braket and Azure backends, noise and mitigation, QPU budgets, uncertain and bounded quantum results, VQE, kernels, amplitude estimation, post-quantum audit | Released |
+| v0.7 | Interoperability: flows and agents as MCP servers, argument types (E131), typed inputs, token streaming, cost and energy dashboard | **Current** |
+| v1.0 | Native runtime and ecosystem | Next |
 
 ## 14. Repository layout
 
@@ -779,6 +800,7 @@ algoquantum.py                quantum tools: simulator, OpenQASM, QAOA + exact c
                               circuit blocks, routing, Monte Carlo + QAE, PQC readiness — v0.3.3
 algoqpu.py                    Quantum AI: hardware backends, noise, budgets, bounded checks, VQE,
                               kernels, amplitude estimation, provenance and replay — v0.6
+algoserve.py                  serve flows and agents as an MCP server (stdio, HTTP) — v0.7
 docs/images/                  animated SVG figures: sections/, apps/ (drawn from the programs), Studio screenshots
 tools/make_figures.py         regenerates every figure (CI checks they match the code)
 examples/v03/                 tour of v0.3: MCP demo server, uncertain<T>, budgets, eval

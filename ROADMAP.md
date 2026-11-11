@@ -1,6 +1,6 @@
 # AlgoLang roadmap
 
-**Current release: v0.6.0 — Quantum AI** (after v0.5 domain applications and v0.4 Trustworthy AI) · **Next: v0.7 — Interoperability** · **Then: v1.0 — native runtime**
+**Current release: v0.7.0 — Interoperability** (after v0.6 Quantum AI, v0.5 domain applications and v0.4 Trustworthy AI) · **Next: v1.0 — native runtime and ecosystem**
 
 AlgoProfessor AI R&D Solutions, Hyderabad. Designed by Dr. S. Satyanarayana. [www.algoprofessor.com](https://www.algoprofessor.com)
 
@@ -245,15 +245,28 @@ As in the rest of AlgoLang, the guarantees come from the language and runtime, n
 
 ---
 
-## 7. Later releases
+## 7. v0.7 Interoperability (released in 0.7.0)
+
+**Objective: let any software use a governed AlgoLang flow, with no gap in its governance.**
+
+| No. | Objective | Delivered |
+|---|---|---|
+| 1 | **Flows as services:** any MCP client can call a flow | `algo mcp serve FILE…` over stdio or Streamable HTTP; one tool per flow, `--agents` for one per agent; schemas from declared types; status, values, pending reviews, cost and audit file in every result |
+| 2 | **Argument types:** wrong data is stopped before a model sees it | E131 at compile time; typed flow inputs at run time from the CLI, SDK, batch files and MCP |
+| 3 | **Streaming:** people see answers as they are written | `algo run --stream`, `run(on_token=…)`, MCP progress notifications; Claude and OpenAI-compatible local models |
+| 4 | **Dashboards:** cost and energy at a glance | `algo report --html`, Studio `/dashboard`, including QPU time |
+
+---
+
+## 8. Later releases
 
 | Version | Theme | Highlights |
 |---|---|---|
-| **v0.7** | Interoperability (next) | Publish a flow as an MCP server; argument type checking; token-by-token output streaming; cost and energy dashboards in Studio |
+| **v0.7** | Interoperability (released) | Publish a flow as an MCP server; argument type checking; token-by-token output streaming; cost and energy dashboards in Studio |
 | **v1.0** | Platform | Native runtime; typed agent-to-agent messaging; package registry for domain packs; SSO and role-based access for Studio |
 
 ---
 
-## 8. How to contribute
+## 9. How to contribute
 
 Pick a work package, open an issue titled `v0.4 WPn: …` (or `v0.6 Qn: …` for quantum), and read the [developer guide](DEVELOPER_GUIDE.md). Each package needs grammar changes (if any), compiler checks with error codes, runtime enforcement, tests, documentation, and an example in an enterprise application. Domain experts in law, finance, health and education are especially welcome to review the fairness and risk rules.

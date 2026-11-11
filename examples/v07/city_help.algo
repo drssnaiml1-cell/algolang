@@ -1,0 +1,27 @@
+// City help desk: answers residents' questions and finds the service they need. Served to other agents over MCP.
+risk limited "Answering residents' questions about municipal services"
+disclose "Answers are written with the help of an AI system; an officer reviews anything uncertain."
+policy { redact pii }
+tool kb.search
+
+agent Topics(question: text) -> list {
+    role "Service classifier"
+    goal "List the municipal services that {question} is about"
+}
+
+agent Answer(question: text, topics: list, urgency: score) -> text {
+    role  "Citizen service officer"
+    goal  "Answer {question} about {topics}; urgency {urgency}"
+    uses  kb.search
+    policy { require human when confidence < 0.7 }
+}
+
+flow main(question: text, urgency: score) {
+    topics = Topics(question)
+    emit topics, Answer(question, topics, urgency)
+}
+
+flow batch(questions: list) {
+    answers = par for q in questions { Topics(q) }
+    emit answers
+}

@@ -887,9 +887,29 @@ class Checker:
         for p in ag.params:
             if p.name not in bound and p.default is None:
                 self.err("E102", line, f"{name}: missing required argument '{p.name}'")
-        for a in arg_nodes:
-            self.expr_type(a, env)
+        ptypes = {p.name: p.type for p in ag.params}
+        for i, a in enumerate(arg_nodes):
+            t = self.expr_type(a, env)
+            pname = str(a.children[0]) if isinstance(a, Tree) and a.data == "kwarg" else \
+                (pnames[i] if i < len(pnames) else None)
+            if pname in ptypes and not arg_compatible(ptypes[pname], t):          # v0.7: argument types
+                self.err("E131", line, f"{name}: argument '{pname}' expects {ptypes[pname]}, but gets {t}"
+                         + (" (a text value cannot become a number; pass a score from an agent)" if
+                            base_of(ptypes[pname]) == "score" else ""))
         return ag.returns
+
+
+def base_of(t: str) -> str:
+    return t[10:-1] if t.startswith("uncertain<") else t
+
+
+def arg_compatible(param: str, arg: str) -> bool:
+    """v0.7: can a value of type `arg` be passed where `param` is declared? Text accepts everything (values are
+    shown to the model as text); numbers, lists, JSON and booleans must match."""
+    p, a = base_of(param), base_of(arg)
+    if p == "text" or a == "any" or p == a:
+        return True
+    return {"score": {"number"}, "list": {"json"}, "json": {"list"}}.get(p, set()).__contains__(a)
 
 
 # ───────────────────────── code generation ─────────────────────
@@ -937,6 +957,9 @@ class CodeGen:
         for f in p.flows.values():
             args = ", ".join(x.name for x in f.params)
             self.w(f"def flow_{f.name}({args}):")
+            if f.params:                  # v0.7: inputs are converted to their declared types (or rejected)
+                spec = ", ".join(f"({x.name!r}, {x.type!r}, {x.name})" for x in f.params)
+                self.w(f"{args}{',' if len(f.params) == 1 else ''} = rt.typed_inputs({f.name!r}, [{spec}])", 1)
             self.w(f"rt.begin_flow({f.name!r}, {{{', '.join(f'{x.name!r}: {x.name}' for x in f.params)}}})", 1)
             self.block(f.body, 1)
             self.w("return rt.end_flow()", 1)
@@ -1272,7 +1295,7 @@ def compile_source(src: str, name: str, base_dir: Path | str | None = None):
     return CodeGen(prog, name).gen(), prog
 
 
-VERSION = "0.6.0"
+VERSION = "0.7.0"
 
 TEMPLATE = '''// {name}.algo — created by `algo new`
 // Run it:  algo run {name}.algo --arg "topic=Your topic here"
@@ -1511,6 +1534,7 @@ def main(argv=None):
         if c == "run":
             s.add_argument("--arg", action="append", default=[], help='flow input, e.g. --arg "topic=AI ethics"')
             s.add_argument("--flow", default="main", help="which flow to run (default: main)")
+            s.add_argument("--stream", action="store_true", help="show each agent's output token by token (v0.7)")
             s.add_argument("--live", action="store_true", help="call real Claude models (needs ANTHROPIC_API_KEY)")
             s.add_argument("--interactive", action="store_true", help="ask a human to approve low-confidence results")
             s.add_argument("--audit-dir", default=None, help="where audit logs go (default: runs/ or algo.config.json)")
@@ -1557,6 +1581,7 @@ def main(argv=None):
     s = sub.add_parser("report", help="usage, cost and governance report from audit logs")
     s.add_argument("dir", nargs="?", default="runs")
     s.add_argument("--json", action="store_true")
+    s.add_argument("--html", default=None, help="also write a cost and energy dashboard to this HTML file (v0.7)")
     s = sub.add_parser("ask", help='agentic: AI writes a program from your description')
     s.add_argument("request", nargs="+", help='what the program should do, e.g. "review research papers"')
     s.add_argument("-o", "--out", help="file to write (default: from the request)")
@@ -1576,11 +1601,14 @@ def main(argv=None):
     s.add_argument("--program", default=None, help="the .algo file to replay (default: the one in the trace)")
     s.add_argument("--lenient", action="store_true", help="answer changed calls offline instead of stopping")
     s.add_argument("--json", action="store_true")
-    s = sub.add_parser("mcp", help="MCP servers: list their tools or call one")
-    s.add_argument("action", choices=["servers", "list", "call"])
-    s.add_argument("server", nargs="?")
-    s.add_argument("tool", nargs="?")
-    s.add_argument("arguments", nargs="?", default="{}", help="JSON arguments for `call`")
+    s = sub.add_parser("mcp", help="MCP: list or call a server's tools, or serve your flows as an MCP server (v0.7)")
+    s.add_argument("action", choices=["servers", "list", "call", "serve"])
+    s.add_argument("rest", nargs="*", help="list/call: SERVER [TOOL] [JSON]; serve: FILE.algo …")
+    s.add_argument("--http", default=None, help="serve: Streamable HTTP on this port instead of stdio")
+    s.add_argument("--host", default="127.0.0.1", help="serve: HTTP host (default 127.0.0.1)")
+    s.add_argument("--agents", action="store_true", help="serve: also expose every agent as a tool")
+    s.add_argument("--live", action="store_true", help="serve: call real models")
+    s.add_argument("--audit-dir", default=None)
     sub.add_parser("lsp", help="language server for editors (VS Code, Neovim …) over stdio")
     # v0.4 Trustworthy AI
     s = sub.add_parser("card", help="AI system card (Markdown + JSON) generated from the source")
@@ -1633,8 +1661,12 @@ def main(argv=None):
             return algoeval.cli_eval(a.file, live=a.live, replay=a.replay, record=a.record, only=a.only, as_json=a.json)
         return algoeval.cli_replay(a.trace, program=a.program, strict=not a.lenient, as_json=a.json)
     if a.cmd == "mcp":
+        if a.action == "serve":
+            import algoserve
+            return algoserve.cli(a.rest, http=a.http, host=a.host, agents=a.agents, live=a.live, audit_dir=a.audit_dir)
         import algomcp
-        return algomcp.cli(a.action, a.server, a.tool, a.arguments)
+        r = list(a.rest) + [None, None, None]
+        return algomcp.cli(a.action, r[0], r[1], r[2] or "{}")
     if a.cmd == "pulse":
         import algopulse
         return algopulse.cli(a.pulse_args or ["--help"])
@@ -1687,7 +1719,7 @@ def main(argv=None):
         if a.cmd == "audit":
             return X.cmd_audit_verify(a.target)
         if a.cmd == "report":
-            return X.cmd_report(a.dir, a.json)
+            return X.cmd_report(a.dir, a.json, a.html)
     if a.cmd == "ask":
         import algoagent
         name = algoagent.ask_cli(" ".join(a.request), a.out)
@@ -1767,6 +1799,8 @@ def main(argv=None):
         env["ALGO_LIVE"] = "1"
     if a.interactive:
         env["ALGO_INTERACTIVE"] = "1"
+    if getattr(a, "stream", False):
+        env["ALGO_STREAM"] = "1"
     if a.trace:
         env["ALGO_TRACE"] = a.trace if a.trace == "1" else str(Path(a.trace).resolve())
         env["ALGO_SOURCE"] = str(path.resolve())

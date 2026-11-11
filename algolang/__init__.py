@@ -131,9 +131,11 @@ class Program:
 
     # running
     def run(self, live: bool = False, quiet: bool = True, audit_dir: str | None = None, backend=None,
-            trace=None, flow: str = "main", **inputs) -> RunResult:
+            trace=None, flow: str = "main", on_token=None, **inputs) -> RunResult:
         """Run a flow. `trace=True` (or a file path) records a trace for replay; `backend` can be a
-        ReplayBackend to answer from a trace. Inputs are passed as keyword arguments."""
+        ReplayBackend to answer from a trace. Inputs are passed as keyword arguments and converted to the flow's
+        declared types (v0.7). `on_token(event)` receives each agent's output as it is written (v0.7): events are
+        {"type": "start" | "delta" | "end", "agent", "call", "sample", "text" | "value"}."""
         if flow not in self._prog.flows:
             raise KeyError(f"{self.name}: no flow named '{flow}'")
         names = self.flow_inputs(flow)
@@ -142,12 +144,12 @@ class Program:
             raise TypeError(f"{self.name}: missing input(s): {', '.join(missing)}")
         ns = {"__name__": "algolang_sdk",
               "__algo_runtime__": dict(quiet=quiet, live=live, backend=backend, audit_dir_override=audit_dir,
-                                       trace=trace if trace else False, source=self.path)}
+                                       trace=trace if trace else False, source=self.path, on_token=on_token)}
         exec(self._code, ns)
         rt = ns["rt"]
         res = RunResult(run_id=rt.run_id, inputs={k: inputs[k] for k in names}, audit_path=str(rt.audit_path))
         try:
-            res.values = ns[f"flow_{flow}"](**{k: str(inputs[k]) for k in names}) or []
+            res.values = ns[f"flow_{flow}"](**{k: inputs[k] for k in names}) or []          # v0.7: typed in the flow
         except _rt.PolicyViolation as e:
             res.ok, res.status, res.problem = False, "blocked", str(e)
             rt.write_trace(status="blocked", problem=str(e))
@@ -156,6 +158,34 @@ class Program:
             rt.write_trace(status="failed", problem=res.problem)
         res.calls, res.stats = list(rt.calls), dict(rt.stats)
         res.trace_path = str(rt.trace_path) if rt.trace_path else None
+        return res
+
+    def call_agent(self, agent: str, live: bool = False, quiet: bool = True, audit_dir: str | None = None,
+                   backend=None, on_token=None, **inputs) -> RunResult:
+        """Call one agent directly, under the same policies and audit as a flow (v0.7: agents as MCP tools)."""
+        spec = self._prog.agents.get(agent)
+        if spec is None:
+            raise KeyError(f"{self.name}: no agent named '{agent}'")
+        missing = [p.name for p in spec.params if p.name not in inputs and p.default is None]
+        if missing:
+            raise TypeError(f"{self.name}: {agent} is missing input(s): {', '.join(missing)}")
+        ns = {"__name__": "algolang_sdk",
+              "__algo_runtime__": dict(quiet=quiet, live=live, backend=backend, audit_dir_override=audit_dir,
+                                       trace=False, source=self.path, on_token=on_token)}
+        exec(self._code, ns)
+        rt = ns["rt"]
+        res = RunResult(run_id=rt.run_id, inputs=dict(inputs), audit_path=str(rt.audit_path))
+        try:
+            args = {p.name: _rt.coerce_input(f"agent {agent}", p.name, p.type, inputs[p.name])
+                    for p in spec.params if p.name in inputs}
+            rt.begin_flow(f"agent:{agent}", args)
+            rt.emit(ns[agent.replace(".", "__")](**args))
+            res.values = rt.end_flow() or []
+        except _rt.PolicyViolation as e:
+            res.ok, res.status, res.problem = False, "blocked", str(e)
+        except Exception as e:  # noqa
+            res.ok, res.status, res.problem = False, "failed", f"{type(e).__name__}: {e}"
+        res.calls, res.stats = list(rt.calls), dict(rt.stats)
         return res
 
     def replay(self, trace, strict: bool = True, quiet: bool = True, audit_dir: str | None = None) -> RunResult:
@@ -413,7 +443,7 @@ class _Audit:
         d = Path(directory)
         out = {"programs": {}, "agents": {}, "totals": dict(calls=0, tokens=0, escalated=0, blocked=0, failed=0,
                                                             cached=0, tool_calls=0, cost_usd=0.0, energy_wh=0.0,
-                                                            co2_g=0.0), "chains": {}}
+                                                            co2_g=0.0, qpu_seconds=0.0, qpu_usd=0.0), "chains": {}}
         for f in sorted(d.glob("*.audit.jsonl")):
             out["chains"][f.name] = _rt.verify_audit(f)["ok"]
             for line in f.read_text(encoding="utf-8").splitlines():
@@ -423,8 +453,11 @@ class _Audit:
                 prog, agent = r.get("program", f.stem), r.get("agent", "?")
                 for key, bucket in ((prog, out["programs"]), (f"{prog}/{agent}", out["agents"])):
                     b = bucket.setdefault(key, dict(calls=0, tokens=0, escalated=0, blocked=0, failed=0,
-                                                    cached=0, conf_sum=0.0, conf_n=0, cost_usd=0.0, energy_wh=0.0))
+                                                    cached=0, conf_sum=0.0, conf_n=0, cost_usd=0.0, energy_wh=0.0,
+                                                    qpu_seconds=0.0))
                     b["cost_usd"] = round(b["cost_usd"] + (r.get("cost_usd") or 0), 6)
+                    b["qpu_seconds"] = round(b["qpu_seconds"] + sum(float(q.get("qpu_seconds") or 0)
+                                                                    for q in r.get("quantum") or []), 4)
                     b["energy_wh"] = round(b["energy_wh"] + (r.get("energy_wh") or 0), 4)
                     st = r.get("status")
                     if st in ("ok", "escalated", "approved"):
@@ -448,6 +481,9 @@ class _Audit:
                 t["tool_calls"] += len(r.get("tool_calls") or [])
                 t["cost_usd"] = round(t["cost_usd"] + (r.get("cost_usd") or 0), 6)
                 t["energy_wh"] = round(t["energy_wh"] + (r.get("energy_wh") or 0), 4)
+                for q in r.get("quantum") or []:                      # v0.6: QPU time and cost
+                    t["qpu_seconds"] = round(t["qpu_seconds"] + float(q.get("qpu_seconds") or 0), 4)
+                    t["qpu_usd"] = round(t["qpu_usd"] + float(q.get("cost_usd") or 0), 4)
         out["totals"]["co2_g"] = round(_rt.co2_grams(out["totals"]["energy_wh"]), 3)
         for bucket in (out["programs"], out["agents"]):
             for b in bucket.values():

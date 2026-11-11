@@ -346,6 +346,9 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(200, (HERE / "algostudio.html").read_bytes(), "text/html")
         if path in ("/prompt", "/prompt.html"):
             return self._send(200, (HERE / "algoprompt.html").read_bytes(), "text/html")
+        if path == "/dashboard":                       # v0.7: cost and energy dashboard
+            import algocli_ext
+            return self._send(200, algocli_ext.dashboard_html(api_report()).encode("utf-8"), "text/html")
         if path in ("/api/files", "/api/templates", "/api/status", "/api/reviews", "/api/report", "/api/config"):
             return self._send(200, ROUTES[path]())
         self._send(404, {"error": "not found"})

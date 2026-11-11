@@ -4,6 +4,23 @@ All notable changes to AlgoLang are documented here. The format follows [Keep a 
 
 ## [Unreleased]
 
+## [0.7.0] — 2026-11-11 · Interoperability
+
+v0.7 lets any software use a governed AlgoLang flow, with no gap in its governance.
+
+### Added
+- **Flows and agents as MCP servers** (`algoserve.py`): `algo mcp serve FILE… [--agents] [--http PORT] [--live]`. One MCP tool per flow (per agent with `--agents`), with input schemas from the declared types and an output schema; each call runs under the organisation's policies, budgets, human review and audit log, and returns status, values, pending human reviews, cost, tokens and the audit file. Stdio (newline-delimited JSON-RPC) and Streamable HTTP (127.0.0.1 by default, optional bearer token `ALGO_MCP_TOKEN`). Progress notifications stream agents' output to stdio clients that send a progress token. AlgoLang programs can call each other through `tool x from mcp "…"`.
+- **Argument type checking (E131):** the compiler rejects a text value passed where an agent declares `score`, `list`, `bool` or `json` (numbers and uncertain scores are accepted for scores, JSON for lists).
+- **Typed flow inputs:** inputs are converted to their declared types (`"80%"` → 0.8, `"a; b; c"` → a list, `"yes"` → true, JSON text → an object) or refused with `InputTypeError` (`✗ invalid input: …` on the CLI). `par for` over a list input now fans out over its items.
+- **Token-by-token streaming:** `algo run --stream`, `Program.run(on_token=…)`, `Program.call_agent(…, on_token=…)`; Claude (Messages streaming API), OpenAI-compatible local models (server-sent events) and the offline mock stream; events are `start`, `delta` and `end`.
+- **`Program.call_agent(name, **inputs)`** in the SDK: one agent under the same policies and audit as a flow.
+- **Cost and energy dashboard:** `algo report DIR --html FILE` and Studio's `/dashboard` (cost, energy, CO₂, tokens and QPU time by program and agent; escalations; audit-chain health). `al.audit.report` now totals QPU seconds and cost.
+- `examples/v07/` with a served program and client configuration; `tests/test_interop.py`.
+
+### Changed
+- The SDK passes inputs to flows with their own types instead of converting everything to text first.
+
+
 ## [0.6.0] — 2026-11-11 · Quantum AI
 
 v0.6 lets agents use real quantum computers with answers that are checked, budgeted and accountable. The same program runs on the exact simulator, a noisy simulator, IBM Quantum, Amazon Braket or Azure Quantum by changing one line of `algo.config.json`.
