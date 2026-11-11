@@ -1,8 +1,8 @@
 # AlgoLang enterprise applications
 
-<p align="center"><img src="../docs/images/sections/06-enterprise-apps.svg" alt="Eleven governed enterprise applications" width="100%"></p>
+<p align="center"><img src="../docs/images/sections/06-enterprise-apps.svg" alt="Twenty-one governed enterprise applications" width="100%"></p>
 
-Eleven complete, governed multi-agent applications, one per industry. Each is a real AlgoLang project with:
+Twenty-one complete, governed multi-agent applications. Ten of them (v0.5) are large-scale domain applications built on real algorithms. Each is a real AlgoLang project with:
 - organisation policy;
 - company tools over its own data;
 - a knowledge base;
@@ -25,8 +25,18 @@ They all run offline as they are, and with real Claude models when you add `--li
 | [Legal Contract Desk](legal-contract-desk/) | Legal & compliance | 2 | `clause.library` | 2 |
 | [Quantum Optimization Lab](quantum-optimization-lab/) | Quantum computing · finance & operations | 4 | `market.universe`, `quantum.portfolio`, `ops.clashes` + built-in `quantum.maxcut`, `quantum.random`, `circuit` blocks | 5 |
 | [AlgoGraph™ LLM & SLM Optimizer](llm-graph-optimizer/) | AI platform · MLOps | 2 | `slm.triage`, `graph.analyze`, `graph.optimize` + local SLM backend | 4 |
+| [AlgoML Model Factory™](ml-model-factory/) | Machine learning & deep learning | 1 | `data.profile`, `ml.train`, `ml.compare`, `ml.drift` | 3 |
+| [AlgoRL Control Room™](rl-control-room/) | Reinforcement learning | 1 | `rl.train`, `rl.evaluate`, `rl.stress` | 3 |
+| [AlgoXAI Audit Studio™](responsible-xai-studio/) | Responsible & explainable AI | 1 | `xai.shapley`, `fair.audit`, `xai.counterfactual` | 2 |
+| [AlgoNLP Document Intelligence™](nlp-document-intelligence/) | Natural language processing | 1 | `nlp.classify`, `nlp.entities`, `nlp.summarize`, `nlp.trends` | 2 |
+| [AlgoBharat Bhasha Desk™](bharat-language-desk/) | Indian-language AI | 1 | `lang.detect`, `lang.transliterate`, `lang.intent`, `lang.reply`, `lang.coverage` | 3 |
+| [AlgoCare Remote Monitoring™](digital-health-monitor/) | Healthcare & digital health | 1 | `vitals.news2`, `ehr.patient`, `drug.check`, `cohort.watch` | 2 |
+| [AlgoBio Network Lab™](network-biology-lab/) | Computational & network biology | 1 | `net.centrality`, `net.modules`, `net.propagate`, `bio.enrich`, `bio.sequence` | 2 |
+| [AlgoEng Predictive Maintenance™](predictive-engineering/) | Data-driven engineering | 1 | `vib.diagnose`, `rul.estimate`, `fleet.scan`, `maint.plan` | 2 |
+| [AlgoCity Operations Centre™](smart-city-operations/) | Smart cities | 1 | `city.aqi`, `city.waste`, `city.energy`, `city.reading` | 2 |
+| [AlgoMove Transport Network Optimizer™](transport-network-optimizer/) | Transportation systems | 1 | `traffic.reroute`, `signal.retime`, `demand.od`, `transit.headway` | 2 |
 
-**10 applications · 25 programs · 34 behaviour tests**, all run in CI on every push.
+**21 applications · 37 programs · 61 behaviour tests**, all run in CI on every push.
 
 ## Risk levels and system cards (v0.4)
 
@@ -34,9 +44,9 @@ Every program declares a risk level, and every app has a `cards/` folder with a 
 
 | Risk | Programs | What the compiler requires |
 |---|---|---|
-| **High** | `loan_decision` (credit), `admissions`, `er_triage`, `welfare_check` | human oversight (four-eyes or always-on review), `explain with evidence`, `redact pii`, fairness and robustness tests, signed audit logs, a disclosure |
-| **Limited** | `kyc_onboarding`, `grievance_desk`, `claims_intake`, `customer_desk`, `discharge`, `phishing_desk`, `cascade_router` | a disclosure that people are dealing with AI |
-| **Minimal** | the other 16 internal tools | nothing extra |
+| **High** | `loan_decision` (credit), `admissions`, `er_triage`, `welfare_check`, `remote_monitoring` (digital health) | human oversight (four-eyes or always-on review), `explain with evidence`, `redact pii`, fairness and robustness tests, signed audit logs, a disclosure |
+| **Limited** | `kyc_onboarding`, `grievance_desk`, `claims_intake`, `customer_desk`, `discharge`, `phishing_desk`, `cascade_router`, `model_factory`, `model_audit`, `document_triage`, `bhasha_desk`, `city_operations`, `network_operations` | a disclosure that people are dealing with AI |
+| **Minimal** | the other 19 internal tools | nothing extra |
 
 ```bash
 cd bank-credit-onboarding && algo trust report programs --html trust.html
@@ -45,7 +55,7 @@ cd bank-credit-onboarding && algo trust report programs --html trust.html
 ## Run every application
 
 ```bash
-python enterprise-apps/run_all.py            # behaviour tests for all eleven apps
+python enterprise-apps/run_all.py            # behaviour tests for all 21 apps
 python enterprise-apps/run_all.py --batch    # also batch-process each app's sample CSV and verify the audit chain
 ```
 

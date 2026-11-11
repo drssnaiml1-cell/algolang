@@ -4,6 +4,27 @@ All notable changes to AlgoLang are documented here. The format follows [Keep a 
 
 ## [Unreleased]
 
+## [0.5.0] — 2026-11-11 · Ten large-scale domain applications
+
+v0.5 applies AlgoLang to ten demanding domains, one application each. Every application runs real, deterministic algorithms over large synthetic datasets as company tools; the AlgoLang program around them adds parallel agents, deterministic guards, human gates, four-eyes approvals, risk levels, evals, behaviour tests, system cards and an animated flow figure. Quantum AI, previously planned as v0.5, moves to v0.6, and Interoperability to v0.7.
+
+### Added
+- **AlgoML Model Factory™** (`ml-model-factory`): logistic regression, a deep network trained with Adam and gradient-boosted trees compared by 5-fold cross-validation on 6,000 customers; leakage detection and population-stability drift checks.
+- **AlgoRL Control Room™** (`rl-control-room`): shielded Q-learning for microgrid battery dispatch, compared with value iteration and stress-tested; only avoidable safety violations count against a policy.
+- **AlgoXAI Audit Studio™** (`responsible-xai-studio`): exact Shapley values, a group fairness audit and counterfactual recourse; signed audit.
+- **AlgoNLP Document Intelligence™** (`nlp-document-intelligence`): Naive Bayes triage of 3,000 messages (macro-F1 0.893), entities, TextRank summaries and emerging-topic alerts.
+- **AlgoBharat Bhasha Desk™** (`bharat-language-desk`): eight Indian languages and scripts: detection, transliteration, intent and approved replies, with measured coverage on unseen phrasings.
+- **AlgoCare Remote Monitoring™** (`digital-health-monitor`, **risk high**): exact NEWS2 scoring, medicine checks, a 5,000-patient cohort watch and a live AlgoPulse™ vitals stream.
+- **AlgoBio Network Lab™** (`network-biology-lab`): Brandes betweenness, label propagation with modularity, random walk with restart validated on hidden disease genes with a negative control, hypergeometric enrichment with Benjamini–Hochberg FDR, six-frame ORF analysis.
+- **AlgoEng Predictive Maintenance™** (`predictive-engineering`): FFT vibration diagnosis (1×, 2×, bearing outer race), ISO 10816-style zones, exponential remaining-life estimates with intervals for 1,000 pumps, earliest-deadline-first crew scheduling.
+- **AlgoCity Operations Centre™** (`smart-city-operations`): CPCB National AQI for 60 stations, sweep + nearest-neighbour + 2-opt waste routing, seasonal feeder-load forecasts with back-test, and a live air-sensor stream.
+- **AlgoMove Transport Network Optimizer™** (`transport-network-optimizer`): Dijkstra incident detours on 1,600 junctions, Webster signal timing for 576 signals, a doubly constrained gravity model with Furness balancing, and bus headway and fleet planning.
+- `algo run FILE --flow NAME` runs any flow of a program (the generated script keeps a table of flows; `ALGO_FLOW` selects one).
+- Figures for every new application; the README "What's new", applications and roadmap figures are updated.
+
+### Changed
+- The offline mock model keys its sample jitter on the canonical form of a goal, so robustness tests measure the program rather than the wording of a goal.
+
 ### Fixed
 - String literals with non-ASCII characters (₹, →, —, Hindi and other scripts) were garbled by the compiler: escapes were decoded as Latin-1. They now keep every character exactly as written; `\n`, `\"` and other escapes still work. Regression test in `tests/test_trust.py`.
 

@@ -1,6 +1,6 @@
 # AlgoLang roadmap
 
-**Current release: v0.4.1 — Trustworthy AI, plus LLM & SLM graph optimisation** · **Next: v0.5 — Quantum AI** · **Then: v0.6 — Interoperability, v1.0 — native runtime**
+**Current release: v0.5.0 — ten large-scale domain applications** (on v0.4 Trustworthy AI) · **Next: v0.6 — Quantum AI** · **Then: v0.7 — Interoperability, v1.0 — native runtime**
 
 AlgoProfessor AI R&D Solutions, Hyderabad. Designed by Dr. S. Satyanarayana. [www.algoprofessor.com](https://www.algoprofessor.com)
 
@@ -175,11 +175,34 @@ algo trust report enterprise-apps/bank-credit-onboarding
 
 ---
 
-## 5. v0.5 Quantum AI
+## 5. v0.5 Large-scale domain applications (released in 0.5.0)
+
+**Objective: show that governed agent programs carry real, large-scale work in ten demanding domains.**
+
+> **Status: released in v0.5.0.** Quantum AI, planned as v0.5, moves to v0.6 unchanged.
+
+| Domain | Application | Core algorithms | Scale |
+|---|---|---|---|
+| Machine learning & deep learning | AlgoML Model Factory™ | Logistic regression, deep network (Adam), boosted trees, 5-fold CV, leakage and drift tests | 6,000 customers, weekly drift data |
+| Reinforcement learning | AlgoRL Control Room™ | Shielded Q-learning, value iteration, stress tests | microgrid battery dispatch |
+| Responsible & explainable AI | AlgoXAI Audit Studio™ | Exact Shapley values, group fairness audit, counterfactual recourse | two credit models |
+| Natural language processing | AlgoNLP Document Intelligence™ | Naive Bayes, entity rules, TextRank, trend detection | 3,000 messages |
+| Indian-language AI | AlgoBharat Bhasha Desk™ | Script detection, transliteration, intent lexicons, template replies | eight languages and scripts |
+| Healthcare & digital health | AlgoCare Remote Monitoring™ | Exact NEWS2, medicine interaction checks, cohort trends, live stream | 5,000 patients · **risk high** |
+| Computational & network biology | AlgoBio Network Lab™ | Brandes betweenness, label propagation, random walk with restart, hypergeometric + BH FDR, ORFs | 1,500 proteins, 7,441 interactions |
+| Data-driven engineering | AlgoEng Predictive Maintenance™ | FFT vibration diagnosis, ISO 10816-style zones, exponential remaining life, EDF scheduling | 1,000 pumps |
+| Smart cities | AlgoCity Operations Centre™ | CPCB National AQI, sweep + nearest neighbour + 2-opt routing, seasonal load forecast, live stream | 60 stations, 400 bins, 8 weeks hourly load |
+| Transportation systems | AlgoMove Transport Network Optimizer™ | Dijkstra, Webster signal timing, doubly constrained gravity model (Furness), headway planning | 1,600 junctions, 576 signals, 48 zones |
+
+Every application validates its own numbers (cross-validation, held-out genes with a negative control, back-tests, agreement with recorded condition) and routes consequential actions to people.
+
+---
+
+## 6. v0.6 Quantum AI
 
 **Objective: let agents use real quantum computers for real business problems, with results that are verified, bounded and accountable.**
 
-The v0.3.2 preview already gives agents five quantum tools (`quantum.run`, `quantum.qubo`, `quantum.maxcut`, `quantum.grover`, `quantum.random`) on an exact simulator. Every optimisation is VERIFIED against the exact optimum, `shots` and `max qubits` live in the policy, and the Quantum Optimization Lab enterprise application uses them in governed flows. v0.5 takes this to quantum hardware without giving up any of those guarantees.
+The v0.3.2 preview already gives agents five quantum tools (`quantum.run`, `quantum.qubo`, `quantum.maxcut`, `quantum.grover`, `quantum.random`) on an exact simulator. Every optimisation is VERIFIED against the exact optimum, `shots` and `max qubits` live in the policy, and the Quantum Optimization Lab enterprise application uses them in governed flows. v0.6 takes this to quantum hardware without giving up any of those guarantees.
 
 ### Specific objectives
 
@@ -220,15 +243,15 @@ As in the rest of AlgoLang, the guarantees come from the language and runtime, n
 
 ---
 
-## 6. Later releases
+## 7. Later releases
 
 | Version | Theme | Highlights |
 |---|---|---|
-| **v0.6** | Interoperability | Publish a flow as an MCP server; argument type checking; token-by-token output streaming; cost and energy dashboards in Studio |
+| **v0.7** | Interoperability | Publish a flow as an MCP server; argument type checking; token-by-token output streaming; cost and energy dashboards in Studio |
 | **v1.0** | Platform | Native runtime; typed agent-to-agent messaging; package registry for domain packs; SSO and role-based access for Studio |
 
 ---
 
-## 7. How to contribute
+## 8. How to contribute
 
-Pick a work package, open an issue titled `v0.4 WPn: …` (or `v0.5 Qn: …` for quantum), and read the [developer guide](DEVELOPER_GUIDE.md). Each package needs grammar changes (if any), compiler checks with error codes, runtime enforcement, tests, documentation, and an example in an enterprise application. Domain experts in law, finance, health and education are especially welcome to review the fairness and risk rules.
+Pick a work package, open an issue titled `v0.4 WPn: …` (or `v0.6 Qn: …` for quantum), and read the [developer guide](DEVELOPER_GUIDE.md). Each package needs grammar changes (if any), compiler checks with error codes, runtime enforcement, tests, documentation, and an example in an enterprise application. Domain experts in law, finance, health and education are especially welcome to review the fairness and risk rules.

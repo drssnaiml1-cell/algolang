@@ -5,7 +5,7 @@ import algolang as al
 
 
 def test_version():
-    assert al.__version__ == "0.4.1"
+    assert al.__version__ == "0.5.0"
 
 
 def test_catalog_has_120_packs_in_20_sectors():

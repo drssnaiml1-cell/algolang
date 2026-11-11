@@ -2,7 +2,7 @@
   "name": "algolang",
   "displayName": "AlgoLang",
   "description": "AlgoLang (.algo) for VS Code: syntax highlighting plus the AlgoLang language server (diagnostics, hover, completion, go to definition, outline)",
-  "version": "0.4.1",
+  "version": "0.5.0",
   "publisher": "algoprofessor",
   "engines": {
     "vscode": "^1.70.0"

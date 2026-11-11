@@ -36,7 +36,7 @@
   <a href="https://www.algoprofessor.com"><img src="docs/images/algolang-hero.svg" alt="AlgoLang: an order event from AlgoPulse flows through parallel Quote and Limits agents, a deterministic BREACH guard, and an uncertain RiskGate agent with a human gate; every call is written to a hash-chained audit log" width="100%"></a>
 </p>
 
-**Current version: 0.4.1** (Trustworthy AI: risk levels · fairness and robustness tests · signed audit · system cards · trust reports · LLM & SLM graph optimisation) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md) · [50 Sample Programs (PDF)](docs/AlgoLang_50_Sample_Programs.pdf) · [Language manual (PDF)](docs/AlgoLang_Documentation_v0.4.pdf)
+**Current version: 0.5.0** (ten large-scale domain applications, from machine learning to transport, on v0.4 Trustworthy AI: risk levels · fairness and robustness tests · signed audit · system cards · LLM & SLM graph optimisation) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md) · [50 Sample Programs (PDF)](docs/AlgoLang_50_Sample_Programs.pdf) · [Language manual (PDF)](docs/AlgoLang_Documentation_v0.4.pdf)
 
 AlgoLang has **no functions**. Every unit of work is an `agent` with a role, a goal, explicit tools, a model and a policy. A `flow` is the only other construct, and it can do just four things:
 
@@ -86,7 +86,7 @@ flowchart TB
 
 1. [Objective](#1-objective)
 2. [Design principles](#2-design-principles)
-3. [What's new in v0.4: Trustworthy AI](#3-whats-new-in-v04-trustworthy-ai)
+3. [What's new in v0.5: ten large-scale applications](#3-whats-new-in-v05-ten-large-scale-applications)
 4. [Get started](#4-get-started)
 5. [Learn by example: 50 sample programs](#5-learn-by-example-50-sample-programs)
 6. [Enterprise applications](#6-enterprise-applications)
@@ -96,7 +96,7 @@ flowchart TB
 10. [Governance and runtime guarantees](#10-governance-and-runtime-guarantees)
 11. [Python SDK](#11-python-sdk)
 12. [For developers](#12-for-developers)
-13. [Roadmap: v0.5 Quantum AI, v0.6 Interoperability, v1.0](#13-roadmap-v05-quantum-ai-v06-interoperability-v10)
+13. [Roadmap: v0.6 Quantum AI, v0.7 Interoperability, v1.0](#13-roadmap-v06-quantum-ai-v07-interoperability-v10)
 14. [Repository layout](#14-repository-layout)
 15. [Author and licence](#15-author-and-licence)
 
@@ -119,7 +119,7 @@ flowchart TB
 | 5 | Accountability | Every agent call returns a value with its confidence and provenance, and is written to a hash-chained audit log that can be verified. Traces can be replayed. |
 | 6 | Honest uncertainty | `uncertain<T>` agents are sampled several times. Their confidence reflects how much the samples agree, and decisions must check it. |
 | 7 | Cost, speed and sustainability | Cheap models for easy steps, strong models where needed, caching, parallelism, and every call priced in money, watt-hours and CO₂. |
-| 8 | Reuse at scale | 120 domain packs in 20 sectors, modules, MCP tools, AlgoPulse™ streams, quantum tools, eleven enterprise applications, and batch processing of thousands of records. |
+| 8 | Reuse at scale | 120 domain packs in 20 sectors, modules, MCP tools, AlgoPulse™ streams, quantum tools, twenty-one enterprise applications, and batch processing of thousands of records. |
 | 9 | Access for everyone | Command line, graphical Studio, a plain-English Prompt UI, a Python SDK and editor support through a language server. |
 | 10 | Teachable and testable | An offline backend runs without an API key. `eval` blocks and behaviour tests run in CI; live mode uses real Claude models. |
 
@@ -134,9 +134,28 @@ flowchart TB
 - **People stay in the loop.** A low-confidence call goes to a human review queue instead of going out.
 - **One engine, many doors.** The command line, Studio, Prompt UI, SDK and language server all run the same compiler and runtime.
 
-## 3. What's new in v0.4: Trustworthy AI
+## 3. What's new in v0.5: ten large-scale applications
 
-<p align="center"><img src="docs/images/sections/03-whats-new.svg" alt="Ten trustworthy-AI properties in v0.4, each enforced in code" width="100%"></p>
+<p align="center"><img src="docs/images/sections/03-whats-new.svg" alt="Ten large-scale domain applications in v0.5" width="100%"></p>
+
+**v0.5 puts AlgoLang to work on ten hard domains, one application each.** Every application runs real, deterministic algorithms over large synthetic datasets as company tools. The AlgoLang program around them adds parallel agents, deterministic guards, `uncertain<T>` scores, human gates, four-eyes approvals, risk levels, evals, behaviour tests and system cards. Each tool reports its own accuracy, validation or back-test, so a flow never acts on an unchecked number.
+
+| Application | Domain | What it does at scale | Risk |
+|---|---|---|---|
+| [AlgoML Model Factory™](enterprise-apps/ml-model-factory/) | Machine learning & deep learning | Logistic regression, a deep network trained with Adam and boosted trees, compared by 5-fold cross-validation; leakage and drift checks | limited |
+| [AlgoRL Control Room™](enterprise-apps/rl-control-room/) | Reinforcement learning | Shielded Q-learning for battery dispatch, checked against value iteration and stress-tested before a person deploys it | minimal |
+| [AlgoXAI Audit Studio™](enterprise-apps/responsible-xai-studio/) | Responsible & explainable AI | Exact Shapley explanations, a fairness audit across groups and counterfactual recourse for each applicant | limited |
+| [AlgoNLP Document Intelligence™](enterprise-apps/nlp-document-intelligence/) | Natural language processing | Naive Bayes triage (macro-F1 0.89), entity extraction, TextRank summaries and emerging-topic alerts | limited |
+| [AlgoBharat Bhasha Desk™](enterprise-apps/bharat-language-desk/) | Indian-language AI | Citizen queries in eight Indian languages and scripts: detection, transliteration, intent and approved replies | limited |
+| [AlgoCare Remote Monitoring™](enterprise-apps/digital-health-monitor/) | Healthcare & digital health | Exact NEWS2 early warning, medicine checks, a 5,000-patient cohort watch and a live vitals stream | **high** |
+| [AlgoBio Network Lab™](enterprise-apps/network-biology-lab/) | Computational & network biology | Random walk with restart on a 1,500-protein network, validated on hidden genes with a negative control; FDR-controlled enrichment | minimal |
+| [AlgoEng Predictive Maintenance™](enterprise-apps/predictive-engineering/) | Data-driven engineering | Vibration FFT diagnosis, ISO 10816-style zones and remaining-life forecasts for 1,000 pumps; earliest-deadline crew plans | minimal |
+| [AlgoCity Operations Centre™](enterprise-apps/smart-city-operations/) | Smart cities | CPCB National AQI, 2-opt waste-truck routes, feeder load forecasts and a live air-sensor stream | limited |
+| [AlgoMove Transport Network Optimizer™](enterprise-apps/transport-network-optimizer/) | Transportation systems | Dijkstra incident detours, Webster signal timing, a gravity demand model and bus fleet planning | limited |
+
+All ten run offline in CI (`python enterprise-apps/run_all.py --batch`), each with an animated flow figure drawn from its program. v0.5 also adds `algo run FILE --flow NAME` to run any flow of a program, and makes the offline mock model's robustness tests independent of the wording of a goal.
+
+### v0.4: Trustworthy AI
 
 **v0.4 makes trustworthiness something a program can prove, not just claim.** The compiler checks that each safeguard a system needs is present; the runtime enforces it; `eval` blocks measure it; and the toolchain writes the evidence an auditor reads.
 
@@ -301,9 +320,9 @@ The runnable source of every program is in [`examples/50-programs/`](examples/50
 
 ## 6. Enterprise applications
 
-<p align="center"><img src="docs/images/sections/06-enterprise-apps.svg" alt="Eleven enterprise applications" width="100%"></p>
+<p align="center"><img src="docs/images/sections/06-enterprise-apps.svg" alt="Twenty-one enterprise applications" width="100%"></p>
 
-[`enterprise-apps/`](enterprise-apps/) holds eleven complete, governed multi-agent applications. Each has its own org policy, company tools over its own data, a knowledge base, programs, batch data, behaviour tests and (v0.4) a risk level and a generated AI system card for every program:
+[`enterprise-apps/`](enterprise-apps/) holds twenty-one complete, governed multi-agent applications: the eleven below and the ten large-scale domain applications of [v0.5](#3-whats-new-in-v05-ten-large-scale-applications). Each has its own org policy, company tools over its own data, a knowledge base, programs, batch data, behaviour tests and (v0.4) a risk level and a generated AI system card for every program:
 
 | Application | Sector | What it automates | Risk (v0.4) |
 |---|---|---|---|
@@ -659,15 +678,15 @@ pip install -e ".[dev]"
 make check        # ruff + pytest + lint of every .algo file
 ```
 
-## 13. Roadmap: v0.5 Quantum AI, v0.6 Interoperability, v1.0
+## 13. Roadmap: v0.6 Quantum AI, v0.7 Interoperability, v1.0
 
 <p align="center"><img src="docs/images/sections/13-roadmap.svg" alt="Roadmap timeline" width="100%"></p>
 
-**v0.4 Trustworthy AI is released** (see [§3](#3-whats-new-in-v04-trustworthy-ai)). The releases below are built one at a time, each with tests, CI, documentation and figures. The full plan is in **[ROADMAP.md](ROADMAP.md)**.
+**v0.5 large-scale domain applications is released** (see [§3](#3-whats-new-in-v05-ten-large-scale-applications)), on top of v0.4 Trustworthy AI. The releases below are built one at a time, each with tests, CI, documentation and figures. The full plan is in **[ROADMAP.md](ROADMAP.md)**.
 
-**v0.5 — Quantum AI (next).** The quantum preview becomes a full release: real quantum hardware (IBM Quantum, Amazon Braket, Azure Quantum) behind the same tool interface, with QPU-time and cost budgets; noise models and error mitigation; quantum results as `uncertain<T>` values whose confidence comes from shot statistics; VQE for chemistry and materials, quantum kernels for classification, amplitude estimation for financial risk; verified bounds beyond the simulator's reach; and post-quantum signatures for the audit chain. Details in [ROADMAP.md](ROADMAP.md#5-v05-quantum-ai).
+**v0.6 — Quantum AI (next).** The quantum preview becomes a full release: real quantum hardware (IBM Quantum, Amazon Braket, Azure Quantum) behind the same tool interface, with QPU-time and cost budgets; noise models and error mitigation; quantum results as `uncertain<T>` values whose confidence comes from shot statistics; VQE for chemistry and materials, quantum kernels for classification, amplitude estimation for financial risk; verified bounds beyond the simulator's reach; and post-quantum signatures for the audit chain. Details in [ROADMAP.md](ROADMAP.md#6-v06-quantum-ai).
 
-**v0.6 — Interoperability.** Agents served as MCP servers, argument type checking, and token-by-token output streaming. **v1.0** adds a native runtime, typed agent-to-agent messaging, a package registry and SSO/RBAC for Studio.
+**v0.7 — Interoperability.** Agents served as MCP servers, argument type checking, and token-by-token output streaming. **v1.0** adds a native runtime, typed agent-to-agent messaging, a package registry and SSO/RBAC for Studio.
 
 | Version | Theme | Status |
 |---|---|---|
@@ -679,9 +698,10 @@ make check        # ruff + pytest + lint of every .algo file
 | v0.3.3 | Quantum circuits in the language; quantum-safe security, Monte Carlo with amplitude estimation, logistics routing | Released |
 | v0.3.4 | AlgoPulse™, AlgoLang's own real-time event engine; animated figures for every section and every application | Released |
 | v0.4 | Trustworthy AI: risk levels, privacy, explanations, untrusted tools, four-eyes review, signed audit, fairness and robustness tests, system cards, evidence packs, trust reports | Released |
-| v0.4.1 | LLM & SLM graph optimisation: SLM-first cascades, exact model assignment over the agent graph, local small models, `agent_models` routing | **Current** |
-| v0.5 | Quantum AI: hardware backends, noise, uncertain quantum results, chemistry and risk algorithms | Next |
-| v0.6 | Interoperability: agents as MCP servers, argument types, output streaming | Planned |
+| v0.4.1 | LLM & SLM graph optimisation: SLM-first cascades, exact model assignment over the agent graph, local small models, `agent_models` routing | Released |
+| v0.5 | Ten large-scale domain applications: ML & DL, RL, responsible & explainable AI, NLP, Indian languages, digital health, network biology, engineering, smart cities, transport | **Current** |
+| v0.6 | Quantum AI: hardware backends, noise, uncertain quantum results, chemistry and risk algorithms | Next |
+| v0.7 | Interoperability: agents as MCP servers, argument types, output streaming | Planned |
 | v1.0 | Native runtime and ecosystem | Planned |
 
 ## 14. Repository layout
@@ -727,8 +747,8 @@ tools/make_figures.py         regenerates every figure (CI checks they match the
 examples/v03/                 tour of v0.3: MCP demo server, uncertain<T>, budgets, eval
 examples/50-programs/          the 50 programs from "AlgoLang: 50 Sample Programs" + inputs.json
 docs/                         language manual (LaTeX + PDF) and AlgoLang_50_Sample_Programs.pdf
-enterprise-apps/              eleven governed enterprise applications (incl. Algo Trading Desk, Quantum Optimization Lab, AlgoGraph™ LLM & SLM Optimizer)
-ROADMAP.md                    v0.4 Trustworthy AI and v0.5 Quantum AI plans, later releases
+enterprise-apps/              21 governed enterprise applications (incl. Algo Trading Desk, Quantum Optimization Lab, AlgoGraph™, and the ten v0.5 domain apps)
+ROADMAP.md                    v0.4 Trustworthy AI, v0.5 domain applications, v0.6 Quantum AI plan, later releases
 examples/*.algo               source programs (bad_example.algo shows every error)
 vscode-algolang/              VS Code extension: highlighting + the language server
 .vscode/tasks.json            Ctrl+Shift+B to run the open .algo file
