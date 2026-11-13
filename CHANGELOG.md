@@ -4,6 +4,9 @@ All notable changes to AlgoLang are documented here. The format follows [Keep a 
 
 ## [Unreleased]
 
+### Documentation
+- **Language manual v1.0** (`docs/AlgoLang_Documentation_v1.0.pdf`, 108 pages): new chapters for v0.5 domain applications, v0.6 Quantum AI, v0.7 Interoperability and v1.0 (typed messages, AlgoIR and the AlgoVM, packages, Studio sign-in), and error codes E131–E133. It replaces the v0.4 manual.
+
 ## [1.0.0] — 2026-11-11 · Native runtime and ecosystem
 
 AlgoLang 1.0: every release planned since v0.1 has shipped. Agents exchange typed messages, programs ship as signed artifacts that run on AlgoLang's own virtual machine, agents are shared as signed packages, and Studio is a multi-user workspace with single sign-on and roles.

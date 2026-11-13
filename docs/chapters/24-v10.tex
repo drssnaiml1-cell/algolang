@@ -1,0 +1,61 @@
+\chapter{Version 1.0: Native runtime and ecosystem}
+\label{ch:v10}
+
+\algolang{} 1.0 is ready for production teams. Agents exchange typed messages that the compiler and the runtime both check; programs ship as signed, portable artifacts that run on \algolang{}'s own virtual machine; agents are shared as signed, versioned packages; and Studio becomes a multi-user workspace with single sign-on and roles.
+
+\section{Typed agent-to-agent messages}
+
+\begin{algo}[title=examples/v10/claims\_typed.algo (excerpt)]
+type Party { name: text, phone_verified: bool }
+type Claim { policy: text, amount: number, urgent: bool, fraud_risk: score, claimant: Party, documents: list }
+
+agent Intake(note: text) -> Claim {
+    goal "Read the claim note {note} and fill in every field of the claim"
+}
+flow main(note: text) {
+    claim = Intake(note)
+    if claim.amount < 50000 and claim.fraud_risk < 0.7 { emit claim, FastTrack(claim) }
+    else { emit claim, Investigate(claim, claim.amount) }
+}
+\end{algo}
+
+Field types are \code{text}, \code{number}, \code{score}, \code{bool}, \code{list}, \code{json} or another declared type. Fields can be read in conditions and passed as arguments (\code{claim.claimant.name}). The compiler checks every field (\errcode{E132}) and every argument (\errcode{E131}). At run time each model answer is validated against its type: numbers and booleans are gently coerced; a missing or mistyped field fails the call (and is retried under \code{retry}). Live models are told the exact JSON shape, and personal data in messages is masked field by field.
+
+\section{AlgoIR and the AlgoVM}
+
+\begin{terminal}
+$ algo keys init
+$ algo build claims.algo --ir --sign              # build/claims.algoir.json
+$ algo run build/claims.algoir.json --arg "note=Bumper damage, INR 9,000"
+$ algo run claims.algo --engine vm --arg "note=..."
+\end{terminal}
+
+AlgoIR is a small, versioned JSON format: models, tools, typed messages, trust settings, agents with their effective policies, and flows as statement trees, with a SHA-256 digest and an optional Ed25519 (and ML-DSA) signature. The AlgoVM interprets it directly on the same governed runtime; no Python is generated or executed. With \code{"runtime": \{"require\_signed\_ir": true\}} the AlgoVM refuses any program that is unsigned or altered. Continuous integration runs all 222 shipped programs on both engines and requires identical results.
+
+\section{Packages and registries}
+
+\begin{terminal}
+$ algo pkg init lib --name claims-desk --version 1.0.0
+$ algo pkg build lib && algo pkg publish dist/claims-desk-1.0.0.algopkg --registry ./registry
+$ algo pkg install insurance@^1.0
+$ algo pkg verify
+\end{terminal}
+
+\begin{algo}[title=Using an installed package]
+use "pkg:insurance/claims_triage.algo" as triage
+\end{algo}
+
+A package is a reproducible \file{.algopkg} archive with a SHA-256 for every file and a signed manifest. Versions follow semantic versioning (\code{\^{}1.2}, \code{\textasciitilde 1.2.3}, comparisons); dependencies are resolved and conflicts reported; \file{algo.lock} pins exact versions and hashes. The compiler refuses a package file that is missing or was changed after installation (\errcode{E133}). \code{"registry": \{"trusted\_publishers": [\ldots]\}} allows only packages signed by named keys. The 120 domain packs are published as 20 packages in the public registry on the website.
+
+\section{Studio single sign-on and roles}
+
+\begin{plaincode}[title=algo.config.json]
+"studio": {
+  "auth": {"mode": "oidc", "issuer": "https://login.example.com", "client_id": "algolang-studio",
+           "client_secret_env": "STUDIO_OIDC_SECRET"},
+  "roles": {"asha@example.com": "admin", "group:risk-reviewers": "reviewer", "*@example.com": "author"},
+  "default_role": "viewer"
+}
+\end{plaincode}
+
+Studio supports OpenID Connect (authorization code with PKCE, state and nonce; RS256 ID tokens verified against the provider's keys) and API tokens for automation. Four roles are enforced on every route: \emph{viewer} reads, \emph{reviewer} also approves or rejects, \emph{author} also edits and runs, \emph{admin} does everything. The signed-in person is recorded as the reviewer, so four-eyes approval really needs two people, and every access decision is written to \file{runs/studio\_access.jsonl}.

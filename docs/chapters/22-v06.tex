@@ -1,0 +1,57 @@
+\chapter{Version 0.6: Quantum AI}
+\label{ch:v06}
+
+Version 0.6 lets agents use real quantum computers, with answers that are checked, budgeted and accountable. The same program runs on the exact simulator, a noisy simulator, IBM Quantum, Amazon Braket or Azure Quantum by changing one line of \file{algo.config.json}; nothing about the language's guarantees changes on hardware.
+
+\begin{plaincode}[title=algo.config.json]
+"quantum": {"backend": "ibm:ibm_kyiv", "shots": 4096, "max_qpu_seconds": 600, "max_qpu_usd": 200}
+\end{plaincode}
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}L{3.4cm}Y@{}}
+\toprule
+\thead{Work package} & \thead{What it adds}\\
+\goldrule
+Q1 Backends & \code{simulator}, \code{noisy:<profile>}, \code{ibm:<device>}, \code{braket:<device>}, \code{azure:<target>}; credentials only from environment variables\\
+Q2 QPU budgets & \code{budget qpu 30 seconds}, \code{budget qpu 2 usd} per agent, and per-run caps, checked before a job is submitted\\
+Q3 Uncertain results & every quantum tool reports a confidence; an agent returning \code{uncertain<T>} carries the lower of the model's and the quantum result's\\
+Q4 Noise & exact density-matrix noise, readout-error mitigation, zero-noise extrapolation by gate folding, Hellinger fidelity; \code{expect fidelity > x}\\
+Q5 Verification & \code{VERIFIED}, \code{BOUNDED} (within x\% of a proven lower bound), \code{UNCHECKED} or \code{GAP}\\
+Q6 Algorithms & \code{quantum.vqe}, \code{quantum.kernel}, \code{quantum.amplitude}, \code{quantum.knapsack}, \code{quantum.colouring}, \code{quantum.backend}\\
+Q7 Provenance & backend, device, calibration, depth, shots, job id, QPU time, cost and fidelity in every audit record; replay from recorded counts\\
+Q8 Post-quantum audit & ML-DSA (FIPS 204) or hybrid Ed25519 + ML-DSA-65 signatures on audit records and evidence packs\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{A quantum agent}
+
+\begin{algo}[title=enterprise-apps/quantum-ai-lab/programs/quantum\_ai.algo (excerpt)]
+agent Energy(molecule: text) -> uncertain<text> {
+    goal   "Compute the ground-state energy of {molecule} with VQE and check it against exact diagonalisation"
+    uses   quantum.vqe
+    policy { samples 3  shots 8192  budget qpu 120 seconds  budget qpu 25 usd }
+}
+eval chemistry on main {
+    case "H2" (molecule = "H2 at equilibrium bond length") {
+        expect output contains "CHEMICAL ACCURACY"
+        expect fidelity > 0.85
+        expect qpu < 1
+    }
+}
+\end{algo}
+
+VQE reaches chemical accuracy for H$_2$ (error below 1.6\,mHa against exact diagonalisation). The quantum kernel is compared with a tuned classical RBF kernel by cross-validation and reports \code{NO QUANTUM ADVANTAGE} when the classical kernel wins.
+
+\begin{caution}
+Hardware backends are exercised in continuous integration with stand-in SDKs: no credentials or QPU time are used. Install \code{algolang[ibm]}, \code{[braket]} or \code{[azure]} and set the provider's credentials to use a device. Prices in the budget table are illustrative defaults; set \code{"quantum": \{"pricing": \ldots\}} from your provider. \algolang{} makes no claim of quantum speed-up; it makes sure a quantum answer is checked before anyone relies on it.
+\end{caution}
+
+\section{Post-quantum audit signatures}
+
+\begin{plaincode}[title=algo.config.json]
+"audit": {"sign": true, "algorithm": "hybrid"}
+\end{plaincode}
+
+\code{hybrid} signs every record with Ed25519 and ML-DSA-65, so the log stays trustworthy while either scheme stands. \code{algo audit verify} and \code{algo evidence verify} check both. The ML-DSA key is derived from the same secret seed as the Ed25519 key.

@@ -130,6 +130,15 @@ An unknown risk level; a limited- or high-risk program without \kw{disclose}; a 
 \errhead{E130}{Trust value error}
 \code{require approvals} outside 1--5; \code{retain} outside 1--3650 days or not \code{audit}/\code{traces}; \code{expect fair} with fewer than two values; an unknown perturbation; or a consistency outside 0--1.
 
+\errhead{E131}{Argument type mismatch}
+A value of the wrong type is passed to an agent (v0.7): text where a \code{score}, \code{number}, \code{list}, \code{bool}, \code{json} or a typed message is declared.
+
+\errhead{E132}{Typed message error}
+An unknown field or field type, a type or field defined twice, a field named \code{confidence}, a type that contains itself, or an \code{uncertain} typed message (v1.0).
+
+\errhead{E133}{Package file not installed or changed}
+A \code{use "pkg:\ldots"} file that is not installed, not in \file{algo.lock}, or whose bytes changed after installation (v1.0).
+
 \section{Run-time outcomes}
 
 Some problems can only be detected while the program runs. They are not compile errors; each stops the run with a clear message and an exit code (Chapter~\ref{ch:cli}).

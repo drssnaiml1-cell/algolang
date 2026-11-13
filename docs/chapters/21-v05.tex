@@ -1,0 +1,45 @@
+\chapter{Version 0.5: Large-scale domain applications}
+\label{ch:v05}
+
+Version 0.5 puts \algolang{} to work on ten demanding domains, one enterprise application each. Every application runs real, deterministic algorithms over large synthetic datasets as company tools. The \algolang{} program around them adds what the algorithms alone do not have: parallel agents, deterministic guards, human gates, four-eyes approvals, risk levels, evals, behaviour tests and system cards. Each tool reports its own accuracy, validation or back-test, so a flow never acts on an unchecked number.
+
+\begin{center}
+\small
+\begin{tabularx}{\linewidth}{@{}L{3.2cm}L{3.6cm}Y@{}}
+\toprule
+\thead{Domain} & \thead{Application} & \thead{Core algorithms}\\
+\goldrule
+Machine learning and deep learning & AlgoML Model Factory & logistic regression, a deep network trained with Adam, boosted trees, 5-fold cross-validation; leakage and drift checks\\
+Reinforcement learning & AlgoRL Control Room & shielded Q-learning for battery dispatch, compared with value iteration, stress-tested\\
+Responsible and explainable AI & AlgoXAI Audit Studio & exact Shapley values, a group fairness audit, counterfactual recourse\\
+Natural language processing & AlgoNLP Document Intelligence & Naive Bayes triage (macro-F1 0.893), entities, TextRank summaries, emerging topics\\
+Indian-language AI & AlgoBharat Bhasha Desk & eight languages and scripts: detection, transliteration, intents, approved replies\\
+Healthcare and digital health & AlgoCare Remote Monitoring & exact NEWS2 early warning for 5,000 patients, medicine checks, a live vitals stream (\code{risk high})\\
+Computational and network biology & AlgoBio Network Lab & Brandes betweenness, label propagation, random walk with restart with held-out validation and a negative control; hypergeometric enrichment with Benjamini--Hochberg FDR\\
+Data-driven engineering & AlgoEng Predictive Maintenance & FFT vibration diagnosis, ISO 10816-style zones, exponential remaining-life estimates for 1,000 pumps, earliest-deadline-first crew plans\\
+Smart cities & AlgoCity Operations Centre & CPCB National AQI, sweep + nearest neighbour + 2-opt waste routes, feeder load forecasts with back-test, a live air-sensor stream\\
+Transportation systems & AlgoMove Transport Network Optimizer & Dijkstra incident detours on 1,600 junctions, Webster signal timing, a doubly constrained gravity model, bus fleet planning\\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+\section{The pattern every application follows}
+
+\begin{algo}[title=enterprise-apps/smart-city-operations/programs/city\_operations.algo (flow)]
+flow main(situation: text) {
+    [air, waste, power] = par { AirQuality(situation), WasteRoutes(situation), PowerForecast(situation) }
+    if air contains "AQI SEVERE" or air contains "AQI VERY POOR" {
+        emit air, waste, power, HealthAdvisory(situation, air)   // the duty officer approves
+    } else {
+        emit air, waste, power, DailyBrief(situation, air, waste, power)
+    }
+}
+\end{algo}
+
+\begin{itemize}
+\item Company tools compute; agents explain and decide. A guard such as \code{contains "AQI SEVERE"} is deterministic: it reads the tool's verdict, which is written first on its first line.
+\item Tools validate themselves: cross-validation, held-out genes with a negative control, back-tests, agreement with recorded conditions.
+\item Public actions (health advisories, load shedding, wet-lab plans, fleet hire) go to people; money and safety decisions need two approvals.
+\end{itemize}
+
+Version 0.5 also adds \code{algo run FILE --flow NAME} to run any flow of a program, and makes the offline model's robustness tests independent of the wording of a goal.

@@ -1,0 +1,30 @@
+\chapter{Version 0.7: Interoperability}
+\label{ch:v07}
+
+Version 0.7 opens \algolang{} to other software without opening a gap in its governance. Any flow can be called by Claude Desktop, an IDE, another agent framework or another \algolang{} program over the Model Context Protocol, and every call still runs under the organisation's policies, budgets, human review and signed audit log.
+
+\section{Flows and agents as MCP servers}
+
+\begin{terminal}
+$ algo mcp serve programs/claims_intake.algo                 # stdio: one tool per flow
+$ algo mcp serve programs/*.algo --agents --http 8765        # every agent too, over Streamable HTTP
+\end{terminal}
+
+Tool input schemas come from the flows' declared types: \code{text} becomes a string, \code{score} a number between 0 and 1, \code{list} an array, \code{json} an object. A result carries the run's status, the emitted values, anything escalated for human review, the cost and the audit file. The HTTP transport listens on 127.0.0.1 and can require a bearer token (\code{ALGO\_MCP\_TOKEN}). Clients that send a progress token receive each agent's output as progress notifications.
+
+\begin{plaincode}[title=claude\_desktop\_config.json]
+{"mcpServers": {"city-help": {"command": "algo", "args": ["mcp", "serve", "city_help.algo"]}}}
+\end{plaincode}
+
+\section{Argument types}
+
+The compiler checks every agent call: a text value cannot be passed where a \code{score}, \code{list}, \code{bool} or \code{json} is declared (\errcode{E131}). Flow inputs are converted to their declared types at the door, from the command line, the SDK, batch files and MCP: \code{"80\%"} becomes 0.8, \code{"a; b; c"} a list, \code{"yes"} true; anything else is refused with a clear message.
+
+\section{Streaming and dashboards}
+
+\begin{terminal}
+$ algo run programs/claims_intake.algo --stream --arg "claim=Rear-end collision, INR 48,000"
+$ algo report runs --html dashboard.html
+\end{terminal}
+
+\code{--stream}, \code{program.run(on\_token=\ldots)} and MCP progress notifications show each agent's answer as the model writes it, with Claude and OpenAI-compatible local models. \code{algo report --html} and Studio's \file{/dashboard} show cost, energy, CO$_2$, tokens and QPU time by program and agent.

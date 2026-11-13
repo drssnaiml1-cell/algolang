@@ -1,9 +1,9 @@
 # AlgoLang Documentation (LaTeX source)
 
-*The AlgoLang Programming Language — Official Documentation, v0.1*
+*The AlgoLang Programming Language — Official Documentation, v1.0*
 Dr. S. Satyanarayana, Ph.D., PDF (AI) · AlgoProfessor AI R&D Solutions
 
-- `AlgoLang_Documentation_v0.1.pdf` — compiled book (72 pages)
+- `AlgoLang_Documentation_v1.0.pdf` — compiled book (108 pages), with chapters for every release up to 1.0
 - `algolang-docs.tex` — main file
 - `algolang-docs.sty` — navy & gold house style
 - `chapters/` — one file per chapter and appendix
