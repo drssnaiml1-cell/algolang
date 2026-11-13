@@ -54,11 +54,11 @@
 <rect x="538.4" y="132" width="203.2" height="152" rx="12" class="card"/>
 <circle cx="562.4" cy="158" r="15" fill="url(#gold)"/><text x="562.4" y="163" fill="#0e2140" font-size="13.5" font-weight="800" text-anchor="middle">3</text>
 <text x="584.4" y="163" fill="#f4f1e8" font-size="15.5" font-weight="700">Check</text>
-<text x="554.4" y="192" fill="#c9b98a" font-size="13">31 rules: agents only,</text>
-<text x="554.4" y="210" fill="#c9b98a" font-size="13">declared tools,</text>
-<text x="554.4" y="228" fill="#c9b98a" font-size="13">forbidden attributes,</text>
-<text x="554.4" y="246" fill="#c9b98a" font-size="13">risk-level safeguards</text>
-<text x="554.4" y="270" fill="#e9c75a" font-size="12" class="mono">E100–E130</text>
+<text x="554.4" y="192" fill="#c9b98a" font-size="13">34 rules: agents only,</text>
+<text x="554.4" y="210" fill="#c9b98a" font-size="13">declared tools, types,</text>
+<text x="554.4" y="228" fill="#c9b98a" font-size="13">risk-level safeguards,</text>
+<text x="554.4" y="246" fill="#c9b98a" font-size="13">locked packages</text>
+<text x="554.4" y="270" fill="#e9c75a" font-size="12" class="mono">E100–E133</text>
 </g>
 <g class="rise" style="animation-delay:0.36s">
 <rect x="787.6" y="132" width="203.2" height="152" rx="12" class="card"/>

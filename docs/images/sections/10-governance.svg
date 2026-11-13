@@ -44,7 +44,7 @@
 <rect x="58" y="196" width="6" height="58" rx="3" fill="url(#gold)"/>
 <text x="80" y="221" fill="#f4f1e8" font-size="16" font-weight="700">Compile-time checks</text>
 <text x="80" y="242" fill="#c9b98a" font-size="13.5">unsafe programs never start; high-risk programs must carry every safeguard</text>
-<text x="1102" y="231" fill="#e9c75a" font-size="13" text-anchor="end" class="mono">E100–E130</text>
+<text x="1102" y="231" fill="#e9c75a" font-size="13" text-anchor="end" class="mono">E100–E133</text>
 </g>
 <g class="rise" style="animation-delay:0.20s">
 <rect x="76" y="266" width="1028" height="58" rx="10" class="card"/>

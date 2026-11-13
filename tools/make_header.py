@@ -153,7 +153,7 @@ def growth():
     lx, ly = pts[-1]
     out.append(f'<text x="{lx - 6:.1f}" y="{ly - 10:.1f}" text-anchor="end" font-family="{SANS}" font-size="12" font-weight="700" '
                f'fill="#D9534F">{rows[-1][1]} applications</text>')
-    out.append(f'<text x="{tpts[-1][0] - 6:.1f}" y="{tpts[-1][1] + 18:.1f}" text-anchor="end" font-family="{SANS}" font-size="12" '
+    out.append(f'<text x="{tpts[-1][0] - 6:.1f}" y="{tpts[-1][1] + 30:.1f}" text-anchor="end" font-family="{SANS}" font-size="12" '
                f'fill="{NAVY}">{rows[-1][2]} test modules</text>')
     out.append(f'<text x="{w / 2}" y="{h - 8}" text-anchor="middle" font-family="{SANS}" font-size="11" fill="{MUTED}">'
                f'— enterprise applications   - - test modules   ·   release</text>')
