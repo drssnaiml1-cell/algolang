@@ -1,35 +1,51 @@
 <p align="center">
-  <a href="https://www.algoprofessor.com"><img src="docs/images/algolang-logo.svg" alt="AlgoLang logo" width="132" height="132"></a>
-</p>
-
-<h1 align="center">AlgoLang</h1>
-
-<h3 align="center">Write AI systems as agents, not functions. Every decision governed, explained, signed and tested before it ships. Build AI you can prove is trustworthy.</h3>
-
-<p align="center">
-  <img src="https://skillicons.dev/icons?i=py,vscode,docker,githubactions,latex,sqlite,linux,windows,apple&perline=9" alt="Python, VS Code, Docker, GitHub Actions, LaTeX, SQLite, Linux, Windows, macOS">
+  <a href="https://github.com/drssnaiml1-cell/algolang"><img src="docs/images/header/wordmark.svg" alt="AlgoLang" width="460"></a>
 </p>
 
 <p align="center">
-  <img src="https://img.shields.io/badge/Claude-models-c9a227?style=for-the-badge&logo=anthropic&logoColor=white" alt="Claude models">
-  <img src="https://img.shields.io/badge/MCP-tools-0e2140?style=for-the-badge" alt="Model Context Protocol tools">
-  <img src="https://img.shields.io/badge/Qiskit-quantum-6929C4?style=for-the-badge&logo=qiskit&logoColor=white" alt="Qiskit">
-  <img src="https://img.shields.io/badge/OpenQASM-2.0-0e2140?style=for-the-badge" alt="OpenQASM 2.0">
-  <img src="https://img.shields.io/badge/Jupyter-Colab-F37626?style=for-the-badge&logo=jupyter&logoColor=white" alt="Jupyter and Colab">
-  <img src="https://img.shields.io/badge/Ed25519-signed%20audit-0e2140?style=for-the-badge" alt="Ed25519 signed audit">
+  <img src="docs/images/header/works-with.svg" alt="Works with Claude, Model Context Protocol, Qiskit and OpenQASM, Jupyter and Colab, Ed25519 and ML-DSA" width="760">
 </p>
 
 <p align="center">
+  <a href="https://www.algoprofessor.com"><b>AlgoProfessor AI R&amp;D Solutions</b></a> · Hyderabad, India · Designed by <b>Dr. S. Satyanarayana</b>
+</p>
+
+<h3 align="center">Your AI agents make decisions nobody can check. AlgoLang makes every decision governed, explained, signed and tested before it ships.</h3>
+
+<p align="center">
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-Apache%202.0-0B1F3A" alt="License: Apache 2.0"></a>
+  <a href="https://github.com/drssnaiml1-cell/algolang/releases/latest"><img src="https://img.shields.io/github/v/release/drssnaiml1-cell/algolang?label=version&color=C9A227" alt="Version"></a>
+  <img src="https://img.shields.io/badge/python-%E2%89%A5%203.9-0B1F3A" alt="Python 3.9 or later">
   <a href="https://github.com/drssnaiml1-cell/algolang/actions/workflows/ci.yml"><img src="https://github.com/drssnaiml1-cell/algolang/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
-  <a href="https://github.com/drssnaiml1-cell/algolang/releases/latest"><img src="https://img.shields.io/github/v/release/drssnaiml1-cell/algolang?color=c9a227" alt="Release"></a>
-  <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-0e2140" alt="License: Apache 2.0"></a>
-  <a href="https://drssnaiml1-cell.github.io/algolang/"><img src="https://img.shields.io/badge/website-playground%20%C2%B7%20library-0e2140" alt="Website"></a>
-  <a href="https://www.algoprofessor.com"><img src="https://img.shields.io/badge/by-algoprofessor.com-c9a227" alt="AlgoProfessor"></a>
+  <img src="https://img.shields.io/badge/runs%20on-Windows%20%C2%B7%20Linux%20%C2%B7%20macOS%20%C2%B7%20Colab-0B1F3A" alt="Runs on Windows, Linux, macOS and Colab">
+  <a href="https://drssnaiml1-cell.github.io/algolang/"><img src="https://img.shields.io/badge/website-playground%20%C2%B7%20registry-C9A227" alt="Website"></a>
 </p>
 
 <p align="center">
-  <b>The AlgoProfessor agent-native programming language</b><br>
-  AlgoProfessor AI R&amp;D Solutions, Hyderabad · Designed by Dr. S. Satyanarayana · <a href="https://www.algoprofessor.com">www.algoprofessor.com</a>
+  <a href="https://github.com/drssnaiml1-cell/algolang/releases/latest"><img src="docs/images/header/card-release.svg" alt="Latest release: AlgoLang 1.0.0" width="300"></a>
+  &nbsp;
+  <a href="#3-whats-new-in-v10-native-runtime-and-ecosystem"><img src="docs/images/header/card-verified.svg" alt="Verified in CI: 222 programs give identical results on the AlgoVM" width="300"></a>
+</p>
+
+<table>
+<tr>
+<td width="50%"><img src="docs/images/header/terminal.svg" alt="AlgoLang toolchain: compile check, fairness and robustness evals, an AlgoIR build, and a run where a credit committee result is escalated to a person" width="100%"></td>
+<td width="50%"><img src="docs/images/header/growth.svg" alt="AlgoLang growth by release, from the git tags: enterprise applications grew from 9 to 22 and test modules from 11 to 18" width="100%"></td>
+</tr>
+</table>
+
+<p align="center">
+  <a href="#quick-start">Quick Start</a> •
+  <a href="#2-design-principles">How It Works</a> •
+  <a href="#6-enterprise-applications">Applications</a> •
+  <a href="#8-quantum-applications">Quantum AI</a> •
+  <a href="docs/AlgoLang_Documentation_v1.0.pdf">Documentation</a> •
+  <a href="#13-roadmap-from-v01-to-v10-and-beyond">Roadmap</a> •
+  <a href="#15-author-and-licence">License</a>
+</p>
+
+<p align="center">
+  Every AI decision your company makes today is a black box. It cannot say why, nobody can prove it was fair,<br>and when it goes wrong there is no record. AlgoLang turns agents into programs a compiler can check,<br>a person can review and an auditor can verify.
 </p>
 
 <p align="center">
