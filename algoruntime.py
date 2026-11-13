@@ -42,7 +42,7 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from pathlib import Path
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 # WebAssembly builds of Python (Pyodide, used by the web playground) cannot start threads:
 # `par` then runs its branches one after another, with identical results.
 CAN_THREAD = sys.platform not in ("emscripten", "wasi")
@@ -530,6 +530,69 @@ def _print_stream(ev):
 # ═══════════════════════════════ v0.7: typed flow inputs ═══════════════════════════════
 class InputTypeError(ValueError):
     """A flow input does not match its declared type."""
+
+
+def _contract_get(ref, val, conf, args):
+    head, *path = ref
+    if head == "result":
+        if path == ["confidence"]:
+            return conf
+        x = val
+    elif head in args:
+        x = args[head]
+        if path == ["confidence"]:
+            return getattr(x, "confidence", 1.0)
+    else:
+        raise KeyError(head)
+    x = getattr(x, "value", x)
+    for f in path:
+        if not isinstance(x, dict) or f not in x:
+            raise KeyError(".".join(ref))
+        x = x[f]
+    return getattr(x, "value", x)
+
+
+def _contract_eval(node, val, conf, args):
+    op = node[0]
+    if op == "and":
+        return _contract_eval(node[1], val, conf, args) and _contract_eval(node[2], val, conf, args)
+    if op == "or":
+        return _contract_eval(node[1], val, conf, args) or _contract_eval(node[2], val, conf, args)
+
+    def operand(o):
+        if o[0] == "lit":
+            return o[1]
+        if o[0] == "ref":
+            return _contract_get(o[1], val, conf, args)
+        raise ValueError(f"unsupported operand {o[0]}")
+    if op == "contains":
+        hay = operand(node[1])
+        hay = json.dumps(hay, ensure_ascii=False) if isinstance(hay, (dict, list)) else str(hay)
+        found = node[2].lower() in hay.lower()
+        return (not found) if node[3] else found
+    _, cmp, left, right = node
+    a, b = operand(left), operand(right)
+    if isinstance(a, bool) or isinstance(b, bool):
+        a, b = bool(a), bool(b)
+    elif not (isinstance(a, (int, float)) and isinstance(b, (int, float))):
+        a, b = float(a), float(b)                    # "0.4" from a model counts as 0.4; text raises ValueError
+    return {"<": a < b, "<=": a <= b, ">": a > b, ">=": a >= b, "==": a == b, "!=": a != b}[cmp]
+
+
+def contract_failures(contracts, val, conf, args):
+    """v1.1 `ensure`: the contracts an agent's answer breaks, as [{contract, message}] (empty = all held).
+    A contract that cannot be evaluated (a missing field, text where a number is needed) counts as broken."""
+    out = []
+    for c in contracts:
+        try:
+            ok = bool(_contract_eval(c["cond"], val, conf, args))
+            why = None
+        except (KeyError, ValueError, TypeError) as e:
+            ok, why = False, f"cannot be checked ({e})"
+        if not ok:
+            msg = c.get("msg") or f"ensure {c['text']}" + (f": {why}" if why else "")
+            out.append(dict(contract=c["text"], message=msg))
+    return out
 
 
 def coerce_input(flow, name, typ, val):
@@ -1250,6 +1313,7 @@ class Runtime:
         args = {}
         for name, _typ, default in spec.params:
             args[name] = self.value(kwargs[name]) if name in kwargs else default
+        raw_args = dict(args)                  # v1.1: contracts read the real inputs, before any masking
         call_id = uuid.uuid4().hex[:6]
         model_id = self.models.get(spec.model, "claude-sonnet-5-5") if spec.model else \
             (self.cfg.get("models") or {}).get("default", "claude-sonnet-5-5")
@@ -1377,6 +1441,31 @@ class Runtime:
             if use_cache and not problems:
                 self.cache.put(ckey, {"__entry__": 3, "value": val, "samples": samples, "tool_calls": tool_calls,
                                       "explanation": explanation, "quantum": quantum}, conf)
+        # v1.1 agent contracts: every `ensure` must hold; ask once more, then a person decides
+        contract = None
+        if pol.get("ensure"):
+            failed = contract_failures(pol["ensure"], val, conf, raw_args)
+            redrawn = False
+            if failed and not cached:
+                redrawn = True
+                with self.lock:
+                    self.stats["retries"] += 1
+                draws2 = [self._sample(spec, model_id, prompt, goal, pol, call_id, k + i, k, guard) for i in range(k)]
+                for d in draws2:
+                    t_in, t_out = t_in + d["t_in"], t_out + d["t_out"]
+                tokens = t_in + t_out
+                v2, c2 = (draws2[0]["value"], draws2[0]["confidence"]) if k == 1 else self._aggregate(spec, draws2)[:2]
+                f2 = contract_failures(pol["ensure"], v2, c2, raw_args)
+                if len(f2) < len(failed):
+                    val, conf, failed = v2, c2, f2
+                    tool_calls = [t for d in draws2 for t in d["tool_calls"]]
+                    if k > 1:
+                        samples = draws2
+            contract = dict(checked=len(pol["ensure"]), held=len(pol["ensure"]) - len(failed),
+                            violated=failed, redrawn=redrawn)
+            if failed:
+                with self.lock:
+                    self.stats["contract_violations"] = self.stats.get("contract_violations", 0) + len(failed)
         qconf = [q["confidence"] for q in quantum if q.get("confidence") is not None]
         if qconf and spec.returns.startswith("uncertain<"):      # v0.6: a quantum answer is a distribution, not a fact
             conf = round(min(conf, min(qconf)), 3)
@@ -1405,6 +1494,8 @@ class Runtime:
         review_reason = None
         if pol.get("human_always") or (pol.get("approvals") and gate is None):
             review_reason = "every result of this agent is reviewed by a person"
+        elif contract and contract["violated"]:
+            review_reason = "contract violated: " + "; ".join(v["message"] for v in contract["violated"])
         elif problems:
             review_reason = "explanation not grounded: " + "; ".join(problems)
         elif gate is not None and conf < gate:
@@ -1457,6 +1548,8 @@ class Runtime:
             rec["injections"] = injections
         if quantum:
             rec["quantum"] = quantum                                # v0.6: what ran where, for auditors
+        if contract:
+            rec["contracts"] = contract                             # v1.1: which contracts held
         self._audit(rec, output=val)
         if self.trace_calls is not None:
             with self.lock:
@@ -1660,6 +1753,7 @@ class Runtime:
                 self._log(f"    • {v}")
         extra = f" · {s['cache_hits']} cached" if s["cache_hits"] else ""
         extra += f" · {s['tool_calls']} tool calls" if s["tool_calls"] else ""
+        extra += f" · {s['contract_violations']} contract(s) broken" if s.get("contract_violations") else ""
         if s["cost_usd"] or s["energy_wh"]:
             est = "est. live " if self.backend.name == "mock" else ""
             extra += f" · {est}${s['cost_usd']:.4f} · {s['energy_wh']:.3f} Wh · {s['co2_g']:.2f} g CO₂"

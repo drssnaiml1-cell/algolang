@@ -1,0 +1,91 @@
+\chapter{Version 1.1: Accountable decisions}
+\label{ch:v11}
+
+Every governed AI decision raises three questions: \emph{is the answer within its limits?}, \emph{would the decision have been different if one thing had been different?}, and \emph{did the last change to the program weaken a safeguard?} \algolang{} 1.1 answers each of them from the program itself.
+
+\section{Agent contracts}
+
+A contract is a condition on an agent's answer, written inside the agent:
+
+\begin{algo}[title=examples/v11/claim\_contracts.algo (excerpt)]
+type Claim { policy: text, amount: number, fraud_risk: score }
+
+agent Intake(note: text) -> Claim {
+    goal   "Fill in every field of the claim described in {note}"
+    ensure result.amount > 0 else "a claim must have a positive amount"
+    ensure result.fraud_risk >= 0 and result.fraud_risk <= 1
+}
+agent Payout(claim: Claim, cover: number) -> number {
+    goal   "Fair payout for {claim} with cover limit {cover}"
+    ensure result >= 0     else "a payout cannot be negative"
+    ensure result <= cover else "a payout cannot exceed the policy's cover"
+}
+agent Letter(claim: Claim, payout: number) -> text {
+    goal   "Write a short, plain letter about the payout of {payout} for {claim}"
+    ensure result not contains "guarantee" else "letters must not promise anything"
+    ensure result.confidence >= 0.5
+}
+\end{algo}
+
+A contract may read \code{result} (its fields and \code{result.confidence}) and the agent's own parameters. It uses the same conditions as an \code{if}: comparisons of numbers and scores, \code{contains} and \code{not contains} for text, joined with \code{and} and \code{or}. The optional \code{else} message is what a reviewer reads.
+
+\paragraph{What happens at run time.} Every answer is checked before anyone uses it. If a contract is broken, the agent is asked once more. If a contract is still broken, the answer goes to a person: it is placed in the review queue with the reason \emph{contract violated: \ldots}, exactly as a low-confidence answer is. A contract that cannot be evaluated (a missing field, or text where a number is needed) counts as broken; it never passes silently. Each audit record carries the outcome:
+
+\begin{plaincode}[title=Audit record (excerpt)]
+"contracts": {"checked": 2, "held": 1, "redrawn": true,
+              "violated": [{"contract": "result <= cover",
+                            "message": "a payout cannot exceed the policy's cover"}]}
+\end{plaincode}
+
+Contracts are compiled into the agent's policy, so they travel inside AlgoIR and behave identically on the AlgoVM. The compiler rejects a contract that calls an agent, does not check \code{result}, or reads an unknown name or field (\errcode{E134}).
+
+\paragraph{Contracts and other safeguards.} A contract is deterministic and local: it states a hard limit on one answer. Confidence thresholds (\code{require human when confidence < x}) handle doubt; guards in flows (\code{if \ldots}) route decisions; \code{eval} blocks test behaviour before release. Use contracts for limits that must hold for every single answer, whatever the model.
+
+\section{What-if audits}
+
+\begin{terminal}
+$ algo run claims.algo --arg "note=..." --arg cover=200000 --trace
+$ algo whatif runs/traces/claims-d81ea7ea.trace.json --set cover=5000
+  agent      before          after           change
+  Intake     {"policy": ...}  {"policy": ...}  same
+  Payout     8609 (0.74)     1276 (0.92)     answer,confidence
+  Letter     ...             ...             answer,confidence
+  2 of 3 agent call(s) re-computed; the rest came from the recording
+  ✗ the decision changed
+\end{terminal}
+
+\code{algo whatif} re-runs a recorded decision with one or more inputs changed. \code{--set NAME=VALUE} gives an input a new value; \code{--swap OLD=NEW} replaces a word or phrase in every text input (whole words, case kept), for example \code{--swap he=she}. The original run is replayed exactly from its trace; in the changed run, every agent whose inputs did not change is answered from the recording, so only the part of the flow that depends on the change is re-computed and the comparison is free of sampling noise. The report shows, agent by agent, whether the answer, confidence, review status or broken contracts changed, the path taken, who was escalated, and whether the final decision flipped.
+
+\paragraph{A counterfactual test in CI.} \code{--expect same} makes the command fail (exit 1) when the decision changes, so a fairness question about a real, recorded case becomes a test:
+
+\begin{terminal}
+$ algo whatif runs/traces/cv-7f1c.trace.json --swap she=he --swap Priya=Rahul --expect same --live
+\end{terminal}
+
+Without a trace, give a program and its inputs: \code{algo whatif claims.algo --arg note=... --arg cover=200000 --set cover=10}. With \code{--live}, changed calls go to the real model; offline they are answered by the deterministic mock model, which is useful for testing the mechanics of a flow but says nothing about how a real model would behave. \code{--json} prints the full report.
+
+\section{Governance diff}
+
+\begin{terminal}
+$ algo diff git:main:programs/claims.algo programs/claims.algo
+  ▼ loosened   agent Payout   token budget raised  1500 → 4000
+  ▼ loosened   agent Payout   human review below confidence lowered  0.8 → 0.6
+  ▼ loosened   agent Payout   forbidden attribute 'gender' allowed again
+  ▼ loosened   agent Payout   contract removed  ensure result <= cover → —
+  ▼ loosened   eval contracts case 'small claim': expectation removed
+  5 loosened · 0 tightened · 0 other change(s)
+\end{terminal}
+
+A code diff shows which lines changed; \code{algo diff} shows what they mean. It compares two versions of a program (a file, or \code{git:REV:path} from history) and classes every change as \textbf{▼ loosened} (the program may now do more, or is checked less), \textbf{▲ tightened}, or \textbf{● changed} (a new model, a reworded goal, a new agent). It covers:
+
+\begin{itemize}
+\item the risk level and the AI disclosure;
+\item declared, trusted and untrusted tools, MCP servers, and the tools each agent can use;
+\item token, cost, energy and QPU budgets, timeouts, retries and maximum qubits;
+\item human-review thresholds, review of every result, required approvals and samples;
+\item forbidden attributes, PII redaction and explanation level;
+\item contracts, return types (an agent that is no longer sampled for confidence is loosened);
+\item eval cases and individual expectations.
+\end{itemize}
+
+By default the command fails when anything is loosened (\code{--fail-on loosened}); \code{--fail-on any} fails on every change and \code{--fail-on never} only reports. \code{--markdown} writes a table for a pull-request comment and \code{--json} a machine-readable report. In CI, a pull request that weakens a safeguard therefore cannot pass unnoticed: someone has to look at it on purpose.

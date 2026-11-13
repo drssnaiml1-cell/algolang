@@ -139,6 +139,9 @@ An unknown field or field type, a type or field defined twice, a field named \co
 \errhead{E133}{Package file not installed or changed}
 A \code{use "pkg:\ldots"} file that is not installed, not in \file{algo.lock}, or whose bytes changed after installation (v1.0).
 
+\errhead{E134}{Contract error}
+An \code{ensure} that calls an agent, does not check \code{result}, reads a name that is neither \code{result} nor a parameter, reads a field the type does not have, or compares text as a number (v1.1).
+
 \section{Run-time outcomes}
 
 Some problems can only be detected while the program runs. They are not compile errors; each stops the run with a clear message and an exit code (Chapter~\ref{ch:cli}).

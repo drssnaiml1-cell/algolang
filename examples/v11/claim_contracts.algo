@@ -1,0 +1,37 @@
+// AlgoLang 1.1: agent contracts. Every `ensure` is checked on every answer, before anyone uses it.
+// A broken contract gets one more try; if it still fails, a person decides (review queue + audit log).
+risk limited "Motor claim payouts"
+disclose "This letter was prepared with the help of an AI system and checked against company rules."
+
+type Claim { policy: text, amount: number, fraud_risk: score }
+
+agent Intake(note: text) -> Claim {
+    goal   "Fill in every field of the claim described in {note}"
+    ensure result.amount > 0 else "a claim must have a positive amount"
+    ensure result.fraud_risk >= 0 and result.fraud_risk <= 1
+}
+
+agent Payout(claim: Claim, cover: number) -> number {
+    goal   "Fair payout for {claim} with cover limit {cover}"
+    ensure result >= 0 else "a payout cannot be negative"
+    ensure result <= cover else "a payout cannot exceed the policy's cover"
+}
+
+agent Letter(claim: Claim, payout: number) -> text {
+    goal   "Write a short, plain letter telling the customer their payout of {payout} for {claim}"
+    ensure result not contains "guarantee" else "letters must not promise or guarantee anything"
+    ensure result.confidence >= 0.5
+}
+
+flow main(note: text, cover: number) {
+    claim  = Intake(note)
+    payout = Payout(claim, cover)
+    emit Letter(claim, payout)
+}
+
+eval contracts on main {
+    case "small claim" (note = "Policy MTR-1182: rear bumper damage, repair estimate 18,500 rupees", cover = 200000) {
+        expect status ok
+        expect called Payout
+    }
+}

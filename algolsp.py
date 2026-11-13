@@ -52,6 +52,8 @@ KEYWORDS = {
     "retain": "**retain** — `retain audit 180 days` / `retain traces 30 days`: older records are removed after each run; "
               "a signed checkpoint keeps the audit chain verifiable.",
     "approvals": "**require approvals N** — N different named reviewers must approve each result (four-eyes = 2).",
+    "ensure": "**ensure** (v1.1) — a contract on every answer: `ensure result >= 0 else \"why\"`. Checked "
+              "before anyone uses the answer; broken once → asked again; broken twice → a person decides.",
     "untrusted": "**untrusted** — `tool web.fetch untrusted`: its output is size-limited, instruction-like lines are "
                  "removed, and it is wrapped as data the model must not obey.",
     "fair": "**expect fair across** attribute [values] — run the case once per value and require the same decision "

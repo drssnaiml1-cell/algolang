@@ -56,6 +56,7 @@ class Agent:
     line: int = 0
     origin: str | None = None        # set for agents imported with `use`
     src: str | None = None           # absolute path of the file that defines it (for the language server)
+    contracts: list = field(default_factory=list)   # v1.1: (condition tree, message, line) from `ensure`
 
 
 @dataclass
@@ -207,6 +208,50 @@ def build_params(node) -> list[Param]:
         default = literal_value(rest[0]) if rest and rest[0] is not None else None
         out.append(Param(str(name), type_str(typ), default, name.line))
     return out
+
+
+# v1.1 agent contracts ──────────────────────────────────────────
+def contract_ir(c):
+    """An `ensure` condition as plain JSON, evaluated by the runtime on every result (both engines)."""
+    if c.data in ("or_cond", "and_cond"):
+        return [c.data[:-5], contract_ir(c.children[0]), contract_ir(c.children[1])]
+    if c.data in ("contains_cond", "not_contains_cond"):
+        return ["contains", _contract_operand(c.children[0]), _s(c.children[1]), c.data == "not_contains_cond"]
+    left, op, right = c.children
+    return ["cmp", str(op), _contract_operand(left), _contract_operand(right)]
+
+
+def _contract_operand(e):
+    if e.data in ("var", "attr"):
+        n = str(e.children[0])
+        if n in ("true", "false"):
+            return ["lit", n == "true"]
+        return ["ref", n.split(".")]
+    if e.data == "string":
+        return ["lit", _s(e.children[0])]
+    if e.data == "number":
+        x = float(str(e.children[0]))
+        return ["lit", int(x) if x.is_integer() else x]
+    if e.data in ("true", "false"):
+        return ["lit", e.data == "true"]
+    return ["bad", e.data]
+
+
+def contract_text(c):
+    """The contract as the programmer wrote it, for messages and the audit log."""
+    if c.data in ("or_cond", "and_cond"):
+        return f"{contract_text(c.children[0])} {c.data[:-5]} {contract_text(c.children[1])}"
+    if c.data in ("contains_cond", "not_contains_cond"):
+        neg = "not " if c.data == "not_contains_cond" else ""
+        return f'{_operand_text(c.children[0])} {neg}contains "{_s(c.children[1])}"'
+    left, op, right = c.children
+    return f"{_operand_text(left)} {op} {_operand_text(right)}"
+
+
+def _operand_text(e):
+    if e.data == "string":
+        return f'"{_s(e.children[0])}"'
+    return str(e.children[0]) if e.children else e.data
 
 
 def parse_policy(rules) -> dict:
@@ -439,6 +484,12 @@ def to_ast(tree: Tree) -> tuple[Program, list[Diag]]:
                     a.model = str(c.children[0])
                 elif c.data == "policy":
                     a.policy = merge_policy(a.policy, parse_policy(c.children))
+                elif c.data == "ensure":                     # v1.1: agent contracts
+                    cond, msg = c.children
+                    a.contracts.append((cond, _s(msg) if msg is not None else None, _line(c)))
+            if a.contracts:
+                a.policy["ensure"] = [dict(cond=contract_ir(cn), text=contract_text(cn), msg=m)
+                                      for cn, m, _ in a.contracts]
             if a.name in prog.agents or a.name in prog.flows:
                 diags.append(Diag("E107", a.line, f"'{a.name}' is defined twice"))
             prog.agents[a.name] = a
@@ -772,9 +823,33 @@ class Checker:
         for msg in a.policy.get("_errors", []):
             code = "E130" if msg.startswith(("`require approvals`", "`retain")) else "E121"
             self.err(code, a.line, f"agent {a.name}: {msg}")
+        self.check_contracts(a)
         if a.policy.get("samples") is not None and not 1 <= a.policy["samples"] <= 15:
             self.err("E121", a.line, f"agent {a.name}: samples must be between 1 and 15")
         self.check_quantum(a)
+
+    def check_contracts(self, a):
+        """v1.1 `ensure`: a contract may read only `result` (its fields or .confidence) and the agent's own
+        parameters, and must be deterministic: no agent calls, no parallel blocks (E134)."""
+        if not a.contracts:
+            return
+        env = {"result": base_type(a.returns) if a.returns.startswith("uncertain<") else a.returns}
+        for prm in a.params:
+            env[prm.name] = prm.type
+            if prm.name == "result":
+                self.err("E134", a.line, f"agent {a.name}: a parameter cannot be called 'result' when the agent "
+                                         f"has contracts (`result` is the agent's answer)")
+        for cond, _msg, line in a.contracts:
+            if any(t.data in ("call", "par_block", "par_for") for t in cond.iter_subtrees()):
+                self.err("E134", line, f"agent {a.name}: `ensure` must be deterministic — it cannot call agents")
+                continue
+            if not any(t.data in ("var", "attr") and str(t.children[0]).split(".")[0] == "result"
+                       for t in cond.iter_subtrees()):
+                self.err("E134", line, f"agent {a.name}: `ensure` must check `result` (the agent's answer)")
+            n0 = len(self.diags)
+            self.check_condition(cond, env)
+            for d in self.diags[n0:]:                    # report contract mistakes under one code
+                d.code, d.msg = "E134", f"agent {a.name}: ensure: {d.msg}"
 
     def check_quantum(self, a):
         """quantum.* tools (v0.3.2): sane shot counts and qubit limits (v0.6: up to 1,000 qubits for hardware
@@ -1397,7 +1472,7 @@ def compile_source(src: str, name: str, base_dir: Path | str | None = None):
     return CodeGen(prog, name).gen(), prog
 
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 
 TEMPLATE = '''// {name}.algo — created by `algo new`
 // Run it:  algo run {name}.algo --arg "topic=Your topic here"
@@ -1707,6 +1782,25 @@ def main(argv=None):
     s.add_argument("--program", default=None, help="the .algo file to replay (default: the one in the trace)")
     s.add_argument("--lenient", action="store_true", help="answer changed calls offline instead of stopping")
     s.add_argument("--json", action="store_true")
+    s = sub.add_parser("whatif", help="what-if audit: re-run a recorded decision with an input changed (v1.1)")
+    s.add_argument("target", help="a trace (.trace.json) or an .algo program (then give its inputs with --arg)")
+    s.add_argument("--set", action="append", default=[], metavar="NAME=VALUE", help="give an input a new value")
+    s.add_argument("--swap", action="append", default=[], metavar="OLD=NEW",
+                   help="replace a word or phrase in every text input (e.g. --swap he=she)")
+    s.add_argument("--arg", action="append", default=[], metavar="NAME=VALUE", help="inputs, when TARGET is a program")
+    s.add_argument("--flow", default=None)
+    s.add_argument("--program", default=None, help="the .algo file (default: the one in the trace)")
+    s.add_argument("--live", action="store_true", help="re-compute changed calls with real models")
+    s.add_argument("--expect", choices=["same", "changed"], default=None,
+                   help="fail (exit 1) unless the decision is the same / changed: a fairness test for CI")
+    s.add_argument("--json", action="store_true")
+    s = sub.add_parser("diff", help="governance diff: what two versions of a program change in policy (v1.1)")
+    s.add_argument("old", help="the earlier .algo file (or git:REV:path)")
+    s.add_argument("new", help="the later .algo file")
+    s.add_argument("--fail-on", choices=["loosened", "any", "never"], default="loosened",
+                   help="exit 1 when governance is loosened (default), on any change, or never")
+    s.add_argument("--json", action="store_true")
+    s.add_argument("--markdown", action="store_true", help="a Markdown report for a pull-request comment")
     s = sub.add_parser("pkg", help="packages: init, build, publish, search, install, list, verify (v1.0)")
     s.add_argument("action", choices=["init", "build", "publish", "search", "install", "list", "verify"])
     s.add_argument("rest", nargs="*")
@@ -1773,6 +1867,13 @@ def main(argv=None):
         if a.cmd == "eval":
             return algoeval.cli_eval(a.file, live=a.live, replay=a.replay, record=a.record, only=a.only, as_json=a.json)
         return algoeval.cli_replay(a.trace, program=a.program, strict=not a.lenient, as_json=a.json)
+    if a.cmd == "whatif":
+        import algowhatif
+        return algowhatif.cli(a.target, sets=a.set, swaps=a.swap, args=a.arg, flow=a.flow, program=a.program,
+                              live=a.live, expect=a.expect, as_json=a.json)
+    if a.cmd == "diff":
+        import algodiff
+        return algodiff.cli(a.old, a.new, fail_on=a.fail_on, as_json=a.json, markdown=a.markdown)
     if a.cmd == "pkg":
         import algopkg
         return algopkg.cli(a.action, a.rest, registry=a.registry, out=a.out, name=a.name, version=a.pkg_version)

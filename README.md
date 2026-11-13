@@ -22,9 +22,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/drssnaiml1-cell/algolang/releases/latest"><img src="docs/images/header/card-release.svg" alt="Latest release: AlgoLang 1.0.0" width="300"></a>
+  <a href="https://github.com/drssnaiml1-cell/algolang/releases/latest"><img src="docs/images/header/card-release.svg" alt="Latest release: AlgoLang 1.1.0" width="300"></a>
   &nbsp;
-  <a href="#3-whats-new-in-v10-native-runtime-and-ecosystem"><img src="docs/images/header/card-verified.svg" alt="Verified in CI: 222 programs give identical results on the AlgoVM" width="300"></a>
+  <a href="#v10-native-runtime-and-ecosystem"><img src="docs/images/header/card-verified.svg" alt="Verified in CI: 223 programs give identical results on the AlgoVM" width="300"></a>
 </p>
 
 <table>
@@ -39,7 +39,7 @@
   <a href="#2-design-principles">How It Works</a> •
   <a href="#6-enterprise-applications">Applications</a> •
   <a href="#8-quantum-applications">Quantum AI</a> •
-  <a href="docs/AlgoLang_Documentation_v1.0.pdf">Documentation</a> •
+  <a href="docs/AlgoLang_Documentation_v1.1.pdf">Documentation</a> •
   <a href="#13-roadmap-from-v01-to-v10-and-beyond">Roadmap</a> •
   <a href="#15-author-and-licence">License</a>
 </p>
@@ -52,7 +52,7 @@
   <a href="https://www.algoprofessor.com"><img src="docs/images/algolang-hero.svg" alt="AlgoLang: an order event from AlgoPulse flows through parallel Quote and Limits agents, a deterministic BREACH guard, and an uncertain RiskGate agent with a human gate; every call is written to a hash-chained audit log" width="100%"></a>
 </p>
 
-**Current version: 1.0.0** (typed agent-to-agent messages · AlgoIR and the AlgoVM native runtime · signed packages and a public registry · Studio single sign-on and roles; with v0.7 Interoperability, v0.6 Quantum AI, v0.5 domain applications and v0.4 Trustworthy AI) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md) · [50 Sample Programs (PDF)](docs/AlgoLang_50_Sample_Programs.pdf) · [Language manual (PDF)](docs/AlgoLang_Documentation_v1.0.pdf) · Presentation: [PDF](docs/presentation/AlgoLang_Presentation.pdf) · [PowerPoint](docs/presentation/AlgoLang_Presentation.pptx) · [LaTeX source](docs/presentation/AlgoLang_Presentation.tex)
+**Current version: 1.1.0** (agent contracts · what-if audits · governance diff; with v1.0 typed messages, AlgoIR and the AlgoVM, signed packages and Studio single sign-on; v0.7 Interoperability, v0.6 Quantum AI, v0.5 domain applications and v0.4 Trustworthy AI) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md) · [50 Sample Programs (PDF)](docs/AlgoLang_50_Sample_Programs.pdf) · [Language manual (PDF)](docs/AlgoLang_Documentation_v1.1.pdf) · Presentation: [PDF](docs/presentation/AlgoLang_Presentation.pdf) · [PowerPoint](docs/presentation/AlgoLang_Presentation.pptx) · [LaTeX source](docs/presentation/AlgoLang_Presentation.tex)
 
 AlgoLang has **no functions**. Every unit of work is an `agent` with a role, a goal, explicit tools, a model and a policy. A `flow` is the only other construct, and it can do just four things:
 
@@ -71,7 +71,7 @@ flowchart TB
     end
     subgraph COMPILER["② Compiler · algoc.py — unsafe programs never run"]
         direction LR
-        SRC[".algo source"] --> PARSE["Lark grammar"] --> AST["AST"] --> CHK{{"Checker · E100–E133"}} --> GEN["Python code"]
+        SRC[".algo source"] --> PARSE["Lark grammar"] --> AST["AST"] --> CHK{{"Checker · E100–E134"}} --> GEN["Python code"]
     end
     subgraph RUNTIME["③ Runtime · algoruntime.py — every call governed"]
         direction LR
@@ -102,7 +102,7 @@ flowchart TB
 
 1. [Objective](#1-objective)
 2. [Design principles](#2-design-principles)
-3. [What's new in v1.0: native runtime and ecosystem](#3-whats-new-in-v10-native-runtime-and-ecosystem)
+3. [What's new in v1.1: accountable decisions](#3-whats-new-in-v11-accountable-decisions)
 4. [Get started](#4-get-started)
 5. [Learn by example: 50 sample programs](#5-learn-by-example-50-sample-programs)
 6. [Enterprise applications](#6-enterprise-applications)
@@ -112,7 +112,7 @@ flowchart TB
 10. [Governance and runtime guarantees](#10-governance-and-runtime-guarantees)
 11. [Python SDK](#11-python-sdk)
 12. [For developers](#12-for-developers)
-13. [Roadmap: from v0.1 to v1.0, and beyond](#13-roadmap-from-v01-to-v10-and-beyond)
+13. [Roadmap: from v0.1 to v1.1, and beyond](#13-roadmap-from-v01-to-v11-and-beyond)
 14. [Repository layout](#14-repository-layout)
 15. [Author and licence](#15-author-and-licence)
 
@@ -150,7 +150,49 @@ flowchart TB
 - **People stay in the loop.** A low-confidence call goes to a human review queue instead of going out.
 - **One engine, many doors.** The command line, Studio, Prompt UI, SDK and language server all run the same compiler and runtime.
 
-## 3. What's new in v1.0: native runtime and ecosystem
+## 3. What's new in v1.1: accountable decisions
+
+Every governed AI decision raises three questions. AlgoLang 1.1 answers each one from the program itself.
+
+| Question | Feature | What it does |
+|:--|:--|:--|
+| *Is every answer within its limits?* | **Agent contracts** · `ensure` | Conditions checked on every answer before anyone uses it. A broken contract gets one more try; if it still fails, a person decides. Every audit record says which contracts held. |
+| *Would the decision have been different?* | **What-if audits** · `algo whatif` | Re-runs a recorded decision with one input changed. Unaffected agents are answered from the recording, so the comparison is exact, and the report shows precisely what flipped. |
+| *Did this change weaken a safeguard?* | **Governance diff** · `algo diff` | Compares two versions of a program and marks each policy, tool, contract and eval change as ▼ loosened, ▲ tightened or ● changed. Fails CI when a safeguard is loosened. |
+
+```algo
+agent Payout(claim: Claim, cover: number) -> number {
+    goal   "Fair payout for {claim} with cover limit {cover}"
+    ensure result >= 0     else "a payout cannot be negative"
+    ensure result <= cover else "a payout cannot exceed the policy's cover"
+}
+agent Letter(claim: Claim, payout: number) -> text {
+    goal   "Write a short, plain letter about the payout of {payout} for {claim}"
+    ensure result not contains "guarantee" else "letters must not promise anything"
+}
+```
+
+```text
+$ algo run examples/v11/claim_contracts.algo --arg "note=…" --arg cover=10
+  → Payout   conf=0.87  6030  ⚠ ESCALATED to human (contract violated: a payout cannot exceed the policy's cover)
+
+$ algo whatif runs/traces/claim_contracts-d81ea7ea.trace.json --set cover=5000
+  agent      before          after           change
+  Intake     {"policy": …}   {"policy": …}   same
+  Payout     8609 (0.74)     1276 (0.92)     answer,confidence
+  2 of 3 agent call(s) re-computed; the rest came from the recording
+  ✗ the decision changed
+
+$ algo diff git:main:programs/claims.algo programs/claims.algo
+  ▼ loosened   agent Payout   human review below confidence lowered  0.8 → 0.6
+  ▼ loosened   agent Payout   forbidden attribute 'gender' allowed again
+  ▼ loosened   agent Payout   contract removed  ensure result <= cover → —
+  3 loosened · 0 tightened · 0 other change(s)        (exit 1)
+```
+
+Contracts compile into the agent's policy, so they travel in AlgoIR and run identically on the AlgoVM (223 programs, both engines, in CI). A contract that calls an agent, does not check `result`, or reads an unknown field is a compile error (**E134**). `algo whatif … --expect same` turns a counterfactual check on a real case into a CI test; `algo diff … --markdown` writes a pull-request comment. Try it: [`examples/v11/claim_contracts.algo`](examples/v11/claim_contracts.algo).
+
+### v1.0: native runtime and ecosystem
 
 <p align="center"><img src="docs/images/sections/03-whats-new.svg" alt="Four pillars of AlgoLang 1.0" width="100%"></p>
 
@@ -699,6 +741,7 @@ flow main(topic: text) {
 | E131 | Argument type mismatch (v0.7): a text value passed where an agent declares a `score`, `list`, `bool` or `json` parameter |
 | E132 | Typed message error (v1.0): unknown field or type, a field defined twice, a reserved field name, a type that contains itself, or an uncertain typed message |
 | E133 | Package error (v1.0): a `use "pkg:…"` file that is not installed, not in algo.lock, or changed since it was installed |
+| E134 | Contract error (v1.1): an `ensure` that calls an agent, does not check `result`, or reads an unknown name or field |
 
 Errors from imported modules are reported with the file name, and the org config is enforced at compile time: a forbidden attribute or an ungranted tool is an error before anything runs.
 
@@ -787,11 +830,11 @@ pip install -e ".[dev]"
 make check        # ruff + pytest + lint of every .algo file
 ```
 
-## 13. Roadmap: from v0.1 to v1.0, and beyond
+## 13. Roadmap: from v0.1 to v1.1, and beyond
 
 <p align="center"><img src="docs/images/sections/13-roadmap.svg" alt="Roadmap timeline" width="100%"></p>
 
-**AlgoLang 1.0 is released** (see [§3](#3-whats-new-in-v10-native-runtime-and-ecosystem)): every release planned since v0.1 has shipped, one at a time, each with tests, CI, documentation and figures. What comes after 1.0 is in **[ROADMAP.md](ROADMAP.md#after-10)**: an AlgoVM for the browser and edge devices, organisation-wide registries with publisher certificates, and federated review across teams.
+**AlgoLang 1.1 is released** (see [§3](#3-whats-new-in-v11-accountable-decisions)): every release planned since v0.1 has shipped, one at a time, each with tests, CI, documentation and figures. What comes next is in **[ROADMAP.md](ROADMAP.md#after-11)**: an AlgoVM for the browser and edge devices, organisation-wide registries with publisher certificates, and federated review across teams.
 
 | Version | Theme | Status |
 |---|---|---|
@@ -807,7 +850,8 @@ make check        # ruff + pytest + lint of every .algo file
 | v0.5 | Ten large-scale domain applications: ML & DL, RL, responsible & explainable AI, NLP, Indian languages, digital health, network biology, engineering, smart cities, transport | Released |
 | v0.6 | Quantum AI: IBM, Braket and Azure backends, noise and mitigation, QPU budgets, uncertain and bounded quantum results, VQE, kernels, amplitude estimation, post-quantum audit | Released |
 | v0.7 | Interoperability: flows and agents as MCP servers, argument types (E131), typed inputs, token streaming, cost and energy dashboard | Released |
-| **v1.0** | Native runtime and ecosystem: typed agent-to-agent messages, AlgoIR and the AlgoVM, signed packages and a public registry, Studio single sign-on and roles | **Current** |
+| v1.0 | Native runtime and ecosystem: typed agent-to-agent messages, AlgoIR and the AlgoVM, signed packages and a public registry, Studio single sign-on and roles | Released |
+| **v1.1** | Accountable decisions: agent contracts (`ensure`), what-if audits (`algo whatif`), governance diff (`algo diff`) | **Current** |
 
 ## 14. Repository layout
 
@@ -839,6 +883,8 @@ grammar.lark                  formal grammar (Lark EBNF)
 algoc.py                      compiler: parse → AST → checks → Python codegen
 algoruntime.py                runtime engine
 algoeval.py                   eval blocks, traces and replay (algo eval, algo replay)        — v0.3
+algowhatif.py                 what-if audits: replay a decision with inputs changed (algo whatif) — v1.1
+algodiff.py                   governance diff between program versions (algo diff)          — v1.1
 algomcp.py                    MCP client and tool bindings (algo mcp)                         — v0.3
 algolsp.py                    language server (algo lsp)                                      — v0.3
 algotrust.py                  privacy, untrusted-tool fencing, Ed25519 signing, retention, perturbations — v0.4

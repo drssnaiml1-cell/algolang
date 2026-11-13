@@ -59,6 +59,7 @@ field_decl: NAME ":" NAME
              | "uses" DOTTED ("," DOTTED)* -> uses
              | "model" NAME             -> model_ref
              | "policy" "{" policy_rule* "}" -> policy
+             | "ensure" condition ["else" STRING] -> ensure     // v1.1 contract on every result: ensure result >= 0
 
 ?policy_rule: "budget" "tokens" NUMBER                       -> budget
             | "budget" "cost" NUMBER [NAME]                  -> budget_cost     // usd (default) or inr

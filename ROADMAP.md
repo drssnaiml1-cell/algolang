@@ -1,6 +1,6 @@
 # AlgoLang roadmap
 
-**Current release: v1.0.0 — native runtime and ecosystem** · every release planned since v0.1 has shipped · **Next: [after 1.0](#after-10)**
+**Current release: v1.1.0 — accountable decisions** · every release planned since v0.1 has shipped · **Next: [after 1.1](#after-11)**
 
 AlgoProfessor AI R&D Solutions, Hyderabad. Designed by Dr. S. Satyanarayana. [www.algoprofessor.com](https://www.algoprofessor.com)
 
@@ -271,7 +271,19 @@ As in the rest of AlgoLang, the guarantees come from the language and runtime, n
 
 ---
 
-## After 1.0
+## 8b. v1.1 Accountable decisions (released in 1.1.0)
+
+**Objective: answer, from the program itself, the three questions asked about every governed AI decision.**
+
+| No. | Question | Delivered |
+|---|---|---|
+| 1 | *Is every answer within its limits?* | **Agent contracts:** `ensure` conditions on each result; one retry, then a person; per-call contract evidence in the audit log; E134; identical on the AlgoVM |
+| 2 | *Would the decision have been different?* | **What-if audits:** `algo whatif` re-runs a recorded decision with an input changed, replays every unaffected call from the recording, and shows exactly what flipped; `--expect same` for CI |
+| 3 | *Did this change weaken a safeguard?* | **Governance diff:** `algo diff` classes every policy, tool, contract and eval change as loosened, tightened or changed; fails CI when a safeguard is loosened; Markdown for pull requests |
+
+---
+
+## After 1.1
 
 Ideas for the next releases, to be planned one at a time as before:
 
@@ -288,6 +300,7 @@ Ideas for the next releases, to be planned one at a time as before:
 |---|---|---|
 | **v0.7** | Interoperability (released) | Publish a flow as an MCP server; argument type checking; token-by-token output streaming; cost and energy dashboards in Studio |
 | **v1.0** | Platform (released) | Native runtime; typed agent-to-agent messaging; package registry for domain packs; SSO and role-based access for Studio |
+| **v1.1** | Accountable decisions (released) | Agent contracts (`ensure`); what-if audits (`algo whatif`); governance diff (`algo diff`) |
 
 ---
 

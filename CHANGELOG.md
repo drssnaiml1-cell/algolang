@@ -7,6 +7,17 @@ All notable changes to AlgoLang are documented here. The format follows [Keep a 
 ### Documentation
 - **Language manual v1.0** (`docs/AlgoLang_Documentation_v1.0.pdf`, 108 pages): new chapters for v0.5 domain applications, v0.6 Quantum AI, v0.7 Interoperability and v1.0 (typed messages, AlgoIR and the AlgoVM, packages, Studio sign-in), and error codes E131–E133. It replaces the v0.4 manual.
 
+## [1.1.0] — 2026-11-13 · Accountable decisions
+
+Three features for the questions auditors, regulators and code reviewers actually ask: *is every answer within its limits?*, *would the decision have been different?*, and *did this change weaken a safeguard?*
+
+### Added
+- **Agent contracts:** `ensure CONDITION [else "message"]` inside an agent. A contract reads `result` (its fields and `.confidence`) and the agent's own parameters, e.g. `ensure result <= cover else "a payout cannot exceed the policy's cover"`, `ensure result not contains "guarantee"`. Every answer is checked before anyone uses it; a broken contract gets one more try, and if it still fails the answer goes to a person (review queue, reason "contract violated: …"). A contract that cannot be evaluated (a missing field, text where a number is needed) counts as broken, never as passed. The audit record of every call carries `contracts: {checked, held, violated, redrawn}`; run statistics count `contract_violations`. Contracts compile into the policy, so they travel in AlgoIR and run identically on the AlgoVM. New compile error **E134** for a contract that calls an agent, does not check `result`, or reads an unknown name or field.
+- **What-if audits** (`algowhatif.py`): `algo whatif TRACE --set NAME=VALUE | --swap OLD=NEW [--expect same|changed] [--live] [--json]`, or `algo whatif FILE.algo --arg … --set …`. Re-runs a recorded decision with inputs changed; every agent whose inputs did not change is answered from the recording, so only the dependent part of the flow is re-computed. The report shows, agent by agent, what changed (answer, confidence, review status, broken contracts), the path taken, who was escalated, and whether the decision flipped. `--expect same` makes a counterfactual check on a real case a CI test (exit 1 when the decision changes).
+- **Governance diff** (`algodiff.py`): `algo diff OLD NEW [--fail-on loosened|any|never] [--markdown] [--json]`, where OLD can be `git:REV:path`. Compares what two versions of a program are *allowed* to do: risk level, disclosure, trusted and untrusted tools, tools each agent can use, token/cost/energy/QPU budgets, timeouts, retries, human-review thresholds, approvals, samples, forbidden attributes, PII redaction, explanation level, contracts, and eval cases and expectations. Each change is marked ▼ loosened, ▲ tightened or ● changed; by default the command fails when anything is loosened, and `--markdown` writes a pull-request comment.
+- `examples/v11/claim_contracts.algo`, `tests/test_v11.py`; `ensure` in the VS Code grammar and the language server.
+- **Language manual v1.1** (`docs/AlgoLang_Documentation_v1.1.pdf`, 111 pages): a chapter for v1.1 and error code E134. It replaces the v1.0 manual.
+
 ## [1.0.0] — 2026-11-11 · Native runtime and ecosystem
 
 AlgoLang 1.0: every release planned since v0.1 has shipped. Agents exchange typed messages, programs ship as signed artifacts that run on AlgoLang's own virtual machine, agents are shared as signed packages, and Studio is a multi-user workspace with single sign-on and roles.

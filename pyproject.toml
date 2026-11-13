@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "algolang"
-version = "1.0.0"
+version = "1.1.0"
 description = "AlgoLang: an agent-native programming language for governed, enterprise multi-agent AI systems"
 readme = "README.md"
 license = "Apache-2.0"
@@ -69,6 +69,8 @@ packages = ["algolang"]
 "algoir.py" = "algolang/_home/algoir.py"
 "algopkg.py" = "algolang/_home/algopkg.py"
 "algoauth.py" = "algolang/_home/algoauth.py"
+"algowhatif.py" = "algolang/_home/algowhatif.py"
+"algodiff.py" = "algolang/_home/algodiff.py"
 "algolsp.py" = "algolang/_home/algolsp.py"
 "grammar.lark" = "algolang/_home/grammar.lark"
 "algostudio.html" = "algolang/_home/algostudio.html"
