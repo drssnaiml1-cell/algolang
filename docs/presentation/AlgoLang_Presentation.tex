@@ -5,6 +5,7 @@
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,positioning,shapes.geometric,calc,shadows}
 \usepackage{booktabs,array,tabularx,colortbl,listings,xcolor}
+\usepackage[most]{tcolorbox}
 
 % ─────────── the AlgoLang LaTeX palette (identical to the language manual) ───────────
 \definecolor{navy}{HTML}{0B1F3A}
@@ -71,6 +72,12 @@
   align=left,text=white]{#2};\end{tikzpicture}}
 \newcommand{\stat}[2]{\begin{tikzpicture}\node[draw=gold,line width=1pt,rounded corners=5pt,fill=white,minimum width=2.45cm,
   minimum height=1.5cm,align=center]{{\LARGE\bfseries\color{navy}#1}\\[1pt]{\scriptsize\color{muted}#2}};\end{tikzpicture}}
+\tcbset{appcard/.style={enhanced,colback=white,colframe=navy!25,boxrule=0.8pt,arc=4pt,
+  left=7pt,right=7pt,top=5pt,bottom=5pt,before skip=0pt,after skip=0pt,before upper=\raggedright}}
+\newcommand{\riskpill}[2]{\tikz[baseline=(p.base)]\node[fill=#1,rounded corners=4pt,inner sep=2.2pt,
+  text=white,font=\fontsize{6}{7}\selectfont\bfseries](p){#2};}
+\newcommand{\govbox}[1]{\tikz\node[fill=goldlight,rounded corners=3pt,inner sep=4pt,text width=\dimexpr\linewidth-8pt\relax,
+  align=left,font=\tiny\bfseries,text=navy]{\textcolor{gold!85!black}{■}\enspace #1};}
 \renewcommand{\arraystretch}{1.12}
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
@@ -519,11 +526,11 @@ agent Triage(claim: text) -> uncertain<score> {
 \item ML model factory
 \item RL control room
 \item Responsible XAI studio
+\item NLP document intelligence
 \end{itemize}
 \column{0.33\textwidth}
 \textbf{\color{navy}Large-scale domains (v0.5)}
 \begin{itemize}\setlength\itemsep{1pt}
-\item NLP document intelligence
 \item Bharat language desk (8 scripts)
 \item Digital health monitor (NEWS2)
 \item Network biology lab
@@ -533,8 +540,10 @@ agent Triage(claim: text) -> uncertain<score> {
 \end{itemize}
 \end{columns}
 \vspace{6pt}
-\begin{center}\stat{22}{applications}\quad\stat{120}{domain packs}\quad\stat{222}{programs on AlgoVM}\quad\stat{34}{compile checks}\end{center}
+\begin{center}\stat{22}{applications}\quad\stat{38}{programs}\quad\stat{222}{programs on AlgoVM}\quad\stat{34}{compile checks}\end{center}
 \end{frame}
+
+\input{apps_slides}
 
 % ═════════════════════════════ 20 · Toolchain ═════════════════════════════
 \begin{frame}{Toolchain}
@@ -626,6 +635,26 @@ agent Triage(claim: text) -> uncertain<score> {
 \end{columns}
 \end{frame}
 
+% ═════════════════════════════ Build with us ═════════════════════════════
+\begin{frame}{Build your application with AlgoLang}{Governed AI for your sector, from pilot to production}
+\begin{columns}[T]
+\column{0.5\textwidth}
+\begin{itemize}\setlength\itemsep{7pt}
+\item \textbf{Pilot}: a governed agent in one of your real workflows, with evals and an evidence pack.
+\item \textbf{Custom applications}: a sector application like the 22 shown here, built on your tools and policies.
+\item \textbf{Training}: teach teams and students to build and audit trustworthy agents.
+\item \textbf{Research}: joint papers and theses on agentic AI, XAI, AI governance and quantum AI.
+\end{itemize}
+\column{0.47\textwidth}
+\navybox{6.4cm}{\large\bfseries Applications \& partnerships\\[6pt]
+{\Large\href{mailto:cto@algoprofessor.com}{\textcolor{gold}{cto@algoprofessor.com}}}\\[10pt]
+\small\mdseries\color{navylight}Leadership\enspace\textcolor{white}{ceo@algoprofessor.com}\\[2pt]
+Web\enspace\textcolor{white}{www.algoprofessor.com}\\[2pt]
+Code\enspace\textcolor{white}{github.com/drssnaiml1-cell/algolang}\\[6pt]
+\footnotesize AlgoProfessor AI R\&D Solutions, Hyderabad, India}
+\end{columns}
+\end{frame}
+
 % ═════════════════════════════ 24 · Thank you ═════════════════════════════
 {\setbeamertemplate{footline}{}
 \begin{frame}[plain]
@@ -638,7 +667,7 @@ agent Triage(claim: text) -> uncertain<score> {
   \node[text=navylight,font=\small] at ([yshift=-1.15cm]current page.center)
     {Founder, CEO \& Chief Agentic AI Scientist · AlgoProfessor AI R\&D Solutions, Hyderabad};
   \node[text=gold,font=\small\ttfamily] at ([yshift=-1.75cm]current page.center)
-    {github.com/drssnaiml1-cell/algolang \quad·\quad www.algoprofessor.com \quad·\quad ceo@algoprofessor.com};
+    {Applications: cto@algoprofessor.com \quad·\quad github.com/drssnaiml1-cell/algolang};
   \node[text=navylight,font=\scriptsize] at ([yshift=0.8cm]current page.south) {AlgoLang is open source under the Apache 2.0 licence.};
 \end{tikzpicture}
 \end{frame}}

@@ -1,0 +1,458 @@
+[
+ {
+  "group": "Enterprise operations",
+  "dir": "claims-ops-center",
+  "name": "Claims Operations Center",
+  "sector": "Insurance",
+  "icon": "FaUmbrella",
+  "risk": "limited",
+  "programs": 2,
+  "challenge": "First notice of loss takes hours: policy checks, fraud screening and a fair payout estimate.",
+  "does": [
+   "Reads the claim and pulls cover, deductible and status from the policy database",
+   "A three-member fraud panel runs in parallel",
+   "High fraud score → SIU referral note, and the flow stops"
+  ],
+  "governance": "Payout drafts carry evidence; fraud referrals stop automation",
+  "tools": [
+   "policydb.lookup",
+   "payout.estimate"
+  ]
+ },
+ {
+  "group": "Enterprise operations",
+  "dir": "hospital-care-coordination",
+  "name": "Hospital Care Coordination",
+  "sector": "Healthcare",
+  "icon": "FaHospital",
+  "risk": "high",
+  "programs": 2,
+  "challenge": "Emergency departments must triage fast, find a bed, hand over cleanly and write discharge summaries.",
+  "does": [
+   "Extracts key facts from the ER note into a structured summary",
+   "Scores urgency; urgent cases get a live bed and a referral draft",
+   "Drafts discharge summaries for clinician sign-off"
+  ],
+  "governance": "Every score below threshold goes to the duty clinician",
+  "tools": [
+   "file.read",
+   "beds.availability"
+  ]
+ },
+ {
+  "group": "Enterprise operations",
+  "dir": "bank-credit-onboarding",
+  "name": "Bank Credit & Onboarding",
+  "sector": "Banking",
+  "icon": "FaBuildingColumns",
+  "risk": "high",
+  "programs": 2,
+  "challenge": "Loan and KYC decisions need bureau data, affordability maths and sanctions screening, all explainable.",
+  "does": [
+   "Pulls the bureau record and computes EMI and debt-to-income",
+   "Credit, risk and policy analysts review in parallel",
+   "Credit committee scores the case and writes a decision memo"
+  ],
+  "governance": "Gender and religion forbidden; low confidence → a person",
+  "tools": [
+   "bureau.score",
+   "dti.calc",
+   "sanctions.screen"
+  ]
+ },
+ {
+  "group": "Enterprise operations",
+  "dir": "university-admissions-obe",
+  "name": "University Admissions & OBE",
+  "sector": "Higher education",
+  "icon": "FaGraduationCap",
+  "risk": "high",
+  "programs": 2,
+  "challenge": "Admissions must be merit-based and fair, and every course needs NBA/NAAC outcome-based evidence.",
+  "does": [
+   "Checks seats and merit cut-offs for the programme",
+   "Academic, statement and potential reviewers assess in parallel",
+   "Panel scores the case and drafts the letter; CO-PO attainment for OBE"
+  ],
+  "governance": "Caste, gender, religion, nationality, income: forbidden inputs",
+  "tools": [
+   "seats.lookup",
+   "file.read"
+  ]
+ },
+ {
+  "group": "Enterprise operations",
+  "dir": "soc-incident-command",
+  "name": "SOC Incident Command",
+  "sector": "Cybersecurity & IT operations",
+  "icon": "FaUserShield",
+  "risk": "limited",
+  "programs": 3,
+  "challenge": "Security operations centres drown in alerts; analysts need assets, owners and threat intel at once.",
+  "does": [
+   "Enriches alerts from the CMDB and checks every IP and domain against threat intel",
+   "Splits the batch and scores severity in parallel",
+   "Severe → IT operations runbook; post-quantum readiness scan"
+  ],
+  "governance": "Untrusted intel fenced against prompt injection",
+  "tools": [
+   "cmdb.lookup",
+   "ioc.check",
+   "pqc.scan"
+  ]
+ },
+ {
+  "group": "Enterprise operations",
+  "dir": "supply-chain-control-tower",
+  "name": "Supply Chain Control Tower",
+  "sector": "Logistics & retail",
+  "icon": "FaTruckFast",
+  "risk": "minimal",
+  "programs": 2,
+  "challenge": "Customs holds, breakdowns and damage need a quick view of where stock is and what to do next.",
+  "does": [
+   "Tracks the shipment and checks stock cover in parallel",
+   "Scores how critical the exception is",
+   "Critical → impact, alternatives, costs and a recovery plan"
+  ],
+  "governance": "Quantum route options verified before they are proposed",
+  "tools": [
+   "shipment.track",
+   "inventory.levels",
+   "quantum.routes"
+  ]
+ },
+ {
+  "group": "Enterprise operations",
+  "dir": "citizen-services-desk",
+  "name": "Citizen Services Desk",
+  "sector": "Government & public services",
+  "icon": "FaLandmark",
+  "risk": "high",
+  "programs": 2,
+  "challenge": "Complaints must reach the right department fast; urgent ones (health, safety, children) first.",
+  "does": [
+   "Finds ward, department, desk and service-level target",
+   "Urgent → priority cell with an action plan",
+   "Checks every reply for clarity; welfare eligibility pre-check"
+  ],
+  "governance": "AI disclosure on every reply; eligibility decided by people",
+  "tools": [
+   "ward.directory"
+  ]
+ },
+ {
+  "group": "Enterprise operations",
+  "dir": "legal-contract-desk",
+  "name": "Legal Contract Desk",
+  "sector": "Legal & compliance",
+  "icon": "FaFileContract",
+  "risk": "minimal",
+  "programs": 2,
+  "challenge": "In-house legal teams review dozens of NDAs and contracts a week against the same playbook.",
+  "does": [
+   "Extracts NDA terms and scores deviation from the playbook",
+   "Suggests redlines with approved fallback wording",
+   "Analyses every contract clause in parallel and summarises for counsel"
+  ],
+  "governance": "Counsel decides; the desk drafts with cited clauses",
+  "tools": [
+   "clause.library",
+   "file.read"
+  ]
+ },
+ {
+  "group": "AI, markets & quantum",
+  "dir": "algo-trading-desk",
+  "name": "Algo Trading Desk (QuantOracle™)",
+  "sector": "Capital markets",
+  "icon": "FaChartLine",
+  "risk": "minimal",
+  "programs": 4,
+  "challenge": "A trading desk must decide which strategies are robust enough to trade, within risk and conduct rules.",
+  "does": [
+   "Quant, compliance and editorial reviewers run in parallel",
+   "Robustness is an uncertain<score> sampled five times",
+   "Failing backtests (PF < 1.3 or DD > 15%) are rejected by a guard"
+  ],
+  "governance": "Approval only for PAPER trading, through the review queue",
+  "tools": [
+   "backtest.stats",
+   "risk.limits",
+   "market.quote"
+  ]
+ },
+ {
+  "group": "AI, markets & quantum",
+  "dir": "quantum-optimization-lab",
+  "name": "Quantum Optimization Lab",
+  "sector": "Quantum for finance & operations",
+  "icon": "FaAtom",
+  "risk": "minimal",
+  "programs": 4,
+  "challenge": "Many business decisions are combinatorial: which k of n assets to hold, which jobs go on which shift.",
+  "does": [
+   "Portfolio selection as a QUBO, solved with QAOA",
+   "Max-cut, scheduling and certified quantum randomness",
+   "Every answer checked against the exact classical optimum"
+  ],
+  "governance": "Guard on VERIFIED / GAP; max qubits enforced by policy",
+  "tools": [
+   "quantum.portfolio",
+   "quantum.qubo",
+   "quantum.maxcut"
+  ]
+ },
+ {
+  "group": "AI, markets & quantum",
+  "dir": "quantum-ai-lab",
+  "name": "AlgoQ Quantum AI Lab™",
+  "sector": "Quantum computing",
+  "icon": "FaMicrochip",
+  "risk": "minimal",
+  "programs": 1,
+  "challenge": "Quantum computers are noisy, scarce and expensive, and their answers are distributions, not facts.",
+  "does": [
+   "VQE ground-state energies, checked by exact diagonalisation",
+   "Knapsack capital budgeting and spectrum colouring with QAOA",
+   "Quantum kernels cross-validated against a classical RBF"
+  ],
+  "governance": "QPU budgets; only VERIFIED answers reach a two-approval committee",
+  "tools": [
+   "quantum.vqe",
+   "quantum.kernel",
+   "quantum.knapsack"
+  ]
+ },
+ {
+  "group": "AI, markets & quantum",
+  "dir": "llm-graph-optimizer",
+  "name": "AlgoGraph™ LLM & SLM Optimizer",
+  "sector": "AI platform engineering · MLOps",
+  "icon": "FaDiagramProject",
+  "risk": "limited",
+  "programs": 2,
+  "challenge": "Large models are slow and costly; small models are cheap but not always good enough.",
+  "does": [
+   "Reads each program's agent graph from the compiler",
+   "Picks the cheapest LLM or SLM per agent that meets quality and latency",
+   "Proves the choice optimal; routes live traffic small-model-first"
+  ],
+  "governance": "Route decided in code, not by a model",
+  "tools": [
+   "graph.analyze",
+   "graph.optimize",
+   "slm.triage"
+  ]
+ },
+ {
+  "group": "AI, markets & quantum",
+  "dir": "ml-model-factory",
+  "name": "AlgoML Model Factory™",
+  "sector": "Machine learning & deep learning",
+  "icon": "FaBrain",
+  "risk": "limited",
+  "programs": 1,
+  "challenge": "Shipping a model safely needs more than a high score: fair comparison, calibration and drift checks.",
+  "does": [
+   "Trains three model families in parallel with 5-fold cross-validation",
+   "Picks a calibrated champion (ECE ≤ 0.05)",
+   "Catches target leakage before training; monitors drift"
+  ],
+  "governance": "A leaking column stops the run before any training",
+  "tools": [
+   "ml.train",
+   "ml.compare",
+   "ml.drift"
+  ]
+ },
+ {
+  "group": "AI, markets & quantum",
+  "dir": "rl-control-room",
+  "name": "AlgoRL Control Room™",
+  "sector": "Reinforcement learning for energy",
+  "icon": "FaBolt",
+  "risk": "minimal",
+  "programs": 1,
+  "challenge": "An RL controller can beat a hand-written rule, but a grid cannot afford trial-and-error mistakes.",
+  "does": [
+   "Q-learning for a 2 MWh campus battery over 3,000 simulated days",
+   "Safety shield enforces the 1.75 MW grid-import cap",
+   "Benchmarked against the exact optimum, then heatwave stress tests"
+  ],
+  "governance": "Policy deploys only after it beats the rule and stays safe",
+  "tools": [
+   "rl.train",
+   "rl.evaluate",
+   "rl.stress"
+  ]
+ },
+ {
+  "group": "AI, markets & quantum",
+  "dir": "responsible-xai-studio",
+  "name": "AlgoXAI Audit Studio™",
+  "sector": "Responsible & explainable AI",
+  "icon": "FaScaleBalanced",
+  "risk": "limited",
+  "programs": 1,
+  "challenge": "A credit model can be accurate and still unfair, often through a feature that stands in for a protected one.",
+  "does": [
+   "Exact Shapley values over all 2⁶ coalitions",
+   "Fairness audit on a group used only for auditing",
+   "Actionable recourse: the smallest change that flips a decline"
+  ],
+  "governance": "Age and area are never suggested as changes",
+  "tools": [
+   "xai.shapley",
+   "fair.audit",
+   "xai.counterfactual"
+  ]
+ },
+ {
+  "group": "AI, markets & quantum",
+  "dir": "nlp-document-intelligence",
+  "name": "AlgoNLP Document Intelligence™",
+  "sector": "Natural language processing",
+  "icon": "FaFileLines",
+  "risk": "limited",
+  "programs": 1,
+  "challenge": "A bank receives thousands of messages a week: card blocks, loans, KYC updates, fraud reports.",
+  "does": [
+   "Classifies, extracts entities and summarises every message in parallel",
+   "Emerging topics and distinctive words per category",
+   "Reply drafts routed to the right queue"
+  ],
+  "governance": "Fraud reports always go to a person, with evidence",
+  "tools": [
+   "nlp.classify",
+   "nlp.entities",
+   "nlp.trends"
+  ]
+ },
+ {
+  "group": "Large-scale domains",
+  "dir": "bharat-language-desk",
+  "name": "AlgoBharat Bhasha Desk™",
+  "sector": "Indian-language AI for citizen services",
+  "icon": "FaLanguage",
+  "risk": "limited",
+  "programs": 1,
+  "challenge": "Citizens write in their own language and script: Telugu, Hindi, Tamil, Bengali and more.",
+  "does": [
+   "Detects the language from 11 scripts; separates Hindi from Marathi",
+   "Transliterates Brahmic scripts (ISO 15919 style)",
+   "Finds the need (pension, ration, water…) and replies in kind"
+  ],
+  "governance": "Coverage reported honestly; unknown scripts go to a person",
+  "tools": [
+   "lang.detect",
+   "lang.transliterate",
+   "lang.intent"
+  ]
+ },
+ {
+  "group": "Large-scale domains",
+  "dir": "digital-health-monitor",
+  "name": "AlgoCare Remote Monitoring™",
+  "sector": "Healthcare & digital health",
+  "icon": "FaHeartPulse",
+  "risk": "high",
+  "programs": 1,
+  "challenge": "Thousands of patients are monitored at home; their readings must be triaged safely, around the clock.",
+  "does": [
+   "Scores every reading with NEWS2, exactly by published bands",
+   "Checks the record and major drug interactions in parallel",
+   "High → emergency alert; medium → review within the hour"
+  ],
+  "governance": "A clinician reviews every alert",
+  "tools": [
+   "vitals.news2",
+   "ehr.patient",
+   "drug.check"
+  ]
+ },
+ {
+  "group": "Large-scale domains",
+  "dir": "network-biology-lab",
+  "name": "AlgoBio Network Lab™",
+  "sector": "Computational & network biology",
+  "icon": "FaDna",
+  "risk": "minimal",
+  "programs": 1,
+  "challenge": "Disease genes cluster in the protein network, so known proteins can point to new candidates.",
+  "does": [
+   "Analyses a 1,500-protein, 7,441-interaction network in parallel",
+   "Random walk with restart, validated on hidden disease proteins",
+   "Negative control from random seeds; enrichment and sequences"
+  ],
+  "governance": "A weak control is required before results are reported",
+  "tools": [
+   "net.propagate",
+   "net.modules",
+   "bio.enrich"
+  ]
+ },
+ {
+  "group": "Large-scale domains",
+  "dir": "predictive-engineering",
+  "name": "AlgoEng Predictive Maintenance™",
+  "sector": "Data-driven engineering",
+  "icon": "FaGears",
+  "risk": "minimal",
+  "programs": 1,
+  "challenge": "Unplanned pump failures stop production and can be dangerous; the data shows them coming.",
+  "does": [
+   "Vibration diagnosis by ISO zones, in parallel with prognosis",
+   "Remaining useful life with a 90% interval",
+   "Fleet scan and a maintenance plan"
+  ],
+  "governance": "Urgent work orders are approved by a person",
+  "tools": [
+   "vib.diagnose",
+   "rul.estimate",
+   "maint.plan"
+  ]
+ },
+ {
+  "group": "Large-scale domains",
+  "dir": "smart-city-operations",
+  "name": "AlgoCity Operations Centre™",
+  "sector": "Smart cities",
+  "icon": "FaCity",
+  "risk": "limited",
+  "programs": 1,
+  "challenge": "A city control room sees air, waste and electricity data around the clock, each in its own silo.",
+  "does": [
+   "Checks AQI (CPCB), waste routes and energy load in parallel",
+   "Very poor AQI → multilingual health advisory",
+   "Overload risk → load plan; never hospitals, water or signals"
+  ],
+  "governance": "Advisories need the duty officer; load plans need two officers",
+  "tools": [
+   "city.aqi",
+   "city.waste",
+   "city.energy"
+  ]
+ },
+ {
+  "group": "Large-scale domains",
+  "dir": "transport-network-optimizer",
+  "name": "AlgoMove Transport Network Optimizer™",
+  "sector": "Transportation systems",
+  "icon": "FaTrainSubway",
+  "risk": "limited",
+  "programs": 1,
+  "challenge": "When an arterial road closes, traffic floods side streets within minutes; fixed signals cannot cope.",
+  "does": [
+   "Reroutes traffic (Dijkstra) and retimes signals (Webster) in parallel",
+   "Gravity-model demand and transit headways",
+   "Oversaturated junctions → police control and metering plan"
+  ],
+  "governance": "Control-room officer approves; notices carry AI disclosure",
+  "tools": [
+   "traffic.reroute",
+   "signal.retime",
+   "demand.od"
+  ]
+ }
+]
