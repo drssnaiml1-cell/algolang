@@ -71,7 +71,7 @@ flowchart TB
     end
     subgraph COMPILER["② Compiler · algoc.py — unsafe programs never run"]
         direction LR
-        SRC[".algo source"] --> PARSE["Lark grammar"] --> AST["AST"] --> CHK{{"Checker · E100–E130"}} --> GEN["Python code"]
+        SRC[".algo source"] --> PARSE["Lark grammar"] --> AST["AST"] --> CHK{{"Checker · E100–E133"}} --> GEN["Python code"]
     end
     subgraph RUNTIME["③ Runtime · algoruntime.py — every call governed"]
         direction LR
