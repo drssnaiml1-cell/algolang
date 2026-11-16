@@ -94,6 +94,7 @@ target: NAME                         -> single_target
 ?expr: call
      | par_block
      | par_for
+     | consensus_block
      | NAME                          -> var
      | DOTTED                        -> attr        // r.confidence, or a field of a typed message: claim.amount
      | literal
@@ -108,6 +109,10 @@ par_block: "par" "{" call ("," call)* "}"
 
 // results = par for t in tasks { Worker(t) }
 par_for: "par" "for" NAME "in" NAME "{" call "}"
+
+// v1.2: verdict = consensus 2 of { Credit(app), Risk(app), Policy(app) } within 0.1
+// independent agents in parallel; the decision stands only if a quorum agrees (dissent is audited)
+consensus_block: "consensus" NUMBER "of" "{" call ("," call)+ "}" ["within" NUMBER]
 
 // if risk > 0.8 and risk.confidence >= 0.7 { ... }
 ?condition: cond_and

@@ -7,6 +7,20 @@ All notable changes to AlgoLang are documented here. The format follows [Keep a 
 ### Documentation
 - **Language manual v1.0** (`docs/AlgoLang_Documentation_v1.0.pdf`, 108 pages): new chapters for v0.5 domain applications, v0.6 Quantum AI, v0.7 Interoperability and v1.0 (typed messages, AlgoIR and the AlgoVM, packages, Studio sign-in), and error codes E131–E133. It replaces the v0.4 manual.
 
+## [1.2.0] — 2026-11-13 · Collective and adversarial assurance
+
+Three features for three harder questions: *did independent assessors agree?*, *do the safeguards hold when someone attacks them?*, and *can the person affected understand the decision?*
+
+### Added
+- **Consensus blocks:** `v = consensus K of { A(x), B(x), C(x) } [within T]`. Independent agents answer in parallel; the result stands only if at least K agree. Scores and numbers agree when they lie within T of each other (default 0.1 for scores, 5% of the largest answer for other numbers); text, booleans and typed messages agree when equal (text ignoring case and spacing). The result's confidence is the share that agreed times their mean confidence, so a numeric consensus is `uncertain<score>` and conditions must check `v.confidence` (E117). Every consensus writes an audit record with each member's answer, the quorum and the dissenters; without a quorum the case goes to the review queue ("no consensus: …"). Run statistics count `consensus`, `dissents` and `no_consensus`. Compiles to AlgoIR and runs identically on the AlgoVM. New compile error **E135**: the quorum must be a true majority (so two factions can never both win), the agents must be independent and answer the same kind of value, and `within` must suit that kind.
+- **Red-team testing** (`algoredteam.py`): `algo redteam FILE [--arg …] [--fail-on high|medium|low|any|never] [--json] [--markdown FILE]`. Runs the program offline many times with hostile inputs and hostile tool answers while recording every prompt a model would see, and reports per agent and tool: planted personal data (e-mail, phone, PAN, Aadhaar-style and card numbers) masked or not; forbidden values (plain, with a typo, spelled out letter by letter) blocked or withheld for agents that `forbid` them; an instruction planted in a tool's answer removed for `untrusted` tools or reported for trusted ones; a 40,000-character input stopped by a budget or not. Findings are high (a declared safeguard did not hold), medium (a safeguard is missing on a limited- or high-risk program) or low, each with a fix; probes never touch the real audit log.
+- **Decision notices** (`algoexplain.py`): `algo explain TRACE [--contact …] [--organisation …] [--html FILE] [--md FILE] [--json]`, or `algo explain FILE.algo --arg …` to run and explain in one step. Turns one recorded decision (its trace and the run's hash-chained audit records) into a plain-language notice for the person affected, in the spirit of the EU AI Act (Art. 86), GDPR (Art. 22) and India's DPDP Act: the outcome (or that a person still has to decide), each step in order with how sure it was, independent assessments and dissent, rule checks, human review, reasons given, safeguards applied, the person's rights with a contact, and whether the audit records are intact and signed. The wording is fixed text filled from the records; only quoted answers come from agents. Config `"notice": {"contact", "organisation"}` sets defaults.
+- **Governance diff** now covers consensus: a lower quorum share, a wider `within` or a removed consensus is ▼ loosened.
+- `examples/v12/credit_consensus.algo`, `tests/test_v12.py`; `consensus`, `of` and `within` in the VS Code grammar and the language server.
+
+### Fixed
+- Forbidden values spelled out letter by letter (`f-e-m-a-l-e`, `H i n d u`, `m.u.s.l.i.m`) are now withheld too. Found by the new red team.
+
 ## [1.1.0] — 2026-11-13 · Accountable decisions
 
 Three features for the questions auditors, regulators and code reviewers actually ask: *is every answer within its limits?*, *would the decision have been different?*, and *did this change weaken a safeguard?*

@@ -22,9 +22,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/drssnaiml1-cell/algolang/releases/latest"><img src="docs/images/header/card-release.svg" alt="Latest release: AlgoLang 1.1.0" width="300"></a>
+  <a href="https://github.com/drssnaiml1-cell/algolang/releases/latest"><img src="docs/images/header/card-release.svg" alt="Latest release: AlgoLang 1.2.0" width="300"></a>
   &nbsp;
-  <a href="#v10-native-runtime-and-ecosystem"><img src="docs/images/header/card-verified.svg" alt="Verified in CI: 223 programs give identical results on the AlgoVM" width="300"></a>
+  <a href="#v10-native-runtime-and-ecosystem"><img src="docs/images/header/card-verified.svg" alt="Verified in CI: 224 programs give identical results on the AlgoVM" width="300"></a>
 </p>
 
 <table>
@@ -39,7 +39,7 @@
   <a href="#2-design-principles">How It Works</a> •
   <a href="#6-enterprise-applications">Applications</a> •
   <a href="#8-quantum-applications">Quantum AI</a> •
-  <a href="docs/AlgoLang_Documentation_v1.1.pdf">Documentation</a> •
+  <a href="docs/AlgoLang_Documentation_v1.2.pdf">Documentation</a> •
   <a href="#13-roadmap-from-v01-to-v10-and-beyond">Roadmap</a> •
   <a href="#15-author-and-licence">License</a>
 </p>
@@ -52,7 +52,7 @@
   <a href="https://www.algoprofessor.com"><img src="docs/images/algolang-hero.svg" alt="AlgoLang: an order event from AlgoPulse flows through parallel Quote and Limits agents, a deterministic BREACH guard, and an uncertain RiskGate agent with a human gate; every call is written to a hash-chained audit log" width="100%"></a>
 </p>
 
-**Current version: 1.1.0** (agent contracts · what-if audits · governance diff; with v1.0 typed messages, AlgoIR and the AlgoVM, signed packages and Studio single sign-on; v0.7 Interoperability, v0.6 Quantum AI, v0.5 domain applications and v0.4 Trustworthy AI) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md) · [50 Sample Programs (PDF)](docs/AlgoLang_50_Sample_Programs.pdf) · [Language manual (PDF)](docs/AlgoLang_Documentation_v1.1.pdf) · Presentation: [PDF](docs/presentation/AlgoLang_Presentation.pdf) · [PowerPoint](docs/presentation/AlgoLang_Presentation.pptx) · [LaTeX source](docs/presentation/AlgoLang_Presentation.tex)
+**Current version: 1.2.0** (consensus blocks · red-team testing · decision notices; with v1.1 agent contracts, what-if audits and governance diff; v1.0 typed messages, AlgoIR and the AlgoVM, signed packages and Studio single sign-on; v0.7 Interoperability, v0.6 Quantum AI, v0.5 domain applications and v0.4 Trustworthy AI) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md) · [50 Sample Programs (PDF)](docs/AlgoLang_50_Sample_Programs.pdf) · [Language manual (PDF)](docs/AlgoLang_Documentation_v1.2.pdf) · Presentation: [PDF](docs/presentation/AlgoLang_Presentation.pdf) · [PowerPoint](docs/presentation/AlgoLang_Presentation.pptx) · [LaTeX source](docs/presentation/AlgoLang_Presentation.tex)
 
 AlgoLang has **no functions**. Every unit of work is an `agent` with a role, a goal, explicit tools, a model and a policy. A `flow` is the only other construct, and it can do just four things:
 
@@ -71,7 +71,7 @@ flowchart TB
     end
     subgraph COMPILER["② Compiler · algoc.py — unsafe programs never run"]
         direction LR
-        SRC[".algo source"] --> PARSE["Lark grammar"] --> AST["AST"] --> CHK{{"Checker · E100–E134"}} --> GEN["Python code"]
+        SRC[".algo source"] --> PARSE["Lark grammar"] --> AST["AST"] --> CHK{{"Checker · E100–E135"}} --> GEN["Python code"]
     end
     subgraph RUNTIME["③ Runtime · algoruntime.py — every call governed"]
         direction LR
@@ -102,7 +102,7 @@ flowchart TB
 
 1. [Objective](#1-objective)
 2. [Design principles](#2-design-principles)
-3. [What's new in v1.1: accountable decisions](#3-whats-new-in-v11-accountable-decisions)
+3. [What's new in v1.2: collective and adversarial assurance](#3-whats-new-in-v12-collective-and-adversarial-assurance)
 4. [Get started](#4-get-started)
 5. [Learn by example: 50 sample programs](#5-learn-by-example-50-sample-programs)
 6. [Enterprise applications](#6-enterprise-applications)
@@ -112,7 +112,7 @@ flowchart TB
 10. [Governance and runtime guarantees](#10-governance-and-runtime-guarantees)
 11. [Python SDK](#11-python-sdk)
 12. [For developers](#12-for-developers)
-13. [Roadmap: from v0.1 to v1.1, and beyond](#13-roadmap-from-v01-to-v11-and-beyond)
+13. [Roadmap: from v0.1 to v1.2, and beyond](#13-roadmap-from-v01-to-v12-and-beyond)
 14. [Repository layout](#14-repository-layout)
 15. [Author and licence](#15-author-and-licence)
 
@@ -150,7 +150,45 @@ flowchart TB
 - **People stay in the loop.** A low-confidence call goes to a human review queue instead of going out.
 - **One engine, many doors.** The command line, Studio, Prompt UI, SDK and language server all run the same compiler and runtime.
 
-## 3. What's new in v1.1: accountable decisions
+## 3. What's new in v1.2: collective and adversarial assurance
+
+AlgoLang 1.2 answers three harder questions, again from the program itself.
+
+| Question | Feature | What it does |
+|:--|:--|:--|
+| *Did independent assessors agree?* | **Consensus blocks** · `consensus K of { … }` | Independent agents answer in parallel; the decision stands only if a true majority agrees. Dissent is written to the audit log; without a quorum a person decides. |
+| *Do the safeguards hold under attack?* | **Red team** · `algo redteam` | Attacks the program offline with planted personal data, forbidden values (plain, misspelt, spelled out), instructions hidden in tool answers and oversized inputs, then reports which safeguards held, with a fix for each gap. |
+| *Can the person affected understand the decision?* | **Decision notices** · `algo explain` | Turns one recorded decision and its audit records into a plain-language notice: outcome, steps, dissent, safeguards, the right to human review with a contact, and whether the records are intact. |
+
+```algo
+flow main(app: text) {
+    strength = consensus 2 of { CreditAnalyst(app), RiskOfficer(app), PolicyReviewer(app) } within 0.15
+    if strength >= 0.6 and strength.confidence >= 0.6 {
+        emit Recommend(app, strength)
+    } else {
+        emit "Refer to a credit officer", strength
+    }
+}
+```
+
+```text
+$ algo run examples/v12/credit_consensus.algo --arg "app=APP-7741: textile trader, DSCR 1.8"
+  ⚖ consensus 3/3 → 0.7833  conf=0.86
+
+$ algo redteam loan_weak.algo
+  ✗ FAIL medium personal data     agent CreditAnalyst    AADHAAR, CARD, EMAIL, PAN, PHONE reached the model unmasked
+                                                         → add `redact pii` to agent CreditAnalyst's policy
+  ✓ PASS       forbidden values  forbid gender (spelled out: “f-e-m-a-l-e”)  withheld from every agent that forbids it
+  ✗ FAIL medium denial of wallet  agent RiskOfficer      a 40,000-character input (~10,000 tokens) reached the model
+  6/12 probes passed · 0 high · 6 medium · 0 low
+
+$ algo explain runs/traces/credit_consensus-29cbe2f3.trace.json --contact cto@algoprofessor.com --html notice.html
+  ✓ notice → notice.html
+```
+
+A numeric consensus is `uncertain<score>`, so the compiler insists its agreement is checked (E117); the quorum must be a true majority, the agents independent and of one answer kind (**E135**); and `algo diff` marks a lowered quorum as ▼ loosened. Consensus runs identically on the AlgoVM (224 programs, both engines, in CI). The red team found one gap in AlgoLang itself, forbidden values spelled out letter by letter, which 1.2 now withholds. Try it: [`examples/v12/credit_consensus.algo`](examples/v12/credit_consensus.algo).
+
+### v1.1: accountable decisions
 
 Every governed AI decision raises three questions. AlgoLang 1.1 answers each one from the program itself.
 
@@ -742,6 +780,7 @@ flow main(topic: text) {
 | E132 | Typed message error (v1.0): unknown field or type, a field defined twice, a reserved field name, a type that contains itself, or an uncertain typed message |
 | E133 | Package error (v1.0): a `use "pkg:…"` file that is not installed, not in algo.lock, or changed since it was installed |
 | E134 | Contract error (v1.1): an `ensure` that calls an agent, does not check `result`, or reads an unknown name or field |
+| E135 | Consensus error (v1.2): a quorum that is not a true majority, agents that are not independent or answer different kinds of value, or a `within` that does not suit them |
 
 Errors from imported modules are reported with the file name, and the org config is enforced at compile time: a forbidden attribute or an ungranted tool is an error before anything runs.
 
@@ -830,11 +869,11 @@ pip install -e ".[dev]"
 make check        # ruff + pytest + lint of every .algo file
 ```
 
-## 13. Roadmap: from v0.1 to v1.1, and beyond
+## 13. Roadmap: from v0.1 to v1.2, and beyond
 
 <p align="center"><img src="docs/images/sections/13-roadmap.svg" alt="Roadmap timeline" width="100%"></p>
 
-**AlgoLang 1.1 is released** (see [§3](#3-whats-new-in-v11-accountable-decisions)): every release planned since v0.1 has shipped, one at a time, each with tests, CI, documentation and figures. What comes next is in **[ROADMAP.md](ROADMAP.md#after-11)**: an AlgoVM for the browser and edge devices, organisation-wide registries with publisher certificates, and federated review across teams.
+**AlgoLang 1.2 is released** (see [§3](#3-whats-new-in-v12-collective-and-adversarial-assurance)): every release planned since v0.1 has shipped, one at a time, each with tests, CI, documentation and figures. What comes next is in **[ROADMAP.md](ROADMAP.md#after-12)**: an AlgoVM for the browser and edge devices, organisation-wide registries with publisher certificates, and federated review across teams.
 
 | Version | Theme | Status |
 |---|---|---|
@@ -851,7 +890,8 @@ make check        # ruff + pytest + lint of every .algo file
 | v0.6 | Quantum AI: IBM, Braket and Azure backends, noise and mitigation, QPU budgets, uncertain and bounded quantum results, VQE, kernels, amplitude estimation, post-quantum audit | Released |
 | v0.7 | Interoperability: flows and agents as MCP servers, argument types (E131), typed inputs, token streaming, cost and energy dashboard | Released |
 | v1.0 | Native runtime and ecosystem: typed agent-to-agent messages, AlgoIR and the AlgoVM, signed packages and a public registry, Studio single sign-on and roles | Released |
-| **v1.1** | Accountable decisions: agent contracts (`ensure`), what-if audits (`algo whatif`), governance diff (`algo diff`) | **Current** |
+| v1.1 | Accountable decisions: agent contracts (`ensure`), what-if audits (`algo whatif`), governance diff (`algo diff`) | Released |
+| **v1.2** | Collective and adversarial assurance: consensus blocks, red-team testing (`algo redteam`), decision notices (`algo explain`) | **Current** |
 
 ## 14. Repository layout
 
@@ -885,6 +925,8 @@ algoruntime.py                runtime engine
 algoeval.py                   eval blocks, traces and replay (algo eval, algo replay)        — v0.3
 algowhatif.py                 what-if audits: replay a decision with inputs changed (algo whatif) — v1.1
 algodiff.py                   governance diff between program versions (algo diff)          — v1.1
+algoredteam.py                red-team testing: attacks a program offline (algo redteam)     — v1.2
+algoexplain.py                decision notices for the people affected (algo explain)        — v1.2
 algomcp.py                    MCP client and tool bindings (algo mcp)                         — v0.3
 algolsp.py                    language server (algo lsp)                                      — v0.3
 algotrust.py                  privacy, untrusted-tool fencing, Ed25519 signing, retention, perturbations — v0.4

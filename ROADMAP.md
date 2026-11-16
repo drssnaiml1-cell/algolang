@@ -1,6 +1,6 @@
 # AlgoLang roadmap
 
-**Current release: v1.1.0 — accountable decisions** · every release planned since v0.1 has shipped · **Next: [after 1.1](#after-11)**
+**Current release: v1.2.0 — collective and adversarial assurance** · every release planned since v0.1 has shipped · **Next: [after 1.2](#after-12)**
 
 AlgoProfessor AI R&D Solutions, Hyderabad. Designed by Dr. S. Satyanarayana. [www.algoprofessor.com](https://www.algoprofessor.com)
 
@@ -283,7 +283,7 @@ As in the rest of AlgoLang, the guarantees come from the language and runtime, n
 
 ---
 
-## After 1.1
+## After 1.2
 
 Ideas for the next releases, to be planned one at a time as before:
 
@@ -301,6 +301,7 @@ Ideas for the next releases, to be planned one at a time as before:
 | **v0.7** | Interoperability (released) | Publish a flow as an MCP server; argument type checking; token-by-token output streaming; cost and energy dashboards in Studio |
 | **v1.0** | Platform (released) | Native runtime; typed agent-to-agent messaging; package registry for domain packs; SSO and role-based access for Studio |
 | **v1.1** | Accountable decisions (released) | Agent contracts (`ensure`); what-if audits (`algo whatif`); governance diff (`algo diff`) |
+| **v1.2** | Collective and adversarial assurance (released) | Consensus blocks (`consensus K of { … }`); red-team testing (`algo redteam`); decision notices (`algo explain`) |
 
 ---
 

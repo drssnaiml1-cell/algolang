@@ -150,6 +150,14 @@ def withhold(text, attrs, extra=None):
             return m.group(0)
         text = re.sub(r"\b[A-Za-z][A-Za-z-]{3,}\b", fuzzy, text)
         n += hits[0]
+        # v1.2: spelled-out values (f-e-m-a-l-e, H i n d u, m.u.s.l.i.m), found by `algo redteam`
+        long_words = [w for w in words if len(w) >= 4 and " " not in w]
+        if long_words:
+            sep = r"[\s\-_.*·/]"
+            alts = "|".join(re.escape(w[0]) + "".join(rf"(?:{sep}){{1,2}}{re.escape(ch)}" for ch in w[1:])
+                            for w in sorted(long_words, key=len, reverse=True))
+            text, m = re.subn(rf"(?<![A-Za-z])(?:{alts})(?![A-Za-z])", WITHHELD, text, flags=re.I)
+            n += m
         if n:
             found[attr] = n
     return text, found

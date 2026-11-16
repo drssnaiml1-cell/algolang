@@ -54,6 +54,9 @@ KEYWORDS = {
     "approvals": "**require approvals N** — N different named reviewers must approve each result (four-eyes = 2).",
     "ensure": "**ensure** (v1.1) — a contract on every answer: `ensure result >= 0 else \"why\"`. Checked "
               "before anyone uses the answer; broken once → asked again; broken twice → a person decides.",
+    "consensus": "**consensus** (v1.2) — `v = consensus 2 of { A(x), B(x), C(x) } within 0.1`: independent agents "
+                 "answer in parallel; the decision stands only if a majority quorum agrees. Dissent is audited; "
+                 "without a quorum a person decides. A numeric consensus is uncertain: check `v.confidence`.",
     "untrusted": "**untrusted** — `tool web.fetch untrusted`: its output is size-limited, instruction-like lines are "
                  "removed, and it is wrapped as data the model must not obey.",
     "fair": "**expect fair across** attribute [values] — run the case once per value and require the same decision "

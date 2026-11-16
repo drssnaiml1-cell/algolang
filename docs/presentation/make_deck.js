@@ -1,4 +1,4 @@
-// AlgoLang 1.1: launch deck (editable PowerPoint).
+// AlgoLang 1.2: launch deck (editable PowerPoint).
 // Build:  node docs/presentation/make_deck.js   ->  docs/presentation/AlgoLang_Presentation.pptx
 // Needs pptxgenjs, react, react-dom, react-icons, sharp. Palette = the LaTeX deck's colours.
 "use strict";
@@ -33,7 +33,7 @@ const pres = new pptxgen();
 pres.layout = "LAYOUT_WIDE"; // 13.333 x 7.5 in
 pres.author = "Dr. S. Satyanarayana, Ph.D., PDF (AI)";
 pres.company = "AlgoProfessor AI R&amp;D Solutions";
-pres.title = "AlgoLang 1.1: the agent-native programming language";
+pres.title = "AlgoLang 1.2: the agent-native programming language";
 pres.subject = "AlgoLang language, comparisons and 22 enterprise applications";
 pres.theme = { headFontFace: THEME.headFontFace, bodyFontFace: THEME.bodyFontFace };
 const C = pres.SchemeColor;
@@ -60,7 +60,7 @@ async function iconDot(slide, name, x, y, d, { fill = NAVY, color = HEX.gold, id
 
 // ── Layouts ──
 const footer = (color) => [
-  { text: { text: "AlgoLang 1.1  ·  Dr. S. Satyanarayana, Ph.D., PDF (AI)  ·  AlgoProfessor AI R&D Solutions",
+  { text: { text: "AlgoLang 1.2  ·  Dr. S. Satyanarayana, Ph.D., PDF (AI)  ·  AlgoProfessor AI R&D Solutions",
     options: { x: 0.6, y: 7.02, w: 9.5, h: 0.3, fontSize: 10, color, fontFace: THEME.bodyFontFace, margin: 0 } } },
 ];
 pres.defineSlideMaster({
@@ -181,14 +181,14 @@ async function appCard(s, a, x, y, w, h, idx) {
   // ═══ 1 · Title ═══
   sec("Opening");
   {
-    const s = add("Title", "AlgoLang 1.1", "The agent-native programming language for trustworthy AI");
+    const s = add("Title", "AlgoLang 1.2", "The agent-native programming language for trustworthy AI");
     await iconDot(s, "FaCodeBranch", 0.8, 0.8, 1.0, { fill: GOLD, color: HEX.navy, id: "logo" });
     T(s, "Agents, not functions.  Checked, explained, signed and tested before they ship.", { x: 0.8, y: 4.55, w: 11.7, h: 0.5, fontSize: 18, color: WHITE, italic: true });
     T(s, [{ text: "Dr. S. Satyanarayana, Ph.D., PDF (AI)", options: { bold: true, color: WHITE, breakLine: true } },
           { text: "Founder, CEO & Chief Agentic AI Scientist  ·  AlgoProfessor AI R&D Solutions, Hyderabad", options: { color: LIGHT } }],
       { x: 0.8, y: 5.75, w: 9, h: 0.8, fontSize: 16 });
     T(s, "github.com/drssnaiml1-cell/algolang", { x: 8.3, y: 6.65, w: 4.2, h: 0.35, fontSize: 13, color: GOLD, align: "right", fontFace: MONO });
-    s.addNotes("AlgoLang 1.1: a programming language whose unit of computation is a governed AI agent. Presented by Dr. S. Satyanarayana.");
+    s.addNotes("AlgoLang 1.2: a programming language whose unit of computation is a governed AI agent. Presented by Dr. S. Satyanarayana.");
   }
 
   // ═══ 2 · Agenda ═══
@@ -307,7 +307,7 @@ flow main(app: text) {
     const arrow = (x1, y1, x2, y2) => s.addShape(pres.shapes.LINE, { x: x1, y: Math.min(y1, y2), w: x2 - x1, h: Math.abs(y2 - y1), flipV: y2 < y1, line: { color: NAVY, width: 1.75, endArrowType: "triangle" } });
     box(0.6, 2.4, 1.6, ".algo", "source", false, "source");
     box(2.6, 2.4, 1.75, "Parser", "grammar → AST", false, "parser");
-    box(4.75, 2.4, 1.85, "Checker", "E100–E134", true, "checker");
+    box(4.75, 2.4, 1.85, "Checker", "E100–E135", true, "checker");
     box(7.05, 1.75, 1.75, "Python", "compiled code", false, "python");
     box(7.05, 3.05, 1.75, "AlgoIR", "signed JSON → AlgoVM", false, "algoir");
     box(9.25, 2.4, 1.85, "Runtime", "policies · budgets · review", true, "runtime");
@@ -315,7 +315,7 @@ flow main(app: text) {
     arrow(2.2, 2.9, 2.6, 2.9); arrow(4.35, 2.9, 4.75, 2.9); arrow(6.6, 2.9, 7.05, 2.25); arrow(6.6, 2.9, 7.05, 3.55);
     arrow(8.8, 2.25, 9.25, 2.9); arrow(8.8, 3.55, 9.25, 2.9); arrow(11.1, 2.9, 11.45, 2.9);
     const facts = [["35", "compile-time checks", "Undeclared tools, budgets, forbidden attributes, type errors, unsafe high-risk programs."],
-      ["223", "programs, two engines", "Compiled Python and the AlgoVM give identical results in CI."],
+      ["224", "programs, two engines", "Compiled Python and the AlgoVM give identical results in CI."],
       ["4", "model backends", "Claude, OpenAI-compatible local models, offline mock, replay from traces."]];
     facts.forEach(([n, l, d], i) => {
       const x = 0.6 + i * 4.1;
@@ -398,6 +398,34 @@ flow main(note: text) {
       await iconDot(s, "FaCheck", 8.55, y + 0.1, 0.6, { id: "typed point " + (i + 1) });
       T(s, pts[i], { x: 9.35, y, w: 3.38, h: 0.95, fontSize: 16, valign: "middle" });
     }
+  }
+  {
+    const s = add("Content", "New in 1.2: collective and adversarial assurance", "Did assessors agree? Do safeguards hold under attack? Can the person affected understand it?");
+    const F = [["FaPeopleGroup", "Did independent assessors agree?", "Consensus", "consensus 2 of {…}", "Independent agents in parallel; the result stands only if a true majority agrees. Dissent audited; no quorum → a person."],
+      ["FaUserNinja", "Do the safeguards hold under attack?", "Red team", "algo redteam", "Planted personal data, forbidden values (misspelt, spelled out), tool injection, huge inputs; a fix for every gap."],
+      ["FaEnvelopeOpenText", "Can the person affected understand it?", "Decision notices", "algo explain", "A plain-language notice from the trace and audit log: outcome, steps, dissent, safeguards, rights and a contact."]];
+    for (let i = 0; i < 3; i++) {
+      const x = 0.6 + i * 4.1;
+      card(s, x, 1.75, 3.85, 2.75, { fill: i === 1 ? NAVY : LIGHT, id: F[i][2] + " card" });
+      await iconDot(s, F[i][0], x + 0.25, 1.95, 0.62, { fill: i === 1 ? GOLD : NAVY, color: i === 1 ? HEX.navy : HEX.gold, id: F[i][2] + " icon" });
+      T(s, F[i][1], { x: x + 1.0, y: 1.95, w: 2.7, h: 0.62, fontSize: 13.5, italic: true, color: GOLD, valign: "middle" });
+      T(s, [{ text: F[i][2] + "  ", options: { bold: true, color: i === 1 ? WHITE : NAVY, fontFace: THEME.headFontFace, fontSize: 19 } },
+            { text: F[i][3], options: { fontFace: MONO, color: i === 1 ? GOLD : NAVY2, fontSize: 12 } }], { x: x + 0.25, y: 2.72, w: 3.45, h: 0.45, valign: "middle" });
+      T(s, F[i][4], { x: x + 0.25, y: 3.2, w: 3.4, h: 1.2, fontSize: 13.5, color: i === 1 ? WHITE : INK });
+    }
+    codeBox(s, `strength = consensus 2 of {
+    CreditAnalyst(app),
+    RiskOfficer(app),
+    PolicyReviewer(app) } within 0.15
+if strength.confidence >= 0.6 { … }`, 0.6, 4.7, 5.9, 2.0, 12, "consensus code");
+    card(s, 6.75, 4.7, 5.98, 2.0, { fill: HEX.term, id: "redteam and explain output" });
+    T(s, [
+      { text: "  ⚖ consensus 2/3 → 0.795 ", options: { color: "D6DEEA" } }, { text: "dissent: CreditAnalyst", options: { color: HEX.gold, breakLine: true } },
+      { text: "$ ", options: { color: HEX.gold } }, { text: "algo redteam loan.algo", options: { color: "D6DEEA", breakLine: true } },
+      { text: "  ✗ medium ", options: { color: "E58C8C" } }, { text: "personal data reached the model", options: { color: "D6DEEA", breakLine: true } },
+      { text: "  ✓ pass   ", options: { color: "7BC67E" } }, { text: "forbid gender: “f-e-m-a-l-e” withheld", options: { color: "D6DEEA", breakLine: true } },
+      { text: "$ ", options: { color: HEX.gold } }, { text: "algo explain run.trace.json --html notice.html", options: { color: "D6DEEA" } },
+    ], { x: 6.95, y: 4.85, w: 5.6, h: 1.75, fontFace: MONO, fontSize: 12, isTextBox: true, margin: 0, valign: "top" });
   }
   {
     const s = add("Content", "New in 1.1: accountable decisions", "Three questions every governed AI decision raises, answered by the program itself");
@@ -491,11 +519,11 @@ flow main(note: text) {
       ["Human review / four-eyes", Y, P, P, P, P, P, P, P], ["Uncertainty as a type", Y, P, P, P, P, P, N, N],
       ["Fairness and robustness evals", Y, P, P, N, P, P, P, P], ["Signed, hash-chained audit", Y, P, P, P, P, P, P, P],
       ["Typed agent messages", Y, P, P, P, P, P, P, P], ["Contracts on every agent answer", Y, P, P, P, P, P, P, P],
-      ["Governance diff between versions", Y, N, N, N, N, N, N, N], ["Quantum tools, verified", Y, P, P, P, P, P, N, N],
+      ["Governance diff between versions", Y, N, N, N, N, N, N, N], ["Quantum tools, verified", Y, P, P, P, P, P, N, N], ["Quorum consensus and built-in red team", Y, P, P, P, P, P, P, P],
       ["General-purpose computing", N, Y, Y, Y, Y, Y, P, P], ["Mature ecosystem and community", N, Y, Y, Y, Y, Y, Y, Y],
       ["Raw performance", P, P, Y, Y, P, Y, P, P]].map((r) => r.map((c) => (typeof c === "object" ? { ...c, options: { ...c.options } } : c)));
     const hdr = ["Capability", "AlgoLang", "Python", "Java", "Rust", "TS", "Julia", "LangGraph", "CrewAI"];
-    table(s, hdr, rows, { colW: [3.73, 1.15, 1.05, 1.05, 1.05, 1.05, 1.05, 1.0, 1.0], fs: 12.5, rowH: 0.36 });
+    table(s, hdr, rows, { colW: [3.73, 1.15, 1.05, 1.05, 1.05, 1.05, 1.05, 1.0, 1.0], fs: 12, rowH: 0.33 });
     s.addNotes("Honest matrix: AlgoLang leads on governance features and trails on general-purpose computing, ecosystem maturity and raw performance.");
   }
   {
@@ -545,7 +573,7 @@ flow main(note: text) {
   await divider("04", "22 enterprise applications", "Every one ships with policies, company tools, a knowledge base, evals, behaviour tests and system cards.", "FaLayerGroup");
   {
     const s = add("Content", "22 applications at a glance", "Open source in enterprise-apps/, each runnable offline");
-    const stats = [["22", "applications"], ["38", "programs"], ["223", "programs on AlgoVM"], ["35", "compile checks"]];
+    const stats = [["22", "applications"], ["38", "programs"], ["224", "programs on AlgoVM"], ["36", "compile checks"]];
     stats.forEach(([n, l], i) => {
       const x = 0.6 + i * 3.07;
       T(s, n, { x, y: 1.65, w: 2.85, h: 0.75, fontSize: 40, bold: true, color: GOLD, fontFace: THEME.headFontFace, align: "center" });
@@ -604,7 +632,7 @@ $ algo pkg install insurance@^1.0`, 0.6, 1.8, 6.4, 3.45, 15, "cli commands");
   }
   {
     const s = add("Content", "Roadmap delivered", "Every planned release shipped, one at a time");
-    const R = [["v0.1", "Language"], ["v0.2", "Enterprise"], ["v0.3", "Uncertainty"], ["v0.3.4", "AlgoPulse"], ["v0.4", "Trustworthy AI"], ["v0.5", "Domain apps"], ["v0.6", "Quantum AI"], ["v0.7", "Interop"], ["v1.0", "Platform"], ["v1.1", "Accountable"]];
+    const R = [["v0.1", "Language"], ["v0.2", "Enterprise"], ["v0.3", "Uncertainty"], ["v0.3.4", "AlgoPulse"], ["v0.4", "Trustworthy AI"], ["v0.5", "Domain apps"], ["v0.6", "Quantum AI"], ["v0.7", "Interop"], ["v1.0", "Platform"], ["v1.1", "Accountable"], ["v1.2", "Assurance"]];
     const x0 = 1.0, x1 = 12.3, y = 3.0, step = (x1 - x0) / (R.length - 1);
     s.addShape(pres.shapes.LINE, { x: x0, y, w: x1 - x0, h: 0, line: { color: GOLD, width: 4 } });
     R.forEach(([v, t], i) => {
@@ -614,10 +642,10 @@ $ algo pkg install insurance@^1.0`, 0.6, 1.8, 6.4, 3.45, 15, "cli commands");
       T(s, t, { x: x - 0.7, y: y + 0.4, w: 1.4, h: 0.6, fontSize: 13, color: MUTED, align: "center" });
     });
     card(s, 0.6, 4.45, 5.95, 1.7, { fill: GOLDL, id: "latest" });
-    T(s, [{ text: "Latest: 1.1", options: { bold: true, color: NAVY, fontSize: 20, breakLine: true } }, { text: "Agent contracts · what-if audits · governance diff, on the 1.0 platform (typed messages, AlgoVM, packages, SSO)." }],
+    T(s, [{ text: "Latest: 1.2", options: { bold: true, color: NAVY, fontSize: 20, breakLine: true } }, { text: "Consensus blocks · red-team testing · decision notices, on 1.1 contracts, what-if and diff and the 1.0 platform." }],
       { x: 0.9, y: 4.45, w: 5.4, h: 1.7, fontSize: 16, valign: "middle" });
-    card(s, 6.78, 4.45, 5.95, 1.7, { fill: NAVY, id: "after 1.1" });
-    T(s, [{ text: "After 1.1", options: { bold: true, color: GOLD, fontSize: 20, breakLine: true } }, { text: "AlgoVM for browser and edge · organisation registries · federated review · long-running agents.", options: { color: WHITE } }],
+    card(s, 6.78, 4.45, 5.95, 1.7, { fill: NAVY, id: "after 1.2" });
+    T(s, [{ text: "After 1.2", options: { bold: true, color: GOLD, fontSize: 20, breakLine: true } }, { text: "AlgoVM for browser and edge · organisation registries · federated review · long-running agents.", options: { color: WHITE } }],
       { x: 7.08, y: 4.45, w: 5.4, h: 1.7, fontSize: 16, valign: "middle" });
   }
   {

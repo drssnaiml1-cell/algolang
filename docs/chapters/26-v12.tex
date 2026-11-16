@@ -1,0 +1,80 @@
+\chapter{Version 1.2: Collective and adversarial assurance}
+\label{ch:v12}
+
+Version 1.1 made each decision accountable. Version 1.2 asks three harder questions: \emph{did independent assessors agree?}, \emph{do the safeguards still hold when someone attacks them?}, and \emph{can the person the decision affects understand it?} Each is answered by the language and its toolchain, not by a library a developer must remember to call.
+
+\section{Consensus blocks}
+
+A \code{consensus} block runs several independent agents in parallel and accepts their answer only if a quorum agrees:
+
+\begin{algo}[title=examples/v12/credit\_consensus.algo (excerpt)]
+flow main(app: text) {
+    strength = consensus 2 of { CreditAnalyst(app), RiskOfficer(app), PolicyReviewer(app) } within 0.15
+    if strength >= 0.6 and strength.confidence >= 0.6 {
+        emit Recommend(app, strength)
+    } else {
+        emit "Refer to a credit officer", strength
+    }
+}
+\end{algo}
+
+\paragraph{When answers agree.} Scores and numbers agree when they lie within \code{within} of each other; the default is 0.1 for scores and 5\% of the largest answer for other numbers. The largest such group is chosen, and its mean is the result. Text, booleans and typed messages agree when they are equal; text is compared ignoring case, spacing and a final full stop.
+
+\paragraph{Confidence.} The result's confidence is the share of agents that agreed multiplied by their mean confidence. Three agents that agree with confidences 0.9, 0.8 and 0.7 give 0.8; two of three that agree with 0.9 and 0.8 give $\tfrac23 \times 0.85 \approx 0.57$. A numeric consensus is therefore \code{uncertain<score>}, and, as with any uncertain value, a condition that compares it must also check its confidence (\errcode{E117}).
+
+\paragraph{Dissent and escalation.} Every consensus writes one audit record with each member's answer and confidence, the quorum, how many agreed, and who dissented:
+
+\begin{plaincode}[title=Audit record (excerpt)]
+{"type": "consensus", "agent": "consensus of CreditAnalyst, RiskOfficer, PolicyReviewer",
+ "quorum": 2, "agreed": 2, "of": 3, "within": 0.02, "reached": true,
+ "value": 0.795, "confidence": 0.58, "dissent": ["CreditAnalyst"], ...}
+\end{plaincode}
+
+Without a quorum, the result is marked escalated and the case goes to the review queue with the reason \emph{no consensus: 1 of 3 agents agreed, 2 needed} and every member's answer, so the reviewer sees the disagreement itself. Run statistics count \code{consensus}, \code{dissents} and \code{no\_consensus}.
+
+\paragraph{Compile-time checks (\errcode{E135}).} The quorum must be a true majority: more than half of the agents and no more than all of them, so two factions can never both reach a quorum. The agents must be independent (three calls of one agent are repeated samples; use \code{policy \{ samples 3 \}} for that), must answer the same kind of value, and must answer a score, number, boolean, text or typed message. \code{within} must be positive, at most 1 for scores, and is only allowed for numeric answers.
+
+\paragraph{Everywhere a flow runs.} Consensus compiles into AlgoIR and runs identically on the AlgoVM; \code{algo diff} marks a lower quorum share, a wider \code{within} or a removed consensus as \emph{loosened}; \code{algo whatif} shows how a changed input moves each member and the consensus.
+
+\section{Red-team testing}
+
+Evals check that a program does the right thing on the cases its authors wrote. A red team checks that it keeps its promises on the cases an attacker would write.
+
+\begin{plaincode}[title=Command line]
+algo redteam programs/loan.algo
+algo redteam programs/loan.algo --arg "app=APP-3101 ..." --fail-on medium --markdown redteam.md
+algo redteam programs/loan.algo --json
+\end{plaincode}
+
+\code{algo redteam} runs the program offline, with the deterministic mock model and at no cost, many times. Each run uses hostile inputs or hostile tool answers, and a recording backend captures every prompt and every tool answer a model would be shown, after \algolang{}'s own guards have been applied. Four families of probes are run:
+
+\begin{center}\small
+\begin{tabularx}{\linewidth}{@{}lX@{}}
+\toprule
+\textbf{Probe} & \textbf{Passes when} \\
+\midrule
+Personal data & A planted e-mail address, phone number, PAN, Aadhaar-style number and card number never reach a model unmasked. \\
+Forbidden values & For every attribute an agent \code{forbid}s, a protected value written plainly, with a typo and spelled out letter by letter is blocked or withheld from that agent. \\
+Tool injection & An instruction planted in a tool's answer is removed before the model sees it (\code{untrusted} tools); a trusted tool that passes it on is reported. \\
+Denial of wallet & A 40{,}000-character input is stopped by a token or cost budget before it reaches a model. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Every failing probe has a severity and a fix. \emph{High} means a safeguard the program declares did not hold. \emph{Medium} means a safeguard is missing on a limited- or high-risk program. \emph{Low} means a safeguard is missing on a minimal-risk program. The command exits with status 1 when a finding reaches \code{--fail-on} (default \code{high}), so it can guard a pull request. Probes write to a temporary audit folder and never touch the real audit log.
+
+\paragraph{What the red team found in \algolang{} itself.} The first red-team run showed that forbidden values spelled out letter by letter (\code{f-e-m-a-l-e}, \code{H i n d u}) were not withheld. Version 1.2 withholds them: a protected word of four or more letters is recognised when its letters are separated by spaces, hyphens, dots, underscores, asterisks or slashes.
+
+\section{Decision notices}
+
+Laws such as the EU AI Act (Article 86), the GDPR (Article 22) and India's Digital Personal Data Protection Act give people affected by automated decisions a right to a meaningful explanation and to human review. An audit log is evidence for an auditor. It is not an explanation that a customer, a patient or a student can read.
+
+\begin{plaincode}[title=Command line]
+algo run programs/loan.algo --arg "app=..." --trace
+algo explain runs/traces/loan-29cbe2f3.trace.json --contact cto@algoprofessor.com --html notice.html
+algo explain programs/loan.algo --arg "app=..." --md notice.md        # run and explain in one step
+\end{plaincode}
+
+\code{algo explain} reads one decision's trace and the run's records in the hash-chained audit log and writes a notice with seven parts: the outcome (or that a person still has to decide); the information used; how the decision was made, step by step, with how sure each agent was, independent assessments and who disagreed, rule checks and human review; reasons given by agents that \code{explain}; the safeguards applied (attributes the system was not allowed to use, personal-data masking, human review, consensus, budgets); the person's rights with a contact and the decision's reference; and whether the audit records of the decision are intact and signed.
+
+The wording of a notice is fixed text, filled only from the trace, the audit log and the program's own declarations; only the answers it quotes come from agents. Scores are written as ``0.79 out of 1'' and confidence in words (``fairly sure (77\%)''). The contact and organisation come from \code{--contact} and \code{--organisation}, or from \code{"notice": \{"contact": \ldots, "organisation": \ldots\}} in \code{algo.config.json}. Notices are available as Markdown, a self-contained web page, or JSON for a case-management system.

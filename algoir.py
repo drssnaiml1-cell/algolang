@@ -22,7 +22,7 @@ import json
 import operator
 from pathlib import Path
 
-from lark import Tree
+from lark import Token, Tree
 
 IR_VERSION = 1
 OPS = {">": operator.gt, ">=": operator.ge, "<": operator.lt, "<=": operator.le, "==": operator.eq, "!=": operator.ne}
@@ -70,6 +70,11 @@ class ToIR:
         if d == "par_for":
             var, src, call = e.children
             return {"par_for": str(var), "in": str(src), "do": self.expr(call)}
+        if d == "consensus_block":
+            q, *rest = e.children
+            within = rest[-1] if rest and isinstance(rest[-1], Token) else None
+            return {"consensus": int(float(q)), "of": [self.expr(c) for c in rest if isinstance(c, Tree)],
+                    "within": float(within) if within is not None else None}
         if d == "string":
             return {"lit": algoc._s(e.children[0])}
         if d == "number":
@@ -244,6 +249,8 @@ class Machine:
             return r.conf(x) if e["path"] == ["confidence"] else r.field(x, e["path"])
         if "par" in e:
             return r.par(*[(lambda c=c: self.ev(c, env)) for c in e["par"]])
+        if "consensus" in e:
+            return r.consensus(e["consensus"], [(lambda c=c: self.ev(c, env)) for c in e["of"]], within=e.get("within"))
         if "par_for" in e:
             var, body = e["par_for"], e["do"]
             return r.par_map(lambda it: self.ev(body, dict(env, **{var: it})), env[e["in"]])

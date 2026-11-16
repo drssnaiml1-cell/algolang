@@ -980,6 +980,8 @@ class Checker:
             for c in e.children:
                 self.call_type(c, env)
             return "list"
+        if e.data == "consensus_block":
+            return self.consensus_type(e, env)
         if e.data == "par_for":
             var, src, call = e.children
             if str(src) not in env:
@@ -999,6 +1001,42 @@ class Checker:
         if e.data == "kwarg":
             return self.expr_type(e.children[1], env)
         return "any"
+
+    def consensus_type(self, e, env):
+        """v1.2 `consensus K of { A(x), B(x), C(x) } [within T]` (E135): at least two independent agents that
+        all answer the same kind of value, and a true majority quorum, so two factions can never both win.
+        A numeric consensus is uncertain<score>: its confidence is the agreement, and must be checked (E117)."""
+        line = _line(e)
+        q_tok, *rest = e.children
+        within = rest[-1] if rest and isinstance(rest[-1], Token) else None
+        calls = [c for c in rest if isinstance(c, Tree)]
+        n = len(calls)
+        try:
+            q = float(q_tok)
+        except ValueError:
+            q = 0
+        types = [base_type(self.call_type(c, env)) for c in calls]
+        names = [str(c.children[0]) for c in calls]
+        if q != int(q) or not (n / 2 < q <= n):
+            self.err("E135", line, f"consensus {q_tok} of {n}: the quorum must be a whole number above half "
+                                   f"of the agents (between {n // 2 + 1} and {n})")
+        if len(set(names)) < n and len(set(names)) == 1:
+            self.err("E135", line, f"consensus needs independent agents, not {n} calls of {names[0]} "
+                                   f"(use `policy {{ samples {n} }}` for repeated samples of one agent)")
+        known = [t for t in types if t != "any"]
+        if len(set(known)) > 1:
+            self.err("E135", line, "consensus agents must answer the same kind of value, got "
+                                   + ", ".join(f"{a} -> {t}" for a, t in zip(names, types)))
+        kind = known[0] if known else "any"
+        if within is not None:
+            if kind not in ("score", "number", "any"):
+                self.err("E135", line, f"`within` sets how close numeric answers must be; these agents answer {kind}")
+            elif not 0 < float(within) <= (1 if kind == "score" else float("inf")):
+                self.err("E135", line, "`within` must be greater than 0 (and at most 1 for scores)")
+        if kind in ("list", "json"):
+            self.err("E135", line, f"consensus compares answers, so agents must answer a score, number, bool, "
+                                   f"text or a typed message, not {kind}")
+        return f"uncertain<{kind}>" if kind in ("score", "number") else kind
 
     def call_type(self, c, env):
         name_tok, args = c.children
@@ -1190,6 +1228,12 @@ class CodeGen:
         if e.data == "par_for":
             var, src, call = e.children
             return f"rt.par_map(lambda {var}: {self.expr(call)}, {src})"
+        if e.data == "consensus_block":
+            q, *rest = e.children
+            within = rest[-1] if rest and isinstance(rest[-1], Token) else None
+            calls = [c for c in rest if isinstance(c, Tree)]
+            thunks = ", ".join(f"lambda: {self.expr(c)}" for c in calls)
+            return f"rt.consensus({int(float(q))}, [{thunks}], within={float(within) if within is not None else None})"
         if e.data == "string":
             return repr(_s(e.children[0]))
         if e.data == "number":
@@ -1316,6 +1360,17 @@ def flow_graph(prog: Program, flow: str = "main"):
                             bind(n, [i])
                     else:
                         bind(names[0], ids)
+                elif expr.data == "consensus_block":
+                    calls = [c for c in expr.children if isinstance(c, Tree)]
+                    ids = []
+                    for c in calls:
+                        nid = new(str(c.children[0]), "par" if kind == "agent" else kind,
+                                  f"consensus {expr.children[0]} of {len(calls)} → {names[0]}")
+                        link(vars_in(c), nid)
+                        if cond_id:
+                            edges.append((cond_id, nid, True))
+                        ids.append(nid)
+                    bind(names[0], ids)
                 elif expr.data == "par_for":
                     var, lst, call = expr.children
                     nid = new(f"{call.children[0]} × each", "par", f"par for {var} in {lst} → {names[0]}")
@@ -1472,7 +1527,7 @@ def compile_source(src: str, name: str, base_dir: Path | str | None = None):
     return CodeGen(prog, name).gen(), prog
 
 
-VERSION = "1.1.0"
+VERSION = "1.2.0"
 
 TEMPLATE = '''// {name}.algo — created by `algo new`
 // Run it:  algo run {name}.algo --arg "topic=Your topic here"
@@ -1801,6 +1856,25 @@ def main(argv=None):
                    help="exit 1 when governance is loosened (default), on any change, or never")
     s.add_argument("--json", action="store_true")
     s.add_argument("--markdown", action="store_true", help="a Markdown report for a pull-request comment")
+    s = sub.add_parser("redteam", help="adversarial testing: personal data, forbidden values, tool injection, "
+                                         "denial of wallet (v1.2)")
+    s.add_argument("file")
+    s.add_argument("--arg", action="append", default=[], metavar="NAME=VALUE", help="a realistic case to attack")
+    s.add_argument("--flow", default="main")
+    s.add_argument("--fail-on", choices=["high", "medium", "low", "any", "never"], default="high",
+                   help="exit 1 when a finding of this severity or worse is found (default: high)")
+    s.add_argument("--json", action="store_true")
+    s.add_argument("--markdown", default=None, metavar="FILE", help="also write a Markdown report")
+    s = sub.add_parser("explain", help="decision notice for the person affected, from a trace and the audit log (v1.2)")
+    s.add_argument("target", help="a trace (.trace.json), or an .algo program to run now (with --arg)")
+    s.add_argument("--arg", action="append", default=[], metavar="NAME=VALUE")
+    s.add_argument("--flow", default=None)
+    s.add_argument("--audit", default=None, help="the audit log (default: next to the trace's folder)")
+    s.add_argument("--contact", default=None, help="where people can ask for review (or config \"notice\": {\"contact\"})")
+    s.add_argument("--organisation", default=None)
+    s.add_argument("--html", default=None, metavar="FILE", help="write the notice as a web page")
+    s.add_argument("--md", default=None, metavar="FILE", help="write the notice as Markdown")
+    s.add_argument("--json", action="store_true")
     s = sub.add_parser("pkg", help="packages: init, build, publish, search, install, list, verify (v1.0)")
     s.add_argument("action", choices=["init", "build", "publish", "search", "install", "list", "verify"])
     s.add_argument("rest", nargs="*")
@@ -1874,6 +1948,13 @@ def main(argv=None):
     if a.cmd == "diff":
         import algodiff
         return algodiff.cli(a.old, a.new, fail_on=a.fail_on, as_json=a.json, markdown=a.markdown)
+    if a.cmd == "redteam":
+        import algoredteam
+        return algoredteam.cli(a.file, args=a.arg, flow=a.flow, fail_on=a.fail_on, as_json=a.json, markdown=a.markdown)
+    if a.cmd == "explain":
+        import algoexplain
+        return algoexplain.cli(a.target, args=a.arg, flow=a.flow, audit=a.audit, contact=a.contact,
+                               organisation=a.organisation, as_json=a.json, html_out=a.html, md_out=a.md)
     if a.cmd == "pkg":
         import algopkg
         return algopkg.cli(a.action, a.rest, registry=a.registry, out=a.out, name=a.name, version=a.pkg_version)

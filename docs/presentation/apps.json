@@ -94,7 +94,7 @@
    "Splits the batch and scores severity in parallel",
    "Severe → IT operations runbook; post-quantum readiness scan"
   ],
-  "governance": "Untrusted intel fenced against prompt injection",
+  "governance": "Severe alerts routed by rule; migration plans need a person",
   "tools": [
    "cmdb.lookup",
    "ioc.check",

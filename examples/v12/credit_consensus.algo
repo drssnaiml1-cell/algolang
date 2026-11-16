@@ -1,0 +1,41 @@
+// AlgoLang v1.2: three independent credit agents must agree before a decision stands.
+risk limited "Pre-screening of small-business loan applications"
+disclose "An AI system assisted this assessment; a person reviews every declined application."
+
+agent CreditAnalyst(app: text) -> score {
+    role "Credit analyst"
+    goal "Score repayment ability for {app} from 0 (poor) to 1 (strong)"
+    policy { budget tokens 1500  forbid gender, religion  redact pii }
+}
+agent RiskOfficer(app: text) -> score {
+    role "Risk officer"
+    goal "Score repayment ability for {app} from 0 (poor) to 1 (strong), focusing on downside risk"
+    policy { budget tokens 1500  forbid gender, religion  redact pii }
+}
+agent PolicyReviewer(app: text) -> score {
+    role "Lending-policy reviewer"
+    goal "Score how well {app} fits the bank's lending policy, from 0 (outside) to 1 (fully inside)"
+    policy { budget tokens 1500  forbid gender, religion  redact pii }
+}
+agent Recommend(app: text, strength: score) -> text {
+    role "Credit writer"
+    goal "Write a two-line recommendation for {app} with repayment strength {strength}"
+}
+
+flow main(app: text) {
+    strength = consensus 2 of { CreditAnalyst(app), RiskOfficer(app), PolicyReviewer(app) } within 0.15
+    if strength >= 0.6 and strength.confidence >= 0.6 {
+        emit Recommend(app, strength)
+    } else {
+        emit "Refer to a credit officer", strength
+    }
+}
+
+eval consensus_holds on main {
+    case "trading business" (app = "APP-7741: textile trader, 6 years trading, turnover 1.2 cr, DSCR 1.8") {
+        expect status ok
+        expect called CreditAnalyst
+        expect called RiskOfficer
+        expect called PolicyReviewer
+    }
+}

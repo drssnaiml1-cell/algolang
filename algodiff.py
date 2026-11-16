@@ -1,4 +1,4 @@
-"""algodiff — governance diff for AlgoLang (v1.1).
+"""algodiff — governance diff for AlgoLang (v1.1; consensus blocks since v1.2).
 
     algo diff old/loan.algo loan.algo
     algo diff git:main:programs/loan.algo programs/loan.algo --markdown
@@ -193,6 +193,23 @@ def diff(old_prog, new_prog):
             add(CHANGED, where, "role reworded", a.role, b.role)
         compare_policy(where, a.policy, b.policy, out)
 
+    # v1.2: consensus blocks: a lower quorum, a wider `within` or a removed consensus is a weaker check
+    cb_, ca_ = consensus_blocks(old_prog), consensus_blocks(new_prog)
+    for k in sorted(set(cb_) - set(ca_)):
+        add(LOOSE, f"flow {k[0]}", f"consensus for '{k[1]}' removed", _cons_text(cb_[k]), None)
+    for k in sorted(set(ca_) - set(cb_)):
+        add(TIGHT, f"flow {k[0]}", f"consensus for '{k[1]}' added", None, _cons_text(ca_[k]))
+    for k in sorted(set(cb_) & set(ca_)):
+        o, n = cb_[k], ca_[k]
+        if o == n:
+            continue
+        share_o, share_n = o["quorum"] / o["of"], n["quorum"] / n["of"]
+        wo, wn = o["within"], n["within"]
+        looser = share_n < share_o or (wo is not None and (wn is None or wn > wo))
+        tighter = share_n > share_o or (wo is not None and wn is not None and wn < wo) or (wo is None and wn is not None)
+        kind = LOOSE if looser else (TIGHT if tighter else CHANGED)
+        add(kind, f"flow {k[0]}", f"consensus for '{k[1]}' changed", _cons_text(o), _cons_text(n))
+
     def cases(p):
         return {(e.name, c.name): c for e in p.evals for c in e.cases}
     cb, ca = cases(old_prog), cases(new_prog)
@@ -210,6 +227,31 @@ def diff(old_prog, new_prog):
     order = {LOOSE: 0, TIGHT: 1, CHANGED: 2}
     out.sort(key=lambda d: order[d["kind"]])
     return out
+
+
+def consensus_blocks(prog):
+    """(flow, variable) → quorum, number of agents, `within` and the agents, for every `x = consensus …`."""
+    from lark import Token, Tree
+    out = {}
+    for f in prog.flows.values():
+        for node in f.body:
+            if not isinstance(node, Tree):
+                continue
+            for st in node.iter_subtrees():
+                if st.data != "assign" or not isinstance(st.children[1], Tree) or st.children[1].data != "consensus_block":
+                    continue
+                q, *rest = st.children[1].children
+                within = rest[-1] if rest and isinstance(rest[-1], Token) else None
+                calls = [str(c.children[0]) for c in rest if isinstance(c, Tree)]
+                out[(f.name, str(st.children[0].children[0]))] = dict(
+                    quorum=int(float(q)), of=len(calls), within=float(within) if within is not None else None,
+                    agents=calls)
+    return out
+
+
+def _cons_text(c):
+    w = f" within {c['within']:g}" if c["within"] is not None else ""
+    return f"{c['quorum']} of {c['of']}{w}"
 
 
 def _expect_text(e):

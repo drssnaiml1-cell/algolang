@@ -42,7 +42,7 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from pathlib import Path
 
-VERSION = "1.1.0"
+VERSION = "1.2.0"
 # WebAssembly builds of Python (Pyodide, used by the web playground) cannot start threads:
 # `par` then runs its branches one after another, with identical results.
 CAN_THREAD = sys.platform not in ("emscripten", "wasi")
@@ -1668,6 +1668,81 @@ class Runtime:
         with ThreadPoolExecutor(max_workers=len(thunks)) as ex:
             return [f.result() for f in [ex.submit(t) for t in thunks]]
 
+    def consensus(self, quorum, thunks, within=None):
+        """v1.2 `consensus K of { A(x), B(x), C(x) } [within T]`: independent agents answer in parallel; the
+        decision stands only if at least K of them agree. Numbers and scores agree when they lie within T of each
+        other (default 0.1 for scores, 5% of the largest answer for other numbers); text, booleans and typed
+        messages agree when they are equal (text ignoring case and spacing). The result's confidence is the
+        share of agents that agreed times their mean confidence. Dissenting agents are written to the audit log;
+        without a quorum the case goes to a person (review queue), with every agent's answer attached."""
+        results = self.par(*thunks)
+        n = len(results)
+        vals = [self.value(r) for r in results]
+        confs = [self.conf(r) for r in results]
+        names = [getattr(r, "agent", f"#{i + 1}") for i, r in enumerate(results)]
+        numeric = all(isinstance(v, (int, float)) and not isinstance(v, bool) for v in vals)
+        if numeric:
+            if within is None:
+                within = 0.1 if all(0 <= v <= 1 for v in vals) else 0.05 * max(abs(v) for v in vals) or 1e-9
+            order = sorted(range(n), key=lambda i: vals[i])
+            best, j = [], 0
+            for i in range(n):                                  # largest set of answers no further apart than `within`
+                while vals[order[i]] - vals[order[j]] > within + 1e-12:
+                    j += 1
+                grp = order[j:i + 1]
+                if len(grp) > len(best) or (len(grp) == len(best) and
+                                            sum(confs[k] for k in grp) > sum(confs[k] for k in best)):
+                    best = grp
+            group = sorted(best)
+            value = round(sum(vals[k] for k in group) / len(group), 4)
+        else:
+            def key(v):
+                if isinstance(v, str):
+                    return " ".join(v.lower().split()).rstrip(".")
+                return json.dumps(_jsonable(v), sort_keys=True, default=str)
+            keys = [key(v) for v in vals]
+            counts = {}
+            for k in keys:
+                counts[k] = counts.get(k, 0) + 1
+            top = max(counts, key=lambda k: (counts[k], sum(c for c, kk in zip(confs, keys) if kk == k)))
+            group = [i for i, k in enumerate(keys) if k == top]
+            value = vals[group[0]]
+        agreed = len(group)
+        conf = round(agreed / n * (sum(confs[k] for k in group) / agreed), 3)
+        call_id = uuid.uuid4().hex[:10]
+        label = "consensus of " + ", ".join(names)
+        res = Result(value, conf, label, call_id)
+        res.samples, res.spread = vals, round(1 - agreed / n, 3)
+        members = [dict(agent=names[i], call=getattr(results[i], "call_id", None), value=_jsonable(vals[i]),
+                        confidence=round(confs[i], 3), agrees=i in group) for i in range(n)]
+        dissent = [m for m in members if not m["agrees"]]
+        reached = agreed >= quorum
+        reason = None
+        if not reached:
+            reason = (f"no consensus: {agreed} of {n} agents agreed, {quorum} needed ("
+                      + "; ".join(f"{m['agent']}: {str(m['value'])[:60]}" for m in members) + ")")
+            res.status = "escalated"
+            queue_for_review(dict(id=uuid.uuid4().hex[:10], program=self.program, run=self.run_id, call=call_id,
+                                  agent=label, confidence=conf, threshold=None, reason=reason, approvals_required=1,
+                                  audit=str(self.audit_path), explanation=None, output=str(value)[:2000],
+                                  ts=time.strftime("%Y-%m-%dT%H:%M:%S")), self.review_queue)
+        with self.lock:
+            self.stats["consensus"] = self.stats.get("consensus", 0) + 1
+            if dissent:
+                self.stats["dissents"] = self.stats.get("dissents", 0) + len(dissent)
+            if not reached:
+                self.stats["escalations"] += 1
+                self.stats["no_consensus"] = self.stats.get("no_consensus", 0) + 1
+        self._audit(dict(type="consensus", call=call_id, agent=label, flow=self.flow_name, agents=names, quorum=quorum,
+                         agreed=agreed, of=n, within=within if numeric else None, reached=reached,
+                         value=_jsonable(value), confidence=conf, status=res.status, members=members,
+                         dissent=[m["agent"] for m in dissent], reason=reason), output=value)
+        shown = value if not isinstance(value, (list, dict)) else json.dumps(_jsonable(value))[:60]
+        tail = ("  dissent: " + ", ".join(f"{m['agent']}={str(m['value'])[:24]}" for m in dissent)) if dissent else ""
+        flag = "" if reached else f"  ⚠ ESCALATED to human (no consensus, {quorum} needed)"
+        self._log(f"  ⚖ consensus {agreed}/{n} → {shown}  conf={conf:.2f}{tail}{flag}")
+        return res
+
     def par_map(self, fn, items):
         items = self.value(items)
         if not isinstance(items, list):
@@ -1754,6 +1829,8 @@ class Runtime:
         extra = f" · {s['cache_hits']} cached" if s["cache_hits"] else ""
         extra += f" · {s['tool_calls']} tool calls" if s["tool_calls"] else ""
         extra += f" · {s['contract_violations']} contract(s) broken" if s.get("contract_violations") else ""
+        extra += (f" · {s['consensus']} consensus ({s.get('dissents', 0)} dissent"
+                  f"{'s' if s.get('dissents', 0) != 1 else ''})") if s.get("consensus") else ""
         if s["cost_usd"] or s["energy_wh"]:
             est = "est. live " if self.backend.name == "mock" else ""
             extra += f" · {est}${s['cost_usd']:.4f} · {s['energy_wh']:.3f} Wh · {s['co2_g']:.2f} g CO₂"
