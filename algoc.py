@@ -79,6 +79,7 @@ class Program:
     evals: list = field(default_factory=list)     # eval blocks: Eval objects
     tool_lines: dict = field(default_factory=dict)
     streams: list = field(default_factory=list)   # stream blocks: Stream objects (v0.3.1)
+    ontologies: dict = field(default_factory=dict)  # v1.3: name → {name, source, base, terms, relations, line}
     circuits: dict = field(default_factory=dict)  # circuit blocks: name → Circuit (v0.3.3)
     risk: tuple | None = None                     # (level, purpose, line): `risk high "…"` (v0.4)
     default_policy: dict = field(default_factory=dict)
@@ -395,6 +396,8 @@ def to_ast(tree: Tree) -> tuple[Program, list[Diag]]:
                 rec[fname] = ftype
             prog.records[str(tname)] = rec
             prog.record_lines[str(tname)] = _line(item)
+        elif item.data == "ontology_decl":                   # v1.3: ontology as code
+            parse_ontology(item, prog, diags)
         elif item.data == "eval_decl":
             ename, flow, *cases = item.children
             ev = Eval(str(ename), str(flow) if flow is not None else "main", [], _line(item))
@@ -484,6 +487,12 @@ def to_ast(tree: Tree) -> tuple[Program, list[Diag]]:
                     a.model = str(c.children[0])
                 elif c.data == "policy":
                     a.policy = merge_policy(a.policy, parse_policy(c.children))
+                elif c.data == "grounded":                   # v1.3: answers only from a certified ontology
+                    a.policy["grounded"] = str(c.children[0])
+                    for t in ("ontology.ask", "ontology.search"):
+                        if t not in a.uses:
+                            a.uses.append(t)
+                        prog.tools.add(t)
                 elif c.data == "ensure":                     # v1.1: agent contracts
                     cond, msg = c.children
                     a.contracts.append((cond, _s(msg) if msg is not None else None, _line(c)))
@@ -506,6 +515,121 @@ def to_ast(tree: Tree) -> tuple[Program, list[Diag]]:
     return prog, diags
 
 
+# ───────────────────────── v1.3 ontology as code ─────────────────────
+_SQL_WRITE = re.compile(r"\b(insert|update|delete|drop|alter|create|replace|attach|detach|pragma|vacuum|grant|"
+                        r"revoke|truncate|load_extension)\b", re.I)
+
+
+def parse_ontology(item, prog, diags):
+    """`ontology Name [from "db"] { term …  relation a.b -> c.d }` → prog.ontologies (structural checks: E136)."""
+    oname, source, *items = item.children
+    line = _line(item)
+    oname = str(oname)
+    if oname in prog.ontologies:
+        diags.append(Diag("E136", line, f"ontology '{oname}' is defined twice"))
+    terms, rels, owner = {}, [], {}
+    for it in items:
+        if it.data == "term_decl":
+            tname, desc, *clauses = it.children
+            tname, tl = str(tname), _line(it)
+            t = dict(description=_s(desc) if desc is not None else "", synonyms=[], columns=[], line=tl)
+            for c in clauses:
+                if c.data == "synonyms":
+                    t["synonyms"] += [_s(x) for x in c.children]
+                elif c.data == "columns":
+                    t["columns"] += [str(x) for x in c.children]
+                elif c.data == "measure":
+                    t["measure"] = _s(c.children[0])
+                elif c.data == "certified":
+                    t["certified"] = _s(c.children[0])
+                    if c.children[1] is not None:
+                        t["on"] = _s(c.children[1])
+            if tname in terms:
+                diags.append(Diag("E136", tl, f"ontology {oname}: term '{tname}' is defined twice"))
+            if not t["columns"]:
+                diags.append(Diag("E136", tl, f"term {tname}: map it to at least one column (column table.name)"))
+            for col in t["columns"]:
+                if col.count(".") != 1:
+                    diags.append(Diag("E136", tl, f"term {tname}: '{col}' must be table.column"))
+            m = t.get("measure")
+            if m is not None:
+                if ";" in m or _SQL_WRITE.search(m):
+                    diags.append(Diag("E136", tl, f"term {tname}: a measure is one read-only SQL expression"))
+                elif not re.search(r"(?i)\b(sum|avg|count|min|max)\s*\(", m):
+                    diags.append(Diag("E136", tl, f"term {tname}: a measure must aggregate (SUM, AVG, COUNT, MIN, MAX)"))
+            for key in [tname.lower()] + [x.lower() for x in t["synonyms"]]:
+                if key in owner and owner[key] != tname:
+                    diags.append(Diag("E136", tl, f"ontology {oname}: '{key}' would mean both {owner[key]} and "
+                                                  f"{tname}; a word may name only one term"))
+                owner.setdefault(key, tname)
+            terms[tname] = t
+        else:
+            a, b = str(it.children[0]), str(it.children[1])
+            if a.count(".") != 1 or b.count(".") != 1:
+                diags.append(Diag("E136", _line(it), f"relation {a} -> {b}: both ends must be table.column"))
+            rels.append([a, b])
+    prog.ontologies[oname] = dict(name=oname, source=_s(source) if source is not None else None, base=None,
+                                  terms=terms, relations=rels, line=line)
+
+
+def check_ontology_data(o, base_dir, diags, file_label=None):
+    """When the data source is present at compile time, every column and join must exist in it (E136)."""
+    o["base"] = str(Path(base_dir).resolve())
+    if not o.get("source"):
+        return
+    db = Path(o["source"]) if Path(o["source"]).is_absolute() else Path(base_dir) / o["source"]
+    if not db.exists():
+        return                                            # checked again at run time
+    import sqlite3
+    try:
+        con = sqlite3.connect(f"file:{db.resolve().as_posix()}?mode=ro", uri=True)
+        schema = {t: {r[1] for r in con.execute(f'PRAGMA table_info("{t}")')}
+                  for (t,) in con.execute("SELECT name FROM sqlite_master WHERE type IN ('table','view')")}
+        con.close()
+    except sqlite3.Error as e:
+        diags.append(Diag("E136", o["line"], f"ontology {o['name']}: cannot read {o['source']}: {e}", file_label))
+        return
+    def known(col):
+        t, _, c = col.partition(".")
+        return t in schema and c in schema[t]
+    for n, t in o["terms"].items():
+        for col in t["columns"]:
+            if col.count(".") == 1 and not known(col):
+                diags.append(Diag("E136", t["line"], f"term {n}: {col} is not a column of {o['source']}", file_label))
+        for col in re.findall(r"\b([A-Za-z_]\w*\.[A-Za-z_]\w*)\b", t.get("measure") or ""):
+            if not known(col):
+                diags.append(Diag("E136", t["line"], f"term {n}: the measure reads {col}, which is not a column of "
+                                                     f"{o['source']}", file_label))
+    for a, b in o["relations"]:
+        for col in (a, b):
+            if col.count(".") == 1 and not known(col):
+                diags.append(Diag("E136", o["line"], f"relation {a} -> {b}: {col} is not a column of {o['source']}",
+                                  file_label))
+
+
+def check_grounding(prog, diags, file_label=None):
+    """`grounded in X`: X must exist; a high-risk program may only rely on certified definitions (E136)."""
+    for a in prog.agents.values():
+        g = a.policy.get("grounded")
+        if g is None or a.origin:
+            continue
+        if g not in prog.ontologies:
+            diags.append(Diag("E136", a.line, f"agent {a.name} is grounded in '{g}', which is not a declared "
+                                              f"ontology", file_label))
+            continue
+        if prog.risk and prog.risk[0] == "high":
+            open_ = [n for n, t in prog.ontologies[g]["terms"].items() if not t.get("certified")]
+            if open_:
+                diags.append(Diag("E136", a.line, f"high-risk program: agent {a.name} is grounded in {g}, whose terms "
+                                                  f"{', '.join(open_[:6])}{' …' if len(open_) > 6 else ''} are not "
+                                                  f"certified (algo ontology certify)", file_label))
+
+
+def _onto_payload(o):
+    return {k: v for k, v in o.items() if k != "line"} | {"terms": {n: {k: v for k, v in t.items() if k != "line"}
+                                                                     for n, t in o["terms"].items()}}
+
+
 # ───────────────────────── semantic checks ─────────────────────
 class Checker:
     """Type/effect/policy checks. Fills `diags`; returns typed var tables."""
@@ -524,7 +648,8 @@ class Checker:
         self.check_org()
         self.check_mcp()
         self.check_records()
-        if "main" not in self.p.flows and not library:
+        only_ontology = self.p.ontologies and not self.p.flows and not any(a.origin is None for a in self.p.agents.values())
+        if "main" not in self.p.flows and not library and not only_ontology:   # v1.3: an ontology file is a library
             self.err("E111", 1, "program has no `flow main(...)` entry point")
         for f in self.p.flows.values():
             env = {}
@@ -1127,6 +1252,8 @@ class CodeGen:
                 self.w(f"rt.tool({t!r})")
         if p.records:                    # v1.0: typed messages are validated at run time too
             self.w(f"rt.types({p.records!r})")
+        for o in p.ontologies.values():  # v1.3: the context layer travels inside the program
+            self.w(f"rt.register_ontology({o['name']!r}, {json.dumps(_onto_payload(o))!r})")
         if p.untrusted or p.risk or p.disclosure:
             self.w(f"rt.trust(untrusted={sorted(p.untrusted)!r}, risk={(p.risk[0] if p.risk else None)!r}, "
                    f"disclosure={p.disclosure!r})")
@@ -1438,6 +1565,8 @@ def load_program(src, name, base_dir: Path, stack=(), file_label=None, library=F
     """Parse a file and everything it `use`s. Returns (Program, diagnostics)."""
     tree = _parse(src, name, file_label)
     prog, diags = to_ast(tree)
+    for o in prog.ontologies.values():                     # v1.3: check declarations against the data
+        check_ontology_data(o, base_dir, diags, file_label)
     me = str((Path(base_dir) / name).resolve())
     for a in prog.agents.values():
         a.src = a.src or me
@@ -1478,6 +1607,8 @@ def load_program(src, name, base_dir: Path, stack=(), file_label=None, library=F
         for t, srv in sub.mcp_tools.items():
             prog.mcp_tools.setdefault(t, srv)
         prog.untrusted |= sub.untrusted                  # an imported untrusted tool stays untrusted
+        for oname, od in sub.ontologies.items():           # v1.3: ontologies travel with their agents
+            prog.ontologies.setdefault(oname, od)
         for tname, rec in sub.records.items():            # v1.0: typed messages travel with their agents
             if tname in prog.records and prog.records[tname] != rec:
                 diags.append(Diag("E132", line, f"type '{tname}' is defined differently in {shown}", file_label))
@@ -1495,6 +1626,7 @@ def load_program(src, name, base_dir: Path, stack=(), file_label=None, library=F
             if inherit:
                 a.policy = merge_policy(a.policy, inherit)
             prog.agents[new_name] = a
+    check_grounding(prog, diags, file_label)               # v1.3: grounded agents and certification
     # local definitions come after imports, so re-check local names against imported ones
     checker = Checker(prog)
     for d in checker.run(library=library):
@@ -1527,7 +1659,7 @@ def compile_source(src: str, name: str, base_dir: Path | str | None = None):
     return CodeGen(prog, name).gen(), prog
 
 
-VERSION = "1.2.0"
+VERSION = "1.3.0"
 
 TEMPLATE = '''// {name}.algo — created by `algo new`
 // Run it:  algo run {name}.algo --arg "topic=Your topic here"
@@ -1856,6 +1988,9 @@ def main(argv=None):
                    help="exit 1 when governance is loosened (default), on any change, or never")
     s.add_argument("--json", action="store_true")
     s.add_argument("--markdown", action="store_true", help="a Markdown report for a pull-request comment")
+    s = sub.add_parser("ontology", help="ontology as code: discover, check, certify, ask, validate, terms (v1.3)",
+                       add_help=False)
+    s.add_argument("rest", nargs=argparse.REMAINDER)
     s = sub.add_parser("redteam", help="adversarial testing: personal data, forbidden values, tool injection, "
                                          "denial of wallet (v1.2)")
     s.add_argument("file")
@@ -1948,6 +2083,9 @@ def main(argv=None):
     if a.cmd == "diff":
         import algodiff
         return algodiff.cli(a.old, a.new, fail_on=a.fail_on, as_json=a.json, markdown=a.markdown)
+    if a.cmd == "ontology":
+        import algoonto
+        return algoonto.cli(a.rest)
     if a.cmd == "redteam":
         import algoredteam
         return algoredteam.cli(a.file, args=a.arg, flow=a.flow, fail_on=a.fail_on, as_json=a.json, markdown=a.markdown)

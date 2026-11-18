@@ -1,0 +1,29 @@
+// AlgoLang v1.3: a data agent grounded in a certified ontology (ontology as code).
+// The ontology (retail.onto.algo) was discovered from retail.db by `algo ontology discover`,
+// reviewed, and certified term by term with `algo ontology certify`.
+risk limited "Answering managers' sales questions from the company's data"
+disclose "Answers come from an AI agent that uses the company's certified data definitions."
+
+use "retail.onto.algo"
+
+agent SalesAnalyst(question: text) -> text {
+    role "Sales data analyst"
+    goal "Answer from the sales data: {question}"
+    grounded in Retail
+    policy { budget tokens 3000 }
+}
+
+flow main(question: text) {
+    emit SalesAnalyst(question)
+}
+
+eval grounded_answers on main {
+    case "revenue by region" (question = "net revenue by region in 2025") {
+        expect status ok
+        expect called SalesAnalyst
+        expect tool ontology.ask
+    }
+    case "outside the data" (question = "headcount by department") {
+        expect output contains "UNANSWERABLE"
+    }
+}

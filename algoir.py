@@ -128,6 +128,7 @@ def to_ir(prog, program_name, source_text=""):
         "algoir": IR_VERSION, "algolang": rt.VERSION, "program": program_name,
         "source_sha256": hashlib.sha256(source_text.encode("utf-8")).hexdigest() if source_text else None,
         "models": dict(prog.models), "tools": tools, "types": dict(prog.records),
+        "ontologies": {n: _onto_payload(o) for n, o in prog.ontologies.items()},
         "trust": {"untrusted": sorted(prog.untrusted), "risk": prog.risk[0] if prog.risk else None,
                   "disclosure": prog.disclosure},
         "agents": [{"name": a.name, "params": [[x.name, x.type, x.default] for x in a.params], "returns": a.returns,
@@ -138,6 +139,11 @@ def to_ir(prog, program_name, source_text=""):
     }
     doc["sha256"] = digest(doc)
     return doc
+
+
+def _onto_payload(o):
+    import algoc
+    return algoc._onto_payload(o)
 
 
 def digest(doc):
@@ -222,6 +228,8 @@ class Machine:
                 r.tool(t["name"])
         if doc.get("types"):
             r.types(doc["types"])
+        for oname, od in (doc.get("ontologies") or {}).items():   # v1.3
+            r.register_ontology(oname, od)
         tr = doc.get("trust") or {}
         if tr.get("untrusted") or tr.get("risk") or tr.get("disclosure"):
             r.trust(untrusted=tr.get("untrusted") or [], risk=tr.get("risk"), disclosure=tr.get("disclosure"))

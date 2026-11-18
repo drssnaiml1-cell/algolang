@@ -1,0 +1,66 @@
+\chapter{Version 1.3: Ontology as code}
+\label{ch:v13}
+
+An agent that answers questions from enterprise data can be fluent and wrong at the same time: it can compute revenue before returns when the business means after returns, or join orders to customers on the wrong key. NVIDIA's open-source \emph{Auto Ontology} (\url{https://github.com/NVIDIA/auto-ontology}) addresses this with a \emph{context layer}: discover what the data means, have people certify it, and let agents answer only from certified definitions. Version 1.3 brings that concept into \algolang{}, with one difference: \textbf{the ontology is source code}. It is compiled, reviewed in pull requests, certified by name in the source, signed inside AlgoIR, and enforced at run time. The implementation is \algolang{}'s own; no Auto Ontology code is used.
+
+\section{Declaring an ontology}
+
+\begin{algo}[title=examples/v13/retail.onto.algo (excerpt)]
+ontology Retail from "retail.db" {
+    term NetRevenue "Net revenue of order lines" {
+        synonyms "sales", "turnover", "income"
+        column order_lines.amount
+        measure "SUM(order_lines.amount)"
+        certified "finance-data-team" on "2026-11-18"
+    }
+    term Region "Region of a customer" {
+        synonyms "area", "zone", "territory"
+        column customers.region
+        certified "finance-data-team" on "2026-11-18"
+    }
+    relation order_lines.order_id -> orders.id
+    relation orders.customer_id -> customers.id
+}
+\end{algo}
+
+A \code{term} names a business concept, describes it, lists its synonyms and maps it to one or more columns. A term with a \code{measure} is a metric: one SQL aggregate that every answer must use. A \code{relation} declares how two tables join. \code{certified} records who signed off the definition and when. An ontology-only file is a library: it needs no \code{flow main}, and \code{use "retail.onto.algo"} brings the ontology into a program.
+
+\paragraph{Compile-time checks (\errcode{E136}).} A term must map to at least one \code{table.column}. A measure must aggregate (SUM, AVG, COUNT, MIN or MAX) and must not modify data. A word, whether a term name or a synonym, may name only one term. When the data source exists at compile time, every column, every column read by a measure and both ends of every relation must exist in it. \code{grounded in} must name a declared ontology, and a high-risk program will not compile while an agent is grounded in an ontology with uncertified terms.
+
+\section{Discover, certify, check}
+
+\begin{plaincode}[title=Command line]
+algo ontology discover retail.db --history query_history.sql -o retail.onto.algo
+algo ontology certify retail.onto.algo NetRevenue Region OrderDate --by finance-data-team
+algo ontology check retail.onto.algo
+algo ontology terms retail.onto.algo
+\end{plaincode}
+
+Discovery profiles a SQLite database. It proposes one entity term per table, with a COUNT measure, and one term per meaningful column: SUM for amounts, AVG for prices, rates and ratios between 0 and 1. Joins come from declared foreign keys, and from \code{x\_id} columns whose every value is a key of table \code{x}. Aliased aggregates in a query-history file become proposed measures. When the business already names a discovered measure (for example \code{SUM(order\_lines.amount) AS net\_revenue}), the term is renamed to that name. Synonyms come from a business vocabulary, and no word is given to two terms. Nothing is certified: the output is source for people to review.
+
+Certification writes \code{certified "<by>" on "<date>"} into the term, so the review appears in the pull request's diff. \code{check} compares the declarations with the data: missing tables or columns, measures the database cannot run, relations with orphan rows, and terms not yet certified.
+
+\section{Answering from certified definitions}
+
+\code{algo ontology ask} and the \code{ontology.ask} tool answer a question in five steps. First, retrieval ranks terms by name, synonyms, column names and description. Second, a \emph{plan} is built only from what the ontology defines: the measure, the groupings the question asks for (\emph{by}, \emph{per}, \emph{top N \ldots by \ldots}, \emph{highest}, \emph{lowest}), filter values that exist in the data, a year on a date term, and joins along declared relations. Third, the SQL is validated. Fourth, it runs in SQLite's read-only mode, with a time limit and a row cap. Fifth, the answer is returned with its SQL, parameters, terms and tables.
+
+When the definitions cannot support the question, there is no answer: a question with no matching measure, a grouping no term covers, or tables no declared relation connects is reported as \textbf{UNANSWERABLE} with the reason. An answer that relies on an uncertified term is marked \textbf{UNCERTIFIED}.
+
+\paragraph{Validating any SQL.} \code{algo ontology validate} and \code{ontology.validate} check SQL written by a person or a model against six rules: one read-only SELECT; only tables in the ontology; joins only on declared relations; aggregates only as defined measures (whole multi-part measures are recognised), and certified ones to pass; literal filter values that exist in the data; and a query the database can compile.
+
+\section{Grounded agents}
+
+\begin{algo}[title=examples/v13/sales\_analyst.algo (excerpt)]
+use "retail.onto.algo"
+
+agent SalesAnalyst(question: text) -> text {
+    role "Sales data analyst"
+    goal "Answer from the sales data: {question}"
+    grounded in Retail
+    policy { budget tokens 3000 }
+}
+\end{algo}
+
+An agent that is \code{grounded in} an ontology receives the tools \code{ontology.ask} and \code{ontology.search}, and the best-matching definitions are added to its prompt as context. Every data answer it uses is written to its audit record under \code{grounding}: the status, terms, tables, SQL, parameters, and which terms were certified. Ontologies are part of AlgoIR, so a signed \code{.algoir.json} also signs the certifications it relied on, and grounded programs run identically on the AlgoVM.
+
+\paragraph{Serving the context layer.} \code{algo mcp serve} exposes every ontology in the served files as five read-only MCP tools: \code{<ontology>\_search\_terms}, \code{\_get\_term}, \code{\_check\_answerable}, \code{\_ask\_question} and \code{\_validate\_sql}. Any MCP client, not only \algolang{} agents, can therefore use the same certified definitions.

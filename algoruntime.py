@@ -42,7 +42,7 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass, field
 from pathlib import Path
 
-VERSION = "1.2.0"
+VERSION = "1.3.0"
 # WebAssembly builds of Python (Pyodide, used by the web playground) cannot start threads:
 # `par` then runs its branches one after another, with identical results.
 CAN_THREAD = sys.platform not in ("emscripten", "wasi")
@@ -459,6 +459,8 @@ def run_tool(name, query):
 # ═══════════════════════════════ v0.7: token-by-token output streaming ═══════════════════════════════
 # The runtime sets STREAM around each model call when someone listens (CLI --stream, SDK on_token, MCP progress).
 STREAM: contextvars.ContextVar = contextvars.ContextVar("algo_stream", default=None)
+# v1.3: the ontology the running agent is grounded in, and the answers it drew from it (for the audit record)
+GROUNDING: contextvars.ContextVar = contextvars.ContextVar("algo_grounding", default=None)
 
 
 class ValueStream:
@@ -1352,6 +1354,17 @@ class Runtime:
                  "max_chars": self.cfg.get("untrusted_max_chars") or 4000} if (red or self.untrusted) else None
         goal = re.sub(r"\{(\w+)\}", lambda m: fmt(args.get(m.group(1), m.group(0))), spec.goal)
         prompt = f"ROLE: {spec.role}\nGOAL: {goal}\nTOOLS: {', '.join(spec.uses) or 'none'}"
+        grounding = None
+        if pol.get("grounded"):                     # v1.3: certified definitions are the agent's context layer
+            import algoonto
+            grounding = {"ontology": pol["grounded"], "answers": []}
+            onto = algoonto.REGISTRY.get(pol["grounded"])
+            if onto is not None:
+                ctx = "; ".join(f"{n}{' (certified)' if onto.certified(n) else ''}: {onto.terms[n].get('description', '')}"
+                                for _s, n in algoonto.search(onto, goal, k=5))
+                if ctx:
+                    prompt += f"\nCONTEXT ({pol['grounded']} ontology): {ctx}"
+        GROUNDING.set(grounding)
 
         def block(reason, msg):
             with self.lock:
@@ -1534,6 +1547,8 @@ class Runtime:
         rec = dict(call=call_id, agent=spec.name, model=model_id, backend=self.backend.name, inputs_sha=sha,
                    returns=spec.returns, confidence=conf, tokens=tokens, status=res.status, cached=cached,
                    tools=spec.uses, tool_calls=tool_calls, policy=pol, cost_usd=round(cost, 6), energy_wh=round(wh, 4))
+        if grounding is not None:                   # v1.3: lineage of every data answer the agent used
+            rec["grounding"] = dict(ontology=grounding["ontology"], answers=grounding["answers"][:10])
         if samples is not None:
             rec.update(samples=k, spread=res.spread)
         if over:
@@ -1742,6 +1757,13 @@ class Runtime:
         flag = "" if reached else f"  ⚠ ESCALATED to human (no consensus, {quorum} needed)"
         self._log(f"  ⚖ consensus {agreed}/{n} → {shown}  conf={conf:.2f}{tail}{flag}")
         return res
+
+    def register_ontology(self, name, payload):
+        """v1.3: make an ontology (declared in the program) available to agents `grounded in` it."""
+        import algoonto
+        data = json.loads(payload) if isinstance(payload, str) else payload
+        algoonto.register(name, data, data.get("base"))
+        algoonto.install_tools(sys.modules[__name__])
 
     def par_map(self, fn, items):
         items = self.value(items)

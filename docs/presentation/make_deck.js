@@ -1,4 +1,4 @@
-// AlgoLang 1.2: launch deck (editable PowerPoint).
+// AlgoLang 1.3: launch deck (editable PowerPoint).
 // Build:  node docs/presentation/make_deck.js   ->  docs/presentation/AlgoLang_Presentation.pptx
 // Needs pptxgenjs, react, react-dom, react-icons, sharp. Palette = the LaTeX deck's colours.
 "use strict";
@@ -33,7 +33,7 @@ const pres = new pptxgen();
 pres.layout = "LAYOUT_WIDE"; // 13.333 x 7.5 in
 pres.author = "Dr. S. Satyanarayana, Ph.D., PDF (AI)";
 pres.company = "AlgoProfessor AI R&amp;D Solutions";
-pres.title = "AlgoLang 1.2: the agent-native programming language";
+pres.title = "AlgoLang 1.3: the agent-native programming language";
 pres.subject = "AlgoLang language, comparisons and 22 enterprise applications";
 pres.theme = { headFontFace: THEME.headFontFace, bodyFontFace: THEME.bodyFontFace };
 const C = pres.SchemeColor;
@@ -60,7 +60,7 @@ async function iconDot(slide, name, x, y, d, { fill = NAVY, color = HEX.gold, id
 
 // ── Layouts ──
 const footer = (color) => [
-  { text: { text: "AlgoLang 1.2  ·  Dr. S. Satyanarayana, Ph.D., PDF (AI)  ·  AlgoProfessor AI R&D Solutions",
+  { text: { text: "AlgoLang 1.3  ·  Dr. S. Satyanarayana, Ph.D., PDF (AI)  ·  AlgoProfessor AI R&D Solutions",
     options: { x: 0.6, y: 7.02, w: 9.5, h: 0.3, fontSize: 10, color, fontFace: THEME.bodyFontFace, margin: 0 } } },
 ];
 pres.defineSlideMaster({
@@ -141,14 +141,14 @@ function codeBox(s, src, x, y, w, h, fs = 13, id = "code") {
 }
 
 // ── Tables ──
-function table(s, head, rows, { x = 0.6, y = 1.75, w = 12.13, colW, fs = 13, firstBold = true, highlight = 0, rowH = 0.42 } = {}) {
+function table(s, head, rows, { x = 0.6, y = 1.75, w = 12.13, colW, fs = 13, firstBold = true, highlight = 0, rowH = 0.42, margin = [3, 6, 3, 6] } = {}) {
   const hdr = head.map((t) => ({ text: t, options: { bold: true, color: WHITE, fill: { color: HEX.navy }, fontSize: fs } }));
   const body = rows.map((r, i) => r.map((t, j) => {
     const o = { fontSize: fs, color: HEX.ink, fill: { color: i === highlight - 1 ? HEX.goldlight : i % 2 ? "F6F8FB" : HEX.white } };
     if (j === 0 && firstBold) { o.bold = true; o.color = HEX.navy; }
     return typeof t === "object" ? { text: t.text, options: { ...o, ...t.options } } : { text: t, options: o };
   }));
-  s.addTable([hdr, ...body], { x, y, w, colW, rowH, fontFace: THEME.bodyFontFace, border: { type: "solid", pt: 0.75, color: "D5DCE6" }, valign: "middle", margin: [3, 6, 3, 6] });
+  s.addTable([hdr, ...body], { x, y, w, colW, rowH, fontFace: THEME.bodyFontFace, border: { type: "solid", pt: 0.75, color: "D5DCE6" }, valign: "middle", margin });
 }
 
 // ── Applications (all 22 in enterprise-apps/): shared with the LaTeX deck via apps.json ──
@@ -181,14 +181,14 @@ async function appCard(s, a, x, y, w, h, idx) {
   // ═══ 1 · Title ═══
   sec("Opening");
   {
-    const s = add("Title", "AlgoLang 1.2", "The agent-native programming language for trustworthy AI");
+    const s = add("Title", "AlgoLang 1.3", "The agent-native programming language for trustworthy AI");
     await iconDot(s, "FaCodeBranch", 0.8, 0.8, 1.0, { fill: GOLD, color: HEX.navy, id: "logo" });
     T(s, "Agents, not functions.  Checked, explained, signed and tested before they ship.", { x: 0.8, y: 4.55, w: 11.7, h: 0.5, fontSize: 18, color: WHITE, italic: true });
     T(s, [{ text: "Dr. S. Satyanarayana, Ph.D., PDF (AI)", options: { bold: true, color: WHITE, breakLine: true } },
           { text: "Founder, CEO & Chief Agentic AI Scientist  ·  AlgoProfessor AI R&D Solutions, Hyderabad", options: { color: LIGHT } }],
       { x: 0.8, y: 5.75, w: 9, h: 0.8, fontSize: 16 });
     T(s, "github.com/drssnaiml1-cell/algolang", { x: 8.3, y: 6.65, w: 4.2, h: 0.35, fontSize: 13, color: GOLD, align: "right", fontFace: MONO });
-    s.addNotes("AlgoLang 1.2: a programming language whose unit of computation is a governed AI agent. Presented by Dr. S. Satyanarayana.");
+    s.addNotes("AlgoLang 1.3: a programming language whose unit of computation is a governed AI agent. Presented by Dr. S. Satyanarayana.");
   }
 
   // ═══ 2 · Agenda ═══
@@ -307,7 +307,7 @@ flow main(app: text) {
     const arrow = (x1, y1, x2, y2) => s.addShape(pres.shapes.LINE, { x: x1, y: Math.min(y1, y2), w: x2 - x1, h: Math.abs(y2 - y1), flipV: y2 < y1, line: { color: NAVY, width: 1.75, endArrowType: "triangle" } });
     box(0.6, 2.4, 1.6, ".algo", "source", false, "source");
     box(2.6, 2.4, 1.75, "Parser", "grammar → AST", false, "parser");
-    box(4.75, 2.4, 1.85, "Checker", "E100–E135", true, "checker");
+    box(4.75, 2.4, 1.85, "Checker", "E100–E136", true, "checker");
     box(7.05, 1.75, 1.75, "Python", "compiled code", false, "python");
     box(7.05, 3.05, 1.75, "AlgoIR", "signed JSON → AlgoVM", false, "algoir");
     box(9.25, 2.4, 1.85, "Runtime", "policies · budgets · review", true, "runtime");
@@ -315,7 +315,7 @@ flow main(app: text) {
     arrow(2.2, 2.9, 2.6, 2.9); arrow(4.35, 2.9, 4.75, 2.9); arrow(6.6, 2.9, 7.05, 2.25); arrow(6.6, 2.9, 7.05, 3.55);
     arrow(8.8, 2.25, 9.25, 2.9); arrow(8.8, 3.55, 9.25, 2.9); arrow(11.1, 2.9, 11.45, 2.9);
     const facts = [["35", "compile-time checks", "Undeclared tools, budgets, forbidden attributes, type errors, unsafe high-risk programs."],
-      ["224", "programs, two engines", "Compiled Python and the AlgoVM give identical results in CI."],
+      ["225", "programs, two engines", "Compiled Python and the AlgoVM give identical results in CI."],
       ["4", "model backends", "Claude, OpenAI-compatible local models, offline mock, replay from traces."]];
     facts.forEach(([n, l, d], i) => {
       const x = 0.6 + i * 4.1;
@@ -398,6 +398,36 @@ flow main(note: text) {
       await iconDot(s, "FaCheck", 8.55, y + 0.1, 0.6, { id: "typed point " + (i + 1) });
       T(s, pts[i], { x: 9.35, y, w: 3.38, h: 0.95, fontSize: 16, valign: "middle" });
     }
+  }
+  {
+    const s = add("Content", "New in 1.3: ontology as code", "A certified context layer for data agents (concept: NVIDIA Auto Ontology), compiled and enforced");
+    const st = [["FaMagnifyingGlassChart", "Discover", "algo ontology discover", "Profile the schema; propose terms, measures (also from query history) and joins (declared and inferred)."],
+      ["FaSignature", "Certify", "certified \"finance\"", "A person signs off each definition, in the source; it shows in the pull request."],
+      ["FaDatabase", "Answer", "grounded in Retail", "SQL only from certified measures and declared joins; read-only; lineage in the audit log."],
+      ["FaBan", "Refuse", "UNANSWERABLE", "Questions the definitions cannot support are refused with the reason, never guessed."]];
+    for (let i = 0; i < 4; i++) {
+      const x = 0.6 + i * 3.07;
+      card(s, x, 1.75, 2.85, 2.65, { fill: i === 3 ? NAVY : LIGHT, id: st[i][1] + " card" });
+      await iconDot(s, st[i][0], x + 0.25, 1.95, 0.6, { fill: i === 3 ? GOLD : NAVY, color: i === 3 ? HEX.navy : HEX.gold, id: st[i][1] + " icon" });
+      T(s, st[i][1], { x: x + 1.0, y: 1.95, w: 1.7, h: 0.6, fontSize: 19, bold: true, color: i === 3 ? WHITE : NAVY, fontFace: THEME.headFontFace, valign: "middle" });
+      T(s, st[i][2], { x: x + 0.25, y: 2.65, w: 2.45, h: 0.32, fontSize: 11, fontFace: MONO, color: i === 3 ? GOLD : NAVY2 });
+      T(s, st[i][3], { x: x + 0.25, y: 3.0, w: 2.4, h: 1.35, fontSize: 13, color: i === 3 ? WHITE : INK });
+    }
+    codeBox(s, `ontology Retail from "retail.db" {
+    term NetRevenue "Net revenue" {
+        synonyms "sales"  column order_lines.amount
+        measure "SUM(order_lines.amount)"
+        certified "finance-data-team" }
+    relation orders.customer_id -> customers.id
+}`, 0.6, 4.6, 6.0, 2.1, 11.5, "ontology code");
+    card(s, 6.85, 4.6, 5.88, 2.1, { fill: HEX.term, id: "ontology ask output" });
+    T(s, [
+      { text: "$ ", options: { color: HEX.gold } }, { text: "algo ontology ask … \"net revenue by region in 2025\"", options: { color: "D6DEEA", breakLine: true } },
+      { text: "Region: North · NetRevenue: 2,258,560.11", options: { color: "FFFFFF", breakLine: true } },
+      { text: "Terms: NetRevenue, Region, OrderDate · ", options: { color: "D6DEEA" } }, { text: "all certified", options: { color: "7BC67E", breakLine: true } },
+      { text: "$ ", options: { color: HEX.gold } }, { text: "algo ontology ask … \"headcount by department\"", options: { color: "D6DEEA", breakLine: true } },
+      { text: "UNANSWERABLE: no defined measure matches", options: { color: "E58C8C" } },
+    ], { x: 7.05, y: 4.75, w: 5.55, h: 1.85, fontFace: MONO, fontSize: 11.5, isTextBox: true, margin: 0, valign: "top" });
   }
   {
     const s = add("Content", "New in 1.2: collective and adversarial assurance", "Did assessors agree? Do safeguards hold under attack? Can the person affected understand it?");
@@ -519,11 +549,11 @@ if strength.confidence >= 0.6 { … }`, 0.6, 4.7, 5.9, 2.0, 12, "consensus code"
       ["Human review / four-eyes", Y, P, P, P, P, P, P, P], ["Uncertainty as a type", Y, P, P, P, P, P, N, N],
       ["Fairness and robustness evals", Y, P, P, N, P, P, P, P], ["Signed, hash-chained audit", Y, P, P, P, P, P, P, P],
       ["Typed agent messages", Y, P, P, P, P, P, P, P], ["Contracts on every agent answer", Y, P, P, P, P, P, P, P],
-      ["Governance diff between versions", Y, N, N, N, N, N, N, N], ["Quantum tools, verified", Y, P, P, P, P, P, N, N], ["Quorum consensus and built-in red team", Y, P, P, P, P, P, P, P],
+      ["Governance diff between versions", Y, N, N, N, N, N, N, N], ["Quantum tools, verified", Y, P, P, P, P, P, N, N], ["Quorum consensus and built-in red team", Y, P, P, P, P, P, P, P], ["Certified ontology for data agents", Y, P, P, P, P, P, P, P],
       ["General-purpose computing", N, Y, Y, Y, Y, Y, P, P], ["Mature ecosystem and community", N, Y, Y, Y, Y, Y, Y, Y],
       ["Raw performance", P, P, Y, Y, P, Y, P, P]].map((r) => r.map((c) => (typeof c === "object" ? { ...c, options: { ...c.options } } : c)));
     const hdr = ["Capability", "AlgoLang", "Python", "Java", "Rust", "TS", "Julia", "LangGraph", "CrewAI"];
-    table(s, hdr, rows, { colW: [3.73, 1.15, 1.05, 1.05, 1.05, 1.05, 1.05, 1.0, 1.0], fs: 12, rowH: 0.33 });
+    table(s, hdr, rows, { colW: [3.73, 1.15, 1.05, 1.05, 1.05, 1.05, 1.05, 1.0, 1.0], fs: 11, rowH: 0.29, y: 1.6, margin: [1, 5, 1, 5] });
     s.addNotes("Honest matrix: AlgoLang leads on governance features and trails on general-purpose computing, ecosystem maturity and raw performance.");
   }
   {
@@ -573,7 +603,7 @@ if strength.confidence >= 0.6 { … }`, 0.6, 4.7, 5.9, 2.0, 12, "consensus code"
   await divider("04", "22 enterprise applications", "Every one ships with policies, company tools, a knowledge base, evals, behaviour tests and system cards.", "FaLayerGroup");
   {
     const s = add("Content", "22 applications at a glance", "Open source in enterprise-apps/, each runnable offline");
-    const stats = [["22", "applications"], ["38", "programs"], ["224", "programs on AlgoVM"], ["36", "compile checks"]];
+    const stats = [["22", "applications"], ["38", "programs"], ["225", "programs on AlgoVM"], ["37", "compile checks"]];
     stats.forEach(([n, l], i) => {
       const x = 0.6 + i * 3.07;
       T(s, n, { x, y: 1.65, w: 2.85, h: 0.75, fontSize: 40, bold: true, color: GOLD, fontFace: THEME.headFontFace, align: "center" });
@@ -632,20 +662,20 @@ $ algo pkg install insurance@^1.0`, 0.6, 1.8, 6.4, 3.45, 15, "cli commands");
   }
   {
     const s = add("Content", "Roadmap delivered", "Every planned release shipped, one at a time");
-    const R = [["v0.1", "Language"], ["v0.2", "Enterprise"], ["v0.3", "Uncertainty"], ["v0.3.4", "AlgoPulse"], ["v0.4", "Trustworthy AI"], ["v0.5", "Domain apps"], ["v0.6", "Quantum AI"], ["v0.7", "Interop"], ["v1.0", "Platform"], ["v1.1", "Accountable"], ["v1.2", "Assurance"]];
+    const R = [["v0.1", "Language"], ["v0.2", "Enterprise"], ["v0.3", "Uncertainty"], ["v0.3.4", "AlgoPulse"], ["v0.4", "Trustworthy AI"], ["v0.5", "Domain apps"], ["v0.6", "Quantum AI"], ["v0.7", "Interop"], ["v1.0", "Platform"], ["v1.1", "Accountable"], ["v1.2", "Assurance"], ["v1.3", "Ontology"]];
     const x0 = 1.0, x1 = 12.3, y = 3.0, step = (x1 - x0) / (R.length - 1);
     s.addShape(pres.shapes.LINE, { x: x0, y, w: x1 - x0, h: 0, line: { color: GOLD, width: 4 } });
     R.forEach(([v, t], i) => {
       const x = x0 + i * step, last = i === R.length - 1, d = last ? 0.55 : 0.38;
       s.addShape(pres.shapes.OVAL, { x: x - d / 2, y: y - d / 2, w: d, h: d, fill: { color: last ? GOLD : NAVY }, line: { color: WHITE, width: 2 }, objectName: "milestone " + v });
       T(s, v, { x: x - 0.7, y: y - 0.85, w: 1.4, h: 0.4, fontSize: last ? 20 : 17, bold: true, color: NAVY, align: "center" });
-      T(s, t, { x: x - 0.7, y: y + 0.4, w: 1.4, h: 0.6, fontSize: 13, color: MUTED, align: "center" });
+      T(s, t, { x: x - 0.5, y: y + 0.4, w: 1.0, h: 0.6, fontSize: 11.5, color: MUTED, align: "center" });
     });
     card(s, 0.6, 4.45, 5.95, 1.7, { fill: GOLDL, id: "latest" });
-    T(s, [{ text: "Latest: 1.2", options: { bold: true, color: NAVY, fontSize: 20, breakLine: true } }, { text: "Consensus blocks · red-team testing · decision notices, on 1.1 contracts, what-if and diff and the 1.0 platform." }],
+    T(s, [{ text: "Latest: 1.3", options: { bold: true, color: NAVY, fontSize: 20, breakLine: true } }, { text: "Ontology as code: certified terms, grounded agents, algo ontology; on 1.2 consensus, red team and notices." }],
       { x: 0.9, y: 4.45, w: 5.4, h: 1.7, fontSize: 16, valign: "middle" });
-    card(s, 6.78, 4.45, 5.95, 1.7, { fill: NAVY, id: "after 1.2" });
-    T(s, [{ text: "After 1.2", options: { bold: true, color: GOLD, fontSize: 20, breakLine: true } }, { text: "AlgoVM for browser and edge · organisation registries · federated review · long-running agents.", options: { color: WHITE } }],
+    card(s, 6.78, 4.45, 5.95, 1.7, { fill: NAVY, id: "after 1.3" });
+    T(s, [{ text: "After 1.3", options: { bold: true, color: GOLD, fontSize: 20, breakLine: true } }, { text: "AlgoVM for browser and edge · organisation registries · federated review · long-running agents.", options: { color: WHITE } }],
       { x: 7.08, y: 4.45, w: 5.4, h: 1.7, fontSize: 16, valign: "middle" });
   }
   {

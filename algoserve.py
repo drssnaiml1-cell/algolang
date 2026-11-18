@@ -82,6 +82,26 @@ class FlowServer:
                     inputSchema={"type": "object", "properties": {x.name: _schema(x.type) for x in f.params},
                                  "required": [x.name for x in f.params if x.default is None]},
                     outputSchema=RESULT_SCHEMA))
+            for oname, od in getattr(ir, "ontologies", {}).items():   # v1.3: the context layer, read-only
+                import algoonto
+                if any(t.get("onto_name") == oname for t in self.tools.values()):
+                    continue
+                onto = algoonto.Ontology.from_dict(od, od.get("base"))
+                for op, arg, desc in (
+                        ("search_terms", "question", "Find business terms that match a question, with definitions "
+                                                     "and certification."),
+                        ("get_term", "term", "One term's full definition: columns, measure, synonyms, certification."),
+                        ("check_answerable", "question", "Whether the certified definitions can answer a question, "
+                                                         "and the SQL that would answer it."),
+                        ("ask_question", "question", "Answer a data question from certified definitions only, with "
+                                                     "the SQL and lineage; unanswerable questions are reported."),
+                        ("validate_sql", "sql", "Check SQL against certified measures and declared joins.")):
+                    name = _tool_name(oname.lower(), op)
+                    self.tools[name] = dict(kind="ontology", onto=onto, onto_name=oname, op=op, spec=dict(
+                        name=name, title=f"{oname} ontology · {op.replace('_', ' ')}",
+                        description=f"AlgoLang ontology {oname} ({onto.source}): {desc}",
+                        inputSchema={"type": "object", "properties": {arg: {"type": "string"}}, "required": [arg]},
+                        annotations={"readOnlyHint": True}))
             if agents:
                 for aname, a in ir.agents.items():
                     name = _tool_name(prog.name, "agent", aname)
@@ -121,6 +141,26 @@ class FlowServer:
         t = self.tools.get(name)
         if t is None:
             return {"content": [{"type": "text", "text": f"unknown tool: {name}"}], "isError": True}
+        if t["kind"] == "ontology":                        # v1.3: read-only context-layer tools
+            import algoonto
+            onto, op = t["onto"], t["op"]
+            arg = str(args.get("sql") or args.get("term") or args.get("question") or "")
+            if op == "search_terms":
+                data = [dict(term=n, score=sc, certified=onto.terms[n].get("certified"), **{k: onto.terms[n].get(k)
+                        for k in ("description", "columns", "measure", "synonyms")}) for sc, n in algoonto.search(onto, arg)]
+            elif op == "get_term":
+                n = next((x for x in onto.terms if x.lower() == arg.strip().lower()), None)
+                data = dict(term=n, **onto.terms[n]) if n else dict(error=f"no term named {arg!r}")
+            elif op == "check_answerable":
+                data = algoonto.plan(onto, arg)
+            elif op == "ask_question":
+                data = algoonto.ask(onto, arg)
+            else:
+                data = algoonto.validate_sql(onto, arg)
+            text = algoonto.render_answer(data) if op == "ask_question" else json.dumps(data, ensure_ascii=False, default=str)
+            bad = op == "ask_question" and data.get("status") not in ("answered", "uncertified")
+            return {"content": [{"type": "text", "text": text}], "structuredContent": json.loads(json.dumps(data, default=str))
+                    if isinstance(data, dict) else {"results": data}, "isError": bad}
         on_token = None
         if progress is not None and notify is not None:
             n = [0]

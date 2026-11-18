@@ -54,6 +54,16 @@ KEYWORDS = {
     "approvals": "**require approvals N** — N different named reviewers must approve each result (four-eyes = 2).",
     "ensure": "**ensure** (v1.1) — a contract on every answer: `ensure result >= 0 else \"why\"`. Checked "
               "before anyone uses the answer; broken once → asked again; broken twice → a person decides.",
+    "ontology": "**ontology** (v1.3) — ontology as code: `ontology Retail from \"retail.db\" { term … relation … }`. "
+                "Business terms mapped to columns, certified SQL measures and declared joins; discover with "
+                "`algo ontology discover`, certify with `algo ontology certify`.",
+    "grounded": "**grounded in** (v1.3) — `grounded in Retail`: the agent answers data questions only from the "
+                "ontology's certified definitions (tools ontology.ask / ontology.search); every answer's SQL and "
+                "terms are written to the audit log. High-risk programs need every term certified (E136).",
+    "certified": "**certified** (v1.3) — `certified \"finance-team\" on \"2026-11-18\"`: a person signed off this "
+                 "term's definition. Written by `algo ontology certify`; uncertified terms are flagged in answers.",
+    "measure": "**measure** (v1.3) — a term's certified SQL aggregate, e.g. `measure \"SUM(order_lines.amount)\"`; "
+               "every answer computes the metric this way.",
     "consensus": "**consensus** (v1.2) — `v = consensus 2 of { A(x), B(x), C(x) } within 0.1`: independent agents "
                  "answer in parallel; the decision stands only if a majority quorum agrees. Dissent is audited; "
                  "without a quorum a person decides. A numeric consensus is uncertain: check `v.confidence`.",

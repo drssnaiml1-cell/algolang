@@ -22,9 +22,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/drssnaiml1-cell/algolang/releases/latest"><img src="docs/images/header/card-release.svg" alt="Latest release: AlgoLang 1.2.0" width="300"></a>
+  <a href="https://github.com/drssnaiml1-cell/algolang/releases/latest"><img src="docs/images/header/card-release.svg" alt="Latest release: AlgoLang 1.3.0" width="300"></a>
   &nbsp;
-  <a href="#v10-native-runtime-and-ecosystem"><img src="docs/images/header/card-verified.svg" alt="Verified in CI: 224 programs give identical results on the AlgoVM" width="300"></a>
+  <a href="#v10-native-runtime-and-ecosystem"><img src="docs/images/header/card-verified.svg" alt="Verified in CI: 225 programs give identical results on the AlgoVM" width="300"></a>
 </p>
 
 <table>
@@ -39,7 +39,7 @@
   <a href="#2-design-principles">How It Works</a> •
   <a href="#6-enterprise-applications">Applications</a> •
   <a href="#8-quantum-applications">Quantum AI</a> •
-  <a href="docs/AlgoLang_Documentation_v1.2.pdf">Documentation</a> •
+  <a href="docs/AlgoLang_Documentation_v1.3.pdf">Documentation</a> •
   <a href="#13-roadmap-from-v01-to-v10-and-beyond">Roadmap</a> •
   <a href="#15-author-and-licence">License</a>
 </p>
@@ -52,7 +52,7 @@
   <a href="https://www.algoprofessor.com"><img src="docs/images/algolang-hero.svg" alt="AlgoLang: an order event from AlgoPulse flows through parallel Quote and Limits agents, a deterministic BREACH guard, and an uncertain RiskGate agent with a human gate; every call is written to a hash-chained audit log" width="100%"></a>
 </p>
 
-**Current version: 1.2.0** (consensus blocks · red-team testing · decision notices; with v1.1 agent contracts, what-if audits and governance diff; v1.0 typed messages, AlgoIR and the AlgoVM, signed packages and Studio single sign-on; v0.7 Interoperability, v0.6 Quantum AI, v0.5 domain applications and v0.4 Trustworthy AI) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md) · [50 Sample Programs (PDF)](docs/AlgoLang_50_Sample_Programs.pdf) · [Language manual (PDF)](docs/AlgoLang_Documentation_v1.2.pdf) · Presentation: [PDF](docs/presentation/AlgoLang_Presentation.pdf) · [PowerPoint](docs/presentation/AlgoLang_Presentation.pptx) · [LaTeX source](docs/presentation/AlgoLang_Presentation.tex)
+**Current version: 1.3.0** (ontology as code: certified terms, grounded agents, `algo ontology`; with v1.2 consensus, red team and decision notices; v1.1 agent contracts, what-if audits and governance diff; v1.0 typed messages, AlgoIR and the AlgoVM, signed packages and Studio single sign-on; v0.7 Interoperability, v0.6 Quantum AI, v0.5 domain applications and v0.4 Trustworthy AI) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md) · [50 Sample Programs (PDF)](docs/AlgoLang_50_Sample_Programs.pdf) · [Language manual (PDF)](docs/AlgoLang_Documentation_v1.3.pdf) · Presentation: [PDF](docs/presentation/AlgoLang_Presentation.pdf) · [PowerPoint](docs/presentation/AlgoLang_Presentation.pptx) · [LaTeX source](docs/presentation/AlgoLang_Presentation.tex)
 
 AlgoLang has **no functions**. Every unit of work is an `agent` with a role, a goal, explicit tools, a model and a policy. A `flow` is the only other construct, and it can do just four things:
 
@@ -71,7 +71,7 @@ flowchart TB
     end
     subgraph COMPILER["② Compiler · algoc.py — unsafe programs never run"]
         direction LR
-        SRC[".algo source"] --> PARSE["Lark grammar"] --> AST["AST"] --> CHK{{"Checker · E100–E135"}} --> GEN["Python code"]
+        SRC[".algo source"] --> PARSE["Lark grammar"] --> AST["AST"] --> CHK{{"Checker · E100–E136"}} --> GEN["Python code"]
     end
     subgraph RUNTIME["③ Runtime · algoruntime.py — every call governed"]
         direction LR
@@ -102,7 +102,7 @@ flowchart TB
 
 1. [Objective](#1-objective)
 2. [Design principles](#2-design-principles)
-3. [What's new in v1.2: collective and adversarial assurance](#3-whats-new-in-v12-collective-and-adversarial-assurance)
+3. [What's new in v1.3: ontology as code](#3-whats-new-in-v13-ontology-as-code)
 4. [Get started](#4-get-started)
 5. [Learn by example: 50 sample programs](#5-learn-by-example-50-sample-programs)
 6. [Enterprise applications](#6-enterprise-applications)
@@ -112,7 +112,7 @@ flowchart TB
 10. [Governance and runtime guarantees](#10-governance-and-runtime-guarantees)
 11. [Python SDK](#11-python-sdk)
 12. [For developers](#12-for-developers)
-13. [Roadmap: from v0.1 to v1.2, and beyond](#13-roadmap-from-v01-to-v12-and-beyond)
+13. [Roadmap: from v0.1 to v1.3, and beyond](#13-roadmap-from-v01-to-v13-and-beyond)
 14. [Repository layout](#14-repository-layout)
 15. [Author and licence](#15-author-and-licence)
 
@@ -150,7 +150,55 @@ flowchart TB
 - **People stay in the loop.** A low-confidence call goes to a human review queue instead of going out.
 - **One engine, many doors.** The command line, Studio, Prompt UI, SDK and language server all run the same compiler and runtime.
 
-## 3. What's new in v1.2: collective and adversarial assurance
+## 3. What's new in v1.3: ontology as code
+
+Data agents fail quietly: a fluent answer computed with the wrong revenue definition or the wrong join. NVIDIA's open-source [Auto Ontology](https://github.com/NVIDIA/auto-ontology) answers this with a *context layer*: discover what the data means, have people certify it, and let agents answer only from certified definitions. AlgoLang 1.3 brings that concept into the language, with one twist: **the ontology is code**. It is compiled, reviewed in pull requests, certified by name in the source, signed inside AlgoIR, and enforced at run time.
+
+```algo
+ontology Retail from "retail.db" {
+    term NetRevenue "Net revenue of order lines" {
+        synonyms "sales", "turnover"
+        column order_lines.amount
+        measure "SUM(order_lines.amount)"
+        certified "finance-data-team" on "2026-11-18"
+    }
+    term Region "Region of a customer" { column customers.region  certified "finance-data-team" }
+    relation order_lines.order_id -> orders.id
+    relation orders.customer_id -> customers.id
+}
+
+agent SalesAnalyst(question: text) -> text {
+    goal "Answer from the sales data: {question}"
+    grounded in Retail                // certified definitions only; SQL and lineage in the audit log
+}
+```
+
+| Stage | Command | What happens |
+|:--|:--|:--|
+| **Discover** | `algo ontology discover retail.db --history queries.sql` | Profiles the schema; proposes terms, synonyms, measures (also from query history) and joins (declared and inferred from the data) as AlgoLang source. Nothing is certified. |
+| **Certify** | `algo ontology certify retail.onto.algo NetRevenue --by finance` | A person signs off a definition; `certified "finance" on "…"` appears in the diff. `algo ontology check` tests every column, join and measure against the data. |
+| **Answer** | `algo ontology ask retail.onto.algo "net revenue by region in 2025"` | SQL planned only from certified measures and declared joins, validated, run read-only, returned with its lineage. |
+| **Validate** | `algo ontology validate retail.onto.algo "SELECT …"` | Any SQL, from a person or a model, checked against the definitions. |
+| **Serve** | `algo mcp serve …` | `retail_search_terms`, `retail_ask_question`, `retail_validate_sql` and more, read-only, for any MCP client. |
+
+```text
+$ algo ontology ask examples/v13/retail.onto.algo "net revenue by region in 2025"
+Region: North · NetRevenue: 2,258,560.11
+Region: West · NetRevenue: 2,102,476.46
+Region: East · NetRevenue: 2,051,546.33
+Region: South · NetRevenue: 1,932,952.49
+SQL: SELECT customers.region AS "Region", SUM(order_lines.amount) AS "NetRevenue" FROM order_lines
+     JOIN orders ON order_lines.order_id = orders.id JOIN customers ON orders.customer_id = customers.id
+     WHERE strftime('%Y', orders.order_date) = ? GROUP BY customers.region …   params ['2025']
+Terms: NetRevenue, Region, OrderDate · all terms certified
+
+$ algo ontology ask examples/v13/retail.onto.algo "headcount by department"
+UNANSWERABLE from ontology Retail: no defined measure matches the question (closest terms: none).
+```
+
+The compiler checks every column and join against the data source (**E136**), and a high-risk program will not compile while its agents rely on uncertified terms. Questions the definitions cannot support are refused, never guessed. Try it: [`examples/v13`](examples/v13).
+
+### v1.2: collective and adversarial assurance
 
 AlgoLang 1.2 answers three harder questions, again from the program itself.
 
@@ -781,6 +829,7 @@ flow main(topic: text) {
 | E133 | Package error (v1.0): a `use "pkg:…"` file that is not installed, not in algo.lock, or changed since it was installed |
 | E134 | Contract error (v1.1): an `ensure` that calls an agent, does not check `result`, or reads an unknown name or field |
 | E135 | Consensus error (v1.2): a quorum that is not a true majority, agents that are not independent or answer different kinds of value, or a `within` that does not suit them |
+| E136 | Ontology error (v1.3): a term without a valid column, a measure that does not aggregate or would change data, one word naming two terms, columns or joins missing from the data source, `grounded in` an unknown ontology, or a high-risk program grounded in uncertified terms |
 
 Errors from imported modules are reported with the file name, and the org config is enforced at compile time: a forbidden attribute or an ungranted tool is an error before anything runs.
 
@@ -869,11 +918,11 @@ pip install -e ".[dev]"
 make check        # ruff + pytest + lint of every .algo file
 ```
 
-## 13. Roadmap: from v0.1 to v1.2, and beyond
+## 13. Roadmap: from v0.1 to v1.3, and beyond
 
 <p align="center"><img src="docs/images/sections/13-roadmap.svg" alt="Roadmap timeline" width="100%"></p>
 
-**AlgoLang 1.2 is released** (see [§3](#3-whats-new-in-v12-collective-and-adversarial-assurance)): every release planned since v0.1 has shipped, one at a time, each with tests, CI, documentation and figures. What comes next is in **[ROADMAP.md](ROADMAP.md#after-12)**: an AlgoVM for the browser and edge devices, organisation-wide registries with publisher certificates, and federated review across teams.
+**AlgoLang 1.3 is released** (see [§3](#3-whats-new-in-v13-ontology-as-code)): every release planned since v0.1 has shipped, one at a time, each with tests, CI, documentation and figures. What comes next is in **[ROADMAP.md](ROADMAP.md#after-13)**: an AlgoVM for the browser and edge devices, organisation-wide registries with publisher certificates, and federated review across teams.
 
 | Version | Theme | Status |
 |---|---|---|
@@ -891,7 +940,8 @@ make check        # ruff + pytest + lint of every .algo file
 | v0.7 | Interoperability: flows and agents as MCP servers, argument types (E131), typed inputs, token streaming, cost and energy dashboard | Released |
 | v1.0 | Native runtime and ecosystem: typed agent-to-agent messages, AlgoIR and the AlgoVM, signed packages and a public registry, Studio single sign-on and roles | Released |
 | v1.1 | Accountable decisions: agent contracts (`ensure`), what-if audits (`algo whatif`), governance diff (`algo diff`) | Released |
-| **v1.2** | Collective and adversarial assurance: consensus blocks, red-team testing (`algo redteam`), decision notices (`algo explain`) | **Current** |
+| v1.2 | Collective and adversarial assurance: consensus blocks, red-team testing (`algo redteam`), decision notices (`algo explain`) | Released |
+| **v1.3** | Ontology as code: certified terms, measures and joins; `grounded in` agents; `algo ontology` discover · certify · ask · validate; MCP tools | **Current** |
 
 ## 14. Repository layout
 
@@ -927,6 +977,7 @@ algowhatif.py                 what-if audits: replay a decision with inputs chan
 algodiff.py                   governance diff between program versions (algo diff)          — v1.1
 algoredteam.py                red-team testing: attacks a program offline (algo redteam)     — v1.2
 algoexplain.py                decision notices for the people affected (algo explain)        — v1.2
+algoonto.py                   ontology as code: discover, certify, ask, validate (algo ontology) — v1.3
 algomcp.py                    MCP client and tool bindings (algo mcp)                         — v0.3
 algolsp.py                    language server (algo lsp)                                      — v0.3
 algotrust.py                  privacy, untrusted-tool fencing, Ed25519 signing, retention, perturbations — v0.4
