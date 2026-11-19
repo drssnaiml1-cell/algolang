@@ -83,6 +83,9 @@ def pg_dsn():
     if not base or importlib.util.find_spec("psycopg") is None:
         pytest.skip("set ALGO_TEST_PG_DSN (and install psycopg) to test PostgreSQL sources")
     import psycopg
+    userinfo = base.split("//")[1].split("@")[0]
+    if ":" in userinfo:                    # ontologies say ${PGPASSWORD}: the password comes from the environment
+        os.environ.setdefault("PGPASSWORD", userinfo.split(":", 1)[1])
     db = "ontotest_" + uuid.uuid4().hex[:8]
     with psycopg.connect(base, autocommit=True) as con:
         con.execute(f"CREATE DATABASE {db} ENCODING 'UTF8' TEMPLATE template0")
