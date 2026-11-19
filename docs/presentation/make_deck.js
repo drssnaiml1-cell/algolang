@@ -1,4 +1,4 @@
-// AlgoLang 1.3: launch deck (editable PowerPoint).
+// AlgoLang 1.4: launch deck (editable PowerPoint).
 // Build:  node docs/presentation/make_deck.js   ->  docs/presentation/AlgoLang_Presentation.pptx
 // Needs pptxgenjs, react, react-dom, react-icons, sharp. Palette = the LaTeX deck's colours.
 "use strict";
@@ -33,7 +33,7 @@ const pres = new pptxgen();
 pres.layout = "LAYOUT_WIDE"; // 13.333 x 7.5 in
 pres.author = "Dr. S. Satyanarayana, Ph.D., PDF (AI)";
 pres.company = "AlgoProfessor AI R&amp;D Solutions";
-pres.title = "AlgoLang 1.3: the agent-native programming language";
+pres.title = "AlgoLang 1.4: the agent-native programming language";
 pres.subject = "AlgoLang language, comparisons and 22 enterprise applications";
 pres.theme = { headFontFace: THEME.headFontFace, bodyFontFace: THEME.bodyFontFace };
 const C = pres.SchemeColor;
@@ -60,7 +60,7 @@ async function iconDot(slide, name, x, y, d, { fill = NAVY, color = HEX.gold, id
 
 // ── Layouts ──
 const footer = (color) => [
-  { text: { text: "AlgoLang 1.3  ·  Dr. S. Satyanarayana, Ph.D., PDF (AI)  ·  AlgoProfessor AI R&D Solutions",
+  { text: { text: "AlgoLang 1.4  ·  Dr. S. Satyanarayana, Ph.D., PDF (AI)  ·  AlgoProfessor AI R&D Solutions",
     options: { x: 0.6, y: 7.02, w: 9.5, h: 0.3, fontSize: 10, color, fontFace: THEME.bodyFontFace, margin: 0 } } },
 ];
 pres.defineSlideMaster({
@@ -181,14 +181,14 @@ async function appCard(s, a, x, y, w, h, idx) {
   // ═══ 1 · Title ═══
   sec("Opening");
   {
-    const s = add("Title", "AlgoLang 1.3", "The agent-native programming language for trustworthy AI");
+    const s = add("Title", "AlgoLang 1.4", "The agent-native programming language for trustworthy AI");
     await iconDot(s, "FaCodeBranch", 0.8, 0.8, 1.0, { fill: GOLD, color: HEX.navy, id: "logo" });
     T(s, "Agents, not functions.  Checked, explained, signed and tested before they ship.", { x: 0.8, y: 4.55, w: 11.7, h: 0.5, fontSize: 18, color: WHITE, italic: true });
     T(s, [{ text: "Dr. S. Satyanarayana, Ph.D., PDF (AI)", options: { bold: true, color: WHITE, breakLine: true } },
           { text: "Founder, CEO & Chief Agentic AI Scientist  ·  AlgoProfessor AI R&D Solutions, Hyderabad", options: { color: LIGHT } }],
       { x: 0.8, y: 5.75, w: 9, h: 0.8, fontSize: 16 });
     T(s, "github.com/drssnaiml1-cell/algolang", { x: 8.3, y: 6.65, w: 4.2, h: 0.35, fontSize: 13, color: GOLD, align: "right", fontFace: MONO });
-    s.addNotes("AlgoLang 1.3: a programming language whose unit of computation is a governed AI agent. Presented by Dr. S. Satyanarayana.");
+    s.addNotes("AlgoLang 1.4: a programming language whose unit of computation is a governed AI agent. Presented by Dr. S. Satyanarayana.");
   }
 
   // ═══ 2 · Agenda ═══
@@ -400,6 +400,31 @@ flow main(note: text) {
     }
   }
   {
+    const s = add("Content", "New in 1.4: AlgoOnto™", "Ontology as code on three engines, watched for drift, shared as standards, drawn as a graph");
+    const F = [["FaDatabase", "Three engines", "SQLite·DuckDB·Postgres", "All read-only with a time limit; the same answers on each. Passwords never in code."],
+      ["FaTriangleExclamation", "Drift", "algo onto drift", "Renamed columns, new categories, moved measures, and certifications to renew. CI exit codes."],
+      ["FaShareNodes", "Standards", "export ttl · jsonld", "OWL/RDF and JSON-LD: classes, properties, joins, SKOS labels, certification."],
+      ["FaDiagramProject", "Graph view", "onto graph · Studio", "Tables, terms, certified measures and joins in one picture."]];
+    for (let i = 0; i < 4; i++) {
+      const x = 0.6 + i * 3.07;
+      card(s, x, 1.75, 2.85, 2.3, { fill: i === 1 ? NAVY : LIGHT, id: F[i][1] + " card" });
+      await iconDot(s, F[i][0], x + 0.25, 1.92, 0.58, { fill: i === 1 ? GOLD : NAVY, color: i === 1 ? HEX.navy : HEX.gold, id: F[i][1] + " icon" });
+      T(s, F[i][1], { x: x + 0.95, y: 1.92, w: 1.8, h: 0.58, fontSize: 18, bold: true, color: i === 1 ? WHITE : NAVY, fontFace: THEME.headFontFace, valign: "middle" });
+      T(s, F[i][2], { x: x + 0.25, y: 2.6, w: 2.5, h: 0.3, fontSize: 11, fontFace: MONO, color: i === 1 ? GOLD : NAVY2 });
+      T(s, F[i][3], { x: x + 0.25, y: 2.95, w: 2.4, h: 1.05, fontSize: 12.5, color: i === 1 ? WHITE : INK });
+    }
+    s.addImage({ path: path.join(__dirname, "..", "images", "algoonto-graph.svg"), x: 0.6, y: 4.2, w: 7.1, h: 2.56, altText: "AlgoOnto graph of the Retail ontology" });
+    card(s, 7.95, 4.2, 4.78, 2.56, { fill: HEX.term, id: "drift output" });
+    T(s, [
+      { text: "$ ", options: { color: HEX.gold } }, { text: "algo onto drift retail.onto.algo", options: { color: "D6DEEA", breakLine: true } },
+      { text: "breaking ", options: { color: "E58C8C" } }, { text: "products.category removed", options: { color: "D6DEEA", breakLine: true } },
+      { text: "         (renamed? product_category)", options: { color: "8C98AB", breakLine: true } },
+      { text: "warning  ", options: { color: HEX.gold } }, { text: "region: new value Central", options: { color: "D6DEEA", breakLine: true } },
+      { text: "warning  ", options: { color: HEX.gold } }, { text: "NetRevenue moved +50%", options: { color: "D6DEEA", breakLine: true } },
+      { text: "review   ", options: { color: "E58C8C" } }, { text: "renew Category certification", options: { color: "D6DEEA" } },
+    ], { x: 8.15, y: 4.35, w: 4.45, h: 2.3, fontFace: MONO, fontSize: 11.5, isTextBox: true, margin: 0, valign: "top" });
+  }
+  {
     const s = add("Content", "New in 1.3: ontology as code", "A certified context layer for data agents (concept: NVIDIA Auto Ontology), compiled and enforced");
     const st = [["FaMagnifyingGlassChart", "Discover", "algo ontology discover", "Profile the schema; propose terms, measures (also from query history) and joins (declared and inferred)."],
       ["FaSignature", "Certify", "certified \"finance\"", "A person signs off each definition, in the source; it shows in the pull request."],
@@ -549,7 +574,7 @@ if strength.confidence >= 0.6 { … }`, 0.6, 4.7, 5.9, 2.0, 12, "consensus code"
       ["Human review / four-eyes", Y, P, P, P, P, P, P, P], ["Uncertainty as a type", Y, P, P, P, P, P, N, N],
       ["Fairness and robustness evals", Y, P, P, N, P, P, P, P], ["Signed, hash-chained audit", Y, P, P, P, P, P, P, P],
       ["Typed agent messages", Y, P, P, P, P, P, P, P], ["Contracts on every agent answer", Y, P, P, P, P, P, P, P],
-      ["Governance diff between versions", Y, N, N, N, N, N, N, N], ["Quantum tools, verified", Y, P, P, P, P, P, N, N], ["Quorum consensus and built-in red team", Y, P, P, P, P, P, P, P], ["Certified ontology for data agents", Y, P, P, P, P, P, P, P],
+      ["Governance diff between versions", Y, N, N, N, N, N, N, N], ["Quantum tools, verified", Y, P, P, P, P, P, N, N], ["Quorum consensus and built-in red team", Y, P, P, P, P, P, P, P], ["AlgoOnto™ certified ontology (3 engines)", Y, P, P, P, P, P, P, P],
       ["General-purpose computing", N, Y, Y, Y, Y, Y, P, P], ["Mature ecosystem and community", N, Y, Y, Y, Y, Y, Y, Y],
       ["Raw performance", P, P, Y, Y, P, Y, P, P]].map((r) => r.map((c) => (typeof c === "object" ? { ...c, options: { ...c.options } } : c)));
     const hdr = ["Capability", "AlgoLang", "Python", "Java", "Rust", "TS", "Julia", "LangGraph", "CrewAI"];
@@ -662,7 +687,7 @@ $ algo pkg install insurance@^1.0`, 0.6, 1.8, 6.4, 3.45, 15, "cli commands");
   }
   {
     const s = add("Content", "Roadmap delivered", "Every planned release shipped, one at a time");
-    const R = [["v0.1", "Language"], ["v0.2", "Enterprise"], ["v0.3", "Uncertainty"], ["v0.3.4", "AlgoPulse"], ["v0.4", "Trustworthy AI"], ["v0.5", "Domain apps"], ["v0.6", "Quantum AI"], ["v0.7", "Interop"], ["v1.0", "Platform"], ["v1.1", "Accountable"], ["v1.2", "Assurance"], ["v1.3", "Ontology"]];
+    const R = [["v0.1", "Language"], ["v0.2", "Enterprise"], ["v0.3", "Uncertainty"], ["v0.3.4", "AlgoPulse"], ["v0.4", "Trustworthy AI"], ["v0.5", "Domain apps"], ["v0.6", "Quantum AI"], ["v0.7", "Interop"], ["v1.0", "Platform"], ["v1.1", "Accountable"], ["v1.2", "Assurance"], ["v1.3", "Ontology"], ["v1.4", "AlgoOnto™"]];
     const x0 = 1.0, x1 = 12.3, y = 3.0, step = (x1 - x0) / (R.length - 1);
     s.addShape(pres.shapes.LINE, { x: x0, y, w: x1 - x0, h: 0, line: { color: GOLD, width: 4 } });
     R.forEach(([v, t], i) => {
@@ -672,10 +697,10 @@ $ algo pkg install insurance@^1.0`, 0.6, 1.8, 6.4, 3.45, 15, "cli commands");
       T(s, t, { x: x - 0.5, y: y + 0.4, w: 1.0, h: 0.6, fontSize: 11.5, color: MUTED, align: "center" });
     });
     card(s, 0.6, 4.45, 5.95, 1.7, { fill: GOLDL, id: "latest" });
-    T(s, [{ text: "Latest: 1.3", options: { bold: true, color: NAVY, fontSize: 20, breakLine: true } }, { text: "Ontology as code: certified terms, grounded agents, algo ontology; on 1.2 consensus, red team and notices." }],
+    T(s, [{ text: "Latest: 1.4", options: { bold: true, color: NAVY, fontSize: 20, breakLine: true } }, { text: "AlgoOnto™: ontology as code on SQLite, DuckDB and PostgreSQL, with drift, OWL/JSON-LD export and a graph view." }],
       { x: 0.9, y: 4.45, w: 5.4, h: 1.7, fontSize: 16, valign: "middle" });
-    card(s, 6.78, 4.45, 5.95, 1.7, { fill: NAVY, id: "after 1.3" });
-    T(s, [{ text: "After 1.3", options: { bold: true, color: GOLD, fontSize: 20, breakLine: true } }, { text: "AlgoVM for browser and edge · organisation registries · federated review · long-running agents.", options: { color: WHITE } }],
+    card(s, 6.78, 4.45, 5.95, 1.7, { fill: NAVY, id: "after 1.4" });
+    T(s, [{ text: "After 1.4", options: { bold: true, color: GOLD, fontSize: 20, breakLine: true } }, { text: "AlgoVM for browser and edge · organisation registries · federated review · long-running agents.", options: { color: WHITE } }],
       { x: 7.08, y: 4.45, w: 5.4, h: 1.7, fontSize: 16, valign: "middle" });
   }
   {

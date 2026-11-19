@@ -129,6 +129,31 @@ def api_run(body):
             "audit": str(rt.audit_path) if rt else None}
 
 
+def ontology_page():
+    """AlgoOnto™: every ontology declared in the workspace (and the examples), drawn as a graph."""
+    import algoc
+    import algoonto
+    found, seen = [], set()
+    roots = [WORKSPACE, HERE / "examples"]
+    for root in roots:
+        for p in sorted(root.rglob("*.algo")):
+            if any(part in ("runs", "build", "node_modules", ".git") for part in p.parts) or len(p.parts) - len(root.parts) > 4:
+                continue
+            try:
+                text = p.read_text(encoding="utf-8")
+                if "ontology " not in text:
+                    continue
+                prog, diags = algoc.load_program(text, p.name, p.parent)
+            except Exception:  # a broken file is shown in the editor, not here
+                continue
+            for name, d in prog.ontologies.items():
+                key = (name, d.get("base"), d.get("source"))
+                if key not in seen and not any(o.get("origin") for o in [d]):
+                    seen.add(key)
+                    found.append(algoonto.Ontology.from_dict(d, d.get("base") or p.parent))
+    return algoonto.graph_html(found)
+
+
 def api_files(_body=None):
     files = []
     for base, label in ((WORKSPACE, "workspace"), (HERE / "examples", "example")):
@@ -404,6 +429,8 @@ class Handler(BaseHTTPRequestHandler):
             return self._send(200, (HERE / "algostudio.html").read_bytes(), "text/html")
         if path in ("/prompt", "/prompt.html"):
             return self._send(200, (HERE / "algoprompt.html").read_bytes(), "text/html")
+        if path == "/ontology":                        # v1.4: AlgoOnto™ graph of every ontology in the workspace
+            return self._send(200, ontology_page().encode("utf-8"), "text/html")
         if path == "/dashboard":                       # v0.7: cost and energy dashboard
             import algocli_ext
             return self._send(200, algocli_ext.dashboard_html(api_report()).encode("utf-8"), "text/html")

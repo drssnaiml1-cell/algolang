@@ -568,6 +568,9 @@ def parse_ontology(item, prog, diags):
             if a.count(".") != 1 or b.count(".") != 1:
                 diags.append(Diag("E136", _line(it), f"relation {a} -> {b}: both ends must be table.column"))
             rels.append([a, b])
+    if source is not None and re.search(r"://[^:/@]+:(?!\$\{)[^@]+@", _s(source)):
+        diags.append(Diag("E136", line, f"ontology {oname}: do not write a password in source code; use "
+                                        f"${{PGPASSWORD}} (or another ${{VAR}}) and set it in the environment"))
     prog.ontologies[oname] = dict(name=oname, source=_s(source) if source is not None else None, base=None,
                                   terms=terms, relations=rels, line=line)
 
@@ -577,16 +580,14 @@ def check_ontology_data(o, base_dir, diags, file_label=None):
     o["base"] = str(Path(base_dir).resolve())
     if not o.get("source"):
         return
-    db = Path(o["source"]) if Path(o["source"]).is_absolute() else Path(base_dir) / o["source"]
-    if not db.exists():
-        return                                            # checked again at run time
-    import sqlite3
+    import algoonto
+    src = algoonto.Source.open(o["source"], base_dir)
+    if src.kind == "postgresql" or not src.exists():
+        return                                            # servers and missing files are checked at run time
     try:
-        con = sqlite3.connect(f"file:{db.resolve().as_posix()}?mode=ro", uri=True)
-        schema = {t: {r[1] for r in con.execute(f'PRAGMA table_info("{t}")')}
-                  for (t,) in con.execute("SELECT name FROM sqlite_master WHERE type IN ('table','view')")}
-        con.close()
-    except sqlite3.Error as e:
+        with src.connect():
+            schema = {t: {c[0] for c in src.columns(t)} for t in src.tables()}
+    except (algoonto.OntologyError, *src.errors) as e:
         diags.append(Diag("E136", o["line"], f"ontology {o['name']}: cannot read {o['source']}: {e}", file_label))
         return
     def known(col):
@@ -1659,7 +1660,7 @@ def compile_source(src: str, name: str, base_dir: Path | str | None = None):
     return CodeGen(prog, name).gen(), prog
 
 
-VERSION = "1.3.0"
+VERSION = "1.4.0"
 
 TEMPLATE = '''// {name}.algo — created by `algo new`
 // Run it:  algo run {name}.algo --arg "topic=Your topic here"
@@ -1988,9 +1989,10 @@ def main(argv=None):
                    help="exit 1 when governance is loosened (default), on any change, or never")
     s.add_argument("--json", action="store_true")
     s.add_argument("--markdown", action="store_true", help="a Markdown report for a pull-request comment")
-    s = sub.add_parser("ontology", help="ontology as code: discover, check, certify, ask, validate, terms (v1.3)",
-                       add_help=False)
-    s.add_argument("rest", nargs=argparse.REMAINDER)
+    for nm in ("onto", "ontology"):              # v1.4: AlgoOnto™ (`algo onto`, also `algo ontology`)
+        s = sub.add_parser(nm, help="AlgoOnto™ ontology as code: discover, certify, check, ask, validate, snapshot, "
+                                    "drift, export, graph" if nm == "onto" else "same as `algo onto`", add_help=False)
+        s.add_argument("rest", nargs=argparse.REMAINDER)
     s = sub.add_parser("redteam", help="adversarial testing: personal data, forbidden values, tool injection, "
                                          "denial of wallet (v1.2)")
     s.add_argument("file")
@@ -2083,7 +2085,7 @@ def main(argv=None):
     if a.cmd == "diff":
         import algodiff
         return algodiff.cli(a.old, a.new, fail_on=a.fail_on, as_json=a.json, markdown=a.markdown)
-    if a.cmd == "ontology":
+    if a.cmd in ("onto", "ontology"):
         import algoonto
         return algoonto.cli(a.rest)
     if a.cmd == "redteam":

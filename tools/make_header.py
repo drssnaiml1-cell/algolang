@@ -165,7 +165,7 @@ def main():
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "wordmark.svg").write_text(wordmark(), encoding="utf-8")
     (OUT / "works-with.svg").write_text(works_with(), encoding="utf-8")
-    (OUT / "card-release.svg").write_text(card("Latest release", "AlgoLang 1.3.0", "star"), encoding="utf-8")
+    (OUT / "card-release.svg").write_text(card("Latest release", "AlgoLang 1.4.0", "star"), encoding="utf-8")
     (OUT / "card-verified.svg").write_text(card("Verified in CI", "225 programs on AlgoVM", "check"), encoding="utf-8")
     (OUT / "terminal.svg").write_text(terminal(), encoding="utf-8")
     (OUT / "growth.svg").write_text(growth(), encoding="utf-8")

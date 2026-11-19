@@ -1,6 +1,6 @@
 # AlgoLang roadmap
 
-**Current release: v1.3.0 — ontology as code** · every release planned since v0.1 has shipped · **Next: [after 1.3](#after-13)**
+**Current release: v1.4.0 — AlgoOnto™** · every release planned since v0.1 has shipped · **Next: [after 1.4](#after-14)**
 
 AlgoProfessor AI R&D Solutions, Hyderabad. Designed by Dr. S. Satyanarayana. [www.algoprofessor.com](https://www.algoprofessor.com)
 
@@ -283,7 +283,7 @@ As in the rest of AlgoLang, the guarantees come from the language and runtime, n
 
 ---
 
-## After 1.3
+## After 1.4
 
 Ideas for the next releases, to be planned one at a time as before:
 
@@ -303,6 +303,7 @@ Ideas for the next releases, to be planned one at a time as before:
 | **v1.1** | Accountable decisions (released) | Agent contracts (`ensure`); what-if audits (`algo whatif`); governance diff (`algo diff`) |
 | **v1.2** | Collective and adversarial assurance (released) | Consensus blocks (`consensus K of { … }`); red-team testing (`algo redteam`); decision notices (`algo explain`) |
 | **v1.3** | Ontology as code (released) | `ontology` declarations with certified terms, measures and joins; `grounded in` agents; `algo ontology` discover · certify · check · ask · validate; ontology tools over MCP |
+| **v1.4** | AlgoOnto™ (released) | SQLite, DuckDB and PostgreSQL sources (read-only); `algo onto snapshot` / `drift`; OWL/RDF and JSON-LD export; graph view in the CLI and Studio |
 
 ---
 

@@ -146,7 +146,7 @@ An \code{ensure} that calls an agent, does not check \code{result}, reads a name
 A \code{consensus} block whose quorum is not a true majority of its agents (more than half, at most all), whose agents are not independent or answer different kinds of value (or a list or JSON), or whose \code{within} is not positive, is above 1 for scores, or is given for answers that are not numbers (v1.2).
 
 \errhead{E136}{Ontology error}
-An \code{ontology} term without a \code{table.column} mapping; a \code{measure} that does not aggregate or would modify data; a word (term name or synonym) that names two terms; a column or relation missing from the data source when it is present at compile time; \code{grounded in} an ontology that is not declared; or a high-risk program with an agent grounded in an ontology whose terms are not all certified (v1.3).
+An \code{ontology} term without a \code{table.column} mapping; a \code{measure} that does not aggregate or would modify data; a word (term name or synonym) that names two terms; a column or relation missing from the data source when it is present at compile time; \code{grounded in} an ontology that is not declared; or a high-risk program with an agent grounded in an ontology whose terms are not all certified (v1.3); or a data source that contains a password instead of a \code{\$\{VAR\}} reference (v1.4).
 
 \section{Run-time outcomes}
 

@@ -22,7 +22,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/drssnaiml1-cell/algolang/releases/latest"><img src="docs/images/header/card-release.svg" alt="Latest release: AlgoLang 1.3.0" width="300"></a>
+  <a href="https://github.com/drssnaiml1-cell/algolang/releases/latest"><img src="docs/images/header/card-release.svg" alt="Latest release: AlgoLang 1.4.0" width="300"></a>
   &nbsp;
   <a href="#v10-native-runtime-and-ecosystem"><img src="docs/images/header/card-verified.svg" alt="Verified in CI: 225 programs give identical results on the AlgoVM" width="300"></a>
 </p>
@@ -39,7 +39,7 @@
   <a href="#2-design-principles">How It Works</a> •
   <a href="#6-enterprise-applications">Applications</a> •
   <a href="#8-quantum-applications">Quantum AI</a> •
-  <a href="docs/AlgoLang_Documentation_v1.3.pdf">Documentation</a> •
+  <a href="docs/AlgoLang_Documentation_v1.4.pdf">Documentation</a> •
   <a href="#13-roadmap-from-v01-to-v10-and-beyond">Roadmap</a> •
   <a href="#15-author-and-licence">License</a>
 </p>
@@ -52,7 +52,7 @@
   <a href="https://www.algoprofessor.com"><img src="docs/images/algolang-hero.svg" alt="AlgoLang: an order event from AlgoPulse flows through parallel Quote and Limits agents, a deterministic BREACH guard, and an uncertain RiskGate agent with a human gate; every call is written to a hash-chained audit log" width="100%"></a>
 </p>
 
-**Current version: 1.3.0** (ontology as code: certified terms, grounded agents, `algo ontology`; with v1.2 consensus, red team and decision notices; v1.1 agent contracts, what-if audits and governance diff; v1.0 typed messages, AlgoIR and the AlgoVM, signed packages and Studio single sign-on; v0.7 Interoperability, v0.6 Quantum AI, v0.5 domain applications and v0.4 Trustworthy AI) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md) · [50 Sample Programs (PDF)](docs/AlgoLang_50_Sample_Programs.pdf) · [Language manual (PDF)](docs/AlgoLang_Documentation_v1.3.pdf) · Presentation: [PDF](docs/presentation/AlgoLang_Presentation.pdf) · [PowerPoint](docs/presentation/AlgoLang_Presentation.pptx) · [LaTeX source](docs/presentation/AlgoLang_Presentation.tex)
+**Current version: 1.4.0** (AlgoOnto™: ontology as code on SQLite, DuckDB and PostgreSQL, with drift, OWL/JSON-LD export and a graph view; with v1.2 consensus, red team and decision notices; v1.1 agent contracts, what-if audits and governance diff; v1.0 typed messages, AlgoIR and the AlgoVM, signed packages and Studio single sign-on; v0.7 Interoperability, v0.6 Quantum AI, v0.5 domain applications and v0.4 Trustworthy AI) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md) · [50 Sample Programs (PDF)](docs/AlgoLang_50_Sample_Programs.pdf) · [Language manual (PDF)](docs/AlgoLang_Documentation_v1.4.pdf) · Presentation: [PDF](docs/presentation/AlgoLang_Presentation.pdf) · [PowerPoint](docs/presentation/AlgoLang_Presentation.pptx) · [LaTeX source](docs/presentation/AlgoLang_Presentation.tex)
 
 AlgoLang has **no functions**. Every unit of work is an `agent` with a role, a goal, explicit tools, a model and a policy. A `flow` is the only other construct, and it can do just four things:
 
@@ -102,7 +102,7 @@ flowchart TB
 
 1. [Objective](#1-objective)
 2. [Design principles](#2-design-principles)
-3. [What's new in v1.3: ontology as code](#3-whats-new-in-v13-ontology-as-code)
+3. [What's new in v1.4: AlgoOnto™](#3-whats-new-in-v14-algoonto)
 4. [Get started](#4-get-started)
 5. [Learn by example: 50 sample programs](#5-learn-by-example-50-sample-programs)
 6. [Enterprise applications](#6-enterprise-applications)
@@ -112,7 +112,7 @@ flowchart TB
 10. [Governance and runtime guarantees](#10-governance-and-runtime-guarantees)
 11. [Python SDK](#11-python-sdk)
 12. [For developers](#12-for-developers)
-13. [Roadmap: from v0.1 to v1.3, and beyond](#13-roadmap-from-v01-to-v13-and-beyond)
+13. [Roadmap: from v0.1 to v1.4, and beyond](#13-roadmap-from-v01-to-v14-and-beyond)
 14. [Repository layout](#14-repository-layout)
 15. [Author and licence](#15-author-and-licence)
 
@@ -150,7 +150,32 @@ flowchart TB
 - **People stay in the loop.** A low-confidence call goes to a human review queue instead of going out.
 - **One engine, many doors.** The command line, Studio, Prompt UI, SDK and language server all run the same compiler and runtime.
 
-## 3. What's new in v1.3: ontology as code
+## 3. What's new in v1.4: AlgoOnto™
+
+**AlgoOnto™** is AlgoLang's ontology as code: a governed context layer that tells data agents where data lives, what it means and how to compute it, after the concept of NVIDIA's open-source [Auto Ontology](https://github.com/NVIDIA/auto-ontology). The ontology is source code: compiled, reviewed in pull requests, certified by name, signed inside AlgoIR, and enforced at run time. Version 1.4 gives it its name and four new capabilities.
+
+<p align="center"><img src="docs/images/algoonto-graph.svg" alt="AlgoOnto graph of the Retail ontology: order lines, orders, products and customers with their terms, certified measures and joins" width="100%"></p>
+
+| Capability | Command | What it does |
+|:--|:--|:--|
+| **Three engines** | `algo onto discover duckdb:retail.duckdb` · `postgresql://host/db` | SQLite, DuckDB and PostgreSQL, all opened read-only with a time limit; the same questions give the same answers on each. Passwords never go into source (`${PGPASSWORD}`, E136). |
+| **Drift** | `algo onto snapshot` · `algo onto drift` | Breaking changes (a renamed column, a type change), new category values, measures that moved, uncovered tables, and every certified term that needs a fresh review. Exit 1 on breaking changes, for CI. |
+| **Standards** | `algo onto export --format ttl\|jsonld` | OWL/RDF (Turtle) and JSON-LD: entities as `owl:Class`, terms as properties, joins as `owl:ObjectProperty`, synonyms as `skos:altLabel`, certification in the `algo:` vocabulary. |
+| **Graph view** | `algo onto graph --html` · Studio **◈ AlgoOnto™** | Tables, terms, certified measures (gold) and joins in one picture. |
+
+```text
+$ algo onto drift examples/v13/retail.onto.algo          # after a schema change and a new region
+AlgoOnto™ drift · Retail  since snapshot 2026-11-19T04:42:17
+  breaking  column removed  column products.category no longer exists; new column(s) in products: product_category (renamed?)
+  warning   new values      customers.region has new value(s): Central
+  warning   measure moved   measure NetRevenue: 17,194,259.68 → 25,791,389.52 (+50%)
+  info      new table       new table returns (0 rows) is not in the ontology
+  breaking  review          certification of Category (by finance-data-team) should be reviewed
+```
+
+Try it: [`examples/v14`](examples/v14) (DuckDB and PostgreSQL copies of the retail data) with the ontology in [`examples/v13`](examples/v13).
+
+### v1.3: ontology as code
 
 Data agents fail quietly: a fluent answer computed with the wrong revenue definition or the wrong join. NVIDIA's open-source [Auto Ontology](https://github.com/NVIDIA/auto-ontology) answers this with a *context layer*: discover what the data means, have people certify it, and let agents answer only from certified definitions. AlgoLang 1.3 brings that concept into the language, with one twist: **the ontology is code**. It is compiled, reviewed in pull requests, certified by name in the source, signed inside AlgoIR, and enforced at run time.
 
@@ -829,7 +854,7 @@ flow main(topic: text) {
 | E133 | Package error (v1.0): a `use "pkg:…"` file that is not installed, not in algo.lock, or changed since it was installed |
 | E134 | Contract error (v1.1): an `ensure` that calls an agent, does not check `result`, or reads an unknown name or field |
 | E135 | Consensus error (v1.2): a quorum that is not a true majority, agents that are not independent or answer different kinds of value, or a `within` that does not suit them |
-| E136 | Ontology error (v1.3): a term without a valid column, a measure that does not aggregate or would change data, one word naming two terms, columns or joins missing from the data source, `grounded in` an unknown ontology, or a high-risk program grounded in uncertified terms |
+| E136 | Ontology error (v1.3; v1.4 adds passwords in source): a term without a valid column, a measure that does not aggregate or would change data, one word naming two terms, columns or joins missing from the data source, `grounded in` an unknown ontology, or a high-risk program grounded in uncertified terms |
 
 Errors from imported modules are reported with the file name, and the org config is enforced at compile time: a forbidden attribute or an ungranted tool is an error before anything runs.
 
@@ -918,11 +943,11 @@ pip install -e ".[dev]"
 make check        # ruff + pytest + lint of every .algo file
 ```
 
-## 13. Roadmap: from v0.1 to v1.3, and beyond
+## 13. Roadmap: from v0.1 to v1.4, and beyond
 
 <p align="center"><img src="docs/images/sections/13-roadmap.svg" alt="Roadmap timeline" width="100%"></p>
 
-**AlgoLang 1.3 is released** (see [§3](#3-whats-new-in-v13-ontology-as-code)): every release planned since v0.1 has shipped, one at a time, each with tests, CI, documentation and figures. What comes next is in **[ROADMAP.md](ROADMAP.md#after-13)**: an AlgoVM for the browser and edge devices, organisation-wide registries with publisher certificates, and federated review across teams.
+**AlgoLang 1.4 is released** (see [§3](#3-whats-new-in-v14-algoonto)): every release planned since v0.1 has shipped, one at a time, each with tests, CI, documentation and figures. What comes next is in **[ROADMAP.md](ROADMAP.md#after-14)**: an AlgoVM for the browser and edge devices, organisation-wide registries with publisher certificates, and federated review across teams.
 
 | Version | Theme | Status |
 |---|---|---|
@@ -941,7 +966,8 @@ make check        # ruff + pytest + lint of every .algo file
 | v1.0 | Native runtime and ecosystem: typed agent-to-agent messages, AlgoIR and the AlgoVM, signed packages and a public registry, Studio single sign-on and roles | Released |
 | v1.1 | Accountable decisions: agent contracts (`ensure`), what-if audits (`algo whatif`), governance diff (`algo diff`) | Released |
 | v1.2 | Collective and adversarial assurance: consensus blocks, red-team testing (`algo redteam`), decision notices (`algo explain`) | Released |
-| **v1.3** | Ontology as code: certified terms, measures and joins; `grounded in` agents; `algo ontology` discover · certify · ask · validate; MCP tools | **Current** |
+| v1.3 | Ontology as code: certified terms, measures and joins; `grounded in` agents; `algo ontology` discover · certify · ask · validate; MCP tools | Released |
+| **v1.4** | AlgoOnto™: SQLite, DuckDB and PostgreSQL; drift detection; OWL/RDF and JSON-LD export; graph view in the CLI and Studio | **Current** |
 
 ## 14. Repository layout
 
@@ -977,7 +1003,7 @@ algowhatif.py                 what-if audits: replay a decision with inputs chan
 algodiff.py                   governance diff between program versions (algo diff)          — v1.1
 algoredteam.py                red-team testing: attacks a program offline (algo redteam)     — v1.2
 algoexplain.py                decision notices for the people affected (algo explain)        — v1.2
-algoonto.py                   ontology as code: discover, certify, ask, validate (algo ontology) — v1.3
+algoonto.py                   AlgoOnto™ ontology as code: discover, certify, ask, validate, drift, export, graph (algo onto) — v1.3, v1.4
 algomcp.py                    MCP client and tool bindings (algo mcp)                         — v0.3
 algolsp.py                    language server (algo lsp)                                      — v0.3
 algotrust.py                  privacy, untrusted-tool fencing, Ed25519 signing, retention, perturbations — v0.4

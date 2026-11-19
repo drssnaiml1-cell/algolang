@@ -7,6 +7,18 @@ All notable changes to AlgoLang are documented here. The format follows [Keep a 
 ### Documentation
 - **Language manual v1.0** (`docs/AlgoLang_Documentation_v1.0.pdf`, 108 pages): new chapters for v0.5 domain applications, v0.6 Quantum AI, v0.7 Interoperability and v1.0 (typed messages, AlgoIR and the AlgoVM, packages, Studio sign-in), and error codes E131–E133. It replaces the v0.4 manual.
 
+## [1.4.0] — 2026-11-19 · AlgoOnto™
+
+Ontology as code, introduced in 1.3 after the concept of NVIDIA's open-source [Auto Ontology](https://github.com/NVIDIA/auto-ontology), becomes **AlgoOnto™**: three database engines, drift detection, standard exports and a graph view. `algo onto …` is the new command (`algo ontology …` still works).
+
+### Added
+- **Three engines.** An ontology's source can be a SQLite file (`"retail.db"`), a DuckDB file (`"duckdb:retail.duckdb"` or `*.duckdb`) or PostgreSQL (`"postgresql://host/db"`, credentials from the environment or `${VAR}` references). Discovery, checking, planning, validation and answering go through one read-only source layer: SQLite `mode=ro` with a progress-handler time limit, DuckDB `read_only` with an interrupt timer, PostgreSQL a read-only transaction with `statement_timeout`, UTF-8 on any server. Year filters use each engine's own date function. The same questions give the same answers on all three (tested in CI against a PostgreSQL 16 service). Optional extra: `pip install "algolang[data]"`.
+- **No passwords in code.** `algo onto discover postgresql://user:pass@…` writes `${PGPASSWORD}` instead of the password, and the compiler rejects an ontology source that contains one (E136).
+- **Drift** (`algo onto snapshot` / `algo onto drift [--tolerance 0.25] [--strict] [--json]`): a snapshot records every table's columns, types and rows, the values of categorical columns and every measure's value; drift reports **breaking** changes (a mapped table or column removed, with a "renamed?" hint, a type change, a measure that no longer runs), **warnings** (a category gained or lost values, rows or a measure moved by more than the tolerance), **info** (tables and columns not covered yet) and a **review** finding for every certified term touched. Exit 1 on breaking changes (on warnings too with `--strict`).
+- **Export** (`algo onto export --format ttl|owl|jsonld`): OWL/RDF in Turtle and JSON-LD describing the same graph. Entity terms are `owl:Class`, other terms `owl:DatatypeProperty` (domain: their table's entity), joins `owl:ObjectProperty`; synonyms `skos:altLabel`, descriptions `skos:definition`; columns, measures, joins and certification in the `algo:` vocabulary. Checked with rdflib in the tests.
+- **Graph view** (`algo onto graph --html`, and **◈ AlgoOnto™** in Studio at `/ontology`): one card per table with its entity and terms, certified measures in gold, ✓ certified or ○ proposed, laid out along the declared joins.
+- **Branding:** AlgoOnto™ in the CLI, MCP tool titles (“AlgoOnto™ · Retail · ask question”), Studio and the documentation; `examples/v14` (DuckDB and PostgreSQL copies of the retail data), `tests/test_v14.py`, CI job “AlgoOnto™ · SQLite, DuckDB and PostgreSQL”.
+
 ## [1.3.0] — 2026-11-18 · Ontology as code
 
 A governed context layer for data agents, after the concept of NVIDIA's open-source [Auto Ontology](https://github.com/NVIDIA/auto-ontology) (discover → certify → answer). AlgoLang's own twist: the ontology is source code, checked by the compiler, reviewed in pull requests and certified by name in the source. Independent implementation; no Auto Ontology code is used.

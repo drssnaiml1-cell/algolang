@@ -1,4 +1,4 @@
-% AlgoLang 1.3 — presentation (Beamer, XeLaTeX). Build: latexmk -xelatex AlgoLang_Presentation.tex
+% AlgoLang 1.4 — presentation (Beamer, XeLaTeX). Build: latexmk -xelatex AlgoLang_Presentation.tex
 % By Dr. S. Satyanarayana, Ph.D., PDF (AI) · AlgoProfessor AI R&D Solutions · github.com/drssnaiml1-cell/algolang
 \documentclass[aspectratio=169,10pt]{beamer}
 \usepackage{fontspec}
@@ -48,7 +48,7 @@
 }
 \setbeamertemplate{footline}{%
   \leavevmode\hbox{\begin{beamercolorbox}[wd=\paperwidth,ht=2.4ex,dp=1.1ex,leftskip=1.2em,rightskip=1.2em]{normal text}%
-    \color{muted}\tiny AlgoLang 1.3 \enspace·\enspace Dr.\ S.\ Satyanarayana, Ph.D., PDF (AI) \enspace·\enspace
+    \color{muted}\tiny AlgoLang 1.4 \enspace·\enspace Dr.\ S.\ Satyanarayana, Ph.D., PDF (AI) \enspace·\enspace
     AlgoProfessor AI R\&D Solutions\hfill github.com/drssnaiml1-cell/algolang\enspace\textcolor{gold}{\insertframenumber}
   \end{beamercolorbox}}}
 
@@ -82,7 +82,7 @@
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
 
-\title{AlgoLang 1.3}
+\title{AlgoLang 1.4}
 \subtitle{The agent-native programming language for trustworthy AI}
 \author{Dr.\ S.\ Satyanarayana, Ph.D., PDF (AI)}
 \date{November 2026}
@@ -104,7 +104,7 @@
   \node[anchor=north west,text=gold,font=\small\bfseries] at ([xshift=1.2cm,yshift=-1.2cm]current page.north west)
     {ALGOPROFESSOR AI R\&D SOLUTIONS · HYDERABAD};
   \node[anchor=west,text=white,font=\fontsize{44}{48}\selectfont\bfseries] at ([xshift=1.2cm,yshift=1.55cm]current page.west)
-    {Algo\textcolor{gold}{Lang} 1.3};
+    {Algo\textcolor{gold}{Lang} 1.4};
   \node[anchor=west,text=white,font=\Large,text width=10cm] at ([xshift=1.2cm,yshift=0.05cm]current page.west)
     {The agent-native programming language\\ for \textcolor{gold}{trustworthy AI}};
   \node[anchor=south west,text=white,font=\large\bfseries] at ([xshift=1.2cm,yshift=2.0cm]current page.south west)
@@ -357,6 +357,31 @@ flow main(note: text) {
 \end{columns}
 \end{frame}
 
+% ═════════════════════════════ New in 1.4 ═════════════════════════════
+\begin{frame}{New in 1.4: AlgoOnto\texttrademark}{Ontology as code on three engines, watched for drift, shared as standards, drawn as a graph}
+\begin{columns}[T]
+\column{0.24\textwidth}\goldbox{2.6cm}{\small\textbf{\color{navy}Three engines}\\[2pt]\scriptsize SQLite, DuckDB, PostgreSQL; read-only with a time limit; same answers; no passwords in code.}
+\column{0.24\textwidth}\navybox{2.6cm}{\small\textbf{Drift}\\[2pt]\scriptsize \texttt{\textcolor{gold}{algo onto drift}}: renamed columns, new categories, moved measures, certifications to renew.}
+\column{0.24\textwidth}\goldbox{2.6cm}{\small\textbf{\color{navy}Standards}\\[2pt]\scriptsize OWL/RDF and JSON-LD: classes, properties, joins, SKOS labels, certification.}
+\column{0.24\textwidth}\goldbox{2.6cm}{\small\textbf{\color{navy}Graph view}\\[2pt]\scriptsize \texttt{algo onto graph} and Studio: tables, terms, certified measures, joins.}
+\end{columns}
+\vspace{6pt}
+\begin{columns}[T]
+\column{0.58\textwidth}
+\includegraphics[width=\linewidth]{../images/algoonto-graph.pdf}
+\column{0.38\textwidth}
+\begin{tikzpicture}
+\node[fill=termbg,rounded corners=4pt,inner sep=6pt,text width=4.5cm,font=\ttfamily\tiny,text=termfg,align=left]{
+\textcolor{gold}{\$} algo onto drift retail.onto.algo\\
+\textcolor{red!60!white}{breaking} products.category removed\\
+\quad(renamed? product\_category)\\
+\textcolor{gold}{warning}\ \ region: new value Central\\
+\textcolor{gold}{warning}\ \ NetRevenue moved +50\%\\
+\textcolor{red!60!white}{review}\ \ \ renew Category certification};
+\end{tikzpicture}
+\end{columns}
+\end{frame}
+
 % ═════════════════════════════ New in 1.3 ═════════════════════════════
 \begin{frame}[fragile]{New in 1.3: ontology as code}{A certified context layer for data agents (concept: NVIDIA Auto Ontology), compiled and enforced}
 \begin{columns}[T]
@@ -539,7 +564,7 @@ Fairness and robustness evals & \yes & \partly & \partly & \no & \partly & \part
 Typed agent messages & \yes & \partly & \partly & \partly & \partly & \partly & \partly & \partly\\
 \rowcolor{goldlight}Quantum tools, verified & \yes & \partly & \partly & \partly & \partly & \partly & \no & \no\\
 Quorum consensus and built-in red team & \yes & \partly & \partly & \partly & \partly & \partly & \partly & \partly\\
-\rowcolor{goldlight}Certified ontology for data agents & \yes & \partly & \partly & \partly & \partly & \partly & \partly & \partly\\
+\rowcolor{goldlight}AlgoOnto\texttrademark{} certified ontology (3 engines) & \yes & \partly & \partly & \partly & \partly & \partly & \partly & \partly\\
 General-purpose computing & \no & \yes & \yes & \yes & \yes & \yes & \partly & \partly\\
 \rowcolor{goldlight}Mature ecosystem and community & \no & \yes & \yes & \yes & \yes & \yes & \yes & \yes\\
 Raw performance & \partly & \partly & \yes & \yes & \partly & \yes & \partly & \partly\\
@@ -673,20 +698,20 @@ agent Triage(claim: text) -> uncertain<score> {
 % ═════════════════════════════ 21 · Roadmap ═════════════════════════════
 \begin{frame}{Roadmap delivered}{Every planned release shipped, one at a time}
 \centering
-\begin{tikzpicture}[x=1.08cm]
-\draw[gold,line width=2.5pt] (0,0) -- (11,0);
+\begin{tikzpicture}[x=0.99cm]
+\draw[gold,line width=2.5pt] (0,0) -- (12,0);
 \foreach \x/\v/\t in {0/v0.1/language,1/v0.2/enterprise,2/v0.3/uncertainty,3/v0.3.4/Algo\-Pulse,4/v0.4/trustworthy AI,
-  5/v0.5/domain apps,6/v0.6/quantum AI,7/v0.7/interop,8/v1.0/platform,9/v1.1/accountable,10/v1.2/assurance,11/v1.3/ontology} {
+  5/v0.5/domain apps,6/v0.6/quantum AI,7/v0.7/interop,8/v1.0/platform,9/v1.1/accountable,10/v1.2/assurance,11/v1.3/ontology,12/v1.4/AlgoOnto} {
   \fill[navy] (\x,0) circle (0.16); \fill[gold] (\x,0) circle (0.07);
   \node[above=6pt,font=\small\bfseries,text=navy] at (\x,0) {\v};
   \node[below=6pt,font=\tiny,text=muted,text width=1.0cm,align=center] at (\x,0) {\t};}
-\fill[gold] (11,0) circle (0.24); \fill[navy] (11,0) circle (0.1);
+\fill[gold] (12,0) circle (0.24); \fill[navy] (12,0) circle (0.1);
 \end{tikzpicture}
 
 \vspace{14pt}
 \begin{columns}[T]
-\column{0.48\textwidth}\goldbox{6cm}{\small\textbf{\color{navy}Latest: 1.3} ontology as code: certified terms, grounded agents, \texttt{algo ontology}; on 1.2 consensus and red team.}
-\column{0.48\textwidth}\navybox{6cm}{\small\textbf{\textcolor{gold}{After 1.3}} AlgoVM for browser and edge · organisation registries · federated review · long-running agents.}
+\column{0.48\textwidth}\goldbox{6cm}{\small\textbf{\color{navy}Latest: 1.4} AlgoOnto\texttrademark: ontology as code on SQLite, DuckDB and PostgreSQL, drift, OWL/JSON-LD, graph view.}
+\column{0.48\textwidth}\navybox{6cm}{\small\textbf{\textcolor{gold}{After 1.4}} AlgoVM for browser and edge · organisation registries · federated review · long-running agents.}
 \end{columns}
 \end{frame}
 

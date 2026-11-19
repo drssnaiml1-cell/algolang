@@ -61,6 +61,27 @@ jobs:
       - run: pip install -e ".[dev]"
       - run: python -m pytest
 
+  algoonto:
+    name: AlgoOnto™ · SQLite, DuckDB and PostgreSQL
+    needs: lint
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env: {POSTGRES_PASSWORD: algoonto}
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      ALGO_TEST_PG_DSN: postgresql://postgres:algoonto@localhost:5432/postgres
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with: {python-version: "3.12", cache: pip}
+      - run: pip install -e ".[dev]"
+      - name: Ontology as code on three engines (discover, ask, validate, drift, export, graph)
+        run: python -m pytest tests/test_v13.py tests/test_v14.py -v
+
   pulse:
     name: Real-time streams · AlgoPulse server
     needs: lint

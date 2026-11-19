@@ -98,8 +98,8 @@ class FlowServer:
                         ("validate_sql", "sql", "Check SQL against certified measures and declared joins.")):
                     name = _tool_name(oname.lower(), op)
                     self.tools[name] = dict(kind="ontology", onto=onto, onto_name=oname, op=op, spec=dict(
-                        name=name, title=f"{oname} ontology · {op.replace('_', ' ')}",
-                        description=f"AlgoLang ontology {oname} ({onto.source}): {desc}",
+                        name=name, title=f"AlgoOnto™ · {oname} · {op.replace('_', ' ')}",
+                        description=f"AlgoOnto™ ontology {oname} ({re.sub(r'//[^@/]*@', '//', onto.source or '')}): {desc}",
                         inputSchema={"type": "object", "properties": {arg: {"type": "string"}}, "required": [arg]},
                         annotations={"readOnlyHint": True}))
             if agents:
