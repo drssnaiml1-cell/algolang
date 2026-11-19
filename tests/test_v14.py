@@ -83,7 +83,7 @@ def pg_dsn():
     if not base or importlib.util.find_spec("psycopg") is None:
         pytest.skip("set ALGO_TEST_PG_DSN (and install psycopg) to test PostgreSQL sources")
     import psycopg
-    db = "algoonto_" + uuid.uuid4().hex[:8]
+    db = "ontotest_" + uuid.uuid4().hex[:8]
     with psycopg.connect(base, autocommit=True) as con:
         con.execute(f"CREATE DATABASE {db} ENCODING 'UTF8' TEMPLATE template0")
     dsn = base.rsplit("/", 1)[0] + "/" + db
@@ -97,8 +97,10 @@ def test_postgresql_matches_sqlite(shop, tmp_path, pg_dsn):
     _f, sq = discovered(str(shop / "retail.db"), tmp_path, "s.algo")
     f, pg = discovered(pg_dsn, tmp_path, "p.algo")
     src_line = f.read_text(encoding="utf-8")
-    if ":" in pg_dsn.split("//")[1].split("@")[0]:                     # a password in the DSN is never written
-        assert "${PGPASSWORD}" in src_line and pg_dsn.split("//")[1].split("@")[0].split(":")[1] not in src_line
+    userinfo = pg_dsn.split("//")[1].split("@")[0]
+    if ":" in userinfo:                                                # a password in the DSN is never written
+        user, password = userinfo.split(":", 1)
+        assert f"//{user}:${{PGPASSWORD}}@" in src_line and f":{password}@" not in src_line
     assert set(sq.terms) == set(pg.terms)
     assert answers(sq) == answers(pg)
 
