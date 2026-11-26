@@ -81,6 +81,12 @@ jobs:
       - run: pip install -e ".[dev]"
       - name: Ontology as code on three engines (discover, ask, validate, drift, export, graph)
         run: python -m pytest tests/test_v13.py tests/test_v14.py -v
+      - name: AlgoOnto™ examples (DuckDB warehouse analyst, drift baseline, drift demo)
+        run: |
+          python examples/v14/make_warehouses.py --duckdb examples/v14/retail.duckdb
+          python algoc.py eval examples/v14/warehouse_analyst.algo
+          python algoc.py onto drift examples/v13/retail.onto.algo
+          python examples/v14/drift_demo.py && exit 1 || test $? -eq 1
 
   pulse:
     name: Real-time streams · AlgoPulse server

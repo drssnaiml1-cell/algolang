@@ -1,0 +1,97 @@
+// AlgoOnto™: discovered by `algo onto discover` from postgresql://localhost:5432/retail. Review every term, then certify it:
+//   algo onto certify <this file> <Term> --by <reviewer>
+
+ontology RetailPostgres from "postgresql://analyst:${PGPASSWORD}@localhost:5432/retail" {
+    term Customer "A customer (customers, 120 rows)" {   // entity · 120 rows
+        synonyms "client", "buyer", "account"
+        column customers.id
+        measure "COUNT(DISTINCT customers.id)"
+        certified "finance-data-team" on "2026-11-26"
+    }
+    term CustomerName "Name of a customer" {   // CHARACTER VARYING · 120 distinct · e.g. Anil Enterprises 40
+        synonyms "title"
+        column customers.name
+        certified "finance-data-team" on "2026-11-26"
+    }
+    term Region "Region of a customer" {   // CHARACTER VARYING · 4 distinct · e.g. East
+        synonyms "area", "zone", "territory"
+        column customers.region
+        certified "finance-data-team" on "2026-11-26"
+    }
+    term Segment "Segment of a customer" {   // CHARACTER VARYING · 3 distinct · e.g. Online
+        column customers.segment
+        certified "finance-data-team" on "2026-11-26"
+    }
+    term OrderLine "An order line (order_lines, 3,740 rows)" {   // entity · 3,740 rows
+        column order_lines.id
+        measure "COUNT(DISTINCT order_lines.id)"
+        certified "finance-data-team" on "2026-11-26"
+    }
+    term Quantity "Quantity of an order line" {   // INTEGER · 1 to 6
+        synonyms "units", "qty", "volume"
+        column order_lines.quantity
+        measure "SUM(order_lines.quantity)"
+        certified "finance-data-team" on "2026-11-26"
+    }
+    term NetRevenue "Net revenue: amount of an order line (named in query history)" {   // DOUBLE PRECISION · 37.28 to 22469.64 · named in query history
+        synonyms "sales", "turnover", "income", "value"
+        column order_lines.amount
+        measure "SUM(order_lines.amount)"
+        certified "finance-data-team" on "2026-11-26"
+    }
+    term Discount "Discount of an order line" {   // DOUBLE PRECISION · 0.0 to 0.1
+        synonyms "rebate"
+        column order_lines.discount
+        measure "AVG(order_lines.discount)"
+        certified "finance-data-team" on "2026-11-26"
+    }
+    term Order "An order (orders, 1,500 rows)" {   // entity · 1,500 rows
+        synonyms "purchase", "transaction"
+        column orders.id
+        measure "COUNT(DISTINCT orders.id)"
+        certified "finance-data-team" on "2026-11-26"
+    }
+    term OrderDate "Order date of an order" {   // DATE · 645 distinct · e.g. 2024-01-01
+        synonyms "day", "when"
+        column orders.order_date
+        certified "finance-data-team" on "2026-11-26"
+    }
+    term Channel "Channel of an order" {   // CHARACTER VARYING · 3 distinct · e.g. Online
+        synonyms "route", "medium"
+        column orders.channel
+        certified "finance-data-team" on "2026-11-26"
+    }
+    term Product "A product (products, 24 rows)" {   // entity · 24 rows
+        synonyms "item", "sku", "article"
+        column products.id
+        measure "COUNT(DISTINCT products.id)"
+        certified "finance-data-team" on "2026-11-26"
+    }
+    term ProductName "Name of a product" {   // CHARACTER VARYING · 24 distinct · e.g. Apparel item 1
+        column products.name
+        certified "finance-data-team" on "2026-11-26"
+    }
+    term Category "Category of a product" {   // CHARACTER VARYING · 4 distinct · e.g. Apparel
+        synonyms "group", "type"
+        column products.category
+        certified "finance-data-team" on "2026-11-26"
+    }
+    term UnitPrice "Unit price of a product" {   // DOUBLE PRECISION · 41.42 to 3744.94
+        synonyms "rate"
+        column products.unit_price
+        measure "AVG(products.unit_price)"
+        certified "finance-data-team" on "2026-11-26"
+    }
+    term AverageLineValue "Average line value (from query history)" {   // from query history
+        column order_lines.amount
+        measure "AVG(order_lines.amount)"
+        certified "finance-data-team" on "2026-11-26"
+    }
+    term DiscountGiven "Discount given (from query history)" {   // from query history
+        column order_lines.amount, order_lines.quantity, products.unit_price
+        measure "SUM(order_lines.quantity * products.unit_price) - SUM(order_lines.amount)"
+    }
+    relation orders.customer_id -> customers.id   // declared foreign key
+    relation order_lines.order_id -> orders.id   // inferred: every order_lines.order_id value is a orders.id
+    relation order_lines.product_id -> products.id   // inferred: every order_lines.product_id value is a products.id
+}

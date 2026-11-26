@@ -40,3 +40,7 @@ node_modules/
 # AlgoPulse event logs (algo pulse / algo stream --pulse)
 pulse/
 .algo-keys/
+
+# AlgoOnto™ example warehouses are generated (python examples/v14/make_warehouses.py)
+examples/v14/*.duckdb
+examples/v14/*.duckdb.wal

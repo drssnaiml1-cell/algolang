@@ -1,0 +1,101 @@
+{
+ "algoonto": 1,
+ "ontology": "Retail",
+ "source_kind": "sqlite",
+ "taken": "2026-11-26T10:04:00",
+ "tables": {
+  "customers": {
+   "rows": 120,
+   "columns": {
+    "id": "INTEGER",
+    "name": "TEXT",
+    "region": "TEXT",
+    "segment": "TEXT"
+   }
+  },
+  "order_lines": {
+   "rows": 3740,
+   "columns": {
+    "id": "INTEGER",
+    "order_id": "INTEGER",
+    "product_id": "INTEGER",
+    "quantity": "INTEGER",
+    "amount": "REAL",
+    "discount": "REAL"
+   }
+  },
+  "orders": {
+   "rows": 1500,
+   "columns": {
+    "id": "INTEGER",
+    "customer_id": "INTEGER",
+    "order_date": "TEXT",
+    "channel": "TEXT"
+   }
+  },
+  "products": {
+   "rows": 24,
+   "columns": {
+    "id": "INTEGER",
+    "name": "TEXT",
+    "category": "TEXT",
+    "unit_price": "REAL"
+   }
+  }
+ },
+ "values": {
+  "customers.region": [
+   "East",
+   "North",
+   "South",
+   "West"
+  ],
+  "customers.segment": [
+   "Online",
+   "Retail",
+   "Wholesale"
+  ],
+  "orders.channel": [
+   "Online",
+   "Partner",
+   "Store"
+  ],
+  "products.category": [
+   "Apparel",
+   "Electronics",
+   "Grocery",
+   "Home"
+  ]
+ },
+ "measures": {
+  "Customer": 120.0,
+  "OrderLine": 3740.0,
+  "Quantity": 13011.0,
+  "NetRevenue": 17194259.68,
+  "Discount": 0.029545454545454545,
+  "Order": 1500.0,
+  "Product": 24.0,
+  "UnitPrice": 1373.5458333333333,
+  "AverageLineValue": 4597.395636363636,
+  "DiscountGiven": 525583.1999999993
+ },
+ "certified": {
+  "Customer": "finance-data-team",
+  "CustomerName": "finance-data-team",
+  "Region": "finance-data-team",
+  "Segment": "finance-data-team",
+  "OrderLine": "finance-data-team",
+  "Quantity": "finance-data-team",
+  "NetRevenue": "finance-data-team",
+  "Discount": "finance-data-team",
+  "Order": "finance-data-team",
+  "OrderDate": "finance-data-team",
+  "Channel": "finance-data-team",
+  "Product": "finance-data-team",
+  "ProductName": "finance-data-team",
+  "Category": "finance-data-team",
+  "UnitPrice": "finance-data-team",
+  "AverageLineValue": "finance-data-team",
+  "DiscountGiven": null
+ }
+}

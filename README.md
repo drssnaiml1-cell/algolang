@@ -22,9 +22,9 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/drssnaiml1-cell/algolang/releases/latest"><img src="docs/images/header/card-release.svg" alt="Latest release: AlgoLang 1.4.0" width="300"></a>
+  <a href="https://github.com/drssnaiml1-cell/algolang/releases/latest"><img src="docs/images/header/card-release.svg" alt="Latest release: AlgoLang 1.4.1" width="300"></a>
   &nbsp;
-  <a href="#v10-native-runtime-and-ecosystem"><img src="docs/images/header/card-verified.svg" alt="Verified in CI: 225 programs give identical results on the AlgoVM" width="300"></a>
+  <a href="#v10-native-runtime-and-ecosystem"><img src="docs/images/header/card-verified.svg" alt="Verified in CI: 226 programs give identical results on the AlgoVM" width="300"></a>
 </p>
 
 <table>
@@ -53,7 +53,7 @@
   <a href="https://www.algoprofessor.com"><img src="docs/images/algolang-hero.svg" alt="AlgoLang: an order event from AlgoPulse flows through parallel Quote and Limits agents, a deterministic BREACH guard, and an uncertain RiskGate agent with a human gate; every call is written to a hash-chained audit log" width="100%"></a>
 </p>
 
-**Current version: 1.4.0** (AlgoOnto™: ontology as code on SQLite, DuckDB and PostgreSQL, with drift, OWL/JSON-LD export and a graph view; with v1.2 consensus, red team and decision notices; v1.1 agent contracts, what-if audits and governance diff; v1.0 typed messages, AlgoIR and the AlgoVM, signed packages and Studio single sign-on; v0.7 Interoperability, v0.6 Quantum AI, v0.5 domain applications and v0.4 Trustworthy AI) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md) · [50 Sample Programs (PDF)](docs/AlgoLang_50_Sample_Programs.pdf) · [Language manual (PDF)](docs/AlgoLang_Documentation_v1.4.pdf) · Presentation: [PDF](docs/presentation/AlgoLang_Presentation.pdf) · [PowerPoint](docs/presentation/AlgoLang_Presentation.pptx) · [LaTeX source](docs/presentation/AlgoLang_Presentation.tex)
+**Current version: 1.4.1** (AlgoOnto™: ontology as code on SQLite, DuckDB and PostgreSQL, with drift, OWL/JSON-LD export and a graph view; with v1.2 consensus, red team and decision notices; v1.1 agent contracts, what-if audits and governance diff; v1.0 typed messages, AlgoIR and the AlgoVM, signed packages and Studio single sign-on; v0.7 Interoperability, v0.6 Quantum AI, v0.5 domain applications and v0.4 Trustworthy AI) · [Changelog](CHANGELOG.md) · [Roadmap](ROADMAP.md) · [50 Sample Programs (PDF)](docs/AlgoLang_50_Sample_Programs.pdf) · [Language manual (PDF)](docs/AlgoLang_Documentation_v1.4.pdf) · Presentation: [PDF](docs/presentation/AlgoLang_Presentation.pdf) · [PowerPoint](docs/presentation/AlgoLang_Presentation.pptx) · [LaTeX source](docs/presentation/AlgoLang_Presentation.tex)
 
 AlgoLang has **no functions**. Every unit of work is an `agent` with a role, a goal, explicit tools, a model and a policy. A `flow` is the only other construct, and it can do just four things:
 
@@ -248,7 +248,7 @@ AlgoOnto™ drift · Retail  since snapshot 2026-11-19T04:42:17
   breaking  review          certification of Category (by finance-data-team) should be reviewed
 ```
 
-Try it: [`examples/v14`](examples/v14) (DuckDB and PostgreSQL copies of the retail data) with the ontology in [`examples/v13`](examples/v13).
+Try it: [`examples/v14`](examples/v14): ontologies discovered from DuckDB and PostgreSQL, a grounded warehouse analyst with evals, a drift demo, and the exports. Start with `python examples/v14/make_warehouses.py --duckdb examples/v14/retail.duckdb`.
 
 ### v1.3: ontology as code
 
@@ -1042,7 +1042,7 @@ make check        # ruff + pytest + lint of every .algo file
 | v1.1 | Accountable decisions: agent contracts (`ensure`), what-if audits (`algo whatif`), governance diff (`algo diff`) | Released |
 | v1.2 | Collective and adversarial assurance: consensus blocks, red-team testing (`algo redteam`), decision notices (`algo explain`) | Released |
 | v1.3 | Ontology as code: certified terms, measures and joins; `grounded in` agents; `algo ontology` discover · certify · ask · validate; MCP tools | Released |
-| **v1.4** | AlgoOnto™: SQLite, DuckDB and PostgreSQL; drift detection; OWL/RDF and JSON-LD export; graph view in the CLI and Studio | **Current** |
+| **v1.4** | AlgoOnto™: SQLite, DuckDB and PostgreSQL; drift detection; OWL/RDF and JSON-LD export; graph view in the CLI and Studio · [examples](examples/v14) (1.4.1) | **Current · 1.4.1** |
 
 ## 14. Repository layout
 

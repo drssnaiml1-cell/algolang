@@ -1,0 +1,41 @@
+// AlgoLang v1.4 · AlgoOnto™: a data agent grounded in a certified ontology on a DuckDB warehouse.
+//   python examples/v14/make_warehouses.py --duckdb examples/v14/retail.duckdb   (once)
+//   algo run examples/v14/warehouse_analyst.algo --arg "question=net revenue by region in 2025"
+risk limited "Answering managers' sales questions from the data warehouse"
+disclose "Figures come from an AI agent that uses the company's certified data definitions."
+
+use "retail_duckdb.onto.algo"
+
+agent WarehouseAnalyst(question: text) -> text {
+    role "Data warehouse analyst"
+    goal "Answer from the sales data: {question}"
+    grounded in RetailWarehouse          // certified definitions only; SQL and lineage in the audit log
+    policy { budget tokens 3000 }
+}
+
+agent Narrator(question: text, figures: text) -> text {
+    role "Report writer"
+    goal "Write a two-sentence summary of {figures} for a manager who asked: {question}"
+    policy { budget tokens 1500 }
+}
+
+flow main(question: text) {
+    figures = WarehouseAnalyst(question)
+    if figures contains "UNANSWERABLE" or figures contains "NOT ANSWERED" {
+        emit "This question cannot be answered from the certified data definitions.", figures
+    } else {
+        emit Narrator(question, figures), figures
+    }
+}
+
+eval warehouse_answers on main {
+    case "revenue by region" (question = "net revenue by region in 2025") {
+        expect status ok
+        expect called WarehouseAnalyst
+        expect called Narrator
+        expect tool ontology.ask
+    }
+    case "outside the data" (question = "headcount by department") {
+        expect output contains "cannot be answered"
+    }
+}

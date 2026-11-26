@@ -1,0 +1,257 @@
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix algo: <https://github.com/drssnaiml1-cell/algolang/ns/onto#> .
+# AlgoOnto™ export of ontology Retail (AlgoLang 1.4.1)
+
+<urn:algolang:onto:Retail>
+    a owl:Ontology ;
+    rdfs:label "Retail (AlgoOnto™)" ;
+    dcterms:source "retail.db" .
+
+<urn:algolang:onto:Retail#Customer>
+    a owl:Class ;
+    rdfs:label "Customer" ;
+    rdfs:isDefinedBy <urn:algolang:onto:Retail> ;
+    skos:definition "A customer (customers, 120 rows)" ;
+    skos:altLabel "client" ;
+    skos:altLabel "buyer" ;
+    skos:altLabel "account" ;
+    algo:column "customers.id" ;
+    algo:measure "COUNT(DISTINCT customers.id)" ;
+    algo:status "certified" ;
+    algo:certifiedBy "finance-data-team" ;
+    algo:certifiedOn "2026-11-18"^^<http://www.w3.org/2001/XMLSchema#date> .
+
+<urn:algolang:onto:Retail#CustomerName>
+    a owl:DatatypeProperty ;
+    rdfs:label "CustomerName" ;
+    rdfs:isDefinedBy <urn:algolang:onto:Retail> ;
+    skos:definition "Name of a customer" ;
+    skos:altLabel "title" ;
+    algo:column "customers.name" ;
+    rdfs:domain <urn:algolang:onto:Retail#Customer> ;
+    algo:status "certified" ;
+    algo:certifiedBy "finance-data-team" ;
+    algo:certifiedOn "2026-11-18"^^<http://www.w3.org/2001/XMLSchema#date> .
+
+<urn:algolang:onto:Retail#Region>
+    a owl:DatatypeProperty ;
+    rdfs:label "Region" ;
+    rdfs:isDefinedBy <urn:algolang:onto:Retail> ;
+    skos:definition "Region of a customer" ;
+    skos:altLabel "area" ;
+    skos:altLabel "zone" ;
+    skos:altLabel "territory" ;
+    algo:column "customers.region" ;
+    rdfs:domain <urn:algolang:onto:Retail#Customer> ;
+    algo:status "certified" ;
+    algo:certifiedBy "finance-data-team" ;
+    algo:certifiedOn "2026-11-18"^^<http://www.w3.org/2001/XMLSchema#date> .
+
+<urn:algolang:onto:Retail#Segment>
+    a owl:DatatypeProperty ;
+    rdfs:label "Segment" ;
+    rdfs:isDefinedBy <urn:algolang:onto:Retail> ;
+    skos:definition "Segment of a customer" ;
+    algo:column "customers.segment" ;
+    rdfs:domain <urn:algolang:onto:Retail#Customer> ;
+    algo:status "certified" ;
+    algo:certifiedBy "finance-data-team" ;
+    algo:certifiedOn "2026-11-18"^^<http://www.w3.org/2001/XMLSchema#date> .
+
+<urn:algolang:onto:Retail#OrderLine>
+    a owl:Class ;
+    rdfs:label "OrderLine" ;
+    rdfs:isDefinedBy <urn:algolang:onto:Retail> ;
+    skos:definition "An order line (order_lines, 3,740 rows)" ;
+    algo:column "order_lines.id" ;
+    algo:measure "COUNT(DISTINCT order_lines.id)" ;
+    algo:status "certified" ;
+    algo:certifiedBy "finance-data-team" ;
+    algo:certifiedOn "2026-11-18"^^<http://www.w3.org/2001/XMLSchema#date> .
+
+<urn:algolang:onto:Retail#Quantity>
+    a owl:DatatypeProperty ;
+    rdfs:label "Quantity" ;
+    rdfs:isDefinedBy <urn:algolang:onto:Retail> ;
+    skos:definition "Quantity of an order line" ;
+    skos:altLabel "units" ;
+    skos:altLabel "qty" ;
+    skos:altLabel "volume" ;
+    algo:column "order_lines.quantity" ;
+    rdfs:domain <urn:algolang:onto:Retail#OrderLine> ;
+    algo:measure "SUM(order_lines.quantity)" ;
+    algo:status "certified" ;
+    algo:certifiedBy "finance-data-team" ;
+    algo:certifiedOn "2026-11-18"^^<http://www.w3.org/2001/XMLSchema#date> .
+
+<urn:algolang:onto:Retail#NetRevenue>
+    a owl:DatatypeProperty ;
+    rdfs:label "NetRevenue" ;
+    rdfs:isDefinedBy <urn:algolang:onto:Retail> ;
+    skos:definition "Net revenue: amount of an order line (named in query history)" ;
+    skos:altLabel "sales" ;
+    skos:altLabel "turnover" ;
+    skos:altLabel "income" ;
+    skos:altLabel "value" ;
+    algo:column "order_lines.amount" ;
+    rdfs:domain <urn:algolang:onto:Retail#OrderLine> ;
+    algo:measure "SUM(order_lines.amount)" ;
+    algo:status "certified" ;
+    algo:certifiedBy "finance-data-team" ;
+    algo:certifiedOn "2026-11-18"^^<http://www.w3.org/2001/XMLSchema#date> .
+
+<urn:algolang:onto:Retail#Discount>
+    a owl:DatatypeProperty ;
+    rdfs:label "Discount" ;
+    rdfs:isDefinedBy <urn:algolang:onto:Retail> ;
+    skos:definition "Discount of an order line" ;
+    skos:altLabel "rebate" ;
+    algo:column "order_lines.discount" ;
+    rdfs:domain <urn:algolang:onto:Retail#OrderLine> ;
+    algo:measure "AVG(order_lines.discount)" ;
+    algo:status "certified" ;
+    algo:certifiedBy "finance-data-team" ;
+    algo:certifiedOn "2026-11-18"^^<http://www.w3.org/2001/XMLSchema#date> .
+
+<urn:algolang:onto:Retail#Order>
+    a owl:Class ;
+    rdfs:label "Order" ;
+    rdfs:isDefinedBy <urn:algolang:onto:Retail> ;
+    skos:definition "An order (orders, 1,500 rows)" ;
+    skos:altLabel "purchase" ;
+    skos:altLabel "transaction" ;
+    algo:column "orders.id" ;
+    algo:measure "COUNT(DISTINCT orders.id)" ;
+    algo:status "certified" ;
+    algo:certifiedBy "finance-data-team" ;
+    algo:certifiedOn "2026-11-18"^^<http://www.w3.org/2001/XMLSchema#date> .
+
+<urn:algolang:onto:Retail#OrderDate>
+    a owl:DatatypeProperty ;
+    rdfs:label "OrderDate" ;
+    rdfs:isDefinedBy <urn:algolang:onto:Retail> ;
+    skos:definition "Order date of an order" ;
+    skos:altLabel "day" ;
+    skos:altLabel "when" ;
+    algo:column "orders.order_date" ;
+    rdfs:domain <urn:algolang:onto:Retail#Order> ;
+    algo:status "certified" ;
+    algo:certifiedBy "finance-data-team" ;
+    algo:certifiedOn "2026-11-18"^^<http://www.w3.org/2001/XMLSchema#date> .
+
+<urn:algolang:onto:Retail#Channel>
+    a owl:DatatypeProperty ;
+    rdfs:label "Channel" ;
+    rdfs:isDefinedBy <urn:algolang:onto:Retail> ;
+    skos:definition "Channel of an order" ;
+    skos:altLabel "route" ;
+    skos:altLabel "medium" ;
+    algo:column "orders.channel" ;
+    rdfs:domain <urn:algolang:onto:Retail#Order> ;
+    algo:status "certified" ;
+    algo:certifiedBy "finance-data-team" ;
+    algo:certifiedOn "2026-11-18"^^<http://www.w3.org/2001/XMLSchema#date> .
+
+<urn:algolang:onto:Retail#Product>
+    a owl:Class ;
+    rdfs:label "Product" ;
+    rdfs:isDefinedBy <urn:algolang:onto:Retail> ;
+    skos:definition "A product (products, 24 rows)" ;
+    skos:altLabel "item" ;
+    skos:altLabel "sku" ;
+    skos:altLabel "article" ;
+    algo:column "products.id" ;
+    algo:measure "COUNT(DISTINCT products.id)" ;
+    algo:status "certified" ;
+    algo:certifiedBy "finance-data-team" ;
+    algo:certifiedOn "2026-11-18"^^<http://www.w3.org/2001/XMLSchema#date> .
+
+<urn:algolang:onto:Retail#ProductName>
+    a owl:DatatypeProperty ;
+    rdfs:label "ProductName" ;
+    rdfs:isDefinedBy <urn:algolang:onto:Retail> ;
+    skos:definition "Name of a product" ;
+    algo:column "products.name" ;
+    rdfs:domain <urn:algolang:onto:Retail#Product> ;
+    algo:status "certified" ;
+    algo:certifiedBy "finance-data-team" ;
+    algo:certifiedOn "2026-11-18"^^<http://www.w3.org/2001/XMLSchema#date> .
+
+<urn:algolang:onto:Retail#Category>
+    a owl:DatatypeProperty ;
+    rdfs:label "Category" ;
+    rdfs:isDefinedBy <urn:algolang:onto:Retail> ;
+    skos:definition "Category of a product" ;
+    skos:altLabel "group" ;
+    skos:altLabel "type" ;
+    algo:column "products.category" ;
+    rdfs:domain <urn:algolang:onto:Retail#Product> ;
+    algo:status "certified" ;
+    algo:certifiedBy "finance-data-team" ;
+    algo:certifiedOn "2026-11-18"^^<http://www.w3.org/2001/XMLSchema#date> .
+
+<urn:algolang:onto:Retail#UnitPrice>
+    a owl:DatatypeProperty ;
+    rdfs:label "UnitPrice" ;
+    rdfs:isDefinedBy <urn:algolang:onto:Retail> ;
+    skos:definition "Unit price of a product" ;
+    skos:altLabel "rate" ;
+    algo:column "products.unit_price" ;
+    rdfs:domain <urn:algolang:onto:Retail#Product> ;
+    algo:measure "AVG(products.unit_price)" ;
+    algo:status "certified" ;
+    algo:certifiedBy "finance-data-team" ;
+    algo:certifiedOn "2026-11-18"^^<http://www.w3.org/2001/XMLSchema#date> .
+
+<urn:algolang:onto:Retail#AverageLineValue>
+    a owl:DatatypeProperty ;
+    rdfs:label "AverageLineValue" ;
+    rdfs:isDefinedBy <urn:algolang:onto:Retail> ;
+    skos:definition "Average line value (from query history)" ;
+    algo:column "order_lines.amount" ;
+    rdfs:domain <urn:algolang:onto:Retail#OrderLine> ;
+    algo:measure "AVG(order_lines.amount)" ;
+    algo:status "certified" ;
+    algo:certifiedBy "finance-data-team" ;
+    algo:certifiedOn "2026-11-18"^^<http://www.w3.org/2001/XMLSchema#date> .
+
+<urn:algolang:onto:Retail#DiscountGiven>
+    a owl:DatatypeProperty ;
+    rdfs:label "DiscountGiven" ;
+    rdfs:isDefinedBy <urn:algolang:onto:Retail> ;
+    skos:definition "Discount given (from query history)" ;
+    algo:column "order_lines.amount" ;
+    algo:column "order_lines.quantity" ;
+    algo:column "products.unit_price" ;
+    rdfs:domain <urn:algolang:onto:Retail#OrderLine> ;
+    algo:measure "SUM(order_lines.quantity * products.unit_price) - SUM(order_lines.amount)" ;
+    algo:status "proposed" .
+
+<urn:algolang:onto:Retail#join_orders_customer_id>
+    a owl:ObjectProperty ;
+    rdfs:label "orders.customer_id → customers.id" ;
+    algo:join "orders.customer_id = customers.id" ;
+    rdfs:isDefinedBy <urn:algolang:onto:Retail> ;
+    rdfs:domain <urn:algolang:onto:Retail#Order> ;
+    rdfs:range <urn:algolang:onto:Retail#Customer> .
+
+<urn:algolang:onto:Retail#join_order_lines_order_id>
+    a owl:ObjectProperty ;
+    rdfs:label "order_lines.order_id → orders.id" ;
+    algo:join "order_lines.order_id = orders.id" ;
+    rdfs:isDefinedBy <urn:algolang:onto:Retail> ;
+    rdfs:domain <urn:algolang:onto:Retail#OrderLine> ;
+    rdfs:range <urn:algolang:onto:Retail#Order> .
+
+<urn:algolang:onto:Retail#join_order_lines_product_id>
+    a owl:ObjectProperty ;
+    rdfs:label "order_lines.product_id → products.id" ;
+    algo:join "order_lines.product_id = products.id" ;
+    rdfs:isDefinedBy <urn:algolang:onto:Retail> ;
+    rdfs:domain <urn:algolang:onto:Retail#OrderLine> ;
+    rdfs:range <urn:algolang:onto:Retail#Product> .

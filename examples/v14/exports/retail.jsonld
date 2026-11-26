@@ -1,0 +1,789 @@
+{
+ "@context": {
+  "owl": "http://www.w3.org/2002/07/owl#",
+  "rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#",
+  "rdfs": "http://www.w3.org/2000/01/rdf-schema#",
+  "skos": "http://www.w3.org/2004/02/skos/core#",
+  "dcterms": "http://purl.org/dc/terms/",
+  "xsd": "http://www.w3.org/2001/XMLSchema#",
+  "algo": "https://github.com/drssnaiml1-cell/algolang/ns/onto#"
+ },
+ "@graph": [
+  {
+   "@id": "urn:algolang:onto:Retail",
+   "@type": [
+    "http://www.w3.org/2002/07/owl#Ontology"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#label": [
+    "Retail (AlgoOnto™)"
+   ],
+   "http://purl.org/dc/terms/source": [
+    "retail.db"
+   ]
+  },
+  {
+   "@id": "urn:algolang:onto:Retail#Customer",
+   "@type": [
+    "http://www.w3.org/2002/07/owl#Class"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#label": [
+    "Customer"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#isDefinedBy": [
+    {
+     "@id": "urn:algolang:onto:Retail"
+    }
+   ],
+   "http://www.w3.org/2004/02/skos/core#definition": [
+    "A customer (customers, 120 rows)"
+   ],
+   "http://www.w3.org/2004/02/skos/core#altLabel": [
+    "client",
+    "buyer",
+    "account"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#column": [
+    "customers.id"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#measure": [
+    "COUNT(DISTINCT customers.id)"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#status": [
+    "certified"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#certifiedBy": [
+    "finance-data-team"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#certifiedOn": [
+    {
+     "@value": "2026-11-18",
+     "@type": "http://www.w3.org/2001/XMLSchema#date"
+    }
+   ]
+  },
+  {
+   "@id": "urn:algolang:onto:Retail#CustomerName",
+   "@type": [
+    "http://www.w3.org/2002/07/owl#DatatypeProperty"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#label": [
+    "CustomerName"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#isDefinedBy": [
+    {
+     "@id": "urn:algolang:onto:Retail"
+    }
+   ],
+   "http://www.w3.org/2004/02/skos/core#definition": [
+    "Name of a customer"
+   ],
+   "http://www.w3.org/2004/02/skos/core#altLabel": [
+    "title"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#column": [
+    "customers.name"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#domain": [
+    {
+     "@id": "urn:algolang:onto:Retail#Customer"
+    }
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#status": [
+    "certified"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#certifiedBy": [
+    "finance-data-team"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#certifiedOn": [
+    {
+     "@value": "2026-11-18",
+     "@type": "http://www.w3.org/2001/XMLSchema#date"
+    }
+   ]
+  },
+  {
+   "@id": "urn:algolang:onto:Retail#Region",
+   "@type": [
+    "http://www.w3.org/2002/07/owl#DatatypeProperty"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#label": [
+    "Region"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#isDefinedBy": [
+    {
+     "@id": "urn:algolang:onto:Retail"
+    }
+   ],
+   "http://www.w3.org/2004/02/skos/core#definition": [
+    "Region of a customer"
+   ],
+   "http://www.w3.org/2004/02/skos/core#altLabel": [
+    "area",
+    "zone",
+    "territory"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#column": [
+    "customers.region"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#domain": [
+    {
+     "@id": "urn:algolang:onto:Retail#Customer"
+    }
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#status": [
+    "certified"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#certifiedBy": [
+    "finance-data-team"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#certifiedOn": [
+    {
+     "@value": "2026-11-18",
+     "@type": "http://www.w3.org/2001/XMLSchema#date"
+    }
+   ]
+  },
+  {
+   "@id": "urn:algolang:onto:Retail#Segment",
+   "@type": [
+    "http://www.w3.org/2002/07/owl#DatatypeProperty"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#label": [
+    "Segment"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#isDefinedBy": [
+    {
+     "@id": "urn:algolang:onto:Retail"
+    }
+   ],
+   "http://www.w3.org/2004/02/skos/core#definition": [
+    "Segment of a customer"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#column": [
+    "customers.segment"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#domain": [
+    {
+     "@id": "urn:algolang:onto:Retail#Customer"
+    }
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#status": [
+    "certified"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#certifiedBy": [
+    "finance-data-team"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#certifiedOn": [
+    {
+     "@value": "2026-11-18",
+     "@type": "http://www.w3.org/2001/XMLSchema#date"
+    }
+   ]
+  },
+  {
+   "@id": "urn:algolang:onto:Retail#OrderLine",
+   "@type": [
+    "http://www.w3.org/2002/07/owl#Class"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#label": [
+    "OrderLine"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#isDefinedBy": [
+    {
+     "@id": "urn:algolang:onto:Retail"
+    }
+   ],
+   "http://www.w3.org/2004/02/skos/core#definition": [
+    "An order line (order_lines, 3,740 rows)"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#column": [
+    "order_lines.id"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#measure": [
+    "COUNT(DISTINCT order_lines.id)"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#status": [
+    "certified"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#certifiedBy": [
+    "finance-data-team"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#certifiedOn": [
+    {
+     "@value": "2026-11-18",
+     "@type": "http://www.w3.org/2001/XMLSchema#date"
+    }
+   ]
+  },
+  {
+   "@id": "urn:algolang:onto:Retail#Quantity",
+   "@type": [
+    "http://www.w3.org/2002/07/owl#DatatypeProperty"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#label": [
+    "Quantity"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#isDefinedBy": [
+    {
+     "@id": "urn:algolang:onto:Retail"
+    }
+   ],
+   "http://www.w3.org/2004/02/skos/core#definition": [
+    "Quantity of an order line"
+   ],
+   "http://www.w3.org/2004/02/skos/core#altLabel": [
+    "units",
+    "qty",
+    "volume"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#column": [
+    "order_lines.quantity"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#domain": [
+    {
+     "@id": "urn:algolang:onto:Retail#OrderLine"
+    }
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#measure": [
+    "SUM(order_lines.quantity)"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#status": [
+    "certified"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#certifiedBy": [
+    "finance-data-team"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#certifiedOn": [
+    {
+     "@value": "2026-11-18",
+     "@type": "http://www.w3.org/2001/XMLSchema#date"
+    }
+   ]
+  },
+  {
+   "@id": "urn:algolang:onto:Retail#NetRevenue",
+   "@type": [
+    "http://www.w3.org/2002/07/owl#DatatypeProperty"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#label": [
+    "NetRevenue"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#isDefinedBy": [
+    {
+     "@id": "urn:algolang:onto:Retail"
+    }
+   ],
+   "http://www.w3.org/2004/02/skos/core#definition": [
+    "Net revenue: amount of an order line (named in query history)"
+   ],
+   "http://www.w3.org/2004/02/skos/core#altLabel": [
+    "sales",
+    "turnover",
+    "income",
+    "value"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#column": [
+    "order_lines.amount"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#domain": [
+    {
+     "@id": "urn:algolang:onto:Retail#OrderLine"
+    }
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#measure": [
+    "SUM(order_lines.amount)"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#status": [
+    "certified"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#certifiedBy": [
+    "finance-data-team"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#certifiedOn": [
+    {
+     "@value": "2026-11-18",
+     "@type": "http://www.w3.org/2001/XMLSchema#date"
+    }
+   ]
+  },
+  {
+   "@id": "urn:algolang:onto:Retail#Discount",
+   "@type": [
+    "http://www.w3.org/2002/07/owl#DatatypeProperty"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#label": [
+    "Discount"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#isDefinedBy": [
+    {
+     "@id": "urn:algolang:onto:Retail"
+    }
+   ],
+   "http://www.w3.org/2004/02/skos/core#definition": [
+    "Discount of an order line"
+   ],
+   "http://www.w3.org/2004/02/skos/core#altLabel": [
+    "rebate"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#column": [
+    "order_lines.discount"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#domain": [
+    {
+     "@id": "urn:algolang:onto:Retail#OrderLine"
+    }
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#measure": [
+    "AVG(order_lines.discount)"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#status": [
+    "certified"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#certifiedBy": [
+    "finance-data-team"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#certifiedOn": [
+    {
+     "@value": "2026-11-18",
+     "@type": "http://www.w3.org/2001/XMLSchema#date"
+    }
+   ]
+  },
+  {
+   "@id": "urn:algolang:onto:Retail#Order",
+   "@type": [
+    "http://www.w3.org/2002/07/owl#Class"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#label": [
+    "Order"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#isDefinedBy": [
+    {
+     "@id": "urn:algolang:onto:Retail"
+    }
+   ],
+   "http://www.w3.org/2004/02/skos/core#definition": [
+    "An order (orders, 1,500 rows)"
+   ],
+   "http://www.w3.org/2004/02/skos/core#altLabel": [
+    "purchase",
+    "transaction"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#column": [
+    "orders.id"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#measure": [
+    "COUNT(DISTINCT orders.id)"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#status": [
+    "certified"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#certifiedBy": [
+    "finance-data-team"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#certifiedOn": [
+    {
+     "@value": "2026-11-18",
+     "@type": "http://www.w3.org/2001/XMLSchema#date"
+    }
+   ]
+  },
+  {
+   "@id": "urn:algolang:onto:Retail#OrderDate",
+   "@type": [
+    "http://www.w3.org/2002/07/owl#DatatypeProperty"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#label": [
+    "OrderDate"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#isDefinedBy": [
+    {
+     "@id": "urn:algolang:onto:Retail"
+    }
+   ],
+   "http://www.w3.org/2004/02/skos/core#definition": [
+    "Order date of an order"
+   ],
+   "http://www.w3.org/2004/02/skos/core#altLabel": [
+    "day",
+    "when"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#column": [
+    "orders.order_date"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#domain": [
+    {
+     "@id": "urn:algolang:onto:Retail#Order"
+    }
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#status": [
+    "certified"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#certifiedBy": [
+    "finance-data-team"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#certifiedOn": [
+    {
+     "@value": "2026-11-18",
+     "@type": "http://www.w3.org/2001/XMLSchema#date"
+    }
+   ]
+  },
+  {
+   "@id": "urn:algolang:onto:Retail#Channel",
+   "@type": [
+    "http://www.w3.org/2002/07/owl#DatatypeProperty"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#label": [
+    "Channel"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#isDefinedBy": [
+    {
+     "@id": "urn:algolang:onto:Retail"
+    }
+   ],
+   "http://www.w3.org/2004/02/skos/core#definition": [
+    "Channel of an order"
+   ],
+   "http://www.w3.org/2004/02/skos/core#altLabel": [
+    "route",
+    "medium"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#column": [
+    "orders.channel"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#domain": [
+    {
+     "@id": "urn:algolang:onto:Retail#Order"
+    }
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#status": [
+    "certified"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#certifiedBy": [
+    "finance-data-team"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#certifiedOn": [
+    {
+     "@value": "2026-11-18",
+     "@type": "http://www.w3.org/2001/XMLSchema#date"
+    }
+   ]
+  },
+  {
+   "@id": "urn:algolang:onto:Retail#Product",
+   "@type": [
+    "http://www.w3.org/2002/07/owl#Class"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#label": [
+    "Product"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#isDefinedBy": [
+    {
+     "@id": "urn:algolang:onto:Retail"
+    }
+   ],
+   "http://www.w3.org/2004/02/skos/core#definition": [
+    "A product (products, 24 rows)"
+   ],
+   "http://www.w3.org/2004/02/skos/core#altLabel": [
+    "item",
+    "sku",
+    "article"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#column": [
+    "products.id"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#measure": [
+    "COUNT(DISTINCT products.id)"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#status": [
+    "certified"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#certifiedBy": [
+    "finance-data-team"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#certifiedOn": [
+    {
+     "@value": "2026-11-18",
+     "@type": "http://www.w3.org/2001/XMLSchema#date"
+    }
+   ]
+  },
+  {
+   "@id": "urn:algolang:onto:Retail#ProductName",
+   "@type": [
+    "http://www.w3.org/2002/07/owl#DatatypeProperty"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#label": [
+    "ProductName"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#isDefinedBy": [
+    {
+     "@id": "urn:algolang:onto:Retail"
+    }
+   ],
+   "http://www.w3.org/2004/02/skos/core#definition": [
+    "Name of a product"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#column": [
+    "products.name"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#domain": [
+    {
+     "@id": "urn:algolang:onto:Retail#Product"
+    }
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#status": [
+    "certified"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#certifiedBy": [
+    "finance-data-team"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#certifiedOn": [
+    {
+     "@value": "2026-11-18",
+     "@type": "http://www.w3.org/2001/XMLSchema#date"
+    }
+   ]
+  },
+  {
+   "@id": "urn:algolang:onto:Retail#Category",
+   "@type": [
+    "http://www.w3.org/2002/07/owl#DatatypeProperty"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#label": [
+    "Category"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#isDefinedBy": [
+    {
+     "@id": "urn:algolang:onto:Retail"
+    }
+   ],
+   "http://www.w3.org/2004/02/skos/core#definition": [
+    "Category of a product"
+   ],
+   "http://www.w3.org/2004/02/skos/core#altLabel": [
+    "group",
+    "type"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#column": [
+    "products.category"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#domain": [
+    {
+     "@id": "urn:algolang:onto:Retail#Product"
+    }
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#status": [
+    "certified"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#certifiedBy": [
+    "finance-data-team"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#certifiedOn": [
+    {
+     "@value": "2026-11-18",
+     "@type": "http://www.w3.org/2001/XMLSchema#date"
+    }
+   ]
+  },
+  {
+   "@id": "urn:algolang:onto:Retail#UnitPrice",
+   "@type": [
+    "http://www.w3.org/2002/07/owl#DatatypeProperty"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#label": [
+    "UnitPrice"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#isDefinedBy": [
+    {
+     "@id": "urn:algolang:onto:Retail"
+    }
+   ],
+   "http://www.w3.org/2004/02/skos/core#definition": [
+    "Unit price of a product"
+   ],
+   "http://www.w3.org/2004/02/skos/core#altLabel": [
+    "rate"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#column": [
+    "products.unit_price"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#domain": [
+    {
+     "@id": "urn:algolang:onto:Retail#Product"
+    }
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#measure": [
+    "AVG(products.unit_price)"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#status": [
+    "certified"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#certifiedBy": [
+    "finance-data-team"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#certifiedOn": [
+    {
+     "@value": "2026-11-18",
+     "@type": "http://www.w3.org/2001/XMLSchema#date"
+    }
+   ]
+  },
+  {
+   "@id": "urn:algolang:onto:Retail#AverageLineValue",
+   "@type": [
+    "http://www.w3.org/2002/07/owl#DatatypeProperty"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#label": [
+    "AverageLineValue"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#isDefinedBy": [
+    {
+     "@id": "urn:algolang:onto:Retail"
+    }
+   ],
+   "http://www.w3.org/2004/02/skos/core#definition": [
+    "Average line value (from query history)"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#column": [
+    "order_lines.amount"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#domain": [
+    {
+     "@id": "urn:algolang:onto:Retail#OrderLine"
+    }
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#measure": [
+    "AVG(order_lines.amount)"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#status": [
+    "certified"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#certifiedBy": [
+    "finance-data-team"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#certifiedOn": [
+    {
+     "@value": "2026-11-18",
+     "@type": "http://www.w3.org/2001/XMLSchema#date"
+    }
+   ]
+  },
+  {
+   "@id": "urn:algolang:onto:Retail#DiscountGiven",
+   "@type": [
+    "http://www.w3.org/2002/07/owl#DatatypeProperty"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#label": [
+    "DiscountGiven"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#isDefinedBy": [
+    {
+     "@id": "urn:algolang:onto:Retail"
+    }
+   ],
+   "http://www.w3.org/2004/02/skos/core#definition": [
+    "Discount given (from query history)"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#column": [
+    "order_lines.amount",
+    "order_lines.quantity",
+    "products.unit_price"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#domain": [
+    {
+     "@id": "urn:algolang:onto:Retail#OrderLine"
+    }
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#measure": [
+    "SUM(order_lines.quantity * products.unit_price) - SUM(order_lines.amount)"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#status": [
+    "proposed"
+   ]
+  },
+  {
+   "@id": "urn:algolang:onto:Retail#join_orders_customer_id",
+   "@type": [
+    "http://www.w3.org/2002/07/owl#ObjectProperty"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#label": [
+    "orders.customer_id → customers.id"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#join": [
+    "orders.customer_id = customers.id"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#isDefinedBy": [
+    {
+     "@id": "urn:algolang:onto:Retail"
+    }
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#domain": [
+    {
+     "@id": "urn:algolang:onto:Retail#Order"
+    }
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#range": [
+    {
+     "@id": "urn:algolang:onto:Retail#Customer"
+    }
+   ]
+  },
+  {
+   "@id": "urn:algolang:onto:Retail#join_order_lines_order_id",
+   "@type": [
+    "http://www.w3.org/2002/07/owl#ObjectProperty"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#label": [
+    "order_lines.order_id → orders.id"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#join": [
+    "order_lines.order_id = orders.id"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#isDefinedBy": [
+    {
+     "@id": "urn:algolang:onto:Retail"
+    }
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#domain": [
+    {
+     "@id": "urn:algolang:onto:Retail#OrderLine"
+    }
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#range": [
+    {
+     "@id": "urn:algolang:onto:Retail#Order"
+    }
+   ]
+  },
+  {
+   "@id": "urn:algolang:onto:Retail#join_order_lines_product_id",
+   "@type": [
+    "http://www.w3.org/2002/07/owl#ObjectProperty"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#label": [
+    "order_lines.product_id → products.id"
+   ],
+   "https://github.com/drssnaiml1-cell/algolang/ns/onto#join": [
+    "order_lines.product_id = products.id"
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#isDefinedBy": [
+    {
+     "@id": "urn:algolang:onto:Retail"
+    }
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#domain": [
+    {
+     "@id": "urn:algolang:onto:Retail#OrderLine"
+    }
+   ],
+   "http://www.w3.org/2000/01/rdf-schema#range": [
+    {
+     "@id": "urn:algolang:onto:Retail#Product"
+    }
+   ]
+  }
+ ]
+}

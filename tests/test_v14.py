@@ -220,3 +220,55 @@ def test_algo_onto_alias(shop):
     a = algo("onto", "terms", str(shop / "retail.onto.algo"))
     b = algo("ontology", "terms", str(shop / "retail.onto.algo"))
     assert a.returncode == 0 and a.stdout == b.stdout and "NetRevenue" in a.stdout
+
+
+# ── the shipped v1.4 examples ───────────────────────────────────────────────
+def test_example_ontologies_compile_and_are_certified():
+    for f, src in (("retail_duckdb.onto.algo", 'from "duckdb:retail.duckdb"'),
+                   ("retail_postgres.onto.algo", 'from "postgresql://analyst:${PGPASSWORD}@localhost:5432/retail"')):
+        text = (V14 / f).read_text(encoding="utf-8")
+        assert src in text and "secret" not in text
+        prog, diags = load_program(text, f, V14)
+        assert not diags
+        (o,) = prog.ontologies.values()
+        assert len(o["terms"]) == 17 and sum(1 for t in o["terms"].values() if t.get("certified")) == 16
+
+
+@needs_duckdb
+def test_warehouse_analyst_example(tmp_path):
+    for f in ("warehouse_analyst.algo", "retail_duckdb.onto.algo"):
+        shutil.copy(V14 / f, tmp_path / f)
+    make_warehouses.to_duckdb(tmp_path / "retail.duckdb", make_warehouses.rows())
+    r = algo("eval", str(tmp_path / "warehouse_analyst.algo"), cwd=tmp_path)
+    assert r.returncode == 0 and "2/2 cases pass" in r.stdout
+    q = "question=top 3 products by sales in 2025"
+    a = algo("run", str(tmp_path / "warehouse_analyst.algo"), "--arg", q, cwd=tmp_path)
+    b = algo("run", str(tmp_path / "warehouse_analyst.algo"), "--engine", "vm", "--arg", q, cwd=tmp_path)
+    emitted = lambda out: out.split("■ emitted:")[1].split("■")[0]
+    assert "879,124.67" in emitted(a.stdout) and emitted(a.stdout) == emitted(b.stdout)
+
+
+def test_warehouse_analyst_refuses_without_its_data(tmp_path):
+    for f in ("warehouse_analyst.algo", "retail_duckdb.onto.algo"):
+        shutil.copy(V14 / f, tmp_path / f)
+    r = algo("run", str(tmp_path / "warehouse_analyst.algo"), "--arg", "question=net revenue by region", cwd=tmp_path)
+    assert r.returncode == 0 and "cannot be answered from the certified data definitions" in r.stdout
+
+
+def test_committed_baseline_shows_no_drift():
+    r = algo("onto", "drift", str(V13 / "retail.onto.algo"))
+    assert r.returncode == 0 and "no drift" in r.stdout
+
+
+def test_drift_demo_reports_the_rename():
+    r = subprocess.run([sys.executable, str(V14 / "drift_demo.py")], capture_output=True, text=True, encoding="utf-8")
+    assert r.returncode == 1 and "product_category (renamed?)" in r.stdout and "Central" in r.stdout
+    assert sqlite3.connect(V13 / "retail.db").execute("SELECT COUNT(*) FROM customers").fetchone()[0] == 120
+
+
+def test_committed_exports_are_current():
+    o = algoonto.load_from_program(V13 / "retail.onto.algo")
+    strip = lambda t: "\n".join(x for x in t.splitlines() if not x.startswith("# AlgoOnto™ export"))  # noqa: E731
+    assert strip((V14 / "exports" / "retail.ttl").read_text(encoding="utf-8")) == strip(algoonto.to_turtle(o))
+    assert json.loads((V14 / "exports" / "retail.jsonld").read_text(encoding="utf-8")) == algoonto.to_jsonld(o)
+    assert "<svg" in (V14 / "exports" / "retail-graph.html").read_text(encoding="utf-8")
