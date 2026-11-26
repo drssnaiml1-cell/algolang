@@ -1,0 +1,77 @@
+name: Enterprise application proposal
+description: Propose a new governed enterprise application for enterprise-apps/ (Call for enterprise application developers)
+title: "[App proposal] "
+labels: [enterprise-app, call-for-developers]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thank you for answering the **Call for enterprise application developers**. A maintainer will reply on this issue to agree the scope before you start building. The acceptance checklist is in the [README](https://github.com/drssnaiml1-cell/algolang#call-for-enterprise-application-developers).
+  - type: input
+    id: name
+    attributes:
+      label: Application name
+      placeholder: Pharmacovigilance Desk
+    validations:
+      required: true
+  - type: input
+    id: sector
+    attributes:
+      label: Sector
+      placeholder: Pharma & life sciences
+    validations:
+      required: true
+  - type: textarea
+    id: decision
+    attributes:
+      label: "What decision does it support, and who uses it?"
+    validations:
+      required: true
+  - type: textarea
+    id: agents
+    attributes:
+      label: Agents and their goals
+      placeholder: |
+        Intake = extract the adverse-event facts
+        Causality = score the likely causal link
+    validations:
+      required: true
+  - type: textarea
+    id: tools
+    attributes:
+      label: Company tools (plugins) and the data they read
+      placeholder: "case.lookup reads data/cases.csv (synthetic)"
+  - type: dropdown
+    id: risk
+    attributes:
+      label: Expected risk level
+      options: [minimal, limited, high]
+    validations:
+      required: true
+  - type: textarea
+    id: never
+    attributes:
+      label: "What must never be automated? Which attributes must be forbidden?"
+    validations:
+      required: true
+  - type: textarea
+    id: data
+    attributes:
+      label: Data source and licence
+      description: "Synthetic data, or openly licensed data with its source. No real personal data."
+    validations:
+      required: true
+  - type: textarea
+    id: team
+    attributes:
+      label: Your team and background
+      description: "Names, roles and relevant experience: developer, domain expert, faculty, student or company."
+  - type: checkboxes
+    id: agree
+    attributes:
+      label: Before you submit
+      options:
+        - label: I will follow the acceptance checklist in the README and release the work under Apache 2.0.
+          required: true
+        - label: I agree to follow the Code of Conduct.
+          required: true

@@ -12,6 +12,8 @@ Twenty-two complete, governed multi-agent applications. Ten of them (v0.5) are l
 
 They all run offline as they are, and with real Claude models when you add `--live`.
 
+> **Build the next one.** The [Call for enterprise application developers](../README.md#call-for-enterprise-application-developers) lists the sectors we want next, the acceptance checklist and how to propose an application.
+
 | Application | Sector | Programs | Company tools | Tests |
 |---|---|---|---|---|
 | [Claims Operations Center](claims-ops-center/) | Insurance | 2 | `policydb.lookup`, `payout.estimate` | 3 |

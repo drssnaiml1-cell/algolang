@@ -38,6 +38,7 @@
   <a href="#quick-start">Quick Start</a> •
   <a href="#2-design-principles">How It Works</a> •
   <a href="#6-enterprise-applications">Applications</a> •
+  <a href="#call-for-enterprise-application-developers"><b>Call for developers</b></a> •
   <a href="#8-quantum-applications">Quantum AI</a> •
   <a href="docs/AlgoLang_Documentation_v1.4.pdf">Documentation</a> •
   <a href="#13-roadmap-from-v01-to-v10-and-beyond">Roadmap</a> •
@@ -98,7 +99,81 @@ flowchart TB
 | **Prove** what happened: hash-chained audit logs, traces you can replay for free, `eval` blocks in CI. | **Scale** to real time: a `stream` block runs a flow for every event on an AlgoPulse™ topic. |
 | **Optimise** with quantum tools: every QAOA answer is VERIFIED against the exact optimum before an agent acts on it. | **Connect** to Claude, MCP tool servers, AlgoPulse™ buses and quantum backends, from the CLI, Studio, SDK or your editor. |
 
+## Call for enterprise application developers
+
+> **Now open.** AlgoProfessor is inviting developers, domain experts and research teams to build the next set of governed AlgoLang enterprise applications.
+
+AlgoLang already ships **22 enterprise applications** in [`enterprise-apps/`](enterprise-apps/). Each one is a complete project: an org policy, company tools over its own data, a knowledge base, programs, batch data, behaviour tests and an AI system card. We want the library to cover every major sector, and we are looking for people who know those sectors to build the next set.
+
+### Who should apply
+
+| You are | You bring |
+|---|---|
+| **Python or full-stack developer** | Company tools (`plugins/`), data pipelines and tests |
+| **Domain expert** (finance, health, law, HR, manufacturing, public services…) | The real decision, its rules, and the line that must never be automated |
+| **Faculty, Ph.D. scholar or student team** | An application that becomes a teaching case, a project or a paper |
+| **Company or startup** | A governed version of a workflow you already run, built in the open |
+
+### Applications we want next
+
+None of these sectors is covered yet. You can also propose your own.
+
+| Application | Sector | What it decides | Expected risk |
+|---|---|---|---|
+| Pharmacovigilance Desk | Pharma & life sciences | Adverse-event intake, causality screening, regulator reporting | **high** |
+| Fair Hiring Panel | Human resources | Résumé screening and interview shortlists, with forbidden attributes enforced | **high** |
+| Loan Collections Assistant | Banking & NBFC | Hardship checks, restructuring offers, respectful contact plans | **high** |
+| GST & Tax Compliance Desk | Tax & accounting | Invoice reconciliation, ITC mismatches, notice responses | limited |
+| Telecom Network Operations | Telecom | Outage triage, root-cause hints, customer notices | limited |
+| Retail Returns & Fraud | Retail & e-commerce | Return eligibility, refund fraud signals, seller disputes | limited |
+| Manufacturing Quality Gate | Manufacturing | Defect triage from inspection data, CAPA drafts | limited |
+| Power Grid Outage Desk | Energy & utilities | Fault localisation, crew dispatch, restoration priority | limited |
+| ESG Reporting Studio | Sustainability | Evidence-backed BRSR and ESG disclosures, greenwashing checks | limited |
+| Kisan Advisory Desk | Agriculture | Crop, pest and scheme advice in Indian languages | limited |
+| Aviation MRO Planner | Aviation | Maintenance task planning against airworthiness directives | minimal |
+| Hotel Revenue Desk | Hospitality | Rate and overbooking decisions under clear limits | minimal |
+
+### What a complete application includes
+
+Every application follows the same layout as the existing ones, and CI checks it ([`tests/test_enterprise_apps.py`](tests/test_enterprise_apps.py)):
+
+```
+enterprise-apps/<your-app>/
+  README.md            the decision, the users, how to run it, and its limits
+  algo.config.json     org policy: forbidden attributes, budgets, review threshold, allowed tools
+  plugins/             company tools over the app's own data (algo dev new-tool)
+  programs/            .algo programs, each declaring a risk level
+  kb/                  documents for kb.search
+  data/                sample batch data (synthetic, with no real personal data)
+  tests/               *.algotest.json behaviour tests (algo dev test)
+  cards/               AI system cards (algo card programs/*.algo --out cards)
+```
+
+**Acceptance checklist.** A pull request is ready to merge when:
+
+- [ ] `algo dev lint .` and `algo dev test .` pass inside the app, and `python enterprise-apps/run_all.py --batch` passes for the whole library
+- [ ] every program declares `risk minimal | limited | high`, and limited or high programs use `disclose`
+- [ ] high-risk decisions go to a person (a human gate or four-eyes review); the app never decides them alone
+- [ ] protected attributes are in `forbid`, and the README lists what must never be automated
+- [ ] all data is synthetic or openly licensed, and the README names its source
+- [ ] system cards are generated and up to date
+- [ ] the app runs offline with the mock model and also with `--live`
+
+### How to take part
+
+1. **Propose:** open an [Enterprise application proposal](https://github.com/drssnaiml1-cell/algolang/issues/new?template=enterprise_app.yml) issue that describes the decision, the users, the agents, the risk level and what must never be automated.
+2. **Agree the scope:** a maintainer replies on the issue to confirm the scope and the data.
+3. **Build:** fork the repo, then run `algo init <your-app>` inside `enterprise-apps/` and follow the [application developer track](DEVELOPER_GUIDE.md#1-application-developer-track).
+4. **Submit:** open a pull request using the [pull request template](.github/pull_request_template.md) and the checklist above.
+5. **Ship:** merged applications are listed in the [enterprise applications table](#6-enterprise-applications) and the [release notes](CHANGELOG.md), with the developers credited by name in the app's README.
+
+**Partnerships and team applications:** organisations, universities and teams that want to build several applications, or to co-develop one for their own sector, can write to **cto@algoprofessor.com**.
+
+All contributions are released under the [Apache License 2.0](LICENSE) and follow the [Code of Conduct](CODE_OF_CONDUCT.md).
+
 ## Contents
+
+**Now open:** [Call for enterprise application developers](#call-for-enterprise-application-developers)
 
 1. [Objective](#1-objective)
 2. [Design principles](#2-design-principles)
@@ -935,7 +1010,7 @@ al.audit.verify("runs/claims_triage.audit.jsonl")                    # tamper ch
 2. **Language contributors:** the architecture, recipes for new syntax, error codes, tools and packs, and the test suite.
 3. **Maintainers:** CI, releases, the website and the container.
 
-Start with [CONTRIBUTING.md](CONTRIBUTING.md).
+Start with [CONTRIBUTING.md](CONTRIBUTING.md). Want to build a whole application? See the [Call for enterprise application developers](#call-for-enterprise-application-developers).
 
 ```bash
 git clone https://github.com/drssnaiml1-cell/algolang && cd algolang
